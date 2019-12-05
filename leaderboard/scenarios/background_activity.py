@@ -49,7 +49,7 @@ class BackgroundActivity(BasicScenario):
     def _initialize_actors(self, config):
         for actor in config.other_actors:
             new_actors = CarlaActorPool.request_new_batch_actors(actor.model,
-                                                                 actor.amount,
+                                                                 4,
                                                                  actor.transform,
                                                                  hero=False,
                                                                  autopilot=actor.autopilot,

@@ -8,6 +8,7 @@ Module use to parse all the route and scenario configuration parameters .
 """
 
 from __future__ import print_function
+from collections import OrderedDict
 import json
 import math
 import xml.etree.ElementTree as ET
@@ -28,7 +29,7 @@ def parse_annotations_file(annotation_filename):
     """
 
     with open(annotation_filename, 'r') as f:
-        annotation_dict = json.loads(f.read())
+        annotation_dict = json.loads(f.read(), object_pairs_hook=OrderedDict)
 
     final_dict = {}
 
@@ -160,9 +161,9 @@ def scan_route_for_scenarios(route_description, world_annotations):
     """
 
     # the triggers dictionaries:
-    existent_triggers = {}
+    existent_triggers = OrderedDict()
     # We have a table of IDs and trigger positions associated
-    possible_scenarios = {}
+    possible_scenarios = OrderedDict()
 
     # Keep track of the trigger ids being added
     latest_trigger_id = 0

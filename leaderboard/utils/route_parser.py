@@ -6,7 +6,7 @@
 """
 Module used to parse all the route and scenario configuration parameters.
 """
-
+from collections import OrderedDict
 import json
 import math
 import xml.etree.ElementTree as ET
@@ -32,11 +32,10 @@ class RouteParser(object):
         :param annotation_filename: the filename for the anotations file
         :return:
         """
-
         with open(annotation_filename, 'r') as f:
-            annotation_dict = json.loads(f.read())
+            annotation_dict = json.loads(f.read(), object_pairs_hook=OrderedDict)
 
-        final_dict = {}
+        final_dict = OrderedDict()
 
         for town_dict in annotation_dict['available_scenarios']:
             final_dict.update(town_dict)
@@ -170,9 +169,9 @@ class RouteParser(object):
         """
 
         # the triggers dictionaries:
-        existent_triggers = {}
+        existent_triggers = OrderedDict()
         # We have a table of IDs and trigger positions associated
-        possible_scenarios = {}
+        possible_scenarios = OrderedDict()
 
         # Keep track of the trigger ids being added
         latest_trigger_id = 0

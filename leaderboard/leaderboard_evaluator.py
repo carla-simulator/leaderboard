@@ -292,7 +292,6 @@ class LeaderboardEvaluator(object):
             transform.location = carla.Location(-10000.0, -10000.0, 0.0)
             self.world.spawn_actor(friction_bp, transform)
 
-        import pdb; pdb.set_trace()
         try:
             # Load scenario and run it
             if args.record:

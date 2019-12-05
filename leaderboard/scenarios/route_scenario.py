@@ -264,19 +264,19 @@ class RouteScenario(BasicScenario):
                                                            timeout=self.timeout,
                                                            debug_mode=False)
 
-        # self.background_scenario = self._build_background_scenario(world,
-        #                                                            ego_vehicle,
-        #                                                            config.town,
-        #                                                            timeout=self.timeout,
-        #                                                            debug_mode=False)
+        self.background_scenario = self._build_background_scenario(world,
+                                                                   ego_vehicle,
+                                                                   config.town,
+                                                                   timeout=self.timeout,
+                                                                   debug_mode=False)
 
-        # self.traffic_light_scenario = self._build_trafficlight_scenario(world,
-        #                                                                 ego_vehicle,
-        #                                                                 config.town,
-        #                                                                 timeout=self.timeout,
-        #                                                                 debug_mode=False)
+        self.traffic_light_scenario = self._build_trafficlight_scenario(world,
+                                                                        ego_vehicle,
+                                                                        config.town,
+                                                                        timeout=self.timeout,
+                                                                        debug_mode=False)
 
-        self.list_scenarios = [self.master_scenario] #, self.background_scenario] #, self.traffic_light_scenario]
+        self.list_scenarios = [self.master_scenario, self.traffic_light_scenario] #, self.background_scenario]#, self.traffic_light_scenario]
 
         # build the instance based on the parsed definitions.
         self.list_scenarios += self._build_scenario_instances(world,
@@ -354,7 +354,7 @@ class RouteScenario(BasicScenario):
         for trigger in potential_scenarios_definitions.keys():
             possible_scenarios = potential_scenarios_definitions[trigger]
 
-            scenario_choice = random.choice(possible_scenarios)
+            scenario_choice = rgn.choice(possible_scenarios)
             del possible_scenarios[possible_scenarios.index(scenario_choice)]
             # We keep sampling and testing if this position is present on any of the scenarios.
             while position_sampled(scenario_choice, sampled_scenarios):
@@ -418,8 +418,8 @@ class RouteScenario(BasicScenario):
         else:
             amount = 1
 
-        actor_configuration_instance = ActorConfigurationData(
-            model, transform, rolename='background', autopilot=True, random=True, amount=amount)
+        actor_configuration_instance = ActorConfigurationData(model, transform, rolename='background', autopilot=True,
+                                                              random=True, amount=amount)
         scenario_configuration.other_actors = [actor_configuration_instance]
 
         return BackgroundActivity(world, [ego_vehicle], scenario_configuration,
@@ -541,7 +541,9 @@ class RouteScenario(BasicScenario):
 
                 subbehavior.add_child(oneshot_idiom)
 
-        behavior.add_child(subbehavior)
+        if subbehavior.children:
+            # don't add the subbehavior node if there weren't additional scenarios besides master!
+            behavior.add_child(subbehavior)
 
         return behavior
 

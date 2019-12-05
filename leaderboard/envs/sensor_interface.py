@@ -264,11 +264,12 @@ class CallBack(object):
         self._data_provider.register_sensor(tag, sensor)
 
     def __call__(self, data):
-        if isinstance(data, carla.Image):
+
+        if isinstance(data, carla.libcarla.Image):
             self._parse_image_cb(data, self._tag)
-        elif isinstance(data, carla.LidarMeasurement):
+        elif isinstance(data, carla.libcarla.LidarMeasurement):
             self._parse_lidar_cb(data, self._tag)
-        elif isinstance(data, carla.GnssEvent):
+        elif isinstance(data, carla.libcarla.GnssMeasurement):
             self._parse_gnss_cb(data, self._tag)
         elif isinstance(data, CANBusMeasurement) or isinstance(data, HDMapMeasurement) \
                 or isinstance(data, SceneLayoutMeasurement) or isinstance(data, ObjectMeasurements):
