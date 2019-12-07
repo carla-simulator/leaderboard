@@ -217,6 +217,10 @@ class LeaderboardEvaluator(object):
         settings.synchronous_mode = True
         self.world.apply_settings(settings)
 
+        # spectator pointing to the sky to reduce rendering impact
+        spectator = self.world.get_spectator()
+        spectator.set_transform(carla.Transform(carla.Location(z=500), carla.Rotation(pitch=90)))
+
         CarlaActorPool.set_client(self.client)
         CarlaActorPool.set_world(self.world)
         CarlaDataProvider.set_world(self.world)

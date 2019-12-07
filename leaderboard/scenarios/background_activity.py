@@ -10,7 +10,6 @@ Scenario spawning elements to make the town dynamic and interesting
 
 import py_trees
 
-from srunner.scenariomanager.scenarioatomics.atomic_behaviors import TrafficJamChecker
 from srunner.scenariomanager.carla_data_provider import CarlaActorPool
 from srunner.scenarios.basic_scenario import BasicScenario
 
@@ -49,7 +48,7 @@ class BackgroundActivity(BasicScenario):
     def _initialize_actors(self, config):
         for actor in config.other_actors:
             new_actors = CarlaActorPool.request_new_batch_actors(actor.model,
-                                                                 4,
+                                                                 actor.amount,
                                                                  actor.transform,
                                                                  hero=False,
                                                                  autopilot=actor.autopilot,
@@ -64,13 +63,7 @@ class BackgroundActivity(BasicScenario):
         """
         Basic behavior do nothing, i.e. Idle
         """
-
-        # Build behavior tree
-        sequence = py_trees.composites.Sequence("BackgroundActivity")
-        check_jam = TrafficJamChecker(debug=self.debug)
-        sequence.add_child(check_jam)
-
-        return sequence
+        pass
 
     def _create_test_criteria(self):
         """

@@ -46,6 +46,8 @@ class AutonomousAgent(object):
         # agent's initialization
         self.setup(path_to_conf_file)
 
+        self.wallclock_t0 = None
+
     def setup(self, path_to_conf_file):
         """
         Initialize everything needed by your agent and set the track attribute to the right type:
@@ -106,8 +108,13 @@ class AutonomousAgent(object):
         input_data = self.sensor_interface.get_data()
 
         timestamp = GameTime.get_time()
+
+        if not self.wallclock_t0:
+            self.wallclock_t0 = GameTime.get_wallclocktime()
         wallclock = GameTime.get_wallclocktime()
-        print('======[Agent] Wallclock_time = {} / Sim_time = {}'.format(wallclock, timestamp))
+        wallclock_diff = (wallclock - self.wallclock_t0).total_seconds()
+
+        print('======[Agent] Wallclock_time = {} / {} / Sim_time = {} / {}x'.format(wallclock, wallclock_diff, timestamp, timestamp/wallclock_diff))
 
         control = self.run_step(input_data, timestamp)
         control.manual_gear_shift = False
