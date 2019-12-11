@@ -16,8 +16,7 @@ import os
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
-from leaderboard.envs.scene_layout_sensors import SceneLayoutReader, ObjectFinder
-from leaderboard.envs.sensor_interface import CallBack, CANBusSensor, HDMapReader
+from leaderboard.envs.sensor_interface import CallBack, OpenDirveMapReader
 from leaderboard.autoagents.autonomous_agent import Track
 
 MAX_ALLOWED_RADIUS_SENSOR = 5.0
@@ -64,18 +63,9 @@ class AgentWrapper(object):
         bp_library = CarlaDataProvider.get_world().get_blueprint_library()
         for sensor_spec in self._agent.sensors():
             # These are the pseudosensors (not spawned)
-            if sensor_spec['type'].startswith('sensor.scene_layout'):
-                # Static sensor that gives you the entire information from the world (Just runs once)
-                sensor = SceneLayoutReader(CarlaDataProvider.get_world())
-            elif sensor_spec['type'].startswith('sensor.object_finder'):
-                # This sensor returns the position of the dynamic objects in the scene.
-                sensor = ObjectFinder(CarlaDataProvider.get_world(), sensor_spec['reading_frequency'])
-            elif sensor_spec['type'].startswith('sensor.can_bus'):
-                # The speedometer pseudo sensor is created directly here
-                sensor = CANBusSensor(vehicle, sensor_spec['reading_frequency'])
-            elif sensor_spec['type'].startswith('sensor.hd_map'):
+            if sensor_spec['type'].startswith('sensor.opendrive_map'):
                 # The HDMap pseudo sensor is created directly here
-                sensor = HDMapReader(vehicle, sensor_spec['reading_frequency'])
+                sensor = OpenDirveMapReader(vehicle, sensor_spec['reading_frequency'])
             # These are the sensors spawned on the carla world
             else:
                 bp = bp_library.find(str(sensor_spec['type']))
@@ -83,6 +73,11 @@ class AgentWrapper(object):
                     bp.set_attribute('image_size_x', str(sensor_spec['width']))
                     bp.set_attribute('image_size_y', str(sensor_spec['height']))
                     bp.set_attribute('fov', str(sensor_spec['fov']))
+                    bp.set_attribute('lens_circle_multiplier', str(3.0))
+                    bp.set_attribute('lens_circle_falloff', str(3.0))
+                    bp.set_attribute('chromatic_aberration_intensity', str(0.5))
+                    bp.set_attribute('chromatic_aberration_offset', str(0))
+
                     sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
                                                      z=sensor_spec['z'])
                     sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
@@ -100,11 +95,44 @@ class AgentWrapper(object):
                     sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
                                                      roll=sensor_spec['roll'],
                                                      yaw=sensor_spec['yaw'])
+                elif sensor_spec['type'].startswith('sensor.other.radar'):
+                    bp.set_attribute('horizontal_fov', str(sensor_spec['fov']))  # degrees
+                    bp.set_attribute('vertical_fov', str(sensor_spec['fov']))  # degrees
+                    bp.set_attribute('points_per_second', '1500')
+                    bp.set_attribute('range', '100')  # meters
+
+                    sensor_location = carla.Location(x=sensor_spec['x'],
+                                                     y=sensor_spec['y'],
+                                                     z=sensor_spec['z'])
+                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                                     roll=sensor_spec['roll'],
+                                                     yaw=sensor_spec['yaw'])
+
+
                 elif sensor_spec['type'].startswith('sensor.other.gnss'):
-                    sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
+                    bp.set_attribute('noise_alt_stddev', str(1.5))
+                    bp.set_attribute('noise_lat_stddev', str(0.1))
+                    bp.set_attribute('noise_lon_stddev', str(0.1))
+
+                    sensor_location = carla.Location(x=sensor_spec['x'],
+                                                     y=sensor_spec['y'],
                                                      z=sensor_spec['z'])
                     sensor_rotation = carla.Rotation()
 
+                elif sensor_spec['type'].startswith('sensor.other.imu'):
+                    bp.set_attribute('noise_accel_stddev_x', str(0.1))
+                    bp.set_attribute('noise_accel_stddev_y', str(0.1))
+                    bp.set_attribute('noise_accel_stddev_z', str(0.15))
+                    bp.set_attribute('noise_gyro_stddev_x', str(0.01))
+                    bp.set_attribute('noise_gyro_stddev_y', str(0.01))
+                    bp.set_attribute('noise_gyro_stddev_z', str(0.01))
+
+                    sensor_location = carla.Location(x=sensor_spec['x'],
+                                                     y=sensor_spec['y'],
+                                                     z=sensor_spec['z'])
+                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                                     roll=sensor_spec['roll'],
+                                                     yaw=sensor_spec['yaw'])
                 # create sensor
                 sensor_transform = carla.Transform(sensor_location, sensor_rotation)
                 sensor = CarlaDataProvider.get_world().spawn_actor(bp, sensor_transform, vehicle)

@@ -25,11 +25,8 @@ import pkg_resources
 import sys
 
 import carla
-from srunner.challenge.autoagents.agent_wrapper import SensorConfigurationInvalid
-from srunner.challenge.challenge_statistics_manager import ChallengeStatisticsManager
 from srunner.scenarioconfigs.route_scenario_configuration import RouteScenarioConfiguration
 from srunner.scenariomanager.carla_data_provider import *
-#from srunner.scenariomanager.scenario_manager import ScenarioManager
 from srunner.scenarios.control_loss import *
 from srunner.scenarios.follow_leading_vehicle import *
 from srunner.scenarios.maneuver_opposite_direction import *
@@ -43,11 +40,12 @@ from srunner.scenarios.signalized_junction_right_turn import *
 from srunner.scenarios.change_lane import *
 from srunner.scenarios.cut_in import *
 from srunner.tools.scenario_config_parser import ScenarioConfigurationParser
-from srunner.tools.route_parser import RouteParser
 
-
-from leaderboard.scenarios.route_scenario import RouteScenario
 from leaderboard.scenarios.scenario_manager import ScenarioManager
+from leaderboard.scenarios.route_scenario import RouteScenario
+from leaderboard.autoagents.agent_wrapper import SensorConfigurationInvalid
+from leaderboard.utils.route_parser import RouteParser
+from leaderboard.utils.challenge_statistics_manager import ChallengeStatisticsManager
 
 
 
@@ -217,10 +215,6 @@ class LeaderboardEvaluator(object):
         settings.synchronous_mode = True
         self.world.apply_settings(settings)
 
-        # spectator pointing to the sky to reduce rendering impact
-        spectator = self.world.get_spectator()
-        spectator.set_transform(carla.Transform(carla.Location(z=500), carla.Rotation(pitch=90)))
-
         CarlaActorPool.set_client(self.client)
         CarlaActorPool.set_world(self.world)
         CarlaDataProvider.set_world(self.world)
@@ -258,6 +252,7 @@ class LeaderboardEvaluator(object):
 
         # Prepare scenario
         print("Preparing scenario: " + config.name)
+
         try:
             self._prepare_ego_vehicles(config.ego_vehicles, False)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
@@ -301,9 +296,7 @@ class LeaderboardEvaluator(object):
             if args.record:
                 self.client.start_recorder("{}/{}.log".format(os.getenv('ROOT_SCENARIO_RUNNER', "./"), config.name))
             self.manager.load_scenario(scenario, self.agent_instance)
-            print('OK')
             self.manager.run_scenario()
-            print('AK')
 
             # Stop scenario
             self.manager.stop_scenario()

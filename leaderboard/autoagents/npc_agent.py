@@ -11,10 +11,12 @@ from __future__ import print_function
 
 import carla
 from agents.navigation.basic_agent import BasicAgent
-
-from srunner.challenge.autoagents.autonomous_agent import AutonomousAgent, Track
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
+from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
+
+def get_entry_point():
+    return 'NpcAgent'
 
 class NpcAgent(AutonomousAgent):
 

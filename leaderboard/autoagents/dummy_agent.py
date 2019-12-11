@@ -16,8 +16,6 @@ from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 def get_entry_point():
     return 'DummyAgent'
 
-
-
 class DummyAgent(AutonomousAgent):
 
     """
@@ -56,9 +54,12 @@ class DummyAgent(AutonomousAgent):
                     'width': 800, 'height': 600, 'fov': 100, 'id': 'Right'},
                    {'type': 'sensor.lidar.ray_cast', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
                     'yaw': -45.0, 'id': 'LIDAR'},
+                   {'type': 'sensor.other.radar', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
+                    'yaw': -45.0, 'fov': 30, 'id': 'RADAR'},
                    {'type': 'sensor.other.gnss', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'GPS'},
-                   {'type': 'sensor.can_bus', 'reading_frequency': 25, 'id': 'can_bus'},
-                   {'type': 'sensor.hd_map', 'reading_frequency': 1, 'id': 'hdmap'},
+                   {'type': 'sensor.other.imu', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
+                    'yaw': -45.0, 'id': 'IMU'},
+                   {'type': 'sensor.opendrive_map', 'reading_frequency': 1, 'id': 'OpenDRIVE'},
                    ]
 
         return sensors
