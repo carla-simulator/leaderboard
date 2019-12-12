@@ -62,14 +62,6 @@ class LeaderboardEvaluator(object):
     wait_for_world = 20.0  # in seconds
     frame_rate = 20.0      # in Hz
 
-    # CARLA world and scenario handlers
-    world = None
-    manager = None
-
-    additional_scenario_module = None
-
-    agent_instance = None
-    module_agent = None
 
     def __init__(self, args):
         """
@@ -83,6 +75,8 @@ class LeaderboardEvaluator(object):
         self.client = carla.Client(args.host, int(args.port))
         self.client.set_timeout(self.client_timeout)
 
+        self.time_available = args.time_available
+
         dist = pkg_resources.get_distribution("carla")
         if LooseVersion(dist.version) < LooseVersion('0.9.6'):
             raise ImportError("CARLA version 0.9.6 or newer required. CARLA version found: {}".format(dist))
@@ -94,7 +88,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug, True)
+        self.manager = ScenarioManager(args.debug, args.challenge_mode, args.track)
 
         self._start_wall_time = datetime.now()
 
@@ -117,25 +111,8 @@ class LeaderboardEvaluator(object):
         current_time = datetime.now()
         elapsed_seconds = (current_time - self._start_wall_time).seconds
 
-        return elapsed_seconds < int(os.getenv('CHALLENGE_TIME_AVAILABLE', '1080000'))
+        return elapsed_seconds < int(self.time_available)
 
-    def _get_scenario_class_or_fail(self, scenario):
-        """
-        Get scenario class by scenario name
-        If scenario is not supported or not found, exit script
-        """
-
-        for scenarios in SCENARIOS.values():
-            if scenario in scenarios:
-                if scenario in globals():
-                    return globals()[scenario]
-
-        for member in inspect.getmembers(self.additional_scenario_module):
-            if scenario in member and inspect.isclass(member[1]):
-                return member[1]
-
-        print("Scenario '{}' not supported ... Exiting".format(scenario))
-        sys.exit(-1)
 
     def _cleanup(self, ego=False):
         """
@@ -194,15 +171,6 @@ class LeaderboardEvaluator(object):
         # sync state
         CarlaDataProvider.get_world().tick()
 
-    def _analyze_scenario(self, args, config):
-        """
-        Provide feedback about success/failure of a scenario
-        """
-
-        current_time = str(datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-        junit_filename = None
-        config_name = config.name
-
 
     def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
         """
@@ -255,7 +223,7 @@ class LeaderboardEvaluator(object):
 
         try:
             self._prepare_ego_vehicles(config.ego_vehicles, False)
-            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
+            scenario = RouteScenario(world=self.world, config=config, debug_mode=1)
 
         except Exception as exception:
             print("The scenario cannot be loaded")
@@ -294,15 +262,12 @@ class LeaderboardEvaluator(object):
         try:
             # Load scenario and run it
             if args.record:
-                self.client.start_recorder("{}/{}.log".format(os.getenv('ROOT_SCENARIO_RUNNER', "./"), config.name))
+                self.client.start_recorder("{}/{}.log".format(os.getenv('PWD', "./"), config.name))
             self.manager.load_scenario(scenario, self.agent_instance)
             self.manager.run_scenario()
 
             # Stop scenario
             self.manager.stop_scenario()
-
-            # Provide outputs if required
-            self._analyze_scenario(args, config)
 
             # Remove all actors
             scenario.remove_all_actors()
@@ -349,9 +314,6 @@ class LeaderboardEvaluator(object):
         Run the challenge mode
         """
 
-        phase_codename = os.getenv('CHALLENGE_PHASE_CODENAME', 'dev_track_3')
-        phase = phase_codename.split("_")[0]
-
         repetitions = args.repetitions
         routes = args.routes
         weather_profiles = CarlaDataProvider.find_weather_presets()
@@ -393,61 +355,43 @@ def main():
                         help='IP of the host server (default: localhost)')
     parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
-    parser.add_argument('--show-to-participant', type=bool, help='Show results to participant?', default=True)
     parser.add_argument('--spectator', type=bool, help='Switch spectator view on?', default=True)
     parser.add_argument('--record', action="store_true",
                         help='Use CARLA recording feature to create a recording of the scenario')
 
     # simulation setup
+    parser.add_argument('--challenge-mode', type=bool, help='Switch to challenge mode?', default=True)
     parser.add_argument('--routes',
-                        help='Name of the route to be executed. Point to the route_xml_file to be executed.')
+                        help='Name of the route to be executed. Point to the route_xml_file to be executed.',
+                        required=True)
     parser.add_argument('--scenarios',
-                        help='Name of the scenario annotation file to be mixed with the route.')
+                        help='Name of the scenario annotation file to be mixed with the route.',
+                        required=True)
     parser.add_argument('--repetitions',
                         type=int,
                         default=1,
                         help='Number of repetitions per route.')
 
     # agent-related options
-    parser.add_argument("-a", "--agent", type=str, help="Path to Agent's py file to evaluate")
+    parser.add_argument("-a", "--agent", type=str, help="Path to Agent's py file to evaluate", required=True)
     parser.add_argument("--agent-config", type=str, help="Path to Agent's configuration file", default="")
+
+    parser.add_argument("--track", type=str, default='SENSORS', help="Participation track: SENSORS, MAP")
+    parser.add_argument("--time-available", type=int, default=1000, help="Time budget in seconds")
+    parser.add_argument("--checkpoint", type=str, help="Path to checkpoint used for saving statistics and resuming",
+                        required=True)
 
     arguments = parser.parse_args()
 
-    CARLA_ROOT = os.environ.get('CARLA_ROOT')
-    ROOT_SCENARIO_RUNNER = os.environ.get('ROOT_SCENARIO_RUNNER')
 
-    if not CARLA_ROOT:
-        print("Error. CARLA_ROOT not found. Please run setup_environment.sh first.")
-        sys.exit(0)
-
-    if not ROOT_SCENARIO_RUNNER:
-        print("Error. ROOT_SCENARIO_RUNNER not found. Please run setup_environment.sh first.")
-        sys.exit(0)
-
-    if arguments.scenarios is None:
-        print("Please specify a path to a scenario specification file  '--scenarios path-to-file'\n\n")
-        parser.print_help(sys.stdout)
-        sys.exit(0)
-
-    arguments.carla_root = CARLA_ROOT
-    challenge_evaluator = None
-
-    phase_codename = os.getenv('CHALLENGE_PHASE_CODENAME', 'dev_track_3')
-    if not phase_codename:
-        raise ValueError('environment variable CHALLENGE_PHASE_CODENAME not defined')
-    track = int(phase_codename.split("_")[2])
-    phase_codename = phase_codename.split("_")[0]
-    if phase_codename == 'test':
-        arguments.show_to_participant = False
-
+    leaderboard_evaluator = None
     try:
         leaderboard_evaluator = LeaderboardEvaluator(arguments)
         leaderboard_evaluator.run(arguments)
     except Exception as e:
         traceback.print_exc()
         if leaderboard_evaluator:
-            leaderboard_evaluator.report_challenge_statistics(arguments.filename, arguments.show_to_participant)
+            leaderboard_evaluator.report_challenge_statistics(arguments.checkpoint, True)
     finally:
         del leaderboard_evaluator
 

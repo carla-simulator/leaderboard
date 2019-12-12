@@ -448,7 +448,7 @@ class RouteScenario(BasicScenario):
                 loc = carla.Location(scenario['trigger_position']['x'],
                                      scenario['trigger_position']['y'],
                                      scenario['trigger_position']['z']) + carla.Location(z=2.0)
-                world.debug.draw_point(loc, size=1.0, color=carla.Color(255, 0, 0), life_time=100000)
+                world.debug.draw_point(loc, size=0.3, color=carla.Color(255, 0, 0), life_time=100000)
                 world.debug.draw_string(loc, str(scenario['name']), draw_shadow=False,
                                         color=carla.Color(0, 0, 255), life_time=100000, persistent_lines=True)
 

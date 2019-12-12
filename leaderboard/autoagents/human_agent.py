@@ -43,8 +43,8 @@ class HumanInterface(object):
     def __init__(self, parent):
         self.quit = False
         self._parent = parent
-        self._width = 800
-        self._height = 600
+        self._width = 300#800
+        self._height = 200#600
         self._throttle_delta = 0.05
         self._steering_delta = 0.01
         self._surface = None
@@ -72,15 +72,16 @@ class HumanInterface(object):
             # process sensor data
             input_data = self._parent.sensor_interface.get_data()
             image_center = input_data['Center'][1][:, :, -2::-1]
-            image_left = input_data['Left'][1][:, :, -2::-1]
-            image_right = input_data['Right'][1][:, :, -2::-1]
-            image_rear = input_data['Rear'][1][:, :, -2::-1]
+            #image_left = input_data['Left'][1][:, :, -2::-1]
+            #image_right = input_data['Right'][1][:, :, -2::-1]
+            #image_rear = input_data['Rear'][1][:, :, -2::-1]
 
-            top_row = np.hstack((image_left, image_center, image_right))
-            bottom_row = np.hstack((0 * image_rear, image_rear, 0 * image_rear))
-            comp_image = np.vstack((top_row, bottom_row))
-            # resize image
-            image_rescaled = cv2.resize(comp_image, dsize=(self._width, self._height), interpolation=cv2.INTER_CUBIC)
+            #top_row = np.hstack((image_left, image_center, image_right))
+            #bottom_row = np.hstack((0 * image_rear, image_rear, 0 * image_rear))
+            #comp_image = np.vstack((top_row, bottom_row))
+            ## resize image
+            #image_rescaled = cv2.resize(comp_image, dsize=(self._width, self._height), interpolation=cv2.INTER_CUBIC)
+            image_rescaled = image_center
 
             # display image
             self._surface = pygame.surfarray.make_surface(image_rescaled.swapaxes(0, 1))
@@ -104,7 +105,7 @@ class HumanAgent(AutonomousAgent):
         """
         Setup the agent parameters
         """
-        self.track = Track.ALL_SENSORS_HDMAP_WAYPOINTS
+        self.track = Track.SENSORS
 
         self.agent_engaged = False
         self.current_control = carla.VehicleControl()
@@ -138,16 +139,6 @@ class HumanAgent(AutonomousAgent):
         sensors = [{'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
                     'width': 300, 'height': 200, 'fov': 100, 'id': 'Center'},
 
-                   {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
-                    'yaw': -45.0, 'width': 300, 'height': 200, 'fov': 100, 'id': 'Left'},
-
-                   {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 45.0,
-                    'width': 300, 'height': 200, 'fov': 100, 'id': 'Right'},
-
-                   {'type': 'sensor.camera.rgb', 'x': -1.8, 'y': 0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
-                    'yaw': 180.0, 'width': 300, 'height': 200, 'fov': 130, 'id': 'Rear'},
-
-                   {'type': 'sensor.other.gnss', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'GPS'}
                    ]
 
         return sensors

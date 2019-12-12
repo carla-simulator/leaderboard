@@ -54,7 +54,7 @@ class AgentWrapper(object):
         """
         return self._agent()
 
-    def setup_sensors(self, vehicle, debug_mode=False):
+    def setup_sensors(self, vehicle, debug_mode=False, track=None):
         """
         Create the sensors defined by the user and attach them to the ego-vehicle
         :param vehicle: ego vehicle
@@ -140,48 +140,26 @@ class AgentWrapper(object):
             sensor.listen(CallBack(sensor_spec['id'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        self._validate_sensor_configuration()
+        if track:
+            self._validate_sensor_configuration(track)
 
         while not self._agent.all_sensors_ready():
             if debug_mode:
                 print(" waiting for one data reading from sensors...")
             CarlaDataProvider.get_world().tick()
 
-    def _validate_sensor_configuration(self):
+    def _validate_sensor_configuration(self, selected_track):
         """
         Ensure that the sensor configuration is valid, in case the challenge mode is used
         Returns true on valid configuration, false otherwise
         """
 
-        if not self._challenge_mode:
-            return
-
-        phase_codename = os.getenv('CHALLENGE_PHASE_CODENAME', 'dev_track_3')
-        track = int(phase_codename.split("_")[2])
-        phase = phase_codename.split("_")[0]
-
-        if phase != 'debug' and Track(track) != self._agent.track:
-            raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(track)))
+        if Track(selected_track) != self._agent.track:
+            raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
 
         for sensor in self._agent.sensors():
-            if self._agent.track == Track.ALL_SENSORS:
-                if sensor['type'].startswith('sensor.scene_layout') or sensor['type'].startswith(
-                        'sensor.object_finder') or sensor['type'].startswith('sensor.hd_map'):
-                    raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(self._agent.track))
-
-            elif self._agent.track == Track.CAMERAS:
-                if not (sensor['type'].startswith('sensor.camera.rgb') or sensor['type'].startswith(
-                        'sensor.other.gnss') or sensor['type'].startswith('sensor.can_bus')):
-                    raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(self._agent.track))
-
-            elif self._agent.track == Track.ALL_SENSORS_HDMAP_WAYPOINTS:
-                if (sensor['type'].startswith('sensor.scene_layout') or
-                        sensor['type'].startswith('sensor.object_finder')):
-                    raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(self._agent.track))
-            else:
-                if not (sensor['type'].startswith('sensor.scene_layout') or sensor['type'].startswith(
-                        'sensor.object_finder') or sensor['type'].startswith('sensor.other.gnss')
-                        or sensor['type'].startswith('sensor.can_bus')):
+            if self._agent.track == Track.SENSORS:
+                if sensor['type'].startswith('sensor.opendrive_map'):
                     raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(self._agent.track))
 
             # let's check the extrinsics of the sensor

@@ -26,7 +26,7 @@ class DummyAgent(AutonomousAgent):
         """
         Setup the agent parameters
         """
-        self.track = Track.ALL_SENSORS_HDMAP_WAYPOINTS
+        self.track = Track.SENSORS
 
     def sensors(self):
         """

@@ -66,7 +66,7 @@ class RosAgent(AutonomousAgent):
         """
         setup agent
         """
-        self.track = Track.ALL_SENSORS_HDMAP_WAYPOINTS
+        self.track = Track.MAP
         self.stack_thread = None
 
         # get start_script from environment

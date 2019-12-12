@@ -31,7 +31,7 @@ class NpcAgent(AutonomousAgent):
         """
         Setup the agent parameters
         """
-        self.track = Track.ALL_SENSORS_HDMAP_WAYPOINTS
+        self.track = Track.SENSORS
 
         self._route_assigned = False
         self._agent = None
