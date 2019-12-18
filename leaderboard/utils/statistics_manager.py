@@ -221,4 +221,18 @@ class StatisticsManager(object):
         stats_dict = route_record.__dict__
         data['value']['results']['_checkpoint']['global_record'] = stats_dict
 
+        data['value']['results']['values'] = [ stats_dict['scores']['score_route'],
+                                               stats_dict['scores']['score_penalty'],
+                                               stats_dict['scores']['score_composed'],
+                                               # infractions
+                                               stats_dict['infractions']['collisions_layout'],
+                                               stats_dict['infractions']['collision_vehicle'],
+                                               stats_dict['infractions']['collisions_pedestrian'],
+                                               stats_dict['infractions']['red_light'],
+                                               stats_dict['infractions']['wrong_way'],
+                                               stats_dict['infractions']['route_dev'],
+                                               stats_dict['infractions']['sidewalk_invasion'],
+                                               stats_dict['infractions']['stop_infraction']
+                                             ]
+
         save_dict(endpoint, data)

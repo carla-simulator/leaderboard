@@ -42,4 +42,4 @@ def save_dict(endpoint, data):
         _ = requests.patch(url=endpoint, data=json.dumps(data))
     else:
         with open(endpoint, 'w') as fd:
-            json.dump(data, fd)
+            json.dump(data, fd, indent=4, sort_keys=True)
