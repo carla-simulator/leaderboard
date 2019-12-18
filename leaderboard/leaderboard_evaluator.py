@@ -41,11 +41,13 @@ from srunner.scenarios.change_lane import *
 from srunner.scenarios.cut_in import *
 from srunner.tools.scenario_config_parser import ScenarioConfigurationParser
 
+from leaderboard.utils.clogger import CLogger
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
 from leaderboard.autoagents.agent_wrapper import SensorConfigurationInvalid
 from leaderboard.utils.route_parser import RouteParser
-from leaderboard.utils.challenge_statistics_manager import ChallengeStatisticsManager
+from leaderboard.utils.statistics_manager import StatisticsManager
+from leaderboard.utils.route_indexer import RouteIndexer
 
 
 
@@ -63,11 +65,13 @@ class LeaderboardEvaluator(object):
     frame_rate = 20.0      # in Hz
 
 
-    def __init__(self, args):
+    def __init__(self, args, statistics_manager, clogger):
         """
         Setup CARLA client and world
         Setup ScenarioManager
         """
+        self.statistics_manager = statistics_manager
+        self.clogger = clogger
 
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
@@ -98,9 +102,9 @@ class LeaderboardEvaluator(object):
         """
 
         self._cleanup(True)
-        if self.manager is not None:
+        if hasattr(self, 'manager') and self.manager:
             del self.manager
-        if self.world is not None:
+        if hasattr(self, 'world') and self.world:
             del self.world
 
     def _within_available_time(self):
@@ -131,7 +135,7 @@ class LeaderboardEvaluator(object):
                 self.ego_vehicles[i] = None
         self.ego_vehicles = []
 
-        if self.agent_instance:
+        if hasattr(self, 'agent_instance') and self.agent_instance:
             self.agent_instance.destroy()
             self.agent_instance = None
 
@@ -262,23 +266,27 @@ class LeaderboardEvaluator(object):
         try:
             # Load scenario and run it
             if args.record:
-                self.client.start_recorder("{}/{}.log".format(os.getenv('PWD', "./"), config.name))
+                self.client.start_recorder("{}/{}.log".format(args.record, config.name))
             self.manager.load_scenario(scenario, self.agent_instance)
+            self.statistics_manager.set_route(config.name, config.index, scenario.scenario)
             self.manager.run_scenario()
 
             # Stop scenario
             self.manager.stop_scenario()
 
+            # register statistics
+            current_stats_record = self.statistics_manager.compute_route_statistics()
+            # save
+            self.statistics_manager.save_record(current_stats_record, config.index, args.checkpoint)
+
             # Remove all actors
             scenario.remove_all_actors()
         except SensorConfigurationInvalid as e:
             self._cleanup(True)
-            ChallengeStatisticsManager.record_fatal_error(e)
             sys.exit(-1)
         except Exception as e:
             if args.debug:
                 traceback.print_exc()
-            ChallengeStatisticsManager.set_error_message(traceback.format_exc())
             print(e)
 
         self._cleanup()
@@ -314,37 +322,26 @@ class LeaderboardEvaluator(object):
         Run the challenge mode
         """
 
-        repetitions = args.repetitions
-        routes = args.routes
-        weather_profiles = CarlaDataProvider.find_weather_presets()
+        route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions)
+        if args.checkpoint:
+            route_indexer.resume(args.checkpoint)
+            self.statistics_manager.resume(args.checkpoint)
+
+        while route_indexer.peek():
+            # setup
+            config = route_indexer.next()
+
+            # run
+            self._load_and_run_scenario(args, config)
+            self._cleanup(ego=True)
+
+            route_indexer.save_state(args.checkpoint)
+
+        # save global statistics
+        global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
+        StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
 
 
-        # retrieve routes
-        route_descriptions_list = RouteParser.parse_routes_file(routes, False)
-        # find and filter potential scenarios for each of the evaluated routes
-        # For each of the routes and corresponding possible scenarios to be evaluated.
-
-        n_routes = len(route_descriptions_list) * repetitions
-        ChallengeStatisticsManager.set_number_of_scenarios(n_routes)
-
-        for _, route_description in enumerate(route_descriptions_list):
-            for repetition in range(repetitions):
-
-                if not self._within_available_time():
-                    error_message = 'Not enough simulation time available to continue'
-                    print(error_message)
-                    ChallengeStatisticsManager.record_fatal_error(error_message)
-                    self._cleanup(True)
-                    sys.exit(-1)
-
-                config = RouteScenarioConfiguration(route_description, args.scenarios)
-                profile = weather_profiles[repetition % len(weather_profiles)]
-                config.weather = profile[0]
-                config.weather.sun_azimuth = -1
-                config.weather.sun_altitude = -1
-
-                self._load_and_run_scenario(args, config)
-                self._cleanup(ego=True)
 
 def main():
     description = ("CARLA AD Leaderboard Evaluation: evaluate your Agent in CARLA scenarios\n")
@@ -356,7 +353,7 @@ def main():
     parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
     parser.add_argument('--spectator', type=bool, help='Switch spectator view on?', default=True)
-    parser.add_argument('--record', action="store_true",
+    parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
 
     # simulation setup
@@ -378,21 +375,25 @@ def main():
 
     parser.add_argument("--track", type=str, default='SENSORS', help="Participation track: SENSORS, MAP")
     parser.add_argument("--time-available", type=int, default=1000, help="Time budget in seconds")
-    parser.add_argument("--checkpoint", type=str, help="Path to checkpoint used for saving statistics and resuming",
-                        required=True)
+    parser.add_argument("--checkpoint", type=str, help="Path to checkpoint used for saving statistics and resuming")
 
     arguments = parser.parse_args()
 
 
     leaderboard_evaluator = None
+    clogger = CLogger(endpoint=arguments.checkpoint)
+
+    StatisticsManager.set_logger(clogger)
+    statistics_manager = StatisticsManager()
+
     try:
-        leaderboard_evaluator = LeaderboardEvaluator(arguments)
+        leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager, clogger)
         leaderboard_evaluator.run(arguments)
+
     except Exception as e:
         traceback.print_exc()
-        if leaderboard_evaluator:
-            leaderboard_evaluator.report_challenge_statistics(arguments.checkpoint, True)
     finally:
+        # report statistics
         del leaderboard_evaluator
 
 

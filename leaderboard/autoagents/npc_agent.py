@@ -87,15 +87,21 @@ class NpcAgent(AutonomousAgent):
             if self._global_plan:
                 plan = []
 
-                for transform, road_option in self._global_plan_world_coord:
+                prev = None
+                for transform, _ in self._global_plan_world_coord:
                     wp = CarlaDataProvider.get_map().get_waypoint(transform.location)
-                    plan.append((wp, road_option))
+                    if  prev:
+                        route_segment = self._agent._trace_route(prev, wp)
+                        plan.extend(route_segment)
 
+                    prev = wp
+
+                #loc = plan[-1][0].transform.location
+                #self._agent.set_destination([loc.x, loc.y, loc.z])
                 self._agent._local_planner.set_global_plan(plan)  # pylint: disable=protected-access
                 self._route_assigned = True
 
         else:
-            print("[Timestamp: {}]".format(timestamp))
             control = self._agent.run_step()
 
         return control
