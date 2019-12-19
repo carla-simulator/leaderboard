@@ -18,14 +18,11 @@ from argparse import RawTextHelpFormatter
 from datetime import datetime
 from distutils.version import LooseVersion
 import importlib
-import inspect
 import os
-import time
 import pkg_resources
 import sys
 
 import carla
-from srunner.scenarioconfigs.route_scenario_configuration import RouteScenarioConfiguration
 from srunner.scenariomanager.carla_data_provider import *
 from srunner.scenarios.control_loss import *
 from srunner.scenarios.follow_leading_vehicle import *
@@ -44,10 +41,8 @@ from srunner.tools.scenario_config_parser import ScenarioConfigurationParser
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
 from leaderboard.autoagents.agent_wrapper import SensorConfigurationInvalid
-from leaderboard.utils.route_parser import RouteParser
 from leaderboard.utils.statistics_manager import StatisticsManager
 from leaderboard.utils.route_indexer import RouteIndexer
-
 
 
 class LeaderboardEvaluator(object):
