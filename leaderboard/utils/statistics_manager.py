@@ -67,7 +67,6 @@ class StatisticsManager(object):
     This is the statistics manager for the CARLA leaderboard.
     It gathers data at runtime via the scenario evaluation criteria.
     """
-    logger = None
 
     def __init__(self):
         self._master_scenario = None
@@ -82,28 +81,29 @@ class StatisticsManager(object):
             for record in records:
                 self._registry_route_records.append(to_route_record(record))
 
-    @staticmethod
-    def set_logger(logger):
-        StatisticsManager.logger = logger
-
     def set_route(self, route_id, index, scenario):
         self._master_scenario = scenario
 
         route_record = RouteRecord()
         route_record.route_id = route_id
         route_record.index = index
-        self._registry_route_records.append(route_record)
 
-    def compute_route_statistics(self):
+        if index < len(self._registry_route_records):
+            # the element already exists and therefore we update it
+            self._registry_route_records[index] = route_record
+        else:
+            self._registry_route_records.append(route_record)
+
+    def compute_route_statistics(self, index):
         """
         Compute the current statistics by evaluating all relevant scenario criteria
         """
 
-        if not self._registry_route_records:
+        if not self._registry_route_records or index >= len(self._registry_route_records):
             raise Exception('Critical error with the route registry.')
 
         # fetch latest record to fill in
-        route_record = self._registry_route_records[-1]
+        route_record = self._registry_route_records[index]
 
         target_reached = False
         score_penalty = 1.0

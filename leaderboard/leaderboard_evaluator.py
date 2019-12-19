@@ -41,7 +41,6 @@ from srunner.scenarios.change_lane import *
 from srunner.scenarios.cut_in import *
 from srunner.tools.scenario_config_parser import ScenarioConfigurationParser
 
-from leaderboard.utils.clogger import CLogger
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
 from leaderboard.autoagents.agent_wrapper import SensorConfigurationInvalid
@@ -65,13 +64,12 @@ class LeaderboardEvaluator(object):
     frame_rate = 20.0      # in Hz
 
 
-    def __init__(self, args, statistics_manager, clogger):
+    def __init__(self, args, statistics_manager):
         """
         Setup CARLA client and world
         Setup ScenarioManager
         """
         self.statistics_manager = statistics_manager
-        self.clogger = clogger
 
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
@@ -275,7 +273,7 @@ class LeaderboardEvaluator(object):
             self.manager.stop_scenario()
 
             # register statistics
-            current_stats_record = self.statistics_manager.compute_route_statistics()
+            current_stats_record = self.statistics_manager.compute_route_statistics(config.index)
             # save
             self.statistics_manager.save_record(current_stats_record, config.index, args.checkpoint)
 
@@ -323,7 +321,7 @@ class LeaderboardEvaluator(object):
         """
 
         route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions)
-        if args.checkpoint:
+        if args.resume:
             route_indexer.resume(args.checkpoint)
             self.statistics_manager.resume(args.checkpoint)
 
@@ -357,7 +355,7 @@ def main():
                         help='Use CARLA recording feature to create a recording of the scenario')
 
     # simulation setup
-    parser.add_argument('--challenge-mode', type=bool, help='Switch to challenge mode?', default=True)
+    parser.add_argument('--challenge-mode', action="store_true", help='Switch to challenge mode?')
     parser.add_argument('--routes',
                         help='Name of the route to be executed. Point to the route_xml_file to be executed.',
                         required=True)
@@ -374,26 +372,22 @@ def main():
     parser.add_argument("--agent-config", type=str, help="Path to Agent's configuration file", default="")
 
     parser.add_argument("--track", type=str, default='SENSORS', help="Participation track: SENSORS, MAP")
-    parser.add_argument("--time-available", type=int, default=1000, help="Time budget in seconds")
-    parser.add_argument("--checkpoint", type=str, help="Path to checkpoint used for saving statistics and resuming")
+    parser.add_argument("--time-available", type=int, default=1000000, help="Time budget in seconds")
+    parser.add_argument('--resume', type=bool, default=False, help='Resume execution from last checkpint?')
+    parser.add_argument("--checkpoint", type=str,
+                        default='./simulation_results.json',
+                        help="Path to checkpoint used for saving statistics and resuming")
 
     arguments = parser.parse_args()
 
-
-    leaderboard_evaluator = None
-    clogger = CLogger(endpoint=arguments.checkpoint)
-
-    StatisticsManager.set_logger(clogger)
     statistics_manager = StatisticsManager()
 
     try:
-        leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager, clogger)
+        leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
         leaderboard_evaluator.run(arguments)
-
     except Exception as e:
         traceback.print_exc()
     finally:
-        # report statistics
         del leaderboard_evaluator
 
 

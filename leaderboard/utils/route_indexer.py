@@ -67,7 +67,6 @@ class RouteIndexer():
         data = fetch_dict(endpoint)
         if not data:
             data = create_default_json_msg()
-
         data['value']['results']['_checkpoint']['progress'] = [self._index, self.total]
 
         save_dict(endpoint, data)
