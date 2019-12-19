@@ -1,0 +1,88 @@
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG http_proxy
+
+RUN apt-get update && apt-get install --reinstall -y locales && locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US
+ENV LC_ALL en_US.UTF-8
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+         build-essential \
+         cmake \
+         git \
+         curl \
+         vim \
+         ca-certificates \
+         libjpeg-dev \
+	     libpng16-16 \
+	     libtiff5 \
+         libpng-dev \
+         python-dev \
+         python3.5 \
+         python3.5-dev \
+         python-networkx \
+         python-setuptools \
+         python3-setuptools \
+         python-pip \
+         python3-pip && \
+         pip install --upgrade pip && \
+         pip3 install --upgrade pip && \
+         rm -rf /var/lib/apt/lists/*
+
+RUN packages='py_trees==0.8.3 shapely six dictor requests' \
+	&& pip3 install ${packages}
+
+
+WORKDIR /workspace
+COPY .tmp/PythonAPI /workspace/CARLA/PythonAPI
+ENV CARLA_ROOT /workspace/CARLA
+
+# installing conda
+RUN curl -o ~/miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh  && \
+     chmod +x ~/miniconda.sh && \
+     ~/miniconda.sh -b -p /opt/conda && \
+     rm ~/miniconda.sh && \
+     /opt/conda/bin/conda clean -ya && \
+     /opt/conda/bin/conda create -n python35 python=3.5 numpy networkx scipy six  requests
+ENV PATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg":/opt/conda/envs/python35/bin:/opt/conda/envs/bin:$PATH
+
+# adding CARLA egg to default python environment
+RUN pip install --user setuptools py_trees==0.8.3 psutil shapely six dictor requests
+
+ENV ROOT_SCENARIO_RUNNER "/workspace/scenario_runner"
+ENV LEADERBOARD_ROOT "/workspace/leaderboard"
+ENV PYTHONPATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg":"${ROOT_SCENARIO_RUNNER}":"${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":${PYTHONPATH}
+
+COPY .tmp/scenario_runner /workspace/scenario_runner
+COPY .tmp/leaderboard /workspace/leaderboard
+
+RUN mkdir -p /workspace/results
+RUN chmod +x /workspace/leaderboard/scripts/run_evaluation.sh
+
+
+########################################################################################################################
+########################################################################################################################
+############                                BEGINNING OF USER COMMANDS                                      ############
+########################################################################################################################
+########################################################################################################################
+
+ENV TEAM_AGENT /workspace/leaderboard/team_code/YOUR_PYTHON_CODE.py
+ENV TEAM_CONFIG /workspace/leaderboard/team_code/YOUR_CONFIG_FILE
+
+
+########################################################################################################################
+########################################################################################################################
+############                                   END OF USER COMMANDS                                         ############
+########################################################################################################################
+########################################################################################################################
+
+ENV HTTP_PROXY ""
+ENV HTTPS_PROXY ""
+ENV http_proxy ""
+ENV https_proxy ""
+
+
+CMD ["/bin/bash"]
