@@ -21,21 +21,13 @@ def fetch_dict(endpoint):
 
 def create_default_json_msg():
     msg = {
-        "status": "ok",
-        "value": {
-            "results": {
-                "values": [],
-                "_checkpoint": {
-                    "progress": [],
-                    "records": [],
-                    "global_record": {}
+            "values": [],
+            "_checkpoint": {
+                "progress": [],
+                "records": [],
+                "global_record": {}
                 },
-                "is_baseline": 'true',
-                "filtering_error": 0,
-                "filtering_score": 0
-            },
-            "session_id": ""}
-    }
+            }
 
     return msg
 

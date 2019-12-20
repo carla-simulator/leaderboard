@@ -54,7 +54,7 @@ class RouteIndexer():
         data = fetch_dict(endpoint)
 
         if data:
-            checkpoint_dict = dictor(data, 'value.results._checkpoint')
+            checkpoint_dict = dictor(data, '_checkpoint')
             if checkpoint_dict and 'progress' in checkpoint_dict:
                 current_route, total_routes = checkpoint_dict['progress']
                 if current_route <= self.total:
@@ -67,6 +67,6 @@ class RouteIndexer():
         data = fetch_dict(endpoint)
         if not data:
             data = create_default_json_msg()
-        data['value']['results']['_checkpoint']['progress'] = [self._index, self.total]
+        data['_checkpoint']['progress'] = [self._index, self.total]
 
         save_dict(endpoint, data)

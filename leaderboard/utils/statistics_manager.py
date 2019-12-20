@@ -74,8 +74,8 @@ class StatisticsManager(object):
     def resume(self, endpoint):
         data = fetch_dict(endpoint)
 
-        if data and dictor(data, 'value.results._checkpoint.records'):
-            records = data['value']['results']['_checkpoint']['records']
+        if data and dictor(data, '_checkpoint.records'):
+            records = data['_checkpoint']['records']
 
             for record in records:
                 self._registry_route_records.append(to_route_record(record))
@@ -200,7 +200,7 @@ class StatisticsManager(object):
             data = create_default_json_msg()
 
         stats_dict = route_record.__dict__
-        record_list = data['value']['results']['_checkpoint']['records']
+        record_list = data['_checkpoint']['records']
         if index > len(record_list):
             print('Error! No enough entries in the list')
             sys.exit(-1)
@@ -218,20 +218,20 @@ class StatisticsManager(object):
             data = create_default_json_msg()
 
         stats_dict = route_record.__dict__
-        data['value']['results']['_checkpoint']['global_record'] = stats_dict
+        data['_checkpoint']['global_record'] = stats_dict
 
-        data['value']['results']['values'] = [ stats_dict['scores']['score_route'],
-                                               stats_dict['scores']['score_penalty'],
-                                               stats_dict['scores']['score_composed'],
-                                               # infractions
-                                               stats_dict['infractions']['collisions_layout'],
-                                               stats_dict['infractions']['collision_vehicle'],
-                                               stats_dict['infractions']['collisions_pedestrian'],
-                                               stats_dict['infractions']['red_light'],
-                                               stats_dict['infractions']['wrong_way'],
-                                               stats_dict['infractions']['route_dev'],
-                                               stats_dict['infractions']['sidewalk_invasion'],
-                                               stats_dict['infractions']['stop_infraction']
-                                             ]
+        data['values'] = [ stats_dict['scores']['score_route'],
+                           stats_dict['scores']['score_penalty'],
+                           stats_dict['scores']['score_composed'],
+                           # infractions
+                           stats_dict['infractions']['collisions_layout'],
+                           stats_dict['infractions']['collision_vehicle'],
+                           stats_dict['infractions']['collisions_pedestrian'],
+                           stats_dict['infractions']['red_light'],
+                           stats_dict['infractions']['wrong_way'],
+                           stats_dict['infractions']['route_dev'],
+                           stats_dict['infractions']['sidewalk_invasion'],
+                           stats_dict['infractions']['stop_infraction']
+                         ]
 
         save_dict(endpoint, data)
