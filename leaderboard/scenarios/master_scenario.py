@@ -77,7 +77,7 @@ class MasterScenario(BasicScenario):
         else:
             route = self.route
 
-        collision_criterion = CollisionTest(self.ego_vehicles[0], terminate_on_failure=False)
+        collision_criterion = CollisionTestLeaderboard(self.ego_vehicles[0], terminate_on_failure=False)
 
         route_criterion = InRouteTest(self.ego_vehicles[0],
                                       radius=30.0,
@@ -93,6 +93,8 @@ class MasterScenario(BasicScenario):
 
         onsidewalk_criterion = OnSidewalkTest(self.ego_vehicles[0])
 
+        onsidewalk_per_meter_criterion = OnSidewalkTestPerMeter(self.ego_vehicles[0])
+
         red_light_criterion = RunningRedLightTest(self.ego_vehicles[0])
 
         stop_criterion = RunningStopTest(self.ego_vehicles[0])
@@ -106,6 +108,7 @@ class MasterScenario(BasicScenario):
         parallel_criteria.add_child(wrong_way_criterion)
         parallel_criteria.add_child(wrong_way_per_meter_criterion)
         parallel_criteria.add_child(onsidewalk_criterion)
+        parallel_criteria.add_child(onsidewalk_per_meter_criterion)
         parallel_criteria.add_child(red_light_criterion)
         parallel_criteria.add_child(stop_criterion)
 
