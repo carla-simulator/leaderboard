@@ -24,6 +24,7 @@ PENALTY_COLLISION_VEHICLE = 0.8
 PENALTY_COLLISION_PEDESTRIAN = 0.8
 PENALTY_TRAFFIC_LIGHT = 0.95
 PENALTY_WRONG_WAY = 0.95
+PENALTY_WRONG_WAY_PER_METER = 0.01 # Formula: score_penalty = (1 - 0.01 * meters)
 PENALTY_SIDEWALK_INVASION = 0.85
 PENALTY_STOP = 0.95
 
@@ -39,6 +40,7 @@ class RouteRecord():
             'collisions_pedestrian': [],
             'red_light': [],
             'wrong_way': [],
+            'wrong_way_per_meter': [],
             'route_dev': [],
             'sidewalk_invasion': [],
             'stop_infraction': []
@@ -114,34 +116,38 @@ class StatisticsManager(object):
                 for event in node.list_traffic_events:
                     if event.get_type() == TrafficEventType.COLLISION_STATIC:
                         score_penalty *= PENALTY_COLLISION_STATIC
-                        route_record['collisions_layout'].append(event)
+                        route_record.infractions['collisions_layout'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
                         score_penalty *= PENALTY_COLLISION_VEHICLE
-                        route_record['collision_vehicle'].append(event)
+                        route_record.infractions['collision_vehicle'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
                         score_penalty *= PENALTY_COLLISION_PEDESTRIAN
-                        route_record['collisions_pedestrian'].append(event)
+                        route_record.infractions['collisions_pedestrian'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.TRAFFIC_LIGHT_INFRACTION:
                         score_penalty *= PENALTY_TRAFFIC_LIGHT
-                        route_record['red_light'].append(event)
+                        route_record.infractions['red_light'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.WRONG_WAY_INFRACTION:
                         score_penalty *= PENALTY_WRONG_WAY
-                        route_record['wrong_way'].append(event)
+                        route_record.infractions['wrong_way'].append(event.get_message())
+
+                    elif event.get_type() == TrafficEventType.WRONG_WAY_PER_METER_INFRACTION:
+                        score_penalty *= 1 - PENALTY_WRONG_WAY_PER_METER*event.get_dict()['distance']
+                        route_record.infractions['wrong_way_per_meter'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
-                        route_record['route_dev'].append(event)
+                        route_record.infractions['route_dev'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ON_SIDEWALK_INFRACTION:
                         score_penalty *= PENALTY_SIDEWALK_INVASION
-                        route_record['sidewalk_invasion'].append(event)
+                        route_record.infractions['sidewalk_invasion'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.STOP_INFRACTION:
                         score_penalty *= PENALTY_STOP
-                        route_record['stop_infraction'].append(event)
+                        route_record.infractions['stop_infraction'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ROUTE_COMPLETED:
                         score_route = 100.0
@@ -229,6 +235,7 @@ class StatisticsManager(object):
                            stats_dict['infractions']['collisions_pedestrian'],
                            stats_dict['infractions']['red_light'],
                            stats_dict['infractions']['wrong_way'],
+                           stats_dict['infractions']['wrong_way_per_meter'],
                            stats_dict['infractions']['route_dev'],
                            stats_dict['infractions']['sidewalk_invasion'],
                            stats_dict['infractions']['stop_infraction']

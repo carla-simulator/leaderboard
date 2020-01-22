@@ -533,19 +533,17 @@ class RouteScenario(BasicScenario):
         subbehavior = py_trees.composites.Parallel(name="Behavior",
                                                    policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
 
-        for scenario in self.list_scenarios:
+        for i in range(len(self.list_scenarios)):
+            scenario = self.list_scenarios[i]
             if scenario.scenario.behavior is not None and scenario.scenario.behavior.name != "MasterScenario":
+                name = "{} - {}".format(i, scenario.scenario.behavior.name)
                 oneshot_idiom = oneshot_behavior(
-                    name=scenario.scenario.behavior.name,
-                    variable_name=scenario.scenario.behavior.name,
+                    name=name,
+                    variable_name=name,
                     behaviour=scenario.scenario.behavior)
 
                 subbehavior.add_child(oneshot_idiom)
-
-        if subbehavior.children:
-            # don't add the subbehavior node if there weren't additional scenarios besides master!
-            behavior.add_child(subbehavior)
-
+        behavior.add_child(subbehavior)
         return behavior
 
     def _create_test_criteria(self):

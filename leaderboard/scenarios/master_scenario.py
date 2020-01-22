@@ -89,6 +89,8 @@ class MasterScenario(BasicScenario):
 
         wrong_way_criterion = WrongLaneTest(self.ego_vehicles[0])
 
+        wrong_way_per_meter_criterion = WrongLaneTestPerMeter(self.ego_vehicles[0])
+
         onsidewalk_criterion = OnSidewalkTest(self.ego_vehicles[0])
 
         red_light_criterion = RunningRedLightTest(self.ego_vehicles[0])
@@ -102,6 +104,7 @@ class MasterScenario(BasicScenario):
         parallel_criteria.add_child(collision_criterion)
         parallel_criteria.add_child(route_criterion)
         parallel_criteria.add_child(wrong_way_criterion)
+        parallel_criteria.add_child(wrong_way_per_meter_criterion)
         parallel_criteria.add_child(onsidewalk_criterion)
         parallel_criteria.add_child(red_light_criterion)
         parallel_criteria.add_child(stop_criterion)
