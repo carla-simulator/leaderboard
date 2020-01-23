@@ -24,9 +24,9 @@ PENALTY_COLLISION_VEHICLE = 0.8
 PENALTY_COLLISION_PEDESTRIAN = 0.8
 PENALTY_TRAFFIC_LIGHT = 0.95
 PENALTY_WRONG_WAY = 0.95
-PENALTY_WRONG_WAY_PER_METER = 0.01 # Formula: score_penalty = (1 - 0.01 * meters)
+PENALTY_WRONG_WAY_PER_METER = 0.01 # Formula: score_penalty = (0.95 - 0.01 * meters)
 PENALTY_SIDEWALK_INVASION = 0.85
-PENALTY_SIDEWALK_INVASION_PER_METER = 0.012 # Formula: score_penalty = (1 - 0.012 * meters)
+PENALTY_SIDEWALK_INVASION_PER_METER = 0.012 # Formula: score_penalty = (0.85 - 0.012 * meters)
 PENALTY_STOP = 0.95
 
 class RouteRecord():
@@ -41,10 +41,8 @@ class RouteRecord():
             'collisions_pedestrian': [],
             'red_light': [],
             'wrong_way': [],
-            'wrong_way_per_meter': [],
             'route_dev': [],
             'sidewalk_invasion': [],
-            'sidewalk_invasion_per_meter': [],
             'stop_infraction': []
         }
 
@@ -133,23 +131,15 @@ class StatisticsManager(object):
                         route_record.infractions['red_light'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.WRONG_WAY_INFRACTION:
-                        score_penalty *= PENALTY_WRONG_WAY
+                        score_penalty *= PENALTY_WRONG_WAY - PENALTY_WRONG_WAY_PER_METER*event.get_dict()['distance']
                         route_record.infractions['wrong_way'].append(event.get_message())
-
-                    elif event.get_type() == TrafficEventType.WRONG_WAY_PER_METER_INFRACTION:
-                        score_penalty *= 1 - PENALTY_WRONG_WAY_PER_METER*event.get_dict()['distance']
-                        route_record.infractions['wrong_way_per_meter'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
                         route_record.infractions['route_dev'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ON_SIDEWALK_INFRACTION:
-                        score_penalty *= PENALTY_SIDEWALK_INVASION
+                        score_penalty *= PENALTY_SIDEWALK_INVASION - PENALTY_SIDEWALK_INVASION_PER_METER*event.get_dict()['distance']
                         route_record.infractions['sidewalk_invasion'].append(event.get_message())
-
-                    elif event.get_type() == TrafficEventType.ON_SIDEWALK_PER_METER_INFRACTION:
-                        score_penalty *= 1 - PENALTY_SIDEWALK_INVASION_PER_METER*event.get_dict()['distance']
-                        route_record.infractions['sidewalk_invasion_per_meter'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.STOP_INFRACTION:
                         score_penalty *= PENALTY_STOP
@@ -241,10 +231,8 @@ class StatisticsManager(object):
                            stats_dict['infractions']['collisions_pedestrian'],
                            stats_dict['infractions']['red_light'],
                            stats_dict['infractions']['wrong_way'],
-                           stats_dict['infractions']['wrong_way_per_meter'],
                            stats_dict['infractions']['route_dev'],
                            stats_dict['infractions']['sidewalk_invasion'],
-                           stats_dict['infractions']['sidewalk_invasion_per_meter'],
                            stats_dict['infractions']['stop_infraction']
                          ]
 
