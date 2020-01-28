@@ -24,9 +24,9 @@ PENALTY_COLLISION_VEHICLE = 0.8
 PENALTY_COLLISION_PEDESTRIAN = 0.8
 PENALTY_TRAFFIC_LIGHT = 0.95
 PENALTY_WRONG_WAY = 0.95
-PENALTY_WRONG_WAY_PER_METER = 0.01 # Formula: score_penalty = (0.95 - 0.01 * meters)
+PENALTY_WRONG_WAY_PER_METER = 0.01
 PENALTY_SIDEWALK_INVASION = 0.85
-PENALTY_SIDEWALK_INVASION_PER_METER = 0.012 # Formula: score_penalty = (0.85 - 0.012 * meters)
+PENALTY_SIDEWALK_INVASION_PER_METER = 0.012
 PENALTY_STOP = 0.95
 
 class RouteRecord():
@@ -168,7 +168,7 @@ class StatisticsManager(object):
 
         return route_record
 
-    def compute_global_statistics(self, total_routes):
+    def compute_global_statistics(self, current_route_index, total_routes):
         global_record = RouteRecord()
         global_record.route_id = -1
         global_record.index = -1
@@ -180,7 +180,10 @@ class StatisticsManager(object):
                 global_record.scores['score_composed'] += route_record.scores['score_composed']
 
                 for key in global_record.infractions.keys():
-                    global_record.infractions[key] = len(route_record.infractions[key])
+                    if isinstance(global_record.infractions[key], list):
+                        global_record.infractions[key] = len(route_record.infractions[key])
+                    else:
+                        global_record.infractions[key] += len(route_record.infractions[key])
 
                 if route_record.status is not 'Completed':
                     if not 'exceptions' in global_record.meta:
@@ -189,9 +192,13 @@ class StatisticsManager(object):
                                                              route_record.index,
                                                              route_record.status))
 
-        global_record.scores['score_route'] /= float(total_routes)
-        global_record.scores['score_penalty'] /= float(total_routes)
-        global_record.scores['score_composed'] /= float(total_routes)
+        current_route = current_route_index + 1
+
+        global_record.scores['score_route'] /= float(current_route)
+        global_record.scores['score_penalty'] /= float(current_route)
+        global_record.scores['score_composed'] /= float(current_route)
+        if current_route == total_routes:
+            global_record.status = 'Completed'
 
         return global_record
 
@@ -237,3 +244,9 @@ class StatisticsManager(object):
                          ]
 
         save_dict(endpoint, data)
+
+    @staticmethod
+    def clear_record(endpoint):
+        if not endpoint.startswith(('http:', 'https:', 'ftp:')):
+            with open(endpoint, 'w') as fd:
+                fd.truncate(0)

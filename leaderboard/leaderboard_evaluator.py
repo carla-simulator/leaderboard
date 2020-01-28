@@ -197,7 +197,7 @@ class LeaderboardEvaluator(object):
 
         return True
 
-    def _load_and_run_scenario(self, args, config):
+    def _load_and_run_scenario(self, args, config, total_routes):
         """
         Load and run the scenario given by config
         """
@@ -272,6 +272,10 @@ class LeaderboardEvaluator(object):
             # save
             self.statistics_manager.save_record(current_stats_record, config.index, args.checkpoint)
 
+            # save global statistics
+            global_stats_record = self.statistics_manager.compute_global_statistics(config.index, total_routes)
+            StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
+
             # Remove all actors
             scenario.remove_all_actors()
         except SensorConfigurationInvalid as e:
@@ -319,20 +323,21 @@ class LeaderboardEvaluator(object):
         if args.resume:
             route_indexer.resume(args.checkpoint)
             self.statistics_manager.resume(args.checkpoint)
-
+        else:
+            self.statistics_manager.clear_record(args.checkpoint)
         while route_indexer.peek():
             # setup
             config = route_indexer.next()
 
             # run
-            self._load_and_run_scenario(args, config)
+            self._load_and_run_scenario(args, config, route_indexer.total)
             self._cleanup(ego=True)
 
             route_indexer.save_state(args.checkpoint)
 
         # save global statistics
-        global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
-        StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
+        # global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
+        # StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
 
 
 
@@ -368,7 +373,7 @@ def main():
 
     parser.add_argument("--track", type=str, default='SENSORS', help="Participation track: SENSORS, MAP")
     parser.add_argument("--time-available", type=int, default=1000000, help="Time budget in seconds")
-    parser.add_argument('--resume', type=bool, default=False, help='Resume execution from last checkpint?')
+    parser.add_argument('--resume', type=bool, default=False, help='Resume execution from last checkpoint?')
     parser.add_argument("--checkpoint", type=str,
                         default='./simulation_results.json',
                         help="Path to checkpoint used for saving statistics and resuming")
