@@ -24,9 +24,9 @@ PENALTY_COLLISION_VEHICLE = 0.8
 PENALTY_COLLISION_PEDESTRIAN = 0.8
 PENALTY_TRAFFIC_LIGHT = 0.95
 PENALTY_WRONG_WAY = 0.95
-PENALTY_WRONG_WAY_PER_METER = 0.01 # Formula: score_penalty = (1 - 0.01 * meters)
+PENALTY_WRONG_WAY_PER_METER = 0.01
 PENALTY_SIDEWALK_INVASION = 0.85
-PENALTY_SIDEWALK_INVASION_PER_METER = 0.012 # Formula: score_penalty = (1 - 0.012 * meters)
+PENALTY_SIDEWALK_INVASION_PER_METER = 0.012
 PENALTY_STOP = 0.95
 
 class RouteRecord():
@@ -41,10 +41,8 @@ class RouteRecord():
             'collisions_pedestrian': [],
             'red_light': [],
             'wrong_way': [],
-            'wrong_way_per_meter': [],
             'route_dev': [],
             'sidewalk_invasion': [],
-            'sidewalk_invasion_per_meter': [],
             'stop_infraction': []
         }
 
@@ -133,23 +131,15 @@ class StatisticsManager(object):
                         route_record.infractions['red_light'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.WRONG_WAY_INFRACTION:
-                        score_penalty *= PENALTY_WRONG_WAY
+                        score_penalty *= PENALTY_WRONG_WAY - PENALTY_WRONG_WAY_PER_METER*event.get_dict()['distance']
                         route_record.infractions['wrong_way'].append(event.get_message())
-
-                    elif event.get_type() == TrafficEventType.WRONG_WAY_PER_METER_INFRACTION:
-                        score_penalty *= 1 - PENALTY_WRONG_WAY_PER_METER*event.get_dict()['distance']
-                        route_record.infractions['wrong_way_per_meter'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
                         route_record.infractions['route_dev'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ON_SIDEWALK_INFRACTION:
-                        score_penalty *= PENALTY_SIDEWALK_INVASION
+                        score_penalty *= PENALTY_SIDEWALK_INVASION - PENALTY_SIDEWALK_INVASION_PER_METER*event.get_dict()['distance']
                         route_record.infractions['sidewalk_invasion'].append(event.get_message())
-
-                    elif event.get_type() == TrafficEventType.ON_SIDEWALK_PER_METER_INFRACTION:
-                        score_penalty *= 1 - PENALTY_SIDEWALK_INVASION_PER_METER*event.get_dict()['distance']
-                        route_record.infractions['sidewalk_invasion_per_meter'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.STOP_INFRACTION:
                         score_penalty *= PENALTY_STOP
@@ -178,7 +168,7 @@ class StatisticsManager(object):
 
         return route_record
 
-    def compute_global_statistics(self, total_routes):
+    def compute_global_statistics(self, current_route_index, total_routes):
         global_record = RouteRecord()
         global_record.route_id = -1
         global_record.index = -1
@@ -190,7 +180,10 @@ class StatisticsManager(object):
                 global_record.scores['score_composed'] += route_record.scores['score_composed']
 
                 for key in global_record.infractions.keys():
-                    global_record.infractions[key] = len(route_record.infractions[key])
+                    if isinstance(global_record.infractions[key], list):
+                        global_record.infractions[key] = len(route_record.infractions[key])
+                    else:
+                        global_record.infractions[key] += len(route_record.infractions[key])
 
                 if route_record.status is not 'Completed':
                     if not 'exceptions' in global_record.meta:
@@ -199,9 +192,13 @@ class StatisticsManager(object):
                                                              route_record.index,
                                                              route_record.status))
 
-        global_record.scores['score_route'] /= float(total_routes)
-        global_record.scores['score_penalty'] /= float(total_routes)
-        global_record.scores['score_composed'] /= float(total_routes)
+        current_route = current_route_index + 1
+
+        global_record.scores['score_route'] /= float(current_route)
+        global_record.scores['score_penalty'] /= float(current_route)
+        global_record.scores['score_composed'] /= float(current_route)
+        if current_route == total_routes:
+            global_record.status = 'Completed'
 
         return global_record
 
@@ -241,11 +238,15 @@ class StatisticsManager(object):
                            stats_dict['infractions']['collisions_pedestrian'],
                            stats_dict['infractions']['red_light'],
                            stats_dict['infractions']['wrong_way'],
-                           stats_dict['infractions']['wrong_way_per_meter'],
                            stats_dict['infractions']['route_dev'],
                            stats_dict['infractions']['sidewalk_invasion'],
-                           stats_dict['infractions']['sidewalk_invasion_per_meter'],
                            stats_dict['infractions']['stop_infraction']
                          ]
 
         save_dict(endpoint, data)
+
+    @staticmethod
+    def clear_record(endpoint):
+        if not endpoint.startswith(('http:', 'https:', 'ftp:')):
+            with open(endpoint, 'w') as fd:
+                fd.truncate(0)
