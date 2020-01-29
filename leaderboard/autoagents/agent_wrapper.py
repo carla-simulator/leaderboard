@@ -19,7 +19,16 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from leaderboard.envs.sensor_interface import CallBack, OpenDirveMapReader
 from leaderboard.autoagents.autonomous_agent import Track
 
-MAX_ALLOWED_RADIUS_SENSOR = 5.0
+MAX_ALLOWED_RADIUS_SENSOR = 3.0
+
+SENSORS_LIMITS = {
+    'sensor.camera.rgb': 4,
+    'sensor.lidar.ray_cast': 1,
+    'sensor.other.radar': 2,
+    'sensor.other.gnss': 1,
+    'sensor.other.imu': 1,
+    'sensor.opendrive_map': 1
+}
 
 
 class SensorConfigurationInvalid(Exception):
@@ -140,8 +149,7 @@ class AgentWrapper(object):
             sensor.listen(CallBack(sensor_spec['id'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        if track:
-            self._validate_sensor_configuration(track)
+        self._validate_sensor_configuration(self._agent.track)
 
         while not self._agent.all_sensors_ready():
             if debug_mode:
@@ -157,6 +165,8 @@ class AgentWrapper(object):
         if Track(selected_track) != self._agent.track:
             raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
 
+        sensor_count = {}
+
         for sensor in self._agent.sensors():
             if self._agent.track == Track.SENSORS:
                 if sensor['type'].startswith('sensor.opendrive_map'):
@@ -167,6 +177,20 @@ class AgentWrapper(object):
                 if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
                     raise SensorConfigurationInvalid(
                         "Illegal sensor extrinsics used for Track [{}]!".format(self._agent.track))
+
+            if sensor['type'] in sensor_count:
+               sensor_count[sensor['type']] += 1
+            else:
+               sensor_count[sensor['type']] = 0
+
+        for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
+            if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
+                raise SensorConfigurationInvalid(
+                    "Too many {} used! "
+                    "Maximum number allowed is {}, but {} were requested.".format(sensor_type,
+                                                                                  max_instances_allowed,
+                                                                                  sensor_count[sensor_type]))
+
 
     def cleanup(self):
         """
