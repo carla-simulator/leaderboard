@@ -197,7 +197,7 @@ class LeaderboardEvaluator(object):
 
         return True
 
-    def _load_and_run_scenario(self, args, config, total_routes):
+    def _load_and_run_scenario(self, args, config):
         """
         Load and run the scenario given by config
         """
@@ -232,7 +232,7 @@ class LeaderboardEvaluator(object):
 
         # Set the appropriate weather conditions
         weather = carla.WeatherParameters(
-            cloudyness=config.weather.cloudyness,
+            cloudiness=config.weather.cloudiness,
             precipitation=config.weather.precipitation,
             precipitation_deposits=config.weather.precipitation_deposits,
             wind_intensity=config.weather.wind_intensity,
@@ -271,10 +271,6 @@ class LeaderboardEvaluator(object):
             current_stats_record = self.statistics_manager.compute_route_statistics(config.index)
             # save
             self.statistics_manager.save_record(current_stats_record, config.index, args.checkpoint)
-
-            # save global statistics
-            global_stats_record = self.statistics_manager.compute_global_statistics(config.index, total_routes)
-            StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
 
             # Remove all actors
             scenario.remove_all_actors()
@@ -330,14 +326,14 @@ class LeaderboardEvaluator(object):
             config = route_indexer.next()
 
             # run
-            self._load_and_run_scenario(args, config, route_indexer.total)
+            self._load_and_run_scenario(args, config)
             self._cleanup(ego=True)
 
             route_indexer.save_state(args.checkpoint)
 
         # save global statistics
-        # global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
-        # StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
+        global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
+        StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
 
 
 
