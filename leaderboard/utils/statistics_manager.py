@@ -12,6 +12,7 @@ This module contains a statistics manager for the CARLA AD leaderboard
 from __future__ import print_function
 
 from dictor import dictor
+import math
 import sys
 
 from srunner.scenariomanager.traffic_events import TrafficEventType
@@ -24,9 +25,9 @@ PENALTY_COLLISION_VEHICLE = 0.8
 PENALTY_COLLISION_PEDESTRIAN = 0.8
 PENALTY_TRAFFIC_LIGHT = 0.95
 PENALTY_WRONG_WAY = 0.95
-PENALTY_WRONG_WAY_PER_METER = 0.01
+PENALTY_WRONG_WAY_PER_METER = 0.99
 PENALTY_SIDEWALK_INVASION = 0.85
-PENALTY_SIDEWALK_INVASION_PER_METER = 0.012
+PENALTY_SIDEWALK_INVASION_PER_METER = 0.99
 PENALTY_STOP = 0.95
 
 class RouteRecord():
@@ -37,7 +38,7 @@ class RouteRecord():
         self.status = 'Started'
         self.infractions = {
             'collisions_layout': [],
-            'collision_vehicle': [],
+            'collisions_vehicle': [],
             'collisions_pedestrian': [],
             'red_light': [],
             'wrong_way': [],
@@ -120,7 +121,7 @@ class StatisticsManager(object):
 
                     elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
                         score_penalty *= PENALTY_COLLISION_VEHICLE
-                        route_record.infractions['collision_vehicle'].append(event.get_message())
+                        route_record.infractions['collisions_vehicle'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
                         score_penalty *= PENALTY_COLLISION_PEDESTRIAN
@@ -131,14 +132,16 @@ class StatisticsManager(object):
                         route_record.infractions['red_light'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.WRONG_WAY_INFRACTION:
-                        score_penalty *= PENALTY_WRONG_WAY - PENALTY_WRONG_WAY_PER_METER*event.get_dict()['distance']
+                        score_penalty *= PENALTY_WRONG_WAY
+                        score_penalty *= math.pow(PENALTY_WRONG_WAY_PER_METER, event.get_dict()['distance'])
                         route_record.infractions['wrong_way'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
                         route_record.infractions['route_dev'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.ON_SIDEWALK_INFRACTION:
-                        score_penalty *= PENALTY_SIDEWALK_INVASION - PENALTY_SIDEWALK_INVASION_PER_METER*event.get_dict()['distance']
+                        score_penalty *= PENALTY_SIDEWALK_INVASION
+                        score_penalty *= math.pow(PENALTY_SIDEWALK_INVASION_PER_METER, event.get_dict()['distance'])
                         route_record.infractions['sidewalk_invasion'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.STOP_INFRACTION:
@@ -168,7 +171,7 @@ class StatisticsManager(object):
 
         return route_record
 
-    def compute_global_statistics(self, current_route_index, total_routes):
+    def compute_global_statistics(self, total_routes):
         global_record = RouteRecord()
         global_record.route_id = -1
         global_record.index = -1
@@ -192,13 +195,10 @@ class StatisticsManager(object):
                                                              route_record.index,
                                                              route_record.status))
 
-        current_route = current_route_index + 1
-
-        global_record.scores['score_route'] /= float(current_route)
-        global_record.scores['score_penalty'] /= float(current_route)
-        global_record.scores['score_composed'] /= float(current_route)
-        if current_route == total_routes:
-            global_record.status = 'Completed'
+        global_record.scores['score_route'] /= float(total_routes)
+        global_record.scores['score_penalty'] /= float(total_routes)
+        global_record.scores['score_composed'] /= float(total_routes)
+        global_record.status = 'Completed'
 
         return global_record
 
@@ -234,7 +234,7 @@ class StatisticsManager(object):
                            stats_dict['scores']['score_composed'],
                            # infractions
                            stats_dict['infractions']['collisions_layout'],
-                           stats_dict['infractions']['collision_vehicle'],
+                           stats_dict['infractions']['collisions_vehicle'],
                            stats_dict['infractions']['collisions_pedestrian'],
                            stats_dict['infractions']['red_light'],
                            stats_dict['infractions']['wrong_way'],
