@@ -28,6 +28,8 @@ PENALTY_WRONG_WAY = 0.95
 PENALTY_WRONG_WAY_PER_METER = 0.99
 PENALTY_SIDEWALK_INVASION = 0.85
 PENALTY_SIDEWALK_INVASION_PER_METER = 0.99
+PENALTY_OUTSIDE_LANE_INVASION = 0.98
+PENALTY_OUTSIDE_LANE_PER_METER = 0.995
 PENALTY_STOP = 0.95
 
 class RouteRecord():
@@ -44,6 +46,7 @@ class RouteRecord():
             'wrong_way': [],
             'route_dev': [],
             'sidewalk_invasion': [],
+            'outside_driving_lanes': [],
             'stop_infraction': []
         }
 
@@ -144,6 +147,11 @@ class StatisticsManager(object):
                         score_penalty *= math.pow(PENALTY_SIDEWALK_INVASION_PER_METER, event.get_dict()['distance'])
                         route_record.infractions['sidewalk_invasion'].append(event.get_message())
 
+                    elif event.get_type() == TrafficEventType.OUTSIDE_LANE_INFRACTION:
+                        score_penalty *= PENALTY_OUTSIDE_LANE_INVASION
+                        score_penalty *= math.pow(PENALTY_OUTSIDE_LANE_PER_METER, event.get_dict()['distance'])
+                        route_record.infractions['outside_driving_lanes'].append(event.get_message())
+
                     elif event.get_type() == TrafficEventType.STOP_INFRACTION:
                         score_penalty *= PENALTY_STOP
                         route_record.infractions['stop_infraction'].append(event.get_message())
@@ -240,6 +248,7 @@ class StatisticsManager(object):
                            stats_dict['infractions']['wrong_way'],
                            stats_dict['infractions']['route_dev'],
                            stats_dict['infractions']['sidewalk_invasion'],
+                           stats_dict['infractions']['outside_driving_lanes'],
                            stats_dict['infractions']['stop_infraction']
                          ]
 
