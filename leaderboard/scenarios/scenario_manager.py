@@ -157,8 +157,7 @@ class ScenarioManager(object):
         """
         Terminate scenario ticking when receiving a signal interrupt
         """
-        with self._my_lock:
-            self._running = False
+        self._running = False
 
     def _reset(self):
         """
