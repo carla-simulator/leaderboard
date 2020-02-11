@@ -138,7 +138,7 @@ class RouteParser(object):
         return None
 
     @staticmethod
-    def get_scenario_type(scenario, match_position, trajectory):
+    def get_route_direction(scenario, match_position, trajectory):
         """
         Some scenarios have different types depending on the route.
         :param scenario: the scenario name
@@ -147,17 +147,45 @@ class RouteParser(object):
         :return: 0 for option, 0 ,1 for option
         """
 
+        # Used as a tag to later decide which is the expected behaviour
+        # It is also used to check which are not viable (Such as an
+        # scenario that triggers when turning but the route doesnt')
         if scenario == 'Scenario4':
             for tuple_wp_turn in trajectory[match_position:]:
                 if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
                     if RoadOption.LEFT == tuple_wp_turn[1]:
-                        return 1
+                        return 'left'
                     elif RoadOption.RIGHT == tuple_wp_turn[1]:
-                        return 0
+                        return 'right'
+                    return None
+            return None
+        if scenario == 'Scenario7':
+            for tuple_wp_turn in trajectory[match_position:]:
+                if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
+                    if RoadOption.LEFT == tuple_wp_turn[1]:
+                        return 'left7'
+                    elif RoadOption.RIGHT == tuple_wp_turn[1]:
+                        return 'right7'
+                    elif RoadOption.STRAIGHT == tuple_wp_turn[1]:
+                        return 'opposite7'
+                    return None
+            return None
+        if scenario == 'Scenario8':
+            for tuple_wp_turn in trajectory[match_position:]:
+                if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
+                    if RoadOption.LEFT == tuple_wp_turn[1]:
+                        return 'left8'
+                    return None
+            return None
+        if scenario == 'Scenario9':
+            for tuple_wp_turn in trajectory[match_position:]:
+                if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
+                    if RoadOption.RIGHT == tuple_wp_turn[1]:
+                        return 'right9'
                     return None
             return None
 
-        return 0
+        return 'straight'
 
     @staticmethod
     def scan_route_for_scenarios(route_description, world_annotations):
@@ -197,15 +225,15 @@ class RouteParser(object):
                             other_vehicles = event['other_actors']
                         else:
                             other_vehicles = None
-                        scenario_subtype = RouteParser.get_scenario_type(scenario_name, match_position,
+                        route_direction = RouteParser.get_route_direction(scenario_name, match_position,
                                                                          route_description['trajectory'])
-                        if scenario_subtype is None:
+                        if route_direction is None:
                             continue
                         scenario_description = {
                             'name': scenario_name,
-                                               'other_actors': other_vehicles,
-                                               'trigger_position': waypoint,
-                                               'type': scenario_subtype,  # some scenarios have different configurations
+                            'other_actors': other_vehicles,
+                            'trigger_position': waypoint,
+                            'route_direction': route_direction, # some scenarios have route dependent configurations
                         }
 
                         trigger_id = RouteParser.check_trigger_position(waypoint, existent_triggers)

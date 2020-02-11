@@ -30,13 +30,14 @@ from srunner.scenarios.basic_scenario import BasicScenario
 from srunner.scenarios.control_loss import ControlLoss
 from srunner.scenarios.follow_leading_vehicle import FollowLeadingVehicle
 from srunner.scenarios.object_crash_vehicle import DynamicObjectCrossing
-from srunner.scenarios.object_crash_intersection import VehicleTurningRight, VehicleTurningLeft
+from srunner.scenarios.object_crash_intersection import VehicleTurningRight, VehicleTurningLeft, VehicleTurningRoute
 from srunner.scenarios.other_leading_vehicle import OtherLeadingVehicle
 from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
 from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLeftTurn
 from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
 from srunner.scenarios.no_signal_junction_crossing import NoSignalJunctionCrossing
 from srunner.scenarios.maneuver_opposite_direction import ManeuverOppositeDirection
+from srunner.scenarios.junction_crossing_route import SignalJunctionCrossingRoute, NoSignalJunctionCrossingRoute
 
 from leaderboard.scenarios.master_scenario import MasterScenario
 from leaderboard.scenarios.background_activity import BackgroundActivity
@@ -51,16 +52,16 @@ SECONDS_GIVEN_PER_METERS = 0.4
 MAX_CONNECTION_ATTEMPTS = 5
 
 NUMBER_CLASS_TRANSLATION = {
-    "Scenario1": [ControlLoss],
-    "Scenario2": [FollowLeadingVehicle],
-    "Scenario3": [DynamicObjectCrossing],
-    "Scenario4": [VehicleTurningRight, VehicleTurningLeft],
-    "Scenario5": [OtherLeadingVehicle],
-    "Scenario6": [ManeuverOppositeDirection],
-    "Scenario7": [OppositeVehicleRunningRedLight],
-    "Scenario8": [SignalizedJunctionLeftTurn],
-    "Scenario9": [SignalizedJunctionRightTurn],
-    "Scenario10": [NoSignalJunctionCrossing]
+    "Scenario1": ControlLoss,
+    "Scenario2": FollowLeadingVehicle,
+    "Scenario3": DynamicObjectCrossing,
+    "Scenario4": VehicleTurningRoute,
+    "Scenario5": OtherLeadingVehicle,
+    "Scenario6": ManeuverOppositeDirection,
+    "Scenario7": SignalJunctionCrossingRoute,
+    "Scenario8": SignalJunctionCrossingRoute,
+    "Scenario9": SignalJunctionCrossingRoute,
+    "Scenario10": NoSignalJunctionCrossingRoute
 }
 
 
@@ -265,22 +266,14 @@ class RouteScenario(BasicScenario):
                                                            timeout=self.timeout,
                                                            debug_mode=False)
 
-        # TODO: uncomment this once the TM is fixed
         # self.background_scenario = self._build_background_scenario(world,
         #                                                            ego_vehicle,
         #                                                            config.town,
         #                                                            timeout=self.timeout,
         #                                                            debug_mode=False)
 
-        self.traffic_light_scenario = self._build_trafficlight_scenario(world,
-                                                                        ego_vehicle,
-                                                                        config.town,
-                                                                        timeout=self.timeout,
-                                                                        debug_mode=False)
-
-        #self.list_scenarios = [self.master_scenario, self.background_scenario, self.traffic_light_scenario]
-        self.list_scenarios = [self.master_scenario, self.traffic_light_scenario]
-
+        # self.list_scenarios = [self.master_scenario, self.background_scenario]
+        self.list_scenarios = [self.master_scenario]
 
         # build the instance based on the parsed definitions.
         self.list_scenarios += self._build_scenario_instances(world,
@@ -311,7 +304,7 @@ class RouteScenario(BasicScenario):
         """
         for w in waypoints:
             wp = w[0].location + carla.Location(z=vertical_shift)
-            world.debug.draw_point(wp, size=0.1, color=carla.Color(0, 255, 0), life_time=persistency)
+            world.debug.draw_point(wp, size=0.05, color=carla.Color(0, 255, 0), life_time=persistency)
         for start, end, conditions in turn_positions_and_labels:
 
             if conditions == RoadOption.LEFT:  # Yellow
@@ -327,11 +320,11 @@ class RouteScenario(BasicScenario):
 
             for position in range(start, end):
                 world.debug.draw_point(waypoints[position][0].location + carla.Location(z=vertical_shift),
-                                       size=0.2, color=color, life_time=persistency)
+                                       size=0.1, color=color, life_time=persistency)
 
-        world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.2,
+        world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.1,
                                color=carla.Color(0, 0, 255), life_time=persistency)
-        world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.2,
+        world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.1,
                                color=carla.Color(255, 0, 0), life_time=persistency)
 
     def _scenario_sampling(self, potential_scenarios_definitions, random_seed=0):
@@ -436,7 +429,7 @@ class RouteScenario(BasicScenario):
         elif town_name == 'Town08':
             amount = 180
         elif town_name == 'Town09':
-            amount = 350
+            amount = 0 #350
         else:
             amount = 1
 
@@ -469,15 +462,13 @@ class RouteScenario(BasicScenario):
                 loc = carla.Location(scenario['trigger_position']['x'],
                                      scenario['trigger_position']['y'],
                                      scenario['trigger_position']['z']) + carla.Location(z=2.0)
-                world.debug.draw_point(loc, size=0.3, color=carla.Color(255, 0, 0), life_time=100000)
+                world.debug.draw_point(loc, size=0.2, color=carla.Color(255, 0, 0), life_time=100000)
                 world.debug.draw_string(loc, str(scenario['name']), draw_shadow=False,
                                         color=carla.Color(0, 0, 255), life_time=100000, persistent_lines=True)
 
         for definition in scenario_definitions:
             # Get the class possibilities for this scenario number
-            possibility_vec = NUMBER_CLASS_TRANSLATION[definition['name']]
-
-            scenario_class = possibility_vec[definition['type']]
+            scenario_class = NUMBER_CLASS_TRANSLATION[definition['name']]
 
             # Create the other actors that are going to appear
             if definition['other_actors'] is not None:
@@ -491,12 +482,13 @@ class RouteScenario(BasicScenario):
             scenario_configuration.other_actors = list_of_actor_conf_instances
             scenario_configuration.town = town
             scenario_configuration.trigger_points = [egoactor_trigger_position]
+            scenario_configuration.route_direction = definition['route_direction']       # Direction of the route at intersections
             scenario_configuration.ego_vehicles = [ActorConfigurationData('vehicle.lincoln.mkz2017',
-                                                                          ego_vehicle.get_transform(),
-                                                                          'hero')]
+                                                                        ego_vehicle.get_transform(),
+                                                                        'hero')]
             try:
                 scenario_instance = scenario_class(world, [ego_vehicle], scenario_configuration,
-                                                   criteria_enable=False, timeout=timeout)
+                                                criteria_enable=False, timeout=timeout)
             except Exception as e:
                 print("Skipping scenario '{}' due to setup error: {}".format(definition['name'], e))
                 continue
