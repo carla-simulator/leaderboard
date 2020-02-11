@@ -270,6 +270,12 @@ class ScenarioManager(object):
         This function triggers a proper termination of a scenario
         """
 
+        world = CarlaDataProvider.get_world()
+        settings = world.get_settings()
+        settings.fixed_delta_seconds = None
+        settings.synchronous_mode = False
+        world.apply_settings(settings)
+
         if self.scenario is not None:
             self.scenario.terminate()
 
