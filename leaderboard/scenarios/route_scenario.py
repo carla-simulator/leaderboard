@@ -30,12 +30,8 @@ from srunner.scenarios.basic_scenario import BasicScenario
 from srunner.scenarios.control_loss import ControlLoss
 from srunner.scenarios.follow_leading_vehicle import FollowLeadingVehicle
 from srunner.scenarios.object_crash_vehicle import DynamicObjectCrossing
-from srunner.scenarios.object_crash_intersection import VehicleTurningRight, VehicleTurningLeft, VehicleTurningRoute
+from srunner.scenarios.object_crash_intersection import VehicleTurningRoute
 from srunner.scenarios.other_leading_vehicle import OtherLeadingVehicle
-from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
-from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLeftTurn
-from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
-from srunner.scenarios.no_signal_junction_crossing import NoSignalJunctionCrossing
 from srunner.scenarios.maneuver_opposite_direction import ManeuverOppositeDirection
 from srunner.scenarios.junction_crossing_route import SignalJunctionCrossingRoute, NoSignalJunctionCrossingRoute
 
@@ -482,7 +478,7 @@ class RouteScenario(BasicScenario):
             scenario_configuration.other_actors = list_of_actor_conf_instances
             scenario_configuration.town = town
             scenario_configuration.trigger_points = [egoactor_trigger_position]
-            scenario_configuration.route_direction = definition['scenario_type']       # Direction of the route at intersections
+            scenario_configuration.subtype = definition['scenario_type']
             scenario_configuration.ego_vehicles = [ActorConfigurationData('vehicle.lincoln.mkz2017',
                                                                           ego_vehicle.get_transform(),
                                                                           'hero')]
