@@ -263,7 +263,6 @@ class ScenarioManager(object):
                     self.ego_vehicles[0].apply_control(ego_action)
 
         if self._agent:
-            # CarlaDataProvider.get_traffic_manager().synchronous_tick()
             CarlaDataProvider.get_world().tick()
 
     def stop_scenario(self):

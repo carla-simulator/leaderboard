@@ -262,6 +262,7 @@ class RouteScenario(BasicScenario):
                                                            timeout=self.timeout,
                                                            debug_mode=False)
 
+        # TODO: uncomment this once the TM is fixed
         # self.background_scenario = self._build_background_scenario(world,
         #                                                            ego_vehicle,
         #                                                            config.town,
