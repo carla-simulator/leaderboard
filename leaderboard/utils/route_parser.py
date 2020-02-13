@@ -138,53 +138,59 @@ class RouteParser(object):
         return None
 
     @staticmethod
-    def get_route_direction(scenario, match_position, trajectory):
+    def get_scenario_type(scenario, match_position, trajectory):
         """
         Some scenarios have different types depending on the route.
         :param scenario: the scenario name
         :param match_position: the matching position for the scenarion
         :param trajectory: the route trajectory the ego is following
-        :return: 0 for option, 0 ,1 for option
+        :return: tag representing this subtype
+
+        Also used to check which are not viable (Such as an scenario
+        that triggers when turning but the route doesnt')
+        WARNING: These tags are used at:
+            - VehicleTurningRoute
+            - SignalJunctionCrossingRoute
+        and changes to these tags will affect them
         """
 
-        # Used as a tag to later decide which is the expected behaviour
-        # It is also used to check which are not viable (Such as an
-        # scenario that triggers when turning but the route doesnt')
         if scenario == 'Scenario4':
             for tuple_wp_turn in trajectory[match_position:]:
                 if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
                     if RoadOption.LEFT == tuple_wp_turn[1]:
-                        return 'left'
+                        return 'S4left'
                     elif RoadOption.RIGHT == tuple_wp_turn[1]:
-                        return 'right'
+                        return 'S4right'
                     return None
             return None
         if scenario == 'Scenario7':
             for tuple_wp_turn in trajectory[match_position:]:
                 if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
                     if RoadOption.LEFT == tuple_wp_turn[1]:
-                        return 'left7'
+                        return 'S7left'
                     elif RoadOption.RIGHT == tuple_wp_turn[1]:
-                        return 'right7'
+                        return 'S7right'
                     elif RoadOption.STRAIGHT == tuple_wp_turn[1]:
-                        return 'opposite7'
+                        return 'S7opposite'
                     return None
             return None
         if scenario == 'Scenario8':
             for tuple_wp_turn in trajectory[match_position:]:
                 if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
                     if RoadOption.LEFT == tuple_wp_turn[1]:
-                        return 'left8'
+                        return 'S8left'
                     return None
             return None
         if scenario == 'Scenario9':
             for tuple_wp_turn in trajectory[match_position:]:
                 if RoadOption.LANEFOLLOW != tuple_wp_turn[1]:
                     if RoadOption.RIGHT == tuple_wp_turn[1]:
-                        return 'right9'
+                        return 'S9right'
                     return None
             return None
 
+        # Unused tag for the rest of scenarios,
+        # can't be None as they are still valid scenarios
         return 'straight'
 
     @staticmethod
@@ -225,15 +231,15 @@ class RouteParser(object):
                             other_vehicles = event['other_actors']
                         else:
                             other_vehicles = None
-                        route_direction = RouteParser.get_route_direction(scenario_name, match_position,
+                        scenario_type = RouteParser.get_scenario_type(scenario_name, match_position,
                                                                          route_description['trajectory'])
-                        if route_direction is None:
+                        if scenario_type is None:
                             continue
                         scenario_description = {
                             'name': scenario_name,
                             'other_actors': other_vehicles,
                             'trigger_position': waypoint,
-                            'route_direction': route_direction, # some scenarios have route dependent configurations
+                            'scenario_type': scenario_type, # some scenarios have route dependent configurations
                         }
 
                         trigger_id = RouteParser.check_trigger_position(waypoint, existent_triggers)

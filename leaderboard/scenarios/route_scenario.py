@@ -304,7 +304,7 @@ class RouteScenario(BasicScenario):
         """
         for w in waypoints:
             wp = w[0].location + carla.Location(z=vertical_shift)
-            world.debug.draw_point(wp, size=0.05, color=carla.Color(0, 255, 0), life_time=persistency)
+            world.debug.draw_point(wp, size=0.1, color=carla.Color(0, 255, 0), life_time=persistency)
         for start, end, conditions in turn_positions_and_labels:
 
             if conditions == RoadOption.LEFT:  # Yellow
@@ -320,11 +320,11 @@ class RouteScenario(BasicScenario):
 
             for position in range(start, end):
                 world.debug.draw_point(waypoints[position][0].location + carla.Location(z=vertical_shift),
-                                       size=0.1, color=color, life_time=persistency)
+                                       size=0.2, color=color, life_time=persistency)
 
-        world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.1,
+        world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.2,
                                color=carla.Color(0, 0, 255), life_time=persistency)
-        world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.1,
+        world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.2,
                                color=carla.Color(255, 0, 0), life_time=persistency)
 
     def _scenario_sampling(self, potential_scenarios_definitions, random_seed=0):
@@ -429,7 +429,7 @@ class RouteScenario(BasicScenario):
         elif town_name == 'Town08':
             amount = 180
         elif town_name == 'Town09':
-            amount = 0 #350
+            amount = 350
         else:
             amount = 1
 
@@ -462,7 +462,7 @@ class RouteScenario(BasicScenario):
                 loc = carla.Location(scenario['trigger_position']['x'],
                                      scenario['trigger_position']['y'],
                                      scenario['trigger_position']['z']) + carla.Location(z=2.0)
-                world.debug.draw_point(loc, size=0.2, color=carla.Color(255, 0, 0), life_time=100000)
+                world.debug.draw_point(loc, size=0.3, color=carla.Color(255, 0, 0), life_time=100000)
                 world.debug.draw_string(loc, str(scenario['name']), draw_shadow=False,
                                         color=carla.Color(0, 0, 255), life_time=100000, persistent_lines=True)
 
@@ -482,13 +482,13 @@ class RouteScenario(BasicScenario):
             scenario_configuration.other_actors = list_of_actor_conf_instances
             scenario_configuration.town = town
             scenario_configuration.trigger_points = [egoactor_trigger_position]
-            scenario_configuration.route_direction = definition['route_direction']       # Direction of the route at intersections
+            scenario_configuration.route_direction = definition['scenario_type']       # Direction of the route at intersections
             scenario_configuration.ego_vehicles = [ActorConfigurationData('vehicle.lincoln.mkz2017',
-                                                                        ego_vehicle.get_transform(),
-                                                                        'hero')]
+                                                                          ego_vehicle.get_transform(),
+                                                                          'hero')]
             try:
                 scenario_instance = scenario_class(world, [ego_vehicle], scenario_configuration,
-                                                criteria_enable=False, timeout=timeout)
+                                                   criteria_enable=False, timeout=timeout)
             except Exception as e:
                 print("Skipping scenario '{}' due to setup error: {}".format(definition['name'], e))
                 continue
