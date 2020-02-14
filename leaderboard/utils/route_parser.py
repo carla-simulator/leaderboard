@@ -89,7 +89,7 @@ class RouteParser(object):
             dx = trigger['x'] - new_trigger['x']
             dy = trigger['y'] - new_trigger['y']
             distance = math.sqrt(dx * dx + dy * dy)
-            dyaw = trigger['yaw'] - trigger['yaw']
+            dyaw = trigger['yaw'] - new_trigger['yaw']
             dist_angle = math.sqrt(dyaw * dyaw)
             if distance < (TRIGGER_THRESHOLD * 2) and dist_angle < TRIGGER_ANGLE_THRESHOLD:
                 return trigger_id
@@ -122,7 +122,7 @@ class RouteParser(object):
             dz = float(waypoint1['z']) - wtransform.location.z
             dist_position = math.sqrt(dx * dx + dy * dy + dz * dz)
 
-            dyaw = float(waypoint1['yaw']) - wtransform.rotation.yaw
+            dyaw = float(waypoint1['yaw'] % 360) - (wtransform.rotation.yaw % 360)
 
             dist_angle = math.sqrt(dyaw * dyaw)
 
