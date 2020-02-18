@@ -157,7 +157,7 @@ def main():
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--inipoint', default="../../data/all_towns_traffic_scenarios_private.json")
     parser.add_argument('--endpoint', default="set_new_scenarios.json")
-    parser.add_argument('--scenario', default='Scenario7')
+    parser.add_argument('--scenario', nargs='+', default='Scenario7')
     parser.add_argument('--modify', action='store_true')
     parser.add_argument('--host', default='localhost', help='IP of the host server (default: localhost)')
     parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
@@ -187,9 +187,6 @@ def main():
             draw_scenarios(world, scenarios, args)
 
     print("DONE")
-
-    while True:
-        world.wait_for_tick()
 
 if __name__ == '__main__':
     main()
