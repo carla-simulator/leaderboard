@@ -47,14 +47,14 @@ RUN curl -o ~/miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-la
      rm ~/miniconda.sh && \
      /opt/conda/bin/conda clean -ya && \
      /opt/conda/bin/conda create -n python35 python=3.5 numpy networkx scipy six  requests
-ENV PATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg":/opt/conda/envs/python35/bin:/opt/conda/envs/bin:$PATH
+ENV PATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.7-py3.5-linux-x86_64.egg":/opt/conda/envs/python35/bin:/opt/conda/envs/bin:$PATH
 
 # adding CARLA egg to default python environment
 RUN pip install --user setuptools py_trees==0.8.3 psutil shapely six dictor requests
 
 ENV SCENARIO_RUNNER_ROOT "/workspace/scenario_runner"
 ENV LEADERBOARD_ROOT "/workspace/leaderboard"
-ENV PYTHONPATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg":"${SCENARIO_RUNNER_ROOT}":"${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":${PYTHONPATH}
+ENV PYTHONPATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.7-py3.5-linux-x86_64.egg":"${SCENARIO_RUNNER_ROOT}":"${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":${PYTHONPATH}
 
 COPY .tmp/scenario_runner /workspace/scenario_runner
 COPY .tmp/leaderboard /workspace/leaderboard
