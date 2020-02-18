@@ -150,7 +150,7 @@ class StatisticsManager(object):
                             outside_route_lanes = event.get_dict()['distance'] / distance_completed
                         else:
                             outside_route_lanes = 0
-                        score_penalty *= min(1 - outside_route_lanes, 1.0)
+                        score_penalty *= max(1 - outside_route_lanes, 0.0)
                         message = event.get_message() + "({}% of the completed route)".format(
                             round(outside_route_lanes * 100, 2))
                         route_record.infractions['outside_route_lanes'].append(message)
