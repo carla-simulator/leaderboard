@@ -52,9 +52,9 @@ ENV PATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.e
 # adding CARLA egg to default python environment
 RUN pip install --user setuptools py_trees==0.8.3 psutil shapely six dictor requests
 
-ENV ROOT_SCENARIO_RUNNER "/workspace/scenario_runner"
+ENV SCENARIO_RUNNER_ROOT "/workspace/scenario_runner"
 ENV LEADERBOARD_ROOT "/workspace/leaderboard"
-ENV PYTHONPATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg":"${ROOT_SCENARIO_RUNNER}":"${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":${PYTHONPATH}
+ENV PYTHONPATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg":"${SCENARIO_RUNNER_ROOT}":"${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":${PYTHONPATH}
 
 COPY .tmp/scenario_runner /workspace/scenario_runner
 COPY .tmp/leaderboard /workspace/leaderboard
