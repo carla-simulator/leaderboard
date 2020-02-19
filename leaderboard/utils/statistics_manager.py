@@ -34,11 +34,11 @@ class RouteRecord():
         self.status = 'Started'
         self.infractions = {
             'collisions_layout': [],
-            'collisions_vehicle': [],
             'collisions_pedestrian': [],
+            'collisions_vehicle': [],
+            'outside_route_lanes': [],
             'red_light': [],
             'route_dev': [],
-            'outside_route_lanes': [],
             'stop_infraction': []
         }
 
@@ -114,13 +114,13 @@ class StatisticsManager(object):
                         score_penalty *= PENALTY_COLLISION_STATIC
                         route_record.infractions['collisions_layout'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
-                        score_penalty *= PENALTY_COLLISION_VEHICLE
-                        route_record.infractions['collisions_vehicle'].append(event.get_message())
-
                     elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
                         score_penalty *= PENALTY_COLLISION_PEDESTRIAN
                         route_record.infractions['collisions_pedestrian'].append(event.get_message())
+
+                    elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
+                        score_penalty *= PENALTY_COLLISION_VEHICLE
+                        route_record.infractions['collisions_vehicle'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
                         score_penalty *= (1 - event.get_dict()['percentage'] / 100)
@@ -146,7 +146,6 @@ class StatisticsManager(object):
                                 score_route = event.get_dict()['route_completed']
                             else:
                                 score_route = 0
-
 
         # update route scores
         route_record.scores['score_route'] = score_route
@@ -219,17 +218,17 @@ class StatisticsManager(object):
         stats_dict = route_record.__dict__
         data['_checkpoint']['global_record'] = stats_dict
 
-        data['values'] = [ stats_dict['scores']['score_route'],
-                           stats_dict['scores']['score_penalty'],
-                           stats_dict['scores']['score_composed'],
-                           # infractions
-                           stats_dict['infractions']['collisions_layout'],
-                           stats_dict['infractions']['collisions_vehicle'],
-                           stats_dict['infractions']['collisions_pedestrian'],
-                           stats_dict['infractions']['red_light'],
-                           stats_dict['infractions']['route_dev'],
-                           stats_dict['infractions']['outside_route_lanes'],
-                           stats_dict['infractions']['stop_infraction']
+        data['values'] = [stats_dict['scores']['score_route'],
+                          stats_dict['scores']['score_penalty'],
+                          stats_dict['scores']['score_composed'],
+                          # infractions
+                          stats_dict['infractions']['collisions_layout'],
+                          stats_dict['infractions']['collisions_pedestrian'],
+                          stats_dict['infractions']['collisions_vehicle'],
+                          stats_dict['infractions']['outside_route_lanes'],
+                          stats_dict['infractions']['red_light'],
+                          stats_dict['infractions']['route_dev'],
+                          stats_dict['infractions']['stop_infraction']
                          ]
 
         save_dict(endpoint, data)
