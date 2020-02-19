@@ -122,6 +122,10 @@ class StatisticsManager(object):
                         score_penalty *= PENALTY_COLLISION_PEDESTRIAN
                         route_record.infractions['collisions_pedestrian'].append(event.get_message())
 
+                    elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
+                        score_penalty *= (1 - event.get_dict()['percentage'] / 100)
+                        route_record.infractions['outside_route_lanes'].append(event.get_message())
+
                     elif event.get_type() == TrafficEventType.TRAFFIC_LIGHT_INFRACTION:
                         score_penalty *= PENALTY_TRAFFIC_LIGHT
                         route_record.infractions['red_light'].append(event.get_message())
@@ -140,20 +144,9 @@ class StatisticsManager(object):
                         if not target_reached:
                             if event.get_dict():
                                 score_route = event.get_dict()['route_completed']
-                                distance_completed = event.get_dict()['distance_completed']
                             else:
                                 score_route = 0
-                                distance_completed = 0
 
-                    elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
-                        if distance_completed != 0:
-                            outside_route_lanes = event.get_dict()['distance'] / distance_completed
-                        else:
-                            outside_route_lanes = 0
-                        score_penalty *= max(1 - outside_route_lanes, 0.0)
-                        message = event.get_message() + "({}% of the completed route)".format(
-                            round(outside_route_lanes * 100, 2))
-                        route_record.infractions['outside_route_lanes'].append(message)
 
         # update route scores
         route_record.scores['score_route'] = score_route
