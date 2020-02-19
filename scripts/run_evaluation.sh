@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
+python ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --challenge-mode \
 --scenarios=${SCENARIOS}  \
 --routes=${ROUTES} \
