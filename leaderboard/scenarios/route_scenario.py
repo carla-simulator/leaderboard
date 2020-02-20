@@ -30,13 +30,10 @@ from srunner.scenarios.basic_scenario import BasicScenario
 from srunner.scenarios.control_loss import ControlLoss
 from srunner.scenarios.follow_leading_vehicle import FollowLeadingVehicle
 from srunner.scenarios.object_crash_vehicle import DynamicObjectCrossing
-from srunner.scenarios.object_crash_intersection import VehicleTurningRight, VehicleTurningLeft
+from srunner.scenarios.object_crash_intersection import VehicleTurningRoute
 from srunner.scenarios.other_leading_vehicle import OtherLeadingVehicle
-from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
-from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLeftTurn
-from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
-from srunner.scenarios.no_signal_junction_crossing import NoSignalJunctionCrossing
 from srunner.scenarios.maneuver_opposite_direction import ManeuverOppositeDirection
+from srunner.scenarios.junction_crossing_route import SignalJunctionCrossingRoute, NoSignalJunctionCrossingRoute
 
 from leaderboard.scenarios.master_scenario import MasterScenario
 from leaderboard.scenarios.background_activity import BackgroundActivity
@@ -51,16 +48,16 @@ SECONDS_GIVEN_PER_METERS = 0.4
 MAX_CONNECTION_ATTEMPTS = 5
 
 NUMBER_CLASS_TRANSLATION = {
-    "Scenario1": [ControlLoss],
-    "Scenario2": [FollowLeadingVehicle],
-    "Scenario3": [DynamicObjectCrossing],
-    "Scenario4": [VehicleTurningRight, VehicleTurningLeft],
-    "Scenario5": [OtherLeadingVehicle],
-    "Scenario6": [ManeuverOppositeDirection],
-    "Scenario7": [OppositeVehicleRunningRedLight],
-    "Scenario8": [SignalizedJunctionLeftTurn],
-    "Scenario9": [SignalizedJunctionRightTurn],
-    "Scenario10": [NoSignalJunctionCrossing]
+    "Scenario1": ControlLoss,
+    "Scenario2": FollowLeadingVehicle,
+    "Scenario3": DynamicObjectCrossing,
+    "Scenario4": VehicleTurningRoute,
+    "Scenario5": OtherLeadingVehicle,
+    "Scenario6": ManeuverOppositeDirection,
+    "Scenario7": SignalJunctionCrossingRoute,
+    "Scenario8": SignalJunctionCrossingRoute,
+    "Scenario9": SignalJunctionCrossingRoute,
+    "Scenario10": NoSignalJunctionCrossingRoute
 }
 
 
@@ -272,15 +269,8 @@ class RouteScenario(BasicScenario):
         #                                                            timeout=self.timeout,
         #                                                            debug_mode=False)
 
-        self.traffic_light_scenario = self._build_trafficlight_scenario(world,
-                                                                        ego_vehicle,
-                                                                        config.town,
-                                                                        timeout=self.timeout,
-                                                                        debug_mode=False)
-
-        #self.list_scenarios = [self.master_scenario, self.background_scenario, self.traffic_light_scenario]
-        self.list_scenarios = [self.master_scenario, self.traffic_light_scenario]
-
+        # self.list_scenarios = [self.master_scenario, self.background_scenario]
+        self.list_scenarios = [self.master_scenario]
 
         # build the instance based on the parsed definitions.
         self.list_scenarios += self._build_scenario_instances(world,
@@ -475,9 +465,7 @@ class RouteScenario(BasicScenario):
 
         for definition in scenario_definitions:
             # Get the class possibilities for this scenario number
-            possibility_vec = NUMBER_CLASS_TRANSLATION[definition['name']]
-
-            scenario_class = possibility_vec[definition['type']]
+            scenario_class = NUMBER_CLASS_TRANSLATION[definition['name']]
 
             # Create the other actors that are going to appear
             if definition['other_actors'] is not None:
@@ -491,6 +479,7 @@ class RouteScenario(BasicScenario):
             scenario_configuration.other_actors = list_of_actor_conf_instances
             scenario_configuration.town = town
             scenario_configuration.trigger_points = [egoactor_trigger_position]
+            scenario_configuration.subtype = definition['scenario_type']
             scenario_configuration.ego_vehicles = [ActorConfigurationData('vehicle.lincoln.mkz2017',
                                                                           ego_vehicle.get_transform(),
                                                                           'hero')]
