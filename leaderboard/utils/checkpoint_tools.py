@@ -55,9 +55,9 @@ def save_dict(endpoint, data):
         proxies = autodetect_proxy()
 
         if proxies:
-            _ = requests.patch(url=endpoint, data=json.dumps(data, indent=4, sort_keys=True), proxies=proxies)
+            _ = requests.patch(url=endpoint, headers={'content-type':'application/json'}, data=json.dumps(data, indent=4, sort_keys=True), proxies=proxies)
         else:
-            _ = requests.patch(url=endpoint, data=json.dumps(data, indent=4, sort_keys=True))
+            _ = requests.patch(url=endpoint, headers={'content-type':'application/json'}, data=json.dumps(data, indent=4, sort_keys=True))
     else:
         with open(endpoint, 'w') as fd:
             json.dump(data, fd, indent=4, sort_keys=True)
