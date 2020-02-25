@@ -25,12 +25,6 @@ PENALTY_COLLISION_VEHICLE = 0.7
 PENALTY_COLLISION_PEDESTRIAN = 0.5
 PENALTY_TRAFFIC_LIGHT = 0.97
 PENALTY_STOP = 0.97
-PENALTY_WRONG_WAY = 1.0
-PENALTY_WRONG_WAY_PER_METER = 1.0
-PENALTY_SIDEWALK_INVASION = 1.0
-PENALTY_SIDEWALK_INVASION_PER_METER = 1.0
-PENALTY_OUTSIDE_LANE_INVASION = 1.0
-PENALTY_OUTSIDE_LANE_PER_METER = 1.0
 
 class RouteRecord():
 
@@ -40,13 +34,11 @@ class RouteRecord():
         self.status = 'Started'
         self.infractions = {
             'collisions_layout': [],
-            'collisions_vehicle': [],
             'collisions_pedestrian': [],
+            'collisions_vehicle': [],
+            'outside_route_lanes': [],
             'red_light': [],
-            'wrong_way': [],
             'route_dev': [],
-            'sidewalk_invasion': [],
-            'outside_driving_lanes': [],
             'stop_infraction': []
         }
 
@@ -122,35 +114,24 @@ class StatisticsManager(object):
                         score_penalty *= PENALTY_COLLISION_STATIC
                         route_record.infractions['collisions_layout'].append(event.get_message())
 
+                    elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
+                        score_penalty *= PENALTY_COLLISION_PEDESTRIAN
+                        route_record.infractions['collisions_pedestrian'].append(event.get_message())
+
                     elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
                         score_penalty *= PENALTY_COLLISION_VEHICLE
                         route_record.infractions['collisions_vehicle'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
-                        score_penalty *= PENALTY_COLLISION_PEDESTRIAN
-                        route_record.infractions['collisions_pedestrian'].append(event.get_message())
+                    elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
+                        score_penalty *= (1 - event.get_dict()['percentage'] / 100)
+                        route_record.infractions['outside_route_lanes'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.TRAFFIC_LIGHT_INFRACTION:
                         score_penalty *= PENALTY_TRAFFIC_LIGHT
                         route_record.infractions['red_light'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.WRONG_WAY_INFRACTION:
-                        score_penalty *= PENALTY_WRONG_WAY
-                        score_penalty *= math.pow(PENALTY_WRONG_WAY_PER_METER, event.get_dict()['distance'])
-                        route_record.infractions['wrong_way'].append(event.get_message())
-
                     elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
                         route_record.infractions['route_dev'].append(event.get_message())
-
-                    elif event.get_type() == TrafficEventType.ON_SIDEWALK_INFRACTION:
-                        score_penalty *= PENALTY_SIDEWALK_INVASION
-                        score_penalty *= math.pow(PENALTY_SIDEWALK_INVASION_PER_METER, event.get_dict()['distance'])
-                        route_record.infractions['sidewalk_invasion'].append(event.get_message())
-
-                    elif event.get_type() == TrafficEventType.OUTSIDE_LANE_INFRACTION:
-                        score_penalty *= PENALTY_OUTSIDE_LANE_INVASION
-                        score_penalty *= math.pow(PENALTY_OUTSIDE_LANE_PER_METER, event.get_dict()['distance'])
-                        route_record.infractions['outside_driving_lanes'].append(event.get_message())
 
                     elif event.get_type() == TrafficEventType.STOP_INFRACTION:
                         score_penalty *= PENALTY_STOP
@@ -237,19 +218,17 @@ class StatisticsManager(object):
         stats_dict = route_record.__dict__
         data['_checkpoint']['global_record'] = stats_dict
 
-        data['values'] = [ stats_dict['scores']['score_route'],
-                           stats_dict['scores']['score_penalty'],
-                           stats_dict['scores']['score_composed'],
-                           # infractions
-                           stats_dict['infractions']['collisions_layout'],
-                           stats_dict['infractions']['collisions_vehicle'],
-                           stats_dict['infractions']['collisions_pedestrian'],
-                           stats_dict['infractions']['red_light'],
-                           stats_dict['infractions']['wrong_way'],
-                           stats_dict['infractions']['route_dev'],
-                           stats_dict['infractions']['sidewalk_invasion'],
-                           stats_dict['infractions']['outside_driving_lanes'],
-                           stats_dict['infractions']['stop_infraction']
+        data['values'] = [stats_dict['scores']['score_route'],
+                          stats_dict['scores']['score_penalty'],
+                          stats_dict['scores']['score_composed'],
+                          # infractions
+                          stats_dict['infractions']['collisions_layout'],
+                          stats_dict['infractions']['collisions_pedestrian'],
+                          stats_dict['infractions']['collisions_vehicle'],
+                          stats_dict['infractions']['outside_route_lanes'],
+                          stats_dict['infractions']['red_light'],
+                          stats_dict['infractions']['route_dev'],
+                          stats_dict['infractions']['stop_infraction']
                          ]
 
         save_dict(endpoint, data)
