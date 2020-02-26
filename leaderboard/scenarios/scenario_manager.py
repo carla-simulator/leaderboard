@@ -202,7 +202,14 @@ class ScenarioManager(object):
         self._running = True
 
         while self._running:
-            self._tick_scenario(CarlaDataProvider.get_world().get_snapshot().timestamp)
+            timestamp = None
+            world = CarlaDataProvider.get_world()
+            if world:
+                snapshot = world.get_snapshot()
+                if snapshot:
+                    timestamp = snapshot.timestamp
+            if timestamp:
+                self._tick_scenario(timestamp)
 
         self.end_system_time = time.time()
         end_game_time = GameTime.get_time()
@@ -226,55 +233,49 @@ class ScenarioManager(object):
           multiple times in parallel.
         """
 
-        with self._my_lock:
-            if self._timestamp_last_run < timestamp.elapsed_seconds:
-                self._timestamp_last_run = timestamp.elapsed_seconds
+        if self._timestamp_last_run < timestamp.elapsed_seconds:
+            self._timestamp_last_run = timestamp.elapsed_seconds
 
-                if self._debug_mode:
-                    print("\n--------- Tick ---------\n")
+            if self._debug_mode:
+                print("\n--------- Tick ---------\n")
 
-                # Update game time and actor information
-                GameTime.on_carla_tick(timestamp)
-                CarlaDataProvider.on_carla_tick()
+            # Update game time and actor information
+            GameTime.on_carla_tick(timestamp)
+            CarlaDataProvider.on_carla_tick()
 
-                if self._agent is not None:
-                    ego_action = self._agent()
+            if self._agent is not None:
+                ego_action = self._agent()
 
-                # Tick scenario
-                self.scenario_tree.tick_once()
+            # Tick scenario
+            self.scenario_tree.tick_once()
 
-                if self._debug_mode:
-                    print("\n")
-                    py_trees.display.print_ascii_tree(
-                        self.scenario_tree, show_status=True)
-                    sys.stdout.flush()
+            if self._debug_mode:
+                print("\n")
+                py_trees.display.print_ascii_tree(
+                    self.scenario_tree, show_status=True)
+                sys.stdout.flush()
 
-                if self.scenario_tree.status != py_trees.common.Status.RUNNING:
-                    self._running = False
+            if self.scenario_tree.status != py_trees.common.Status.RUNNING:
+                self._running = False
 
-                if self._challenge_mode:
+            if self._challenge_mode:
 
-                    spectator = CarlaDataProvider.get_world().get_spectator()
-                    ego_trans = self.ego_vehicles[0].get_transform()
-                    spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
-                                                                carla.Rotation(pitch=-90)))
+                spectator = CarlaDataProvider.get_world().get_spectator()
+                ego_trans = self.ego_vehicles[0].get_transform()
+                spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+                                                            carla.Rotation(pitch=-90)))
 
-                if self._agent is not None:
-                    self.ego_vehicles[0].apply_control(ego_action)
+            if self._agent is not None:
+                self.ego_vehicles[0].apply_control(ego_action)
 
         if self._agent:
+            CarlaDataProvider.get_trafficmanager().synchronous_tick()
             CarlaDataProvider.get_world().tick()
 
     def stop_scenario(self):
         """
         This function triggers a proper termination of a scenario
         """
-
-        world = CarlaDataProvider.get_world()
-        settings = world.get_settings()
-        settings.fixed_delta_seconds = None
-        settings.synchronous_mode = False
-        world.apply_settings(settings)
 
         if self.scenario is not None:
             self.scenario.terminate()
