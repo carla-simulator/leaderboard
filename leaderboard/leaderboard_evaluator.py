@@ -57,7 +57,6 @@ class LeaderboardEvaluator(object):
     client_timeout = 30.0  # in seconds
     wait_for_world = 20.0  # in seconds
     frame_rate = 20.0      # in Hz
-    trafficmanager = None
 
 
     def __init__(self, args, statistics_manager):
@@ -72,8 +71,6 @@ class LeaderboardEvaluator(object):
         # requests in the localhost at port 2000.
         self.client = carla.Client(args.host, int(args.port))
         self.client.set_timeout(self.client_timeout)
-        self.trafficmanager = None
-        self.counter = 8100  # Patch for the port problem
 
         self.time_available = args.time_available
 
@@ -102,8 +99,6 @@ class LeaderboardEvaluator(object):
             del self.manager
         if hasattr(self, 'world') and self.world:
             del self.world
-        if self.trafficmanager is not None:
-            del self.trafficmanager
 
     def _within_available_time(self):
         """
@@ -171,7 +166,6 @@ class LeaderboardEvaluator(object):
                 self.ego_vehicles[i].set_transform(ego_vehicles[i].transform)
 
         # sync state
-        CarlaDataProvider.get_trafficmanager().synchronous_tick()
         CarlaDataProvider.get_world().tick()
 
 
@@ -179,30 +173,24 @@ class LeaderboardEvaluator(object):
         """
         Load a new CARLA world and provide data to CarlaActorPool and CarlaDataProvider
         """
-        self.counter += 1
 
         self.world = self.client.load_world(town)
         settings = self.world.get_settings()
         settings.fixed_delta_seconds = 1.0 / self.frame_rate
         self.world.apply_settings(settings)
 
-        self.trafficmanager = self.client.get_trafficmanager(self.counter)
         self.world = self.client.get_world()
 
         CarlaActorPool.set_client(self.client)
         CarlaActorPool.set_world(self.world)
-        CarlaActorPool.set_trafficmanager(self.trafficmanager)
         CarlaDataProvider.set_world(self.world)
-        CarlaDataProvider.set_trafficmanager(self.trafficmanager)
 
-        self.trafficmanager.set_synchronous_mode(True)
         settings = self.world.get_settings()
         settings.synchronous_mode = True
         self.world.apply_settings(settings)
 
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
-            self.trafficmanager.synchronous_tick()
             self.world.tick()
         else:
             self.world.wait_for_tick()
@@ -291,9 +279,6 @@ class LeaderboardEvaluator(object):
 
             # Remove all actors
             scenario.remove_all_actors()
-
-            if self.trafficmanager is not None:
-                del self.trafficmanager
 
             settings = self.world.get_settings()
             settings.fixed_delta_seconds = None
