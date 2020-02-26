@@ -274,6 +274,7 @@ class LeaderboardEvaluator(object):
 
             # Remove all actors
             scenario.remove_all_actors()
+
         except SensorConfigurationInvalid as e:
             self._cleanup(True)
             sys.exit(-1)
