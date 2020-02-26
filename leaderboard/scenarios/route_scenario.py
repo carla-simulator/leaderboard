@@ -549,9 +549,7 @@ class RouteScenario(BasicScenario):
                 subbehavior.add_child(scenario.scenario.behavior)
 
         subbehavior.add_child(Idle()) # The behaviours cannot make the scenario stop
-
         behavior.add_child(subbehavior)
-
         return behavior
 
     def _create_test_criteria(self):
