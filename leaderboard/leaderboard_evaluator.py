@@ -177,17 +177,12 @@ class LeaderboardEvaluator(object):
         self.world = self.client.load_world(town)
         settings = self.world.get_settings()
         settings.fixed_delta_seconds = 1.0 / self.frame_rate
+        settings.synchronous_mode = True
         self.world.apply_settings(settings)
-
-        self.world = self.client.get_world()
 
         CarlaActorPool.set_client(self.client)
         CarlaActorPool.set_world(self.world)
         CarlaDataProvider.set_world(self.world)
-
-        settings = self.world.get_settings()
-        settings.synchronous_mode = True
-        self.world.apply_settings(settings)
 
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
@@ -279,12 +274,6 @@ class LeaderboardEvaluator(object):
 
             # Remove all actors
             scenario.remove_all_actors()
-
-            settings = self.world.get_settings()
-            settings.fixed_delta_seconds = None
-            settings.synchronous_mode = False
-            self.world.apply_settings(settings)
-
 
         except SensorConfigurationInvalid as e:
             self._cleanup(True)
