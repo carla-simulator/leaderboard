@@ -159,6 +159,12 @@ class ScenarioManager(object):
         """
         self._running = False
 
+        world = CarlaDataProvider.get_world()
+        settings = world.get_settings()
+        settings.fixed_delta_seconds = None
+        settings.synchronous_mode = False
+        world.apply_settings(settings)
+
     def _reset(self):
         """
         Reset all parameters
