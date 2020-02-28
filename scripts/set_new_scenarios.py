@@ -91,8 +91,6 @@ def draw_scenarios(world, scenarios, args):
         color = SCENARIO_COLOR[scenarios["scenario_type"]][0]
 
         event_list = scenarios["available_event_configurations"]
-        # number_of_scenarios = len(event_list)
-        # for event in event_list:
         for i in range(len(event_list)):
             event = event_list[i]
             _waypoint = event['transform']  # trigger point of this scenario
@@ -100,6 +98,7 @@ def draw_scenarios(world, scenarios, args):
 
             scenario_location = location + carla.Location(z=number / z)
             world.debug.draw_point(scenario_location, size=float(0.15), color=color)
+            world.debug.draw_string(scenario_location + carla.Location(z=0.1), text=str(i+1), color=carla.Color(0, 0, 0), life_time=1000)
 
             if args.debug:
                 save_from_dict(args.endpoint, _waypoint)
@@ -108,22 +107,25 @@ def draw_scenarios(world, scenarios, args):
                                                             carla.Rotation(pitch=-90)))
                 print(" Scenario [{}/{}]. Press Enter for the next scenario".format(i+1, len(event_list)))
                 input()
+        world.wait_for_tick()
 
 def modify_junction_scenarios(world, scenarios, args):
     """
     Used to move scenario trigger points a certain distance to the front
     """
-    DISTANCE = 2
+    DISTANCE = 10
 
     if scenarios["scenario_type"] in args.scenarios:
         event_list = scenarios["available_event_configurations"]
 
-        for event in event_list:
+        for i in range(len(event_list)):
+            event = event_list[i]
             _waypoint = event['transform']  # trigger point of this scenario
             location = carla.Location(float(_waypoint["x"]), float(_waypoint["y"]), float(_waypoint["z"]))
             rotation = carla.Rotation(float(0), float(_waypoint["pitch"]), float(_waypoint["yaw"]))
             print("Init location: {}. Init rotation: {}".format(location, rotation))
             world.debug.draw_point(location, size=float(0.15), color=carla.Color(0, 255, 255))
+            world.debug.draw_string(location + carla.Location(x=1), text=str(i+1), color=carla.Color(0, 0, 0))
 
             # Used to get the S7-10 points
             new_waypoint = world.get_map().get_waypoint(location)
@@ -141,7 +143,9 @@ def modify_junction_scenarios(world, scenarios, args):
             spectator.set_transform(carla.Transform(scenario_waypoint.transform.location + carla.Location(z=50),
                                                         carla.Rotation(pitch=-90)))
 
-            input("Press Enter to continue...\n")
+            print(" Scenario [{}/{}]. Press Enter for the next scenario".format(i+1, len(event_list)))
+            input()
+        world.wait_for_tick()
 
 def main():
     """
@@ -157,9 +161,10 @@ def main():
 
     # general parameters
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
-    parser.add_argument('--town', default='Town09')
+    parser.add_argument('--town', default='Town08')
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--inipoint', default="../data/Tests.json")
+    parser.add_argument('--reload', action='store_true')
+    parser.add_argument('--inipoint', default="../../carla-challenge-contents/src/leaderboard/data/all_towns_traffic_scenarios_private_new.json")
     parser.add_argument('--endpoint', default="set_new_scenarios.json")
     parser.add_argument('--scenarios', nargs='+', default='Scenario7')
     parser.add_argument('--modify', action='store_true')
@@ -171,7 +176,10 @@ def main():
     # 0) Set the world
     client = carla.Client(args.host, int(args.port))
     client.set_timeout(20)
-    world = client.load_world(args.town)
+    if args.reload:
+        world = client.load_world(args.town)
+    else:
+        world = client.get_world()
 
     settings = world.get_settings()
     settings.fixed_delta_seconds = None
