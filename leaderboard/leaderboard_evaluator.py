@@ -184,6 +184,9 @@ class LeaderboardEvaluator(object):
         CarlaActorPool.set_world(self.world)
         CarlaDataProvider.set_world(self.world)
 
+        spectator = CarlaDataProvider.get_world().get_spectator()
+        spectator.set_transform(carla.Transform(carla.Location(x=0, y=0,z=20), carla.Rotation(pitch=-90)))
+
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
             self.world.tick()
@@ -237,7 +240,7 @@ class LeaderboardEvaluator(object):
             precipitation_deposits=config.weather.precipitation_deposits,
             wind_intensity=config.weather.wind_intensity,
             sun_azimuth_angle=config.weather.sun_azimuth,
-            sun_altitude_angle=config.weather.sun_altitude
+            sun_altitude_angle=40
         )
 
         self.world.set_weather(weather)
@@ -274,6 +277,11 @@ class LeaderboardEvaluator(object):
 
             # Remove all actors
             scenario.remove_all_actors()
+
+            settings = self.world.get_settings()
+            settings.synchronous_mode = False
+            settings.fixed_delta_seconds = None
+            self.world.apply_settings(settings)
 
         except SensorConfigurationInvalid as e:
             self._cleanup(True)
