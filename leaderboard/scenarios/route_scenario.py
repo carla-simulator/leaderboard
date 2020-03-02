@@ -491,7 +491,7 @@ class RouteScenario(BasicScenario):
 
             scenario_instance_vec.append(scenario_instance)
 
-        return scenario_instance_vec    
+        return scenario_instance_vec
 
     def _get_actors_instances(self, list_of_antagonist_actors):
         """
