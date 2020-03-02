@@ -89,12 +89,9 @@ class RouteParser(object):
             dx = trigger['x'] - new_trigger['x']
             dy = trigger['y'] - new_trigger['y']
             distance = math.sqrt(dx * dx + dy * dy)
-
-            dyaw = trigger['yaw'] % 360 - new_trigger['yaw'] % 360
+            dyaw = trigger['yaw'] - new_trigger['yaw']
             dist_angle = math.sqrt(dyaw * dyaw)
-            if distance < TRIGGER_THRESHOLD \
-                and (dist_angle < TRIGGER_ANGLE_THRESHOLD or dist_angle > (360 - TRIGGER_ANGLE_THRESHOLD)):
-
+            if distance < (TRIGGER_THRESHOLD * 2) and dist_angle < TRIGGER_ANGLE_THRESHOLD:
                 return trigger_id
 
         return None
@@ -129,8 +126,7 @@ class RouteParser(object):
 
             dist_angle = math.sqrt(dyaw * dyaw)
 
-            return dist_position < TRIGGER_THRESHOLD \
-                    and (dist_angle < TRIGGER_ANGLE_THRESHOLD or dist_angle > (360 - TRIGGER_ANGLE_THRESHOLD))
+            return dist_position < TRIGGER_THRESHOLD and dist_angle < TRIGGER_ANGLE_THRESHOLD
 
         match_position = 0
         # TODO this function can be optimized to run on Log(N) time
