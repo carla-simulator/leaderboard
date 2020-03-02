@@ -142,7 +142,6 @@ class ScenarioManager(object):
         self._agent = None
         self._running = False
         self._timestamp_last_run = 0.0
-        self._my_lock = threading.Lock()
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
