@@ -111,9 +111,10 @@ def draw_scenarios(world, scenarios, args):
 
 def modify_junction_scenarios(world, scenarios, args):
     """
-    Used to move scenario trigger points a certain distance to the front
+    Used to move scenario trigger points:
+        1) a certain distance to the front (follows the lane)
+        2) a certain distance to the back (does not follow the lane)
     """
-    DISTANCE = 10
 
     if scenarios["scenario_type"] in args.scenarios:
         event_list = scenarios["available_event_configurations"]
@@ -123,24 +124,27 @@ def modify_junction_scenarios(world, scenarios, args):
             _waypoint = event['transform']  # trigger point of this scenario
             location = carla.Location(float(_waypoint["x"]), float(_waypoint["y"]), float(_waypoint["z"]))
             rotation = carla.Rotation(float(0), float(_waypoint["pitch"]), float(_waypoint["yaw"]))
-            print("Init location: {}. Init rotation: {}".format(location, rotation))
             world.debug.draw_point(location, size=float(0.15), color=carla.Color(0, 255, 255))
             world.debug.draw_string(location + carla.Location(x=1), text=str(i+1), color=carla.Color(0, 0, 0))
 
-            # Used to get the S7-10 points
+            # # Case 1)
+            # DISTANCE = 10
+            # new_waypoint = world.get_map().get_waypoint(location)
+            # scenario_waypoint = new_waypoint.next(DISTANCE)[0]
+
+            # Case 2)
+            DISTANCE = 5
             new_waypoint = world.get_map().get_waypoint(location)
-            scenario_waypoint = new_waypoint.next(DISTANCE)[0]
+            wp_vec = new_waypoint.transform.get_forward_vector()
+            new_location = new_waypoint.transform.location - wp_vec*DISTANCE
+            scenario_waypoint = world.get_map().get_waypoint(new_location)
 
+            # Drawing and waiting for input
             apart_enough(world, _waypoint, scenario_waypoint)
-
-            print("Last location: {}. Last rotation: {}".format(
-                scenario_waypoint.transform.location,
-                scenario_waypoint.transform.rotation))
-
             save_from_wp(args.endpoint, scenario_waypoint)
 
             spectator = world.get_spectator()
-            spectator.set_transform(carla.Transform(scenario_waypoint.transform.location + carla.Location(z=50),
+            spectator.set_transform(carla.Transform(scenario_waypoint.transform.location + carla.Location(z=70),
                                                         carla.Rotation(pitch=-90)))
 
             print(" Scenario [{}/{}]. Press Enter for the next scenario".format(i+1, len(event_list)))

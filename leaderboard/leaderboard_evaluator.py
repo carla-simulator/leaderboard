@@ -240,7 +240,7 @@ class LeaderboardEvaluator(object):
             precipitation_deposits=config.weather.precipitation_deposits,
             wind_intensity=config.weather.wind_intensity,
             sun_azimuth_angle=config.weather.sun_azimuth,
-            sun_altitude_angle=40
+            sun_altitude_angle=config.weather.sun_altitude
         )
 
         self.world.set_weather(weather)
