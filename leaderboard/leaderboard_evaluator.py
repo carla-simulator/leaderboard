@@ -184,6 +184,9 @@ class LeaderboardEvaluator(object):
         CarlaActorPool.set_world(self.world)
         CarlaDataProvider.set_world(self.world)
 
+        spectator = CarlaDataProvider.get_world().get_spectator()
+        spectator.set_transform(carla.Transform(carla.Location(x=0, y=0,z=20), carla.Rotation(pitch=-90)))
+
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
             self.world.tick()
@@ -274,6 +277,11 @@ class LeaderboardEvaluator(object):
 
             # Remove all actors
             scenario.remove_all_actors()
+
+            settings = self.world.get_settings()
+            settings.synchronous_mode = False
+            settings.fixed_delta_seconds = None
+            self.world.apply_settings(settings)
 
         except SensorConfigurationInvalid as e:
             self._cleanup(True)
