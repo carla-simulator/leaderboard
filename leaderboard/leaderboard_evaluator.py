@@ -54,7 +54,7 @@ class LeaderboardEvaluator(object):
     ego_vehicles = []
 
     # Tunable parameters
-    client_timeout = 30.0  # in seconds
+    client_timeout = 10.0  # in seconds
     wait_for_world = 20.0  # in seconds
     frame_rate = 20.0      # in Hz
 
@@ -70,6 +70,8 @@ class LeaderboardEvaluator(object):
         # to the simulator. Here we'll assume the simulator is accepting
         # requests in the localhost at port 2000.
         self.client = carla.Client(args.host, int(args.port))
+        if args.timeout:
+            self.client_timeout = float(args.timeout)
         self.client.set_timeout(self.client_timeout)
 
         self.time_available = args.time_available
@@ -85,7 +87,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug, args.challenge_mode, args.track)
+        self.manager = ScenarioManager(args.debug, args.challenge_mode, self.client_timeout)
 
         self._start_wall_time = datetime.now()
 
@@ -166,7 +168,7 @@ class LeaderboardEvaluator(object):
                 self.ego_vehicles[i].set_transform(ego_vehicles[i].transform)
 
         # sync state
-        CarlaDataProvider.get_world().tick()
+        CarlaDataProvider.perform_carla_tick()
 
 
     def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
@@ -189,7 +191,7 @@ class LeaderboardEvaluator(object):
 
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
-            self.world.tick()
+            CarlaDataProvider.perform_carla_tick()
         else:
             self.world.wait_for_tick()
 
@@ -358,6 +360,8 @@ def main():
     parser.add_argument('--spectator', type=bool, help='Switch spectator view on?', default=True)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
+    parser.add_argument('--timeout', default="10.0",
+                        help='Set the CARLA client timeout value in seconds')
 
     # simulation setup
     parser.add_argument('--challenge-mode', action="store_true", help='Switch to challenge mode?')
@@ -390,6 +394,7 @@ def main():
     try:
         leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
         leaderboard_evaluator.run(arguments)
+
     except Exception as e:
         traceback.print_exc()
     finally:

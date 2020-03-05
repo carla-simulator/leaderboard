@@ -21,6 +21,7 @@ import carla
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime, TimeOut
+from srunner.scenariomanager.watchdog import Watchdog
 
 from leaderboard.autoagents.agent_wrapper import AgentWrapper
 
@@ -126,7 +127,7 @@ class ScenarioManager(object):
     5. Cleanup with manager.stop_scenario()
     """
 
-    def __init__(self, debug_mode=False, challenge_mode=False, track=None):
+    def __init__(self, debug_mode=False, challenge_mode=False, track=None, timeout=10.0):
         """
         Init requires scenario as input
         """
@@ -142,6 +143,8 @@ class ScenarioManager(object):
         self._agent = None
         self._running = False
         self._timestamp_last_run = 0.0
+        self._timeout = timeout
+        self._watchdog = Watchdog(float(self._timeout))
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
@@ -157,6 +160,8 @@ class ScenarioManager(object):
         Terminate scenario ticking when receiving a signal interrupt
         """
         self._running = False
+        if not self.get_running_status():
+            raise RuntimeError("Timeout occured during scenario execution")
 
     def _reset(self):
         """
@@ -198,6 +203,7 @@ class ScenarioManager(object):
         self.start_system_time = time.time()
         start_game_time = GameTime.get_time()
 
+        self._watchdog.start()
         self._running = True
 
         while self._running:
@@ -209,6 +215,8 @@ class ScenarioManager(object):
                     timestamp = snapshot.timestamp
             if timestamp:
                 self._tick_scenario(timestamp)
+
+        self._watchdog.stop()
 
         self.end_system_time = time.time()
         end_game_time = GameTime.get_time()
@@ -234,6 +242,8 @@ class ScenarioManager(object):
 
         if self._timestamp_last_run < timestamp.elapsed_seconds:
             self._timestamp_last_run = timestamp.elapsed_seconds
+
+            self._watchdog.update()
 
             if self._debug_mode:
                 print("\n--------- Tick ---------\n")
@@ -267,8 +277,15 @@ class ScenarioManager(object):
             if self._agent is not None:
                 self.ego_vehicles[0].apply_control(ego_action)
 
-        if self._agent:
-            CarlaDataProvider.get_world().tick()
+        if self._agent and self._running and self._watchdog.get_status():
+            CarlaDataProvider.perform_carla_tick(self._timeout)
+
+    def get_running_status(self):
+        """
+        returns:
+           bool:  False if watchdog exception occured, True otherwise
+        """
+        return self._watchdog.get_status()
 
     def stop_scenario(self):
         """
