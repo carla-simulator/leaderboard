@@ -168,7 +168,7 @@ class LeaderboardEvaluator(object):
                 self.ego_vehicles[i].set_transform(ego_vehicles[i].transform)
 
         # sync state
-        CarlaDataProvider.perform_carla_tick()
+        CarlaDataProvider.get_world().tick()
 
 
     def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
@@ -191,7 +191,7 @@ class LeaderboardEvaluator(object):
 
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
-            CarlaDataProvider.perform_carla_tick()
+            CarlaDataProvider.get_world().tick()
         else:
             self.world.wait_for_tick()
 
