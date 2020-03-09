@@ -33,7 +33,7 @@ class RouteIndexer():
                 config.weather = profile[0]
                 config.weather.sun_azimuth = -1
                 config.weather.sun_altitude = 70
-                config.index = i
+                config.index = i * self._repetitions + repetition
                 self._configs_dict['{}.{}'.format(config.name, repetition)] = config
 
         self._configs_list = list(self._configs_dict.items())
