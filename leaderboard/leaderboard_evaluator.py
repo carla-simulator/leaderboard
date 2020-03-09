@@ -87,7 +87,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug, args.challenge_mode, self.client_timeout)
+        self.manager = ScenarioManager(args.debug, args.challenge_mode, args.track, self.client_timeout)
 
         self._start_wall_time = datetime.now()
 
@@ -191,7 +191,7 @@ class LeaderboardEvaluator(object):
 
         # Wait for the world to be ready
         if self.world.get_settings().synchronous_mode:
-            CarlaDataProvider.get_world().tick()
+            self.world.tick()
         else:
             self.world.wait_for_tick()
 

@@ -283,7 +283,7 @@ class ScenarioManager(object):
     def get_running_status(self):
         """
         returns:
-           bool:  False if watchdog exception occured, True otherwise
+           bool: False if watchdog exception occured, True otherwise
         """
         return self._watchdog.get_status()
 
