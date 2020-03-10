@@ -164,6 +164,7 @@ class StatisticsManager(object):
         global_record = RouteRecord()
         global_record.route_id = -1
         global_record.index = -1
+        global_record.status = 'Completed'
 
         if self._registry_route_records:
             for route_record in self._registry_route_records:
@@ -178,6 +179,7 @@ class StatisticsManager(object):
                         global_record.infractions[key] += len(route_record.infractions[key])
 
                 if route_record.status is not 'Completed':
+                    global_record.status = 'Failed'
                     if not 'exceptions' in global_record.meta:
                         global_record.meta['exceptions'] = []
                     global_record.meta['exceptions'].append((route_record.route_id,
@@ -187,7 +189,6 @@ class StatisticsManager(object):
         global_record.scores['score_route'] /= float(total_routes)
         global_record.scores['score_penalty'] /= float(total_routes)
         global_record.scores['score_composed'] /= float(total_routes)
-        global_record.status = 'Completed'
 
         return global_record
 
