@@ -20,11 +20,11 @@ from srunner.scenariomanager.traffic_events import TrafficEventType
 from leaderboard.utils.checkpoint_tools import fetch_dict, save_dict, create_default_json_msg
 
 
-PENALTY_COLLISION_STATIC = 0.8
-PENALTY_COLLISION_VEHICLE = 0.7
-PENALTY_COLLISION_PEDESTRIAN = 0.5
-PENALTY_TRAFFIC_LIGHT = 0.97
-PENALTY_STOP = 0.97
+PENALTY_COLLISION_STATIC = 0.80
+PENALTY_COLLISION_VEHICLE = 0.70
+PENALTY_COLLISION_PEDESTRIAN = 0.50
+PENALTY_TRAFFIC_LIGHT = 0.90
+PENALTY_STOP = 0.95
 
 class RouteRecord():
 
