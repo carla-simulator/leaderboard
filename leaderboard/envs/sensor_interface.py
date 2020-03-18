@@ -17,11 +17,81 @@ def threaded(fn):
         return thread
     return wrapper
 
-
-class OpenDirveMapMeasurement(object):
+class GenericMeasurement(object):
     def __init__(self, data, frame):
         self.data = data
         self.frame = frame
+
+class SpeedometerReader(object):
+    """
+    Sensor to measure the speed of the vehicle.
+    """
+    MAX_CONNECTION_ATTEMPTS = 10
+
+    def __init__(self, vehicle, reading_frequency):
+        self._vehicle = vehicle
+        # How often do you look at your speedometer in hz
+        self._reading_frequency = reading_frequency
+        self._callback = None
+        #  Counts the frames
+        self._frame = 0
+        self._run_ps = True
+
+    def _get_forward_speed(self, transform=None, velocity=None):
+        """ Convert the vehicle transform directly to forward speed """
+        if not velocity:
+            velocity = self._vehicle.get_velocity()
+        if not transform:
+            transform = self._vehicle.get_transform()
+
+        vel_np = np.array([velocity.x, velocity.y, velocity.z])
+        pitch = np.deg2rad(transform.rotation.pitch)
+        yaw = np.deg2rad(transform.rotation.yaw)
+        orientation = np.array([np.cos(pitch) * np.cos(yaw), np.cos(pitch) * np.sin(yaw), np.sin(pitch)])
+        speed = np.dot(vel_np, orientation)
+        return speed
+
+    def __call__(self):
+
+        """ We convert the vehicle physics information into a convenient dictionary """
+
+        # protect this access against timeout
+        attempts = 0
+        while attempts < self.MAX_CONNECTION_ATTEMPTS:
+            try:
+                velocity = self._vehicle.get_velocity()
+                transform = self._vehicle.get_transform()
+                break
+            except Exception:
+                attempts += 1
+                time.sleep(1.0)
+                continue
+
+        return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
+
+
+    @threaded
+    def run(self):
+        latest_speed_read = time.time()
+        while self._run_ps:
+            if self._callback is not None:
+                capture = time.time()
+                if capture - latest_speed_read > (1 / self._reading_frequency):
+                    self._callback(GenericMeasurement(self.__call__(), self._frame))
+                    self._frame += 1
+                    latest_speed_read = time.time()
+                else:
+                    time.sleep(0.001)
+
+    def listen(self, callback):
+        # Tell that this function receives what the producer does.
+        self._callback = callback
+
+    def stop(self):
+        self._run_ps = False
+
+    def destroy(self):
+        self._run_ps = False
 
 
 class  OpenDirveMapReader(object):
@@ -43,7 +113,7 @@ class  OpenDirveMapReader(object):
             if self._callback is not None:
                 capture = time.time()
                 if capture - latest_read > (1 / self._reading_frequency):
-                    self._callback(OpenDirveMapMeasurement(self.__call__(), self._frame))
+                    self._callback(GenericMeasurement(self.__call__(), self._frame))
                     self._frame += 1
                     latest_read = time.time()
                 else:
@@ -79,7 +149,7 @@ class CallBack(object):
             self._parse_gnss_cb(data, self._tag)
         elif isinstance(data, carla.libcarla.IMUMeasurement):
             self._parse_imu_cb(data, self._tag)
-        elif isinstance(data, OpenDirveMapMeasurement):
+        elif isinstance(data, GenericMeasurement):
             self._parse_pseudosensor(data, self._tag)
         else:
             logging.error('No callback method for this sensor.')
