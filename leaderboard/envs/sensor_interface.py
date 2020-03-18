@@ -28,7 +28,7 @@ class SpeedometerReader(object):
     """
     MAX_CONNECTION_ATTEMPTS = 10
 
-    def __init__(self, vehicle, reading_frequency):
+    def __init__(self, vehicle, reading_frequency=20):
         self._vehicle = vehicle
         # How often do you look at your speedometer in hz
         self._reading_frequency = reading_frequency
