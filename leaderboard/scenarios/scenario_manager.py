@@ -247,6 +247,11 @@ class ScenarioManager(object):
 
             return symbol
 
+        if self.scenario_tree.status == py_trees.common.Status.RUNNING:
+            # If still running, all the following is None, so no point continuing
+            print("\n> Something happened during the simulation. Was it manually shutdown?\n")
+            return
+
         blackv = py_trees.blackboard.Blackboard()
 
         route_completed = 100 if blackv.get("RouteCompletion") > 99 else blackv.get("RouteCompletion")
@@ -273,8 +278,6 @@ class ScenarioManager(object):
                 message = "> FAILED: The actor timed out "
             else:
                 message = "> FAILED: The actor deviated from the route"
-        elif self.scenario_tree.status == py_trees.common.Status.RUNNING:
-            print("\n> Something happened during the simulation. Was it manually shutdown?\n")
 
         if self.scenario_tree.status != py_trees.common.Status.RUNNING:
             print("\n" + message)
