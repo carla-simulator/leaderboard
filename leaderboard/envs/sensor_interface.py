@@ -8,6 +8,7 @@ from threading import Thread
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
+
 def threaded(fn):
     def wrapper(*args, **kwargs):
         thread = Thread(target=fn, args=args, kwargs=kwargs)
@@ -17,12 +18,50 @@ def threaded(fn):
         return thread
     return wrapper
 
+
 class GenericMeasurement(object):
     def __init__(self, data, frame):
         self.data = data
         self.frame = frame
 
-class SpeedometerReader(object):
+
+class BaseReader(object):
+    def __init__(self, vehicle, reading_frequency=1.0):
+        self._vehicle = vehicle
+        self._reading_frequency = reading_frequency
+        self._callback = None
+        #  Counts the frames
+        self._frame = 0
+        self._run_ps = True
+
+    def __call__(self):
+        pass
+
+    @threaded
+    def run(self):
+        latest_speed_read = time.time()
+        while self._run_ps:
+            if self._callback is not None:
+                capture = time.time()
+                if capture - latest_speed_read > (1 / self._reading_frequency):
+                    self._callback(GenericMeasurement(self.__call__(), self._frame))
+                    self._frame += 1
+                    latest_speed_read = time.time()
+                else:
+                    time.sleep(0.001)
+
+    def listen(self, callback):
+        # Tell that this function receives what the producer does.
+        self._callback = callback
+
+    def stop(self):
+        self._run_ps = False
+
+    def destroy(self):
+        self._run_ps = False
+
+
+class SpeedometerReader(BaseReader):
     """
     Sensor to measure the speed of the vehicle.
     """
@@ -52,7 +91,6 @@ class SpeedometerReader(object):
         return speed
 
     def __call__(self):
-
         """ We convert the vehicle physics information into a convenient dictionary """
 
         # protect this access against timeout
@@ -64,70 +102,15 @@ class SpeedometerReader(object):
                 break
             except Exception:
                 attempts += 1
-                time.sleep(1.0)
+                time.sleep(0.2)
                 continue
 
         return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
 
 
-    @threaded
-    def run(self):
-        latest_speed_read = time.time()
-        while self._run_ps:
-            if self._callback is not None:
-                capture = time.time()
-                if capture - latest_speed_read > (1 / self._reading_frequency):
-                    self._callback(GenericMeasurement(self.__call__(), self._frame))
-                    self._frame += 1
-                    latest_speed_read = time.time()
-                else:
-                    time.sleep(0.001)
-
-    def listen(self, callback):
-        # Tell that this function receives what the producer does.
-        self._callback = callback
-
-    def stop(self):
-        self._run_ps = False
-
-    def destroy(self):
-        self._run_ps = False
-
-
-class  OpenDirveMapReader(object):
-    def __init__(self, vehicle, reading_frequency=1.0):
-        self._vehicle = vehicle
-        self._reading_frequency = reading_frequency
-        self._callback = None
-        self._frame = 0
-        self._run_ps = True
-        self.run()
-
+class OpenDirveMapReader(BaseReader):
     def __call__(self):
         return {'opendrive': CarlaDataProvider.get_map().to_opendrive()}
-
-    @threaded
-    def run(self):
-        latest_read = time.time()
-        while self._run_ps:
-            if self._callback is not None:
-                capture = time.time()
-                if capture - latest_read > (1 / self._reading_frequency):
-                    self._callback(GenericMeasurement(self.__call__(), self._frame))
-                    self._frame += 1
-                    latest_read = time.time()
-                else:
-                    time.sleep(0.001)
-
-    def listen(self, callback):
-        # Tell that this function receives what the producer does.
-        self._callback = callback
-
-    def stop(self):
-        self._run_ps = False
-
-    def destroy(self):
-        self._run_ps = False
 
 
 class CallBack(object):
@@ -138,7 +121,6 @@ class CallBack(object):
         self._data_provider.register_sensor(tag, sensor)
 
     def __call__(self, data):
-
         if isinstance(data, carla.libcarla.Image):
             self._parse_image_cb(data, self._tag)
         elif isinstance(data, carla.libcarla.LidarMeasurement):
@@ -194,6 +176,7 @@ class CallBack(object):
 
     def _parse_pseudosensor(self, package, tag):
         self._data_provider.update_sensor(tag, package.data, package.frame)
+
 
 class SensorInterface(object):
     def __init__(self):
