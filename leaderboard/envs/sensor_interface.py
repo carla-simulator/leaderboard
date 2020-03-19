@@ -68,15 +68,6 @@ class SpeedometerReader(BaseReader):
     """
     MAX_CONNECTION_ATTEMPTS = 10
 
-    def __init__(self, vehicle, reading_frequency=20):
-        self._vehicle = vehicle
-        # How often do you look at your speedometer in hz
-        self._reading_frequency = reading_frequency
-        self._callback = None
-        #  Counts the frames
-        self._frame = 0
-        self._run_ps = True
-
     def _get_forward_speed(self, transform=None, velocity=None):
         """ Convert the vehicle transform directly to forward speed """
         if not velocity:
