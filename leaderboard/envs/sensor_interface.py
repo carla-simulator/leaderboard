@@ -33,20 +33,21 @@ class BaseReader(object):
         #  Counts the frames
         self._frame = 0
         self._run_ps = True
+        self.run()
 
     def __call__(self):
         pass
 
     @threaded
     def run(self):
-        latest_speed_read = time.time()
+        latest_read = time.time()
         while self._run_ps:
             if self._callback is not None:
                 capture = time.time()
-                if capture - latest_speed_read > (1 / self._reading_frequency):
+                if capture - latest_read > (1 / self._reading_frequency):
                     self._callback(GenericMeasurement(self.__call__(), self._frame))
                     self._frame += 1
-                    latest_speed_read = time.time()
+                    latest_read = time.time()
                 else:
                     time.sleep(0.001)
 
