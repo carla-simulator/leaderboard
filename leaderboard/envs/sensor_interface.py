@@ -108,7 +108,7 @@ class SpeedometerReader(BaseReader):
         return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
 
 
-class OpenDirveMapReader(BaseReader):
+class OpenDriveMapReader(BaseReader):
     def __call__(self):
         return {'opendrive': CarlaDataProvider.get_map().to_opendrive()}
 

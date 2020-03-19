@@ -16,7 +16,7 @@ import os
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
-from leaderboard.envs.sensor_interface import CallBack, OpenDirveMapReader, SpeedometerReader
+from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader
 from leaderboard.autoagents.autonomous_agent import Track
 
 MAX_ALLOWED_RADIUS_SENSOR = 3.0
@@ -75,7 +75,7 @@ class AgentWrapper(object):
             # These are the pseudosensors (not spawned)
             if sensor_spec['type'].startswith('sensor.opendrive_map'):
                 # The HDMap pseudo sensor is created directly here
-                sensor = OpenDirveMapReader(vehicle, sensor_spec['reading_frequency'])
+                sensor = OpenDriveMapReader(vehicle, sensor_spec['reading_frequency'])
             elif sensor_spec['type'].startswith('sensor.speedometer'):
                 sensor = SpeedometerReader(vehicle, sensor_spec['reading_frequency'])
             # These are the sensors spawned on the carla world
@@ -119,7 +119,6 @@ class AgentWrapper(object):
                     sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
                                                      roll=sensor_spec['roll'],
                                                      yaw=sensor_spec['yaw'])
-
 
                 elif sensor_spec['type'].startswith('sensor.other.gnss'):
                     bp.set_attribute('noise_alt_stddev', str(0.000001))
@@ -182,9 +181,9 @@ class AgentWrapper(object):
                         "Illegal sensor extrinsics used for Track [{}]!".format(self._agent.track))
 
             if sensor['type'] in sensor_count:
-               sensor_count[sensor['type']] += 1
+                sensor_count[sensor['type']] += 1
             else:
-               sensor_count[sensor['type']] = 0
+                sensor_count[sensor['type']] = 0
 
         for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
             if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
@@ -193,7 +192,6 @@ class AgentWrapper(object):
                     "Maximum number allowed is {}, but {} were requested.".format(sensor_type,
                                                                                   max_instances_allowed,
                                                                                   sensor_count[sensor_type]))
-
 
     def cleanup(self):
         """
