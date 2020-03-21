@@ -225,7 +225,7 @@ class LeaderboardEvaluator(object):
 
         try:
             self._prepare_ego_vehicles(config.ego_vehicles, False)
-            scenario = RouteScenario(world=self.world, config=config, debug_mode=1)
+            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
 
         except Exception as exception:
             print("The scenario cannot be loaded")

@@ -305,10 +305,6 @@ class ScenarioManager(object):
             self._timestamp_last_run = timestamp.elapsed_seconds
 
             self._watchdog.update()
-
-            if self._debug_mode:
-                print("\n--------- Tick ---------\n")
-
             # Update game time and actor information
             GameTime.on_carla_tick(timestamp)
             CarlaDataProvider.on_carla_tick()
@@ -319,7 +315,7 @@ class ScenarioManager(object):
             # Tick scenario
             self.scenario_tree.tick_once()
 
-            if self._debug_mode:
+            if self._debug_mode > 1:
                 print("\n")
                 py_trees.display.print_ascii_tree(
                     self.scenario_tree, show_status=True)

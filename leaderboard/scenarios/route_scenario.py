@@ -38,7 +38,6 @@ from srunner.scenarios.junction_crossing_route import SignalJunctionCrossingRout
 
 from leaderboard.scenarios.master_scenario import MasterScenario
 from leaderboard.scenarios.background_activity import BackgroundActivity
-from leaderboard.scenarios.trafficlight_scenario import TrafficLightScenario
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory, clean_route
 
@@ -175,7 +174,7 @@ class RouteScenario(BasicScenario):
 
     category = "RouteScenario"
 
-    def __init__(self, world, config, debug_mode=False, criteria_enable=True, timeout=300):
+    def __init__(self, world, config, debug_mode=False, criteria_enable=True):
         """
         Setup all relevant parameters and create scenarios along route
         """
@@ -184,17 +183,17 @@ class RouteScenario(BasicScenario):
         self.target = None
         self.sampled_scenarios_definitions = None
 
-        self._update_route(world, config, debug_mode)
+        self._update_route(world, config, debug_mode>0)
 
         ego_vehicle = self._update_ego_vehicle()
 
-        self._create_scenarios_along_route(world, ego_vehicle, config, debug_mode)
+        self._create_scenarios_along_route(world, ego_vehicle, config, debug_mode>1)
 
         super(RouteScenario, self).__init__(name=config.name,
                                             ego_vehicles=[ego_vehicle],
                                             config=config,
                                             world=world,
-                                            debug_mode=False,
+                                            debug_mode=debug_mode>1,
                                             terminate_on_failure=False,
                                             criteria_enable=criteria_enable)
 
@@ -256,7 +255,6 @@ class RouteScenario(BasicScenario):
         Create the different scenarios along the route
         - MasterScenario for observation
         - BackgroundActivity for controlling background traffic
-        - TrafficlightScenario for controlling/manipulating traffic lights
         - Other scenarios that occur along the route
         """
         # build the master scenario based on the route and the target.
@@ -268,7 +266,7 @@ class RouteScenario(BasicScenario):
                                                            self.route,
                                                            config.town,
                                                            timeout=self.timeout,
-                                                           debug_mode=False)
+                                                           debug_mode=debug_mode)
         self.list_scenarios.append(self.master_scenario)
 
         # Build all the scenarios triggered throughout the route
@@ -284,7 +282,7 @@ class RouteScenario(BasicScenario):
                                                                    ego_vehicle,
                                                                    config.town,
                                                                    timeout=self.timeout,
-                                                                   debug_mode=False)
+                                                                   debug_mode=debug_mode)
         self.list_scenarios.append(self.background_scenario)
 
     def _estimate_route_timeout(self):
@@ -443,17 +441,6 @@ class RouteScenario(BasicScenario):
 
         return BackgroundActivity(world, [ego_vehicle], scenario_configuration,
                                   timeout=timeout, debug_mode=debug_mode)
-
-    def _build_trafficlight_scenario(self, world, ego_vehicle, town_name, timeout=300, debug_mode=False):
-        """
-        Create scenario for traffic light manipulation
-        """
-        scenario_configuration = ScenarioConfiguration()
-        scenario_configuration.route = None
-        scenario_configuration.town = town_name
-
-        return TrafficLightScenario(world, [ego_vehicle], scenario_configuration,
-                                    timeout=timeout, debug_mode=debug_mode)
 
     def _build_scenario_instances(self, world, ego_vehicle, scenario_definitions, town,
                                   scenarios_per_tick=5, timeout=300, debug_mode=False):
