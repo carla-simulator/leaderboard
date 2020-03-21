@@ -360,7 +360,7 @@ def main():
     parser.add_argument('--spectator', type=bool, help='Switch spectator view on?', default=True)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
-    parser.add_argument('--timeout', default="10.0",
+    parser.add_argument('--timeout', default="30.0",
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup
