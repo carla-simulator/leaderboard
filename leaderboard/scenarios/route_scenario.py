@@ -232,8 +232,7 @@ class RouteScenario(BasicScenario):
 
         # Print route in debug mode
         if debug_mode:
-            turn_positions_and_labels = clean_route(self.route)
-            self._draw_waypoints(world, self.route, turn_positions_and_labels, vertical_shift=1.0, persistency=50000.0)
+            self._draw_waypoints(world, self.route, vertical_shift=1.0, persistency=50000.0)
 
     def _update_ego_vehicle(self):
         """
@@ -300,29 +299,29 @@ class RouteScenario(BasicScenario):
         return int(SECONDS_GIVEN_PER_METERS * route_length)
 
     # pylint: disable=no-self-use
-    def _draw_waypoints(self, world, waypoints, turn_positions_and_labels, vertical_shift, persistency=-1):
+    def _draw_waypoints(self, world, waypoints, vertical_shift, persistency=-1):
         """
         Draw a list of waypoints at a certain height given in vertical_shift.
         """
         for w in waypoints:
             wp = w[0].location + carla.Location(z=vertical_shift)
-            world.debug.draw_point(wp, size=0.1, color=carla.Color(0, 255, 0), life_time=persistency)
-        for start, end, conditions in turn_positions_and_labels:
 
-            if conditions == RoadOption.LEFT:  # Yellow
+            size = 0.2
+            if w[1] == RoadOption.LEFT:  # Yellow
                 color = carla.Color(255, 255, 0)
-            elif conditions == RoadOption.RIGHT:  # Cyan
+            elif w[1] == RoadOption.RIGHT:  # Cyan
                 color = carla.Color(0, 255, 255)
-            elif conditions == RoadOption.CHANGELANELEFT:  # Orange
+            elif w[1] == RoadOption.CHANGELANELEFT:  # Orange
                 color = carla.Color(255, 64, 0)
-            elif conditions == RoadOption.CHANGELANERIGHT:  # Dark Cyan
+            elif w[1] == RoadOption.CHANGELANERIGHT:  # Dark Cyan
                 color = carla.Color(0, 64, 255)
-            else:  # STRAIGHT
-                color = carla.Color(128, 128, 128)  # Gray
+            elif w[1] == RoadOption.STRAIGHT:  # Gray
+                color = carla.Color(128, 128, 128)
+            else:  # LANEFOLLOW
+                color = carla.Color(0, 255, 0) # Green
+                size = 0.1
 
-            for position in range(start, end):
-                world.debug.draw_point(waypoints[position][0].location + carla.Location(z=vertical_shift),
-                                       size=0.2, color=color, life_time=persistency)
+            world.debug.draw_point(wp, size=size, color=color, life_time=persistency)
 
         world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.2,
                                color=carla.Color(0, 0, 255), life_time=persistency)

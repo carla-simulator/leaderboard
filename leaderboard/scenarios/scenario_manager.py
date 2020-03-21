@@ -271,13 +271,15 @@ class ScenarioManager(object):
 
         in_route = blackv.get("InRoute")
 
-        if self.scenario_tree.status == py_trees.common.Status.SUCCESS:
-            message = "> SUCCESS: Congratulations, route finished! "
-        elif self.scenario_tree.status == py_trees.common.Status.FAILURE:
-            if in_route:
-                message = "> FAILED: The actor timed out "
+        if self.scenario_tree.status == py_trees.common.Status.FAILURE and not in_route:
+            message = "> FAILED: The actor deviated from the route"
+        elif self.scenario_tree.status == py_trees.common.Status.SUCCESS:
+            if route_completed == 100:
+                message = "> SUCCESS: Congratulations, route finished! "
             else:
-                message = "> FAILED: The actor deviated from the route"
+                message = "> FAILED: The actor timed out "
+        else: # This should never be triggered
+            return
 
         if self.scenario_tree.status != py_trees.common.Status.RUNNING:
             print("\n" + message)
