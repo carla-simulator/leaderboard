@@ -75,6 +75,7 @@ class LeaderboardEvaluator(object):
         Setup ScenarioManager
         """
         self.statistics_manager = statistics_manager
+        self.sensors = []
 
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
@@ -223,7 +224,7 @@ class LeaderboardEvaluator(object):
         try:
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
             config.agent = self.agent_instance
-            self.sensors = [sensors_to_icons[sensor] for sensor in self.agent_instance.sensors()]
+            self.sensors = [sensors_to_icons[sensor['type']] for sensor in self.agent_instance.sensors()]
         except Exception as e:
             print("Could not setup required agent due to {}".format(e))
             self._cleanup()
