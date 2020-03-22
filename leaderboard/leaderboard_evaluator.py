@@ -343,7 +343,7 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.clear_record(args.checkpoint)
         while route_indexer.peek():
             # setup
-            config = self.route_indexer.next()
+            config = route_indexer.next()
 
             # run
             self._load_and_run_scenario(args, config)
