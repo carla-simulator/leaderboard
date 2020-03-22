@@ -45,6 +45,17 @@ from leaderboard.utils.statistics_manager import StatisticsManager
 from leaderboard.utils.route_indexer import RouteIndexer
 
 
+sensors_to_icons = {
+    'sensor.camera.rgb':        'carla_camera',
+    'sensor.lidar.ray_cast':    'carla_lidar',
+    'sensor.other.radar':       'carla_radar',
+    'sensor.other.gnss':        'carla_gnss',
+    'sensor.other.imu':         'carla_imu',
+    'sensor.opendrive_map':     'carla_opendrive_map',
+    'sensor.speedometer':       'carla_speedometer'
+}
+
+
 class LeaderboardEvaluator(object):
 
     """
@@ -58,13 +69,13 @@ class LeaderboardEvaluator(object):
     wait_for_world = 20.0  # in seconds
     frame_rate = 20.0      # in Hz
 
-
     def __init__(self, args, statistics_manager):
         """
         Setup CARLA client and world
         Setup ScenarioManager
         """
         self.statistics_manager = statistics_manager
+        self.sensors = []
 
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
@@ -111,7 +122,6 @@ class LeaderboardEvaluator(object):
         elapsed_seconds = (current_time - self._start_wall_time).seconds
 
         return elapsed_seconds < int(self.time_available)
-
 
     def _cleanup(self, ego=False):
         """
@@ -170,7 +180,6 @@ class LeaderboardEvaluator(object):
         # sync state
         CarlaDataProvider.get_world().tick()
 
-
     def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
         """
         Load a new CARLA world and provide data to CarlaActorPool and CarlaDataProvider
@@ -215,6 +224,7 @@ class LeaderboardEvaluator(object):
         try:
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
             config.agent = self.agent_instance
+            self.sensors = [sensors_to_icons[sensor['type']] for sensor in self.agent_instance.sensors()]
         except Exception as e:
             print("Could not setup required agent due to {}".format(e))
             self._cleanup()
@@ -344,7 +354,7 @@ class LeaderboardEvaluator(object):
 
         # save global statistics
         global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
-        StatisticsManager.save_global_record(global_stats_record, args.checkpoint)
+        StatisticsManager.save_global_record(global_stats_record, self.sensors, args.checkpoint)
 
 
 

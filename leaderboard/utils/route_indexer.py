@@ -10,6 +10,7 @@ from srunner.scenarioconfigs.route_scenario_configuration import RouteScenarioCo
 from leaderboard.utils.route_parser import RouteParser
 from leaderboard.utils.checkpoint_tools import fetch_dict, create_default_json_msg, save_dict
 
+
 class RouteIndexer():
     def __init__(self, routes_file, scenarios_file, repetitions):
         self._routes_file = routes_file
