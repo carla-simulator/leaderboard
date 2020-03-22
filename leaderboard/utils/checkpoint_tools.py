@@ -3,6 +3,7 @@ from json import JSONDecodeError
 import requests
 import os.path
 
+
 def autodetect_proxy():
     proxies = {}
 
@@ -38,8 +39,10 @@ def fetch_dict(endpoint):
 
     return data
 
+
 def create_default_json_msg():
     msg = {
+            "sensors": [],
             "values": [],
             "_checkpoint": {
                 "progress": [],
@@ -49,6 +52,7 @@ def create_default_json_msg():
             }
 
     return msg
+
 
 def save_dict(endpoint, data):
     if endpoint.startswith(('http:', 'https:', 'ftp:')):

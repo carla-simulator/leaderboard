@@ -211,14 +211,13 @@ class StatisticsManager(object):
         save_dict(endpoint, data)
 
     @staticmethod
-    def save_global_record(route_record, endpoint):
+    def save_global_record(route_record, sensors, endpoint):
         data = fetch_dict(endpoint)
         if not data:
             data = create_default_json_msg()
 
         stats_dict = route_record.__dict__
         data['_checkpoint']['global_record'] = stats_dict
-
         data['values'] = [stats_dict['scores']['score_route'],
                           stats_dict['scores']['score_penalty'],
                           stats_dict['scores']['score_composed'],
@@ -230,7 +229,8 @@ class StatisticsManager(object):
                           stats_dict['infractions']['red_light'],
                           stats_dict['infractions']['route_dev'],
                           stats_dict['infractions']['stop_infraction']
-                         ]
+                          ]
+        data['sensors'] = sensors
 
         save_dict(endpoint, data)
 
