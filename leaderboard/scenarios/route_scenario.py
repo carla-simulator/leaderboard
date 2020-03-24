@@ -45,6 +45,7 @@ ROUTESCENARIO = ["RouteScenario"]
 
 MAX_ALLOWED_RADIUS_SENSOR = 5.0
 SECONDS_GIVEN_PER_METERS = 0.4
+INITIAL_SECONDS_DELAY = 5.0
 MAX_CONNECTION_ATTEMPTS = 5
 
 NUMBER_CLASS_TRANSLATION = {
@@ -296,7 +297,7 @@ class RouteScenario(BasicScenario):
             route_length += dist
             prev_point = current_point
 
-        return int(SECONDS_GIVEN_PER_METERS * route_length)
+        return int(SECONDS_GIVEN_PER_METERS * route_length + INITIAL_SECONDS_DELAY)
 
     # pylint: disable=no-self-use
     def _draw_waypoints(self, world, waypoints, vertical_shift, persistency=-1):
