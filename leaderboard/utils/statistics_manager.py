@@ -26,8 +26,8 @@ PENALTY_COLLISION_PEDESTRIAN = 0.50
 PENALTY_TRAFFIC_LIGHT = 0.90
 PENALTY_STOP = 0.95
 
-class RouteRecord():
 
+class RouteRecord():
     def __init__(self):
         self.route_id = None
         self.index = None
@@ -39,7 +39,8 @@ class RouteRecord():
             'outside_route_lanes': [],
             'red_light': [],
             'route_dev': [],
-            'stop_infraction': []
+            'stop_infraction': [],
+            'route_timeout': []
         }
 
         self.scores = {
@@ -57,6 +58,7 @@ def to_route_record(record_dict):
         setattr(record, key, value)
 
     return record
+
 
 class StatisticsManager(object):
 
@@ -106,6 +108,7 @@ class StatisticsManager(object):
         score_penalty = 1.0
         score_route = 0.0
 
+        import pdb; pdb.set_trace()
         for node in self._master_scenario.get_criteria():
             if node.list_traffic_events:
                 # analyze all traffic events
