@@ -121,9 +121,9 @@ class AgentWrapper(object):
                                                      yaw=sensor_spec['yaw'])
 
                 elif sensor_spec['type'].startswith('sensor.other.gnss'):
-                    bp.set_attribute('noise_alt_stddev', str(0.0))
-                    bp.set_attribute('noise_lat_stddev', str(0.0))
-                    bp.set_attribute('noise_lon_stddev', str(0.0))
+                    bp.set_attribute('noise_alt_stddev', str(0.000005))
+                    bp.set_attribute('noise_lat_stddev', str(0.000005))
+                    bp.set_attribute('noise_lon_stddev', str(0.000005))
                     bp.set_attribute('noise_alt_bias', str(0.0))
                     bp.set_attribute('noise_lat_bias', str(0.0))
                     bp.set_attribute('noise_lon_bias', str(0.0))
