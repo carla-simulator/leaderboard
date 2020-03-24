@@ -85,8 +85,6 @@ class LeaderboardEvaluator(object):
             self.client_timeout = float(args.timeout)
         self.client.set_timeout(self.client_timeout)
 
-        self.time_available = args.time_available
-
         dist = pkg_resources.get_distribution("carla")
         if LooseVersion(dist.version) < LooseVersion('0.9.6'):
             raise ImportError("CARLA version 0.9.6 or newer required. CARLA version found: {}".format(dist))
@@ -100,8 +98,6 @@ class LeaderboardEvaluator(object):
         # Create the ScenarioManager
         self.manager = ScenarioManager(args.debug, args.challenge_mode, args.track, self.client_timeout)
 
-        self._start_wall_time = datetime.now()
-
     def __del__(self):
         """
         Cleanup and delete actors, ScenarioManager and CARLA world
@@ -112,16 +108,6 @@ class LeaderboardEvaluator(object):
             del self.manager
         if hasattr(self, 'world') and self.world:
             del self.world
-
-    def _within_available_time(self):
-        """
-        Check if the elapsed runtime is within the remaining user time budget
-        Only relevant when running in challenge mode
-        """
-        current_time = datetime.now()
-        elapsed_seconds = (current_time - self._start_wall_time).seconds
-
-        return elapsed_seconds < int(self.time_available)
 
     def _cleanup(self, ego=False):
         """
@@ -391,7 +377,6 @@ def main():
     parser.add_argument("--agent-config", type=str, help="Path to Agent's configuration file", default="")
 
     parser.add_argument("--track", type=str, default='SENSORS', help="Participation track: SENSORS, MAP")
-    parser.add_argument("--time-available", type=int, default=1000000, help="Time budget in seconds")
     parser.add_argument('--resume', type=bool, default=False, help='Resume execution from last checkpoint?')
     parser.add_argument("--checkpoint", type=str,
                         default='./simulation_results.json',
