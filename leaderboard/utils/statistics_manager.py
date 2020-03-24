@@ -108,7 +108,7 @@ class StatisticsManager(object):
         score_penalty = 1.0
         score_route = 0.0
 
-        if self._master_scenario.scenario.timeout_node.timeout:
+        if self._master_scenario.timeout_node.timeout:
             route_record.infractions['route_timeout'].append('Route timeout.')
 
         for node in self._master_scenario.get_criteria():
