@@ -253,23 +253,28 @@ class ScenarioManager(object):
             return
 
         blackv = py_trees.blackboard.Blackboard()
-
-        route_completed = 100 if blackv.get("RouteCompletion") > 99 else blackv.get("RouteCompletion")
-        route_symbol = get_symbol(route_completed, 100, True)
-
+        route_completed = blackv.get("RouteCompletion")
         collisions = blackv.get("Collision")
-        collision_symbol = get_symbol(collisions, 0, False)
-
-        outside_route_lanes = float(blackv.get("OutsideRouteLanes"))
-        outside_symbol = get_symbol(outside_route_lanes, 0, False)
-
-        red_light = blackv.get("RunningRedLight")
-        red_light_symbol = get_symbol(red_light, 0, False)
-
+        outside_route_lanes = blackv.get("OutsideRouteLanes")
         stop_signs = blackv.get("RunningStop")
-        stop_symbol = get_symbol(stop_signs, 0, False)
-
+        red_light = blackv.get("RunningRedLight")
         in_route = blackv.get("InRoute")
+
+        # If something failed, stop
+        if [x for x in (collisions, outside_route_lanes, stop_signs, red_light, in_route) if x is None]:
+            return
+
+        if blackv.get("RouteCompletion") > 99:
+            route_completed = 100
+        else:
+            route_completed = blackv.get("RouteCompletion")
+        outside_route_lanes = float(outside_route_lanes)
+
+        route_symbol = get_symbol(route_completed, 100, True)
+        collision_symbol = get_symbol(collisions, 0, False)
+        outside_symbol = get_symbol(outside_route_lanes, 0, False)
+        red_light_symbol = get_symbol(red_light, 0, False)
+        stop_symbol = get_symbol(stop_signs, 0, False)
 
         if self.scenario_tree.status == py_trees.common.Status.FAILURE and not in_route:
             message = "> FAILED: The actor deviated from the route"
