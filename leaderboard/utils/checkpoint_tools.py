@@ -44,6 +44,7 @@ def create_default_json_msg():
     msg = {
             "sensors": [],
             "values": [],
+            "labels": [],
             "_checkpoint": {
                 "progress": [],
                 "records": [],
