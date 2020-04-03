@@ -20,11 +20,11 @@ from srunner.scenariomanager.traffic_events import TrafficEventType
 from leaderboard.utils.checkpoint_tools import fetch_dict, save_dict, create_default_json_msg
 
 
-PENALTY_COLLISION_STATIC = 0.80
-PENALTY_COLLISION_VEHICLE = 0.70
+PENALTY_COLLISION_STATIC = 0.65
+PENALTY_COLLISION_VEHICLE = 0.60
 PENALTY_COLLISION_PEDESTRIAN = 0.50
-PENALTY_TRAFFIC_LIGHT = 0.90
-PENALTY_STOP = 0.95
+PENALTY_TRAFFIC_LIGHT = 0.70
+PENALTY_STOP = 0.75
 
 
 class RouteRecord():
@@ -236,6 +236,20 @@ class StatisticsManager(object):
                           stats_dict['infractions']['stop_infraction'],
                           stats_dict['infractions']['route_timeout']
                           ]
+
+        data['labels'] = ['avg. total score',
+                          'avg. route score',
+                          'avg. infraction penalty',
+                          'collisions with layout',
+                          'collisions with pedestrians',
+                          'collisions with vehicles',
+                          'off-road infractions',
+                          'red lights infractions',
+                          'route deviation infractions',
+                          'stop sign infractions',
+                          'timeouts'
+                          ]
+
         data['sensors'] = sensors
 
         save_dict(endpoint, data)

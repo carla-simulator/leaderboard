@@ -89,7 +89,6 @@ class LeaderboardEvaluator(object):
         if LooseVersion(dist.version) < LooseVersion('0.9.6'):
             raise ImportError("CARLA version 0.9.6 or newer required. CARLA version found: {}".format(dist))
 
-
         # Load agent
         module_name = os.path.basename(args.agent).split('.')[0]
         sys.path.insert(0, os.path.dirname(args.agent))
@@ -321,7 +320,6 @@ class LeaderboardEvaluator(object):
         """
         Run the challenge mode
         """
-
         route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions)
         if args.resume:
             route_indexer.resume(args.checkpoint)
