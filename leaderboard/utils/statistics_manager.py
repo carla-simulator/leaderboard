@@ -40,7 +40,8 @@ class RouteRecord():
             'red_light': [],
             'route_dev': [],
             'stop_infraction': [],
-            'route_timeout': []
+            'route_timeout': [],
+            'vehicle_blocked': []
         }
 
         self.scores = {
@@ -142,6 +143,9 @@ class StatisticsManager(object):
                         score_penalty *= PENALTY_STOP
                         route_record.infractions['stop_infraction'].append(event.get_message())
 
+                    elif event.get_type() == TrafficEventType.VEHICLE_BLOCKED:
+                        route_record.infractions['vehicle_blocked'].append(event.get_message())
+
                     elif event.get_type() == TrafficEventType.ROUTE_COMPLETED:
                         score_route = 100.0
                         target_reached = True
@@ -234,7 +238,8 @@ class StatisticsManager(object):
                           stats_dict['infractions']['red_light'],
                           stats_dict['infractions']['route_dev'],
                           stats_dict['infractions']['stop_infraction'],
-                          stats_dict['infractions']['route_timeout']
+                          stats_dict['infractions']['route_timeout'],
+                          stats_dict['infractions']['vehicle_blocked']
                           ]
 
         data['labels'] = ['avg. total score',
@@ -247,7 +252,8 @@ class StatisticsManager(object):
                           'red lights infractions',
                           'route deviation infractions',
                           'stop sign infractions',
-                          'timeouts'
+                          'timeouts',
+                          'vehicle blocked'
                           ]
 
         data['sensors'] = sensors
