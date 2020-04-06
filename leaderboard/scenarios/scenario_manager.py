@@ -276,8 +276,11 @@ class ScenarioManager(object):
         red_light_symbol = get_symbol(red_light, 0, False)
         stop_symbol = get_symbol(stop_signs, 0, False)
 
-        if self.scenario_tree.status == py_trees.common.Status.FAILURE and not in_route:
-            message = "> FAILED: The actor deviated from the route"
+        if self.scenario_tree.status == py_trees.common.Status.FAILURE:
+            if not in_route:
+                message = "> FAILED: The actor deviated from the route"
+            else:
+                message = "> FAILED: The actor didn't finish the route"
         elif self.scenario_tree.status == py_trees.common.Status.SUCCESS:
             if route_completed == 100:
                 message = "> SUCCESS: Congratulations, route finished! "

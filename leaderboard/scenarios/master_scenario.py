@@ -9,7 +9,6 @@ Basic CARLA Autonomous Driving training scenario
 """
 
 import py_trees
-
 from srunner.scenarioconfigs.route_scenario_configuration import RouteConfiguration
 from srunner.scenariomanager.scenarioatomics.atomic_behaviors import Idle
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
@@ -19,6 +18,8 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningStopTest,
                                                                      OutsideRouteLanesTest)
 from srunner.scenarios.basic_scenario import BasicScenario
+
+from leaderboard.scenarios.scenarioatomics.atomic_criteria import ActorSpeedAboveThresholdTest
 
 
 MASTER_SCENARIO = ["MasterScenario"]
@@ -34,6 +35,7 @@ class MasterScenario(BasicScenario):
 
     category = "Master"
     radius = 10.0           # meters
+
 
     def __init__(self, world, ego_vehicles, config, randomize=False, debug_mode=False, criteria_enable=True,
                  timeout=300):
@@ -97,6 +99,11 @@ class MasterScenario(BasicScenario):
 
         stop_criterion = RunningStopTest(self.ego_vehicles[0])
 
+        blocked_criterion = ActorSpeedAboveThresholdTest(self.ego_vehicles[0],
+                                                         speed_threshold=0.1,
+                                                         below_threshold_max_time=60.0,
+                                                         terminate_on_failure=True)
+
         parallel_criteria = py_trees.composites.Parallel("group_criteria",
                                                          policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
 
@@ -106,6 +113,8 @@ class MasterScenario(BasicScenario):
         parallel_criteria.add_child(outsidelane_criterion)
         parallel_criteria.add_child(red_light_criterion)
         parallel_criteria.add_child(stop_criterion)
+        parallel_criteria.add_child(blocked_criterion)
+
 
         return parallel_criteria
 
