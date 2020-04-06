@@ -25,7 +25,7 @@ from srunner.scenariomanager.traffic_events import TrafficEvent, TrafficEventTyp
 class ActorSpeedAboveThresholdTest(Criterion):
     """
     This test will fail if the actor has had its linear velocity lower than a specific value for
-    a specific amoutn of time
+    a specific amount of time
 
     Important parameters:
     - actor: CARLA actor to be used for this test
