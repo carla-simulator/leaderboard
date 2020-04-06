@@ -21,9 +21,9 @@ import importlib
 import os
 import pkg_resources
 import sys
-
 import carla
 from srunner.scenariomanager.carla_data_provider import *
+from srunner.scenariomanager.timer import GameTime
 from srunner.scenarios.control_loss import *
 from srunner.scenarios.follow_leading_vehicle import *
 from srunner.scenarios.maneuver_opposite_direction import *
@@ -96,6 +96,10 @@ class LeaderboardEvaluator(object):
 
         # Create the ScenarioManager
         self.manager = ScenarioManager(args.debug, args.challenge_mode, args.track, self.client_timeout)
+
+        # Time control for summary purposes
+        self._start_time = GameTime.get_time()
+        self._end_time = None
 
     def __del__(self):
         """
@@ -268,7 +272,9 @@ class LeaderboardEvaluator(object):
             self.manager.stop_scenario()
 
             # register statistics
-            current_stats_record = self.statistics_manager.compute_route_statistics(config.index)
+            current_stats_record = self.statistics_manager.compute_route_statistics(config.index,
+                                                                                    self.manager.scenario_duration_system,
+                                                                                    self.manager.scenario_duration_game)
             # save
             self.statistics_manager.save_record(current_stats_record, config.index, args.checkpoint)
 

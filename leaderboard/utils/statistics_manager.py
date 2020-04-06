@@ -94,7 +94,7 @@ class StatisticsManager(object):
         else:
             self._registry_route_records.append(route_record)
 
-    def compute_route_statistics(self, index):
+    def compute_route_statistics(self, index, duration_time_system=-1, duration_time_game=-1):
         """
         Compute the current statistics by evaluating all relevant scenario criteria
         """
@@ -108,6 +108,9 @@ class StatisticsManager(object):
         target_reached = False
         score_penalty = 1.0
         score_route = 0.0
+
+        route_record.meta['duration_system'] = duration_time_system
+        route_record.meta['duration_game'] = duration_time_game
 
         if self._master_scenario.timeout_node.timeout:
             route_record.infractions['route_timeout'].append('Route timeout.')
