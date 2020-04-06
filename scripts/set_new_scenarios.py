@@ -168,7 +168,7 @@ def main():
     parser.add_argument('--town', default='Town08')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--reload', action='store_true')
-    parser.add_argument('--inipoint', default="../../carla-challenge-contents/src/leaderboard/data/all_towns_traffic_scenarios_private_new.json")
+    parser.add_argument('--inipoint', default="")
     parser.add_argument('--endpoint', default="set_new_scenarios.json")
     parser.add_argument('--scenarios', nargs='+', default='Scenario7')
     parser.add_argument('--modify', action='store_true')

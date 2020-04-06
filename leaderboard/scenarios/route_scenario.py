@@ -39,7 +39,7 @@ from srunner.scenarios.junction_crossing_route import SignalJunctionCrossingRout
 from leaderboard.scenarios.master_scenario import MasterScenario
 from leaderboard.scenarios.background_activity import BackgroundActivity
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
-from leaderboard.utils.route_manipulation import interpolate_trajectory, clean_route
+from leaderboard.utils.route_manipulation import interpolate_trajectory
 
 ROUTESCENARIO = ["RouteScenario"]
 
@@ -371,7 +371,7 @@ class RouteScenario(BasicScenario):
         for trigger in potential_scenarios_definitions.keys():
             possible_scenarios = potential_scenarios_definitions[trigger]
 
-            scenario_choice =  select_scenario(possible_scenarios)
+            scenario_choice = select_scenario(possible_scenarios)
             del possible_scenarios[possible_scenarios.index(scenario_choice)]
             # We keep sampling and testing if this position is present on any of the scenarios.
             while position_sampled(scenario_choice, sampled_scenarios):
