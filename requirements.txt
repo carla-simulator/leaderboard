@@ -4,3 +4,4 @@ opencv-python
 carla
 srunner
 pygame
+tabulate
