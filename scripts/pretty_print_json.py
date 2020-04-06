@@ -56,15 +56,22 @@ def prettify_json(args):
     if records_table:
         header = ['metric', 'value', 'additional information']
         list_statistics = [header]
-        for idx, route in enumerate(records_table):
-            metrics_route = [[key, values, ''] for key, values in route['scores'].items()]
+        total_duration_game = 0
+        total_duration_system = 0
+        for route in records_table:
+            metrics_route = [[key, '{:.3f}'.format(values), ''] for key, values in route['scores'].items()]
             infractions_route = [[key, len(values), '\n'.join(values)] for key, values in route['infractions'].items()]
+            times = [[key, '{:.3f}'.format(values), 'seconds'] for key, values in route['meta'].items()]
+
+            total_duration_game += route['meta']['duration_game']
+            total_duration_system += route['meta']['duration_system']
 
             list_statistics.extend([['{}'.format(route['route_id']), '', '']])
-            list_statistics.extend([*metrics_route, *infractions_route])
+            list_statistics.extend([*metrics_route, *infractions_route, *times])
+            list_statistics.extend([['', '', '']])
 
-            if idx < len(records_table)-1:
-                list_statistics.extend([['', '', '']])
+        list_statistics.extend([['total duration_game', '{:.3f}'.format(total_duration_game), 'seconds']])
+        list_statistics.extend([['total duration_system', '{:.3f}'.format(total_duration_system), 'seconds']])
 
         output += '==== Per-route analysis: ===\n'.format()
         output += tabulate(list_statistics, tablefmt=args.format)
