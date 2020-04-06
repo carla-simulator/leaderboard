@@ -235,7 +235,7 @@ class ScenarioManager(object):
             """
             Returns a tick or a cross depending on the values
             """
-            tick = '\033[92m'+u'\u2713'+'\033[0m'
+            tick = '\033[92m'+'O'+'\033[0m'
             cross = '\033[91m'+'X'+'\033[0m'
 
             multiplier = 1 if high else -1

@@ -1,5 +1,8 @@
 import json
-from json import JSONDecodeError
+try:
+    import simplejson as json
+except ImportError:
+    import json
 import requests
 import os.path
 
@@ -34,7 +37,7 @@ def fetch_dict(endpoint):
             with open(endpoint) as fd:
                 try:
                     data = json.load(fd)
-                except JSONDecodeError:
+                except json.JSONDecodeError:
                     data = {}
 
     return data
