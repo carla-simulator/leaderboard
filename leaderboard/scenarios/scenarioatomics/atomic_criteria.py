@@ -24,7 +24,8 @@ from srunner.scenariomanager.traffic_events import TrafficEvent, TrafficEventTyp
 
 class ActorSpeedAboveThresholdTest(Criterion):
     """
-    The test is a success if the actor is ...
+    This test will fail if the actor has had its linear velocity lower than a specific value for
+    a specific amoutn of time
 
     Important parameters:
     - actor: CARLA actor to be used for this test
@@ -52,7 +53,7 @@ class ActorSpeedAboveThresholdTest(Criterion):
         new_status = py_trees.common.Status.RUNNING
 
         linear_speed = CarlaDataProvider.get_velocity(self._actor)
-        if linear_speed:
+        if linear_speed is not None:
             if linear_speed < self._speed_threshold and self._time_last_valid_state:
                 if (GameTime.get_time() - self._time_last_valid_state) > self._below_threshold_max_time:
                     # Game over. The actor has been "blocked" for too long
@@ -79,7 +80,7 @@ class ActorSpeedAboveThresholdTest(Criterion):
         Sets the message of the event
         """
 
-        event.set_message('Ego-agent got blocked at (x={}, y={}, z={})'.format(round(location.x, 3),
+        event.set_message('Agent got blocked at (x={}, y={}, z={})'.format(round(location.x, 3),
                                                                                round(location.y, 3),
                                                                                round(location.z, 3)))
     @staticmethod
