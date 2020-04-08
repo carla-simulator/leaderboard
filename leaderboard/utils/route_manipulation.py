@@ -83,37 +83,6 @@ def _get_latlon_ref(world):
     return lat_ref, lon_ref
 
 
-def clean_route(route):
-    """
-    Create a clean route with turn directions
-    """
-    curves_start_end = []
-    inside = False
-    start = -1
-    current_curve = RoadOption.LANEFOLLOW
-    index = 0
-    while index < len(route):
-
-        command = route[index][1]
-        if command != RoadOption.LANEFOLLOW and not inside:
-            inside = True
-            start = index
-            current_curve = command
-
-        if command != current_curve and inside:
-            inside = False
-            # End now is the index.
-            curves_start_end.append([start, index, current_curve])
-            if start == -1:
-                raise ValueError("End of curve without start")
-
-            start = -1
-        else:
-            index += 1
-
-    return curves_start_end
-
-
 def downsample_route(route, sample_factor):
     """
     Downsample the route by some factor.
