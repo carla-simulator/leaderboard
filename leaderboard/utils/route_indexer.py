@@ -22,7 +22,6 @@ class RouteIndexer():
 
         # retrieve routes
         route_descriptions_list = RouteParser.parse_routes_file(self._routes_file, False)
-        weather_profiles = CarlaDataProvider.find_weather_presets()
 
         self.n_routes = len(route_descriptions_list)
         self.total = self.n_routes*self._repetitions
@@ -30,10 +29,6 @@ class RouteIndexer():
         for i, route_description in enumerate(route_descriptions_list):
             for repetition in range(repetitions):
                 config = RouteScenarioConfiguration(route_description, self._scenarios_file)
-                profile = weather_profiles[repetition % len(weather_profiles)]
-                config.weather = profile[0]
-                config.weather.sun_azimuth = -1
-                config.weather.sun_altitude = 70
                 config.index = i * self._repetitions + repetition
                 self._configs_dict['{}.{}'.format(config.name, repetition)] = config
 

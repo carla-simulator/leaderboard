@@ -240,8 +240,11 @@ class LeaderboardEvaluator(object):
             precipitation=config.weather.precipitation,
             precipitation_deposits=config.weather.precipitation_deposits,
             wind_intensity=config.weather.wind_intensity,
-            sun_azimuth_angle=config.weather.sun_azimuth,
-            sun_altitude_angle=config.weather.sun_altitude
+            sun_azimuth_angle=config.weather.sun_azimuth_angle,
+            sun_altitude_angle=config.weather.sun_altitude_angle,
+            fog_density=config.weather.fog_density,
+            fog_distance=config.weather.fog_distance,
+            wetness=config.weather.wetness
         )
 
         self.world.set_weather(weather)
@@ -295,32 +298,6 @@ class LeaderboardEvaluator(object):
             print(e)
 
         self._cleanup()
-
-    def _run_scenarios(self, args):
-        """
-        Run conventional scenarios (e.g. implemented using the Python API of ScenarioRunner)
-        """
-
-        # Setup and run the scenarios for repetition times
-        for _ in range(int(args.repetitions)):
-
-            # Load the scenario configurations provided in the config file
-            scenario_configurations = None
-            scenario_config_file = ScenarioConfigurationParser.find_scenario_config(args.scenario)
-            if scenario_config_file is None:
-                print("Configuration for scenario {} cannot be found!".format(args.scenario))
-                continue
-
-            scenario_configurations = ScenarioConfigurationParser.parse_scenario_configuration(scenario_config_file,
-                                                                                               args.scenario)
-
-            # Execute each configuration
-            for config in scenario_configurations:
-                self._load_and_run_scenario(args, config)
-
-            self._cleanup(ego=True)
-
-            print("No more scenarios .... Exiting")
 
     def run(self, args):
         """
