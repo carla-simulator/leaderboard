@@ -1,9 +1,6 @@
 from collections import OrderedDict
-import json
 from dictor import dictor
-import requests
 
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenarioconfigs.route_scenario_configuration import RouteScenarioConfiguration
 
 
@@ -18,6 +15,7 @@ class RouteIndexer():
         self._repetitions = repetitions
         self._configs_dict = OrderedDict()
         self._configs_list = None
+        self.routes_length = []
         self._index = 0
 
         # retrieve routes
