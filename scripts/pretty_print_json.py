@@ -46,10 +46,10 @@ def prettify_json(args):
         metrics = list(zip(*[labels_scores[0:3], scores[0:3]]))
         infractions = list(zip(*[labels_scores[3:], scores[3:]]))
 
-        output += '=== Global average metrics: ===\n'.format()
+        output += '=== Global average metrics: ===\n'
         output += tabulate(metrics, tablefmt=args.format)
         output += '\n\n'
-        output += '=== Total infractions: ===\n'.format()
+        output += '=== Total infractions: ===\n'
         output += tabulate(infractions, tablefmt=args.format)
         output += '\n\n'
 
@@ -58,20 +58,29 @@ def prettify_json(args):
         list_statistics = [header]
         total_duration_game = 0
         total_duration_system = 0
+        total_route_length = 0
         for route in records_table:
+            route_completed_kms = 0.01 * route['scores']['score_route'] * route['meta']['route_length'] / 1000.0
             metrics_route = [[key, '{:.3f}'.format(values), ''] for key, values in route['scores'].items()]
-            infractions_route = [[key, len(values), '\n'.join(values)] for key, values in route['infractions'].items()]
-            times = [[key, '{:.3f}'.format(values), 'seconds'] for key, values in route['meta'].items()]
+            infractions_route = [[key, '{:.3f} ({} occurrences)'.format(len(values)/route_completed_kms, len(values)),
+                                 '\n'.join(values)] for key, values in route['infractions'].items()]
+
+            times = [['duration game', '{:.3f}'.format(route['meta']['duration_game']), 'seconds'],
+                     ['duration system', '{:.3f}'.format(route['meta']['duration_system']), 'seconds']]
+
+            route_completed_length = [ ['distance driven', '{:.3f}'.format(route_completed_kms), 'Km']]
 
             total_duration_game += route['meta']['duration_game']
             total_duration_system += route['meta']['duration_system']
+            total_route_length += route_completed_kms
 
             list_statistics.extend([['{}'.format(route['route_id']), '', '']])
-            list_statistics.extend([*metrics_route, *infractions_route, *times])
+            list_statistics.extend([*metrics_route, *infractions_route, *times, *route_completed_length])
             list_statistics.extend([['', '', '']])
 
         list_statistics.extend([['total duration_game', '{:.3f}'.format(total_duration_game), 'seconds']])
         list_statistics.extend([['total duration_system', '{:.3f}'.format(total_duration_system), 'seconds']])
+        list_statistics.extend([['total distance driven', '{:.3f}'.format(total_route_length), 'Km']])
 
         output += '==== Per-route analysis: ===\n'.format()
         output += tabulate(list_statistics, tablefmt=args.format)

@@ -275,7 +275,7 @@ class LeaderboardEvaluator(object):
             self.manager.stop_scenario()
 
             # register statistics
-            current_stats_record = self.statistics_manager.compute_route_statistics(config.index,
+            current_stats_record = self.statistics_manager.compute_route_statistics(config,
                                                                                     self.manager.scenario_duration_system,
                                                                                     self.manager.scenario_duration_game)
             # save

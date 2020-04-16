@@ -24,7 +24,7 @@ PENALTY_COLLISION_STATIC = 0.65
 PENALTY_COLLISION_VEHICLE = 0.60
 PENALTY_COLLISION_PEDESTRIAN = 0.50
 PENALTY_TRAFFIC_LIGHT = 0.70
-PENALTY_STOP = 0.75
+PENALTY_STOP = 0.80
 
 
 class RouteRecord():
@@ -61,6 +61,22 @@ def to_route_record(record_dict):
     return record
 
 
+def compute_route_length(config):
+    trajectory = config.route_description['trajectory']
+
+    route_length = 0.0
+    previous_location = None
+    for location in trajectory:
+        if previous_location:
+            dist = math.sqrt((location.x-previous_location.x)*(location.x-previous_location.x) +
+                             (location.y-previous_location.y)*(location.y-previous_location.y) +
+                             (location.z - previous_location.z) * (location.z - previous_location.z))
+            route_length += dist
+        previous_location = location
+
+    return route_length
+
+
 class StatisticsManager(object):
 
     """
@@ -94,10 +110,11 @@ class StatisticsManager(object):
         else:
             self._registry_route_records.append(route_record)
 
-    def compute_route_statistics(self, index, duration_time_system=-1, duration_time_game=-1):
+    def compute_route_statistics(self, config, duration_time_system=-1, duration_time_game=-1):
         """
         Compute the current statistics by evaluating all relevant scenario criteria
         """
+        index = config.index
 
         if not self._registry_route_records or index >= len(self._registry_route_records):
             raise Exception('Critical error with the route registry.')
@@ -111,6 +128,7 @@ class StatisticsManager(object):
 
         route_record.meta['duration_system'] = duration_time_system
         route_record.meta['duration_game'] = duration_time_game
+        route_record.meta['route_length'] = compute_route_length(config)
 
         if self._master_scenario.timeout_node.timeout:
             route_record.infractions['route_timeout'].append('Route timeout.')
@@ -185,14 +203,15 @@ class StatisticsManager(object):
                 global_record.scores['score_composed'] += route_record.scores['score_composed']
 
                 for key in global_record.infractions.keys():
+                    route_length_kms = route_record.scores['score_route'] * route_record.meta['route_length'] / 1000.0
                     if isinstance(global_record.infractions[key], list):
-                        global_record.infractions[key] = len(route_record.infractions[key])
+                        global_record.infractions[key] = len(route_record.infractions[key]) / route_length_kms
                     else:
-                        global_record.infractions[key] += len(route_record.infractions[key])
+                        global_record.infractions[key] += len(route_record.infractions[key]) / route_length_kms
 
                 if route_record.status is not 'Completed':
                     global_record.status = 'Failed'
-                    if not 'exceptions' in global_record.meta:
+                    if 'exceptions' not in global_record.meta:
                         global_record.meta['exceptions'] = []
                     global_record.meta['exceptions'].append((route_record.route_id,
                                                              route_record.index,
@@ -230,19 +249,19 @@ class StatisticsManager(object):
 
         stats_dict = route_record.__dict__
         data['_checkpoint']['global_record'] = stats_dict
-        data['values'] = [stats_dict['scores']['score_composed'],
-                          stats_dict['scores']['score_route'],
-                          stats_dict['scores']['score_penalty'],
+        data['values'] = ['{:.3f}'.format(stats_dict['scores']['score_composed']),
+                          '{:.3f}'.format(stats_dict['scores']['score_route']),
+                          '{:.3f}'.format(stats_dict['scores']['score_penalty']),
                           # infractions
-                          stats_dict['infractions']['collisions_layout'],
-                          stats_dict['infractions']['collisions_pedestrian'],
-                          stats_dict['infractions']['collisions_vehicle'],
-                          stats_dict['infractions']['outside_route_lanes'],
-                          stats_dict['infractions']['red_light'],
-                          stats_dict['infractions']['route_dev'],
-                          stats_dict['infractions']['stop_infraction'],
-                          stats_dict['infractions']['route_timeout'],
-                          stats_dict['infractions']['vehicle_blocked']
+                          '{:.3f}'.format(stats_dict['infractions']['collisions_layout']),
+                          '{:.3f}'.format(stats_dict['infractions']['collisions_pedestrian']),
+                          '{:.3f}'.format(stats_dict['infractions']['collisions_vehicle']),
+                          '{:.3f}'.format(stats_dict['infractions']['outside_route_lanes']),
+                          '{:.3f}'.format(stats_dict['infractions']['red_light']),
+                          '{:.3f}'.format(stats_dict['infractions']['route_dev']),
+                          '{:.3f}'.format(stats_dict['infractions']['stop_infraction']),
+                          '{:.3f}'.format(stats_dict['infractions']['route_timeout']),
+                          '{:.3f}'.format(stats_dict['infractions']['vehicle_blocked'])
                           ]
 
         data['labels'] = ['avg. total score',
