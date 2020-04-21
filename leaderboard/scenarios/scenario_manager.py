@@ -19,7 +19,7 @@ import threading
 import py_trees
 import carla
 
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from srunner.scenariomanager.carla_data_provider import CarlaDataProvider, CarlaActorPool
 from srunner.scenariomanager.timer import GameTime, TimeOut
 from srunner.scenariomanager.watchdog import Watchdog
 
@@ -264,7 +264,7 @@ class ScenarioManager(object):
         if [x for x in (collisions, outside_route_lanes, stop_signs, red_light, in_route) if x is None]:
             return
 
-        if blackv.get("RouteCompletion") > 99:
+        if blackv.get("RouteCompletion") >= 99:
             route_completed = 100
         else:
             route_completed = blackv.get("RouteCompletion")
@@ -367,3 +367,4 @@ class ScenarioManager(object):
             self._agent = None
 
         CarlaDataProvider.cleanup()
+        CarlaActorPool.cleanup()
