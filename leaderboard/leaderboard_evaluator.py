@@ -36,7 +36,6 @@ from srunner.scenarios.signalized_junction_left_turn import *
 from srunner.scenarios.signalized_junction_right_turn import *
 from srunner.scenarios.change_lane import *
 from srunner.scenarios.cut_in import *
-from srunner.tools.scenario_config_parser import ScenarioConfigurationParser
 
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
@@ -76,6 +75,7 @@ class LeaderboardEvaluator(object):
         """
         self.statistics_manager = statistics_manager
         self.sensors = []
+        self._vehicle_lights = carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam
 
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
@@ -86,8 +86,8 @@ class LeaderboardEvaluator(object):
         self.client.set_timeout(self.client_timeout)
 
         dist = pkg_resources.get_distribution("carla")
-        if LooseVersion(dist.version) < LooseVersion('0.9.6'):
-            raise ImportError("CARLA version 0.9.6 or newer required. CARLA version found: {}".format(dist))
+        if LooseVersion(dist.version) < LooseVersion('0.9.9'):
+            raise ImportError("CARLA version 0.9.9 or newer required. CARLA version found: {}".format(dist))
 
         # Load agent
         module_name = os.path.basename(args.agent).split('.')[0]
@@ -263,6 +263,11 @@ class LeaderboardEvaluator(object):
             transform.location = carla.Location(-10000.0, -10000.0, 0.0)
             self.world.spawn_actor(friction_bp, transform)
 
+        # night mode
+        if config.weather.sun_altitude_angle < 0.0:
+            for vehicle in scenario.ego_vehicles:
+                vehicle.set_light_state(carla.VehicleLightState(self._vehicle_lights))
+
         try:
             # Load scenario and run it
             if args.record:
@@ -324,9 +329,8 @@ class LeaderboardEvaluator(object):
         StatisticsManager.save_global_record(global_stats_record, self.sensors, args.checkpoint)
 
 
-
 def main():
-    description = ("CARLA AD Leaderboard Evaluation: evaluate your Agent in CARLA scenarios\n")
+    description = "CARLA AD Leaderboard Evaluation: evaluate your Agent in CARLA scenarios\n"
 
     # general parameters
     parser = argparse.ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)

@@ -194,6 +194,8 @@ class ScenarioManager(object):
 
         if self._agent is not None:
             self._agent.setup_sensors(self.ego_vehicles[0], self._debug_mode, self._track)
+            #self.ego_vehicles[0].set_light_state(carla.VehicleLightState(carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam))
+
 
     def run_scenario(self):
         """
