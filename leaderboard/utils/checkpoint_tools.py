@@ -27,10 +27,14 @@ def fetch_dict(endpoint):
         proxies = autodetect_proxy()
 
         if proxies:
-            r = requests.get(url=endpoint, proxies=proxies)
+            response = requests.get(url=endpoint, proxies=proxies)
         else:
-            r = requests.get(url=endpoint)
-        data = r.json()
+            response = requests.get(url=endpoint)
+
+        try:
+            data = response.json()
+        except json.decoder.JSONDecodeError:
+            data = {}
     else:
         data = {}
         if os.path.exists(endpoint):

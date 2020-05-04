@@ -19,10 +19,9 @@ from srunner.scenariomanager.traffic_events import TrafficEventType
 
 from leaderboard.utils.checkpoint_tools import fetch_dict, save_dict, create_default_json_msg
 
-
-PENALTY_COLLISION_STATIC = 0.65
-PENALTY_COLLISION_VEHICLE = 0.60
 PENALTY_COLLISION_PEDESTRIAN = 0.50
+PENALTY_COLLISION_VEHICLE = 0.60
+PENALTY_COLLISION_STATIC = 0.65
 PENALTY_TRAFFIC_LIGHT = 0.70
 PENALTY_STOP = 0.80
 
@@ -33,13 +32,13 @@ class RouteRecord():
         self.index = None
         self.status = 'Started'
         self.infractions = {
-            'collisions_layout': [],
             'collisions_pedestrian': [],
             'collisions_vehicle': [],
-            'outside_route_lanes': [],
+            'collisions_layout': [],
             'red_light': [],
-            'route_dev': [],
             'stop_infraction': [],
+            'outside_route_lanes': [],
+            'route_dev': [],
             'route_timeout': [],
             'vehicle_blocked': []
         }
@@ -253,29 +252,29 @@ class StatisticsManager(object):
                           '{:.3f}'.format(stats_dict['scores']['score_route']),
                           '{:.3f}'.format(stats_dict['scores']['score_penalty']),
                           # infractions
-                          '{:.3f}'.format(stats_dict['infractions']['collisions_layout']),
                           '{:.3f}'.format(stats_dict['infractions']['collisions_pedestrian']),
                           '{:.3f}'.format(stats_dict['infractions']['collisions_vehicle']),
-                          '{:.3f}'.format(stats_dict['infractions']['outside_route_lanes']),
+                          '{:.3f}'.format(stats_dict['infractions']['collisions_layout']),
                           '{:.3f}'.format(stats_dict['infractions']['red_light']),
-                          '{:.3f}'.format(stats_dict['infractions']['route_dev']),
                           '{:.3f}'.format(stats_dict['infractions']['stop_infraction']),
+                          '{:.3f}'.format(stats_dict['infractions']['outside_route_lanes']),
+                          '{:.3f}'.format(stats_dict['infractions']['route_dev']),
                           '{:.3f}'.format(stats_dict['infractions']['route_timeout']),
                           '{:.3f}'.format(stats_dict['infractions']['vehicle_blocked'])
                           ]
 
-        data['labels'] = ['avg. total score',
-                          'avg. route score',
-                          'avg. infraction penalty',
-                          'collisions with layout',
-                          'collisions with pedestrians',
-                          'collisions with vehicles',
-                          'off-road infractions',
-                          'red lights infractions',
-                          'route deviation infractions',
-                          'stop sign infractions',
-                          'timeouts',
-                          'vehicle blocked'
+        data['labels'] = ['Avg. driving score',
+                          'Avg. route completion',
+                          'Avg. infraction penalty',
+                          'Collisions with pedestrians',
+                          'Collisions with vehicles',
+                          'Collisions with layout',
+                          'Red lights infractions',
+                          'Stop sign infractions',
+                          'Off-road infractions',
+                          'Route deviations',
+                          'Route timeouts',
+                          'Agent blocked'
                           ]
 
         data['sensors'] = sensors
