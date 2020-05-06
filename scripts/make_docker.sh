@@ -16,11 +16,17 @@ then echo "Error $LEADERBOARD_ROOT is empty. Set \$LEADERBOARD_ROOT as an enviro
     exit 1
 fi
 
+if [ -z "$TEAM_CODE_ROOT" ]
+then echo "Error $TEAM_CODE_ROOT is empty. Set \$TEAM_CODE_ROOT as an environment variable first."
+    exit 1
+fi
+
 mkdir .tmp
 
 cp -fr ${CARLA_ROOT}/PythonAPI  .tmp
 cp -fr ${SCENARIO_RUNNER_ROOT}/ .tmp
 cp -fr ${LEADERBOARD_ROOT}/ .tmp
+cp -fr ${TEAM_CODE_ROOT}/ .tmp/team_code
 
 # build docker image
 docker build --force-rm -t leaderboard-user -f ${LEADERBOARD_ROOT}/scripts/Dockerfile.master .
