@@ -24,18 +24,6 @@ import sys
 import carla
 from srunner.scenariomanager.carla_data_provider import *
 from srunner.scenariomanager.timer import GameTime
-from srunner.scenarios.control_loss import *
-from srunner.scenarios.follow_leading_vehicle import *
-from srunner.scenarios.maneuver_opposite_direction import *
-from srunner.scenarios.no_signal_junction_crossing import *
-from srunner.scenarios.object_crash_intersection import *
-from srunner.scenarios.object_crash_vehicle import *
-from srunner.scenarios.opposite_vehicle_taking_priority import *
-from srunner.scenarios.other_leading_vehicle import *
-from srunner.scenarios.signalized_junction_left_turn import *
-from srunner.scenarios.signalized_junction_right_turn import *
-from srunner.scenarios.change_lane import *
-from srunner.scenarios.cut_in import *
 
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
@@ -120,7 +108,6 @@ class LeaderboardEvaluator(object):
         self.client.stop_recorder()
 
         CarlaDataProvider.cleanup()
-        CarlaActorPool.cleanup()
 
         for i, _ in enumerate(self.ego_vehicles):
             if self.ego_vehicles[i]:
@@ -140,12 +127,12 @@ class LeaderboardEvaluator(object):
 
         if not wait_for_ego_vehicles:
             for vehicle in ego_vehicles:
-                self.ego_vehicles.append(CarlaActorPool.setup_actor(vehicle.model,
-                                                                    vehicle.transform,
-                                                                    vehicle.rolename,
-                                                                    True,
-                                                                    color=vehicle.color,
-                                                                    vehicle_category=vehicle.category))
+                self.ego_vehicles.append(CarlaDataProvider.request_new_actor(vehicle.model,
+                                                                             vehicle.transform,
+                                                                             vehicle.rolename,
+                                                                             color=vehicle.color,
+                                                                             vehicle_category=vehicle.category))
+
         else:
             ego_vehicle_missing = True
             while ego_vehicle_missing:
@@ -171,7 +158,7 @@ class LeaderboardEvaluator(object):
 
     def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
         """
-        Load a new CARLA world and provide data to CarlaActorPool and CarlaDataProvider
+        Load a new CARLA world and provide data to CarlaDataProvider
         """
 
         self.world = self.client.load_world(town)
@@ -180,15 +167,11 @@ class LeaderboardEvaluator(object):
         settings.synchronous_mode = True
         self.world.apply_settings(settings)
 
-        CarlaActorPool.set_client(self.client)
-        CarlaActorPool.set_world(self.world)
+        CarlaDataProvider.set_client(self.client)
         CarlaDataProvider.set_world(self.world)
 
-        spectator = CarlaDataProvider.get_world().get_spectator()
-        spectator.set_transform(carla.Transform(carla.Location(x=0, y=0,z=20), carla.Rotation(pitch=-90)))
-
         # Wait for the world to be ready
-        if self.world.get_settings().synchronous_mode:
+        if CarlaDataProvider.is_sync_mode():
             self.world.tick()
         else:
             self.world.wait_for_tick()
@@ -234,36 +217,7 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             return
 
-        # Set the appropriate weather conditions
-        weather = carla.WeatherParameters(
-            cloudiness=config.weather.cloudiness,
-            precipitation=config.weather.precipitation,
-            precipitation_deposits=config.weather.precipitation_deposits,
-            wind_intensity=config.weather.wind_intensity,
-            sun_azimuth_angle=config.weather.sun_azimuth_angle,
-            sun_altitude_angle=config.weather.sun_altitude_angle,
-            fog_density=config.weather.fog_density,
-            fog_distance=config.weather.fog_distance,
-            wetness=config.weather.wetness
-        )
-
-        self.world.set_weather(weather)
-
-        # Set the appropriate road friction
-        if config.friction is not None:
-            friction_bp = self.world.get_blueprint_library().find('static.trigger.friction')
-            extent = carla.Location(1000000.0, 1000000.0, 1000000.0)
-            friction_bp.set_attribute('friction', str(config.friction))
-            friction_bp.set_attribute('extent_x', str(extent.x))
-            friction_bp.set_attribute('extent_y', str(extent.y))
-            friction_bp.set_attribute('extent_z', str(extent.z))
-
-            # Spawn Trigger Friction
-            transform = carla.Transform()
-            transform.location = carla.Location(-10000.0, -10000.0, 0.0)
-            self.world.spawn_actor(friction_bp, transform)
-
-        # night mode
+        # Night mode
         if config.weather.sun_altitude_angle < 0.0:
             for vehicle in scenario.ego_vehicles:
                 vehicle.set_light_state(carla.VehicleLightState(self._vehicle_lights))

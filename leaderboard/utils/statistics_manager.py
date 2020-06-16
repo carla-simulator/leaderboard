@@ -61,7 +61,7 @@ def to_route_record(record_dict):
 
 
 def compute_route_length(config):
-    trajectory = config.route_description['trajectory']
+    trajectory = config.trajectory
 
     route_length = 0.0
     previous_location = None
