@@ -83,7 +83,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug, args.challenge_mode, args.track, self.client_timeout)
+        self.manager = ScenarioManager(args.debug > 1, args.challenge_mode, args.track, self.client_timeout)
 
         # Time control for summary purposes
         self._start_time = GameTime.get_time()
@@ -263,11 +263,13 @@ class LeaderboardEvaluator(object):
         Run the challenge mode
         """
         route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions)
+
         if args.resume:
             route_indexer.resume(args.checkpoint)
             self.statistics_manager.resume(args.checkpoint)
         else:
             self.statistics_manager.clear_record(args.checkpoint)
+
         while route_indexer.peek():
             # setup
             config = route_indexer.next()

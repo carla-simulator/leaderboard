@@ -119,7 +119,7 @@ def convert_json_to_actor(actor_dict):
     node.set('z', actor_dict['z'])
     node.set('yaw', actor_dict['yaw'])
 
-    return ActorConfigurationdata.parse_from_node(node, 'simulation')
+    return ActorConfigurationData.parse_from_node(node, 'simulation')
 
 
 def convert_transform_to_location(transform_vec):
@@ -195,7 +195,7 @@ class RouteScenario(BasicScenario):
         self.list_scenarios = self._build_scenario_instances(world,
                                                              ego_vehicle,
                                                              self.sampled_scenarios_definitions,
-                                                             scenarios_per_tick=20,
+                                                             scenarios_per_tick=10,
                                                              timeout=self.timeout,
                                                              debug_mode=debug_mode>1)
 

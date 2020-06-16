@@ -61,7 +61,7 @@ class RouteParser(object):
                 continue
 
             new_config = RouteScenarioConfiguration()
-            new_config.town = route.attrib['map']
+            new_config.town = route.attrib['town']
             new_config.name = "RouteScenario_{}".format(route_id)
             new_config.weather = RouteParser.parse_weather(route)
             new_config.scenario_file = scenario_file
@@ -112,6 +112,8 @@ class RouteParser(object):
                     weather.fog_distance = float(weather_attrib.attrib['fog_distance'])
                 if 'fog_density' in weather_attrib.attrib:
                     weather.fog_density = float(weather_attrib.attrib['fog_density'])
+                if 'fog_falloff' in weather_attrib.attrib:
+                    weather.fog_falloff = float(weather_attrib.attrib['fog_falloff'])
 
         return weather
 
