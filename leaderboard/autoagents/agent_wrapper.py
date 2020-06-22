@@ -154,7 +154,7 @@ class AgentWrapper(object):
             sensor.listen(CallBack(sensor_spec['id'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        self._validate_sensor_configuration(self._agent.track)
+        self._validate_sensor_configuration(track)
 
         while not self._agent.all_sensors_ready():
             if debug_mode:
@@ -166,7 +166,6 @@ class AgentWrapper(object):
         Ensure that the sensor configuration is valid, in case the challenge mode is used
         Returns true on valid configuration, false otherwise
         """
-
         if Track(selected_track) != self._agent.track:
             raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
 
