@@ -1,26 +1,25 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018-2019 Intel Corporation
+# Copyright (c) 2018-2020 Intel Corporation
 #
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 """
-This module provides the Scenario and ScenarioManager implementations.
-These must not be modified and are for reference only!
+This module provides the ScenarioManager implementations.
+It must not be modified and is for reference only!
 """
 
 from __future__ import print_function
 import signal
 import sys
 import time
-import threading
 
 import py_trees
 import carla
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
-from srunner.scenariomanager.timer import GameTime, TimeOut
+from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.watchdog import Watchdog
 
 from leaderboard.autoagents.agent_wrapper import AgentWrapper
@@ -103,8 +102,6 @@ class ScenarioManager(object):
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
 
-        CarlaDataProvider.register_actors(self.ego_vehicles)
-        CarlaDataProvider.register_actors(self.other_actors)
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
@@ -220,7 +217,7 @@ class ScenarioManager(object):
         Run next tick of scenario and the agent and tick the world.
         """
 
-        if self._timestamp_last_run < timestamp.elapsed_seconds:
+        if self._timestamp_last_run < timestamp.elapsed_seconds and self._running:
             self._timestamp_last_run = timestamp.elapsed_seconds
 
             self._watchdog.update()
