@@ -549,14 +549,15 @@ class RouteScenario(BasicScenario):
         blocked_criterion = ActorSpeedAboveThresholdTest(self.ego_vehicles[0],
                                                          speed_threshold=0.1,
                                                          below_threshold_max_time=90.0,
-                                                         terminate_on_failure=True)
+                                                         terminate_on_failure=True,
+                                                         name="AgentBlockedTest")
 
         criteria.append(completion_criterion)
-        criteria.append(collision_criterion)
-        criteria.append(route_criterion)
         criteria.append(outsidelane_criterion)
+        criteria.append(collision_criterion)
         criteria.append(red_light_criterion)
         criteria.append(stop_criterion)
+        criteria.append(route_criterion)
         criteria.append(blocked_criterion)
 
         return criteria

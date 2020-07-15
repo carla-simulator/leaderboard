@@ -19,6 +19,15 @@ def threaded(fn):
     return wrapper
 
 
+class SensorConfigurationInvalid(Exception):
+    """
+    Exceptions thrown when the sensors used by the agent are not allowed for that specific submissions
+    """
+
+    def __init__(self, message):
+        super(SensorConfigurationInvalid, self).__init__(message)
+
+
 class GenericMeasurement(object):
     def __init__(self, data, frame):
         self.data = data
@@ -178,7 +187,7 @@ class SensorInterface(object):
 
     def register_sensor(self, tag, sensor):
         if tag in self._sensors_objects:
-            raise ValueError("Duplicated sensor tag [{}]".format(tag))
+            raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
 
         self._sensors_objects[tag] = sensor
         self._data_buffers[tag] = None
@@ -186,7 +195,7 @@ class SensorInterface(object):
 
     def update_sensor(self, tag, data, timestamp):
         if tag not in self._sensors_objects:
-            raise ValueError("The sensor with tag [{}] has not been created!".format(tag))
+            raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
         self._data_buffers[tag] = data
         self._timestamps[tag] = timestamp
 
