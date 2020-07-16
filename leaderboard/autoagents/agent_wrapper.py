@@ -16,7 +16,7 @@ import os
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
-from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader
+from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
 
 MAX_ALLOWED_RADIUS_SENSOR = 3.0
@@ -32,13 +32,13 @@ SENSORS_LIMITS = {
 }
 
 
-class SensorConfigurationInvalid(Exception):
-
-    """Base class for other exceptions"""
+class AgentError(Exception):
+    """
+    Exceptions thrown when the agent returns an error during the simulation
+    """
 
     def __init__(self, message):
-        print(message)
-        super(SensorConfigurationInvalid, self).__init__()
+        super(AgentError, self).__init__(message)
 
 
 class AgentWrapper(object):
@@ -64,7 +64,7 @@ class AgentWrapper(object):
         """
         return self._agent()
 
-    def setup_sensors(self, vehicle, debug_mode=False, track=None):
+    def setup_sensors(self, vehicle, debug_mode=False):
         """
         Create the sensors defined by the user and attach them to the ego-vehicle
         :param vehicle: ego vehicle
@@ -154,38 +154,48 @@ class AgentWrapper(object):
             sensor.listen(CallBack(sensor_spec['id'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        self._validate_sensor_configuration(track)
-
         while not self._agent.all_sensors_ready():
             if debug_mode:
                 print(" waiting for one data reading from sensors...")
             CarlaDataProvider.get_world().tick()
 
-    def _validate_sensor_configuration(self, selected_track):
+    @staticmethod
+    def validate_sensor_configuration(sensors, agent_track, selected_track):
         """
         Ensure that the sensor configuration is valid, in case the challenge mode is used
         Returns true on valid configuration, false otherwise
         """
-        if Track(selected_track) != self._agent.track:
+        if Track(selected_track) != agent_track:
             raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
 
         sensor_count = {}
+        sensor_ids = []
 
-        for sensor in self._agent.sensors():
-            if self._agent.track == Track.SENSORS:
+        for sensor in sensors:
+
+            # Check if the is has been already used
+            sensor_id = sensor['id']
+            if sensor_id in sensor_ids:
+                raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(sensor_id))
+            else:
+                sensor_ids.append(sensor_id)
+
+            # Check if the sensor is valid
+            if agent_track == Track.SENSORS:
                 if sensor['type'].startswith('sensor.opendrive_map'):
-                    raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(self._agent.track))
+                    raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(agent_track))
 
-            # let's check the extrinsics of the sensor
+            # Check the extrinsics of the sensor
             if 'x' in sensor and 'y' in sensor and 'z' in sensor:
                 if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
                     raise SensorConfigurationInvalid(
-                        "Illegal sensor extrinsics used for Track [{}]!".format(self._agent.track))
+                        "Illegal sensor extrinsics used for Track [{}]!".format(agent_track))
 
+            # Check the amount of sensors
             if sensor['type'] in sensor_count:
                 sensor_count[sensor['type']] += 1
             else:
-                sensor_count[sensor['type']] = 0
+                sensor_count[sensor['type']] = 1
 
         for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
             if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:

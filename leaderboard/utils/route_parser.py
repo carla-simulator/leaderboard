@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 
 import carla
 from agents.navigation.local_planner import RoadOption
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from srunner.scenarioconfigs.route_scenario_configuration import RouteScenarioConfiguration
 
 # TODO  check this threshold, it could be a bit larger but not so large that we cluster scenarios.
 TRIGGER_THRESHOLD = 2.0  # Threshold to say if a trigger position is new or repeated, works for matching positions
@@ -44,22 +44,27 @@ class RouteParser(object):
         return final_dict  # the file has a current maps name that is an one element vec
 
     @staticmethod
-    def parse_routes_file(route_filename, single_route=None):
+    def parse_routes_file(route_filename, scenario_file, single_route=None):
         """
-        Returns a list of route elements that is where the challenge is going to happen.
+        Returns a list of route elements.
         :param route_filename: the path to a set of routes.
         :param single_route: If set, only this route shall be returned
-        :return:  List of dicts containing the waypoints, id and town of the routes
+        :return: List of dicts containing the waypoints, id and town of the routes
         """
 
         list_route_descriptions = []
         tree = ET.parse(route_filename)
         for route in tree.iter("route"):
-            route_town = route.attrib['map']
+
             route_id = route.attrib['id']
-            route_weather = RouteParser.parse_weather(route)
             if single_route and route_id != single_route:
                 continue
+
+            new_config = RouteScenarioConfiguration()
+            new_config.town = route.attrib['map']
+            new_config.name = "RouteScenario_{}".format(route_id)
+            new_config.weather = RouteParser.parse_weather(route)
+            new_config.scenario_file = scenario_file
 
             waypoint_list = []  # the list of waypoints that can be found on this route
             for waypoint in route.iter('waypoint'):
@@ -67,14 +72,9 @@ class RouteParser(object):
                                                     y=float(waypoint.attrib['y']),
                                                     z=float(waypoint.attrib['z'])))
 
-                # Waypoints is basically a list of XML nodes
+            new_config.trajectory = waypoint_list
 
-            list_route_descriptions.append({
-                'id': route_id,
-                'town_name': route_town,
-                'trajectory': waypoint_list,
-                'weather': route_weather
-            })
+            list_route_descriptions.append(new_config)
 
         return list_route_descriptions
 
@@ -112,6 +112,8 @@ class RouteParser(object):
                     weather.fog_distance = float(weather_attrib.attrib['fog_distance'])
                 if 'fog_density' in weather_attrib.attrib:
                     weather.fog_density = float(weather_attrib.attrib['fog_density'])
+                if 'fog_falloff' in weather_attrib.attrib:
+                    weather.fog_falloff = float(weather_attrib.attrib['fog_falloff'])
 
         return weather
 
@@ -260,7 +262,7 @@ class RouteParser(object):
         return subtype
 
     @staticmethod
-    def scan_route_for_scenarios(route_description, world_annotations):
+    def scan_route_for_scenarios(route_name, trajectory, world_annotations):
         """
         Just returns a plain list of possible scenarios that can happen in this route by matching
         the locations from the scenario into the route description
@@ -277,7 +279,7 @@ class RouteParser(object):
         latest_trigger_id = 0
 
         for town_name in world_annotations.keys():
-            if town_name != route_description['town_name']:
+            if town_name != route_name:
                 continue
 
             scenarios = world_annotations[town_name]
@@ -288,7 +290,7 @@ class RouteParser(object):
                     RouteParser.convert_waypoint_float(waypoint)
                     # We match trigger point to the  route, now we need to check if the route affects
                     match_position = RouteParser.match_world_location_to_route(
-                        waypoint, route_description['trajectory'])
+                        waypoint, trajectory)
                     if match_position is not None:
                         # We match a location for this scenario, create a scenario object so this scenario
                         # can be instantiated later
@@ -297,15 +299,15 @@ class RouteParser(object):
                             other_vehicles = event['other_actors']
                         else:
                             other_vehicles = None
-                        scenario_type = RouteParser.get_scenario_type(scenario_name, match_position,
-                                                                         route_description['trajectory'])
-                        if scenario_type is None:
+                        scenario_subtype = RouteParser.get_scenario_type(scenario_name, match_position,
+                                                                         trajectory)
+                        if scenario_subtype is None:
                             continue
                         scenario_description = {
                             'name': scenario_name,
                             'other_actors': other_vehicles,
                             'trigger_position': waypoint,
-                            'scenario_type': scenario_type, # some scenarios have route dependent configurations
+                            'scenario_type': scenario_subtype, # some scenarios have route dependent configurations
                         }
 
                         trigger_id = RouteParser.check_trigger_position(waypoint, existent_triggers)
