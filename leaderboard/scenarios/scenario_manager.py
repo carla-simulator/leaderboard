@@ -44,7 +44,7 @@ class ScenarioManager(object):
     """
 
 
-    def __init__(self, debug_mode=False):
+    def __init__(self, timeout, debug_mode=False):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """

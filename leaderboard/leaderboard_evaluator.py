@@ -85,7 +85,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug > 1)
+        self.manager = ScenarioManager(args.timeout, args.debug > 1)
 
         # Time control for summary purposes
         self._start_time = GameTime.get_time()
