@@ -85,7 +85,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug > 1, args.challenge_mode)
+        self.manager = ScenarioManager(args.debug > 1, args.challenge_mode, self.client_timeout)
 
         # Time control for summary purposes
         self._start_time = GameTime.get_time()
@@ -288,9 +288,11 @@ class LeaderboardEvaluator(object):
             crash_message = "Simulation crashed"
             entry_status = "Crashed"
 
+            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
             if args.record:
                 self.client.stop_recorder()
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
             self._cleanup()
             sys.exit(-1)
 
@@ -319,8 +321,10 @@ class LeaderboardEvaluator(object):
         # Stop the scenario
         try:
             self.manager.stop_scenario()
-            self.client.stop_recorder()
             self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
+            if args.record:
+                self.client.stop_recorder()
 
             # Remove all actors
             scenario.remove_all_actors()
@@ -376,7 +380,7 @@ def main():
     parser.add_argument('--spectator', type=bool, help='Switch spectator view on?', default=True)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
-    parser.add_argument('--timeout', default="30.0",
+    parser.add_argument('--timeout', default="60.0",
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup

@@ -88,7 +88,7 @@ class RouteParser(object):
         route_weather = route.find("weather")
         if route_weather is None:
 
-            weather = carla.WeatherParameters(sun_altitude_angle = 70)
+            weather = carla.WeatherParameters(sun_altitude_angle=70, cloudiness=70)
 
         else:
             weather = carla.WeatherParameters()
