@@ -288,9 +288,11 @@ class LeaderboardEvaluator(object):
             crash_message = "Simulation crashed"
             entry_status = "Crashed"
 
+            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
             if args.record:
                 self.client.stop_recorder()
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
             self._cleanup()
             sys.exit(-1)
 
@@ -319,8 +321,10 @@ class LeaderboardEvaluator(object):
         # Stop the scenario
         try:
             self.manager.stop_scenario()
-            self.client.stop_recorder()
             self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
+            if args.record:
+                self.client.stop_recorder()
 
             # Remove all actors
             scenario.remove_all_actors()
@@ -375,7 +379,7 @@ def main():
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
-    parser.add_argument('--timeout', default="30.0",
+    parser.add_argument('--timeout', default="60.0",
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup

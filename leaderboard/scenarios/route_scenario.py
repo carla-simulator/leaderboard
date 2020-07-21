@@ -48,10 +48,8 @@ from leaderboard.utils.route_manipulation import interpolate_trajectory
 
 ROUTESCENARIO = ["RouteScenario"]
 
-MAX_ALLOWED_RADIUS_SENSOR = 5.0
-SECONDS_GIVEN_PER_METERS = 0.4
+SECONDS_GIVEN_PER_METERS = 0.8
 INITIAL_SECONDS_DELAY = 5.0
-MAX_CONNECTION_ATTEMPTS = 5
 
 NUMBER_CLASS_TRANSLATION = {
     "Scenario1": ControlLoss,
@@ -548,7 +546,7 @@ class RouteScenario(BasicScenario):
 
         blocked_criterion = ActorSpeedAboveThresholdTest(self.ego_vehicles[0],
                                                          speed_threshold=0.1,
-                                                         below_threshold_max_time=90.0,
+                                                         below_threshold_max_time=180.0,
                                                          terminate_on_failure=True,
                                                          name="AgentBlockedTest")
 

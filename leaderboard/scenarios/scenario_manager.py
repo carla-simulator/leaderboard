@@ -43,6 +43,7 @@ class ScenarioManager(object):
     4. If needed, cleanup with manager.stop_scenario()
     """
 
+
     def __init__(self, debug_mode=False):
         """
         Setups up the parameters, which will be filled at load_scenario()
@@ -57,9 +58,11 @@ class ScenarioManager(object):
         self._agent = None
         self._running = False
         self._timestamp_last_run = 0.0
+        self._timeout = float(timeout)
 
         # Used to detect the simulation is down, but doesn't create any exception
-        self._watchdog = Watchdog(5)
+        watchdog_timeout = max(5, self._timeout - 2)
+        self._watchdog = Watchdog(watchdog_timeout)
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
@@ -165,7 +168,7 @@ class ScenarioManager(object):
             self.ego_vehicles[0].apply_control(ego_action)
 
         if self._running and self.get_running_status():
-            CarlaDataProvider.get_world().tick()
+            CarlaDataProvider.get_world().tick(self._timeout)
 
     def get_running_status(self):
         """
