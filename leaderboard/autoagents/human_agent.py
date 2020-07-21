@@ -124,22 +124,22 @@ class HumanAgent(AutonomousAgent):
         :return: a list containing the required sensors in the following format:
 
         [
-            ['sensor.camera.rgb', {'x':x_rel, 'y': y_rel, 'z': z_rel,
-                                   'yaw': yaw, 'pitch': pitch, 'roll': roll,
-                                   'width': width, 'height': height, 'fov': fov}, 'Sensor01'],
-            ['sensor.camera.rgb', {'x':x_rel, 'y': y_rel, 'z': z_rel,
-                                   'yaw': yaw, 'pitch': pitch, 'roll': roll,
-                                   'width': width, 'height': height, 'fov': fov}, 'Sensor02'],
+            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+                      'width': 300, 'height': 200, 'fov': 100, 'id': 'Left'},
 
-            ['sensor.lidar.ray_cast', {'x':x_rel, 'y': y_rel, 'z': z_rel,
-                                       'yaw': yaw, 'pitch': pitch, 'roll': roll}, 'Sensor03']
+            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+                      'width': 300, 'height': 200, 'fov': 100, 'id': 'Right'},
+
+            {'type': 'sensor.lidar.ray_cast', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'yaw': 0.0, 'pitch': 0.0, 'roll': 0.0,
+             'id': 'LIDAR'}
         ]
-
         """
-        sensors = [{'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-                    'width': 300, 'height': 200, 'fov': 100, 'id': 'Center'},
-                   {'type': 'sensor.speedometer',  'reading_frequency': 20, 'id': 'speed'},
-                   ]
+
+        sensors = [
+            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+             'width': 300, 'height': 200, 'fov': 100, 'id': 'Center'},
+            {'type': 'sensor.speedometer', 'reading_frequency': 20, 'id': 'speed'},
+        ]
 
         return sensors
 

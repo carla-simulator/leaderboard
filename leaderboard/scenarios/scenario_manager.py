@@ -43,7 +43,8 @@ class ScenarioManager(object):
     4. If needed, cleanup with manager.stop_scenario()
     """
 
-    def __init__(self, debug_mode=False, challenge_mode=False, timeout=10):
+
+    def __init__(self, debug_mode=False):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
@@ -54,7 +55,6 @@ class ScenarioManager(object):
         self.other_actors = None
 
         self._debug_mode = debug_mode
-        self._challenge_mode = challenge_mode
         self._agent = None
         self._running = False
         self._timestamp_last_run = 0.0
@@ -98,7 +98,7 @@ class ScenarioManager(object):
         Load a new scenario
         """
         self._reset()
-        self._agent = AgentWrapper(agent, self._challenge_mode)
+        self._agent = AgentWrapper(agent)
         self.scenario_class = scenario
         self.scenario = scenario.scenario
         self.scenario_tree = self.scenario.scenario_tree
@@ -160,12 +160,10 @@ class ScenarioManager(object):
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
                 self._running = False
 
-            if self._challenge_mode:
-
-                spectator = CarlaDataProvider.get_world().get_spectator()
-                ego_trans = self.ego_vehicles[0].get_transform()
-                spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
-                                                            carla.Rotation(pitch=-90)))
+            spectator = CarlaDataProvider.get_world().get_spectator()
+            ego_trans = self.ego_vehicles[0].get_transform()
+            spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+                                                        carla.Rotation(pitch=-90)))
 
             self.ego_vehicles[0].apply_control(ego_action)
 

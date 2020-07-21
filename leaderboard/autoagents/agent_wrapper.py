@@ -49,14 +49,12 @@ class AgentWrapper(object):
 
     _agent = None
     _sensors_list = []
-    _challenge_mode = False
 
-    def __init__(self, agent, challenge_mode):
+    def __init__(self, agent):
         """
         Set the autonomous agent
         """
         self._agent = agent
-        self._challenge_mode = challenge_mode
 
     def __call__(self):
         """
@@ -96,12 +94,16 @@ class AgentWrapper(object):
                                                      roll=sensor_spec['roll'],
                                                      yaw=sensor_spec['yaw'])
                 elif sensor_spec['type'].startswith('sensor.lidar'):
-                    bp.set_attribute('range', str(200))
+                    bp.set_attribute('range', str(85))
                     bp.set_attribute('rotation_frequency', str(10))
                     bp.set_attribute('channels', str(64))
                     bp.set_attribute('upper_fov', str(10))
                     bp.set_attribute('lower_fov', str(-30))
-                    bp.set_attribute('points_per_second', str(560000))
+                    bp.set_attribute('points_per_second', str(600000))
+                    bp.set_attribute('atmosphere_attenuation_rate', str(0.004))
+                    bp.set_attribute('dropoff_general_rate', str(0.45))
+                    bp.set_attribute('dropoff_intensity_limit', str(0.8))
+                    bp.set_attribute('dropoff_zero_intensity', str(0.4))
                     sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
                                                      z=sensor_spec['z'])
                     sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],

@@ -85,7 +85,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.debug > 1, args.challenge_mode, self.client_timeout)
+        self.manager = ScenarioManager(args.debug > 1)
 
         # Time control for summary purposes
         self._start_time = GameTime.get_time()
@@ -377,14 +377,12 @@ def main():
                         help='IP of the host server (default: localhost)')
     parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
-    parser.add_argument('--spectator', type=bool, help='Switch spectator view on?', default=True)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
     parser.add_argument('--timeout', default="60.0",
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup
-    parser.add_argument('--challenge-mode', action="store_true", help='Switch to challenge mode?')
     parser.add_argument('--routes',
                         help='Name of the route to be executed. Point to the route_xml_file to be executed.',
                         required=True)
