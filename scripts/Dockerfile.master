@@ -40,7 +40,7 @@ RUN curl -o ~/miniconda.sh -LO https://repo.continuum.io/miniconda/Miniconda3-la
      /opt/conda/bin/conda clean -ya && \
      /opt/conda/bin/conda create -n python37 python=3.7 numpy networkx scipy six requests
 
-RUN packages='py_trees==0.8.3 shapely six dictor requests' \
+RUN packages='py_trees==0.8.3 shapely six dictor requests ephem tabulate' \
 	&& pip3 install ${packages}
 
 WORKDIR /workspace
@@ -50,7 +50,7 @@ ENV CARLA_ROOT /workspace/CARLA
 ENV PATH "/workspace/CARLA/PythonAPI/carla/dist/carla-0.9.9-py3.7-linux-x86_64.egg":/opt/conda/envs/python37/bin:/opt/conda/envs/bin:$PATH
 
 # adding CARLA egg to default python environment
-RUN pip install --user setuptools py_trees==0.8.3 psutil shapely six dictor requests
+RUN pip install --user setuptools py_trees==0.8.3 psutil shapely six dictor requests ephem tabulate
 
 ENV SCENARIO_RUNNER_ROOT "/workspace/scenario_runner"
 ENV LEADERBOARD_ROOT "/workspace/leaderboard"
@@ -73,7 +73,8 @@ RUN chmod +x /workspace/leaderboard/scripts/run_evaluation.sh
 
 ENV TEAM_AGENT ${TEAM_CODE_ROOT}/npc_agent.py
 ENV TEAM_CONFIG ${TEAM_CODE_ROOT}/YOUR_CONFIG_FILE
-ENV CHALLENGE_PHASE_CODENAME SENSORS
+ENV CHALLENGE_TRACK_CODENAME SENSORS
+
 
 ########################################################################################################################
 ########################################################################################################################

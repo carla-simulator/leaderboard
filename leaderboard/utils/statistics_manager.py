@@ -61,7 +61,7 @@ def to_route_record(record_dict):
 
 
 def compute_route_length(config):
-    trajectory = config.route_description['trajectory']
+    trajectory = config.trajectory
 
     route_length = 0.0
     previous_location = None
@@ -96,8 +96,7 @@ class StatisticsManager(object):
             for record in records:
                 self._registry_route_records.append(to_route_record(record))
 
-    def set_route(self, route_id, index, scenario):
-        self._master_scenario = scenario
+    def set_route(self, route_id, index):
 
         route_record = RouteRecord()
         route_record.route_id = route_id
@@ -109,7 +108,13 @@ class StatisticsManager(object):
         else:
             self._registry_route_records.append(route_record)
 
-    def compute_route_statistics(self, config, duration_time_system=-1, duration_time_game=-1):
+    def set_scenario(self, scenario):
+        """
+        Sets the scenario from which the statistics willb e taken
+        """
+        self._master_scenario = scenario
+
+    def compute_route_statistics(self, config, duration_time_system=-1, duration_time_game=-1, failure=""):
         """
         Compute the current statistics by evaluating all relevant scenario criteria
         """
@@ -129,52 +134,56 @@ class StatisticsManager(object):
         route_record.meta['duration_game'] = duration_time_game
         route_record.meta['route_length'] = compute_route_length(config)
 
-        if self._master_scenario.timeout_node.timeout:
-            route_record.infractions['route_timeout'].append('Route timeout.')
+        if self._master_scenario:
+            if self._master_scenario.timeout_node.timeout:
+                route_record.infractions['route_timeout'].append('Route timeout.')
+                failure = "Agent timed out"
 
-        for node in self._master_scenario.get_criteria():
-            if node.list_traffic_events:
-                # analyze all traffic events
-                for event in node.list_traffic_events:
-                    if event.get_type() == TrafficEventType.COLLISION_STATIC:
-                        score_penalty *= PENALTY_COLLISION_STATIC
-                        route_record.infractions['collisions_layout'].append(event.get_message())
+            for node in self._master_scenario.get_criteria():
+                if node.list_traffic_events:
+                    # analyze all traffic events
+                    for event in node.list_traffic_events:
+                        if event.get_type() == TrafficEventType.COLLISION_STATIC:
+                            score_penalty *= PENALTY_COLLISION_STATIC
+                            route_record.infractions['collisions_layout'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
-                        score_penalty *= PENALTY_COLLISION_PEDESTRIAN
-                        route_record.infractions['collisions_pedestrian'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN:
+                            score_penalty *= PENALTY_COLLISION_PEDESTRIAN
+                            route_record.infractions['collisions_pedestrian'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
-                        score_penalty *= PENALTY_COLLISION_VEHICLE
-                        route_record.infractions['collisions_vehicle'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.COLLISION_VEHICLE:
+                            score_penalty *= PENALTY_COLLISION_VEHICLE
+                            route_record.infractions['collisions_vehicle'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
-                        score_penalty *= (1 - event.get_dict()['percentage'] / 100)
-                        route_record.infractions['outside_route_lanes'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
+                            score_penalty *= (1 - event.get_dict()['percentage'] / 100)
+                            route_record.infractions['outside_route_lanes'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.TRAFFIC_LIGHT_INFRACTION:
-                        score_penalty *= PENALTY_TRAFFIC_LIGHT
-                        route_record.infractions['red_light'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.TRAFFIC_LIGHT_INFRACTION:
+                            score_penalty *= PENALTY_TRAFFIC_LIGHT
+                            route_record.infractions['red_light'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
-                        route_record.infractions['route_dev'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
+                            route_record.infractions['route_dev'].append(event.get_message())
+                            failure = "Agent deviated from the route"
 
-                    elif event.get_type() == TrafficEventType.STOP_INFRACTION:
-                        score_penalty *= PENALTY_STOP
-                        route_record.infractions['stop_infraction'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.STOP_INFRACTION:
+                            score_penalty *= PENALTY_STOP
+                            route_record.infractions['stop_infraction'].append(event.get_message())
 
-                    elif event.get_type() == TrafficEventType.VEHICLE_BLOCKED:
-                        route_record.infractions['vehicle_blocked'].append(event.get_message())
+                        elif event.get_type() == TrafficEventType.VEHICLE_BLOCKED:
+                            route_record.infractions['vehicle_blocked'].append(event.get_message())
+                            failure = "Agent got blocked"
 
-                    elif event.get_type() == TrafficEventType.ROUTE_COMPLETED:
-                        score_route = 100.0
-                        target_reached = True
-                    elif event.get_type() == TrafficEventType.ROUTE_COMPLETION:
-                        if not target_reached:
-                            if event.get_dict():
-                                score_route = event.get_dict()['route_completed']
-                            else:
-                                score_route = 0
+                        elif event.get_type() == TrafficEventType.ROUTE_COMPLETED:
+                            score_route = 100.0
+                            target_reached = True
+                        elif event.get_type() == TrafficEventType.ROUTE_COMPLETION:
+                            if not target_reached:
+                                if event.get_dict():
+                                    score_route = event.get_dict()['route_completed']
+                                else:
+                                    score_route = 0
 
         # update route scores
         route_record.scores['score_route'] = score_route
@@ -186,6 +195,8 @@ class StatisticsManager(object):
             route_record.status = 'Completed'
         else:
             route_record.status = 'Failed'
+            if failure:
+                route_record.status += ' - ' + failure
 
         return route_record
 
@@ -202,7 +213,7 @@ class StatisticsManager(object):
                 global_record.scores['score_composed'] += route_record.scores['score_composed']
 
                 for key in global_record.infractions.keys():
-                    route_length_kms = route_record.scores['score_route'] * route_record.meta['route_length'] / 1000.0
+                    route_length_kms = max(route_record.scores['score_route'] * route_record.meta['route_length'] / 1000.0, 0.001)
                     if isinstance(global_record.infractions[key], list):
                         global_record.infractions[key] = len(route_record.infractions[key]) / route_length_kms
                     else:
@@ -241,7 +252,7 @@ class StatisticsManager(object):
         save_dict(endpoint, data)
 
     @staticmethod
-    def save_global_record(route_record, sensors, endpoint):
+    def save_global_record(route_record, sensors, total_routes, endpoint):
         data = fetch_dict(endpoint)
         if not data:
             data = create_default_json_msg()
@@ -277,8 +288,49 @@ class StatisticsManager(object):
                           'Agent blocked'
                           ]
 
-        data['sensors'] = sensors
+        entry_status = "Finished"
+        eligible = "True"
 
+        route_records = data["_checkpoint"]["records"]
+        progress = data["_checkpoint"]["progress"]
+
+        if progress[1] != total_routes:
+            raise Exception('Critical error with the route registry.')
+
+        if len(route_records) != total_routes or progress[0] != progress[1]:
+            entry_status = "Finished with missing data"
+            eligible = "False"
+        else:
+            for route in route_records:
+                route_status = route["status"]
+                if "Agent crashed" in route_status:
+                    entry_status = "Finished with agent errors"
+                    break
+
+        data['entry_status'] = entry_status
+        data['eligible'] = eligible
+
+        save_dict(endpoint, data)
+
+    @staticmethod
+    def save_sensors(sensors, endpoint):
+        data = fetch_dict(endpoint)
+        if not data:
+            data = create_default_json_msg()
+
+        if not data['sensors']:
+            data['sensors'] = sensors
+
+            save_dict(endpoint, data)
+
+    @staticmethod
+    def save_entry_status(entry_status, eligible, endpoint):
+        data = fetch_dict(endpoint)
+        if not data:
+            data = create_default_json_msg()
+
+        data['entry_status'] = entry_status
+        data['eligible'] = eligible
         save_dict(endpoint, data)
 
     @staticmethod
