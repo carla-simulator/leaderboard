@@ -131,11 +131,13 @@ def downsample_route(route, sample_factor):
 
 def interpolate_trajectory(world, waypoints_trajectory, hop_resolution=1.0):
     """
-        Given some raw keypoints interpolate a full dense trajectory to be used by the user.
-    :param world: an reference to the CARLA world so we can use the planner
-    :param waypoints_trajectory: the current coarse trajectory
-    :param hop_resolution: is the resolution, how dense is the provided trajectory going to be made
-    :return: the full interpolated route both in GPS coordinates and also in its original form.
+    Given some raw keypoints interpolate a full dense trajectory to be used by the user.
+    returns the full interpolated route both in GPS coordinates and also in its original form.
+    
+    Args:
+        - world: an reference to the CARLA world so we can use the planner
+        - waypoints_trajectory: the current coarse trajectory
+        - hop_resolution: is the resolution, how dense is the provided trajectory going to be made
     """
 
     dao = GlobalRoutePlannerDAO(world.get_map(), hop_resolution)
@@ -150,8 +152,6 @@ def interpolate_trajectory(world, waypoints_trajectory, hop_resolution=1.0):
         interpolated_trace = grp.trace_route(waypoint, waypoint_next)
         for wp_tuple in interpolated_trace:
             route.append((wp_tuple[0].transform, wp_tuple[1]))
-
-    # Increase the route position to avoid fails
 
     lat_ref, lon_ref = _get_latlon_ref(world)
 

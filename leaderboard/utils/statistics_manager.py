@@ -289,7 +289,7 @@ class StatisticsManager(object):
                           ]
 
         entry_status = "Finished"
-        eligible = "True"
+        eligible = True
 
         route_records = data["_checkpoint"]["records"]
         progress = data["_checkpoint"]["progress"]
@@ -299,7 +299,7 @@ class StatisticsManager(object):
 
         if len(route_records) != total_routes or progress[0] != progress[1]:
             entry_status = "Finished with missing data"
-            eligible = "False"
+            eligible = False
         else:
             for route in route_records:
                 route_status = route["status"]
