@@ -203,7 +203,7 @@ class LeaderboardEvaluator(object):
             crash_message
         )
         self.statistics_manager.save_record(current_stats_record, config.index, checkpoint)
-        self.statistics_manager.save_entry_status(entry_status, "False", checkpoint)
+        self.statistics_manager.save_entry_status(entry_status, False, checkpoint)
 
     def _load_and_run_scenario(self, args, config):
         """
