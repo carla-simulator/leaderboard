@@ -61,7 +61,7 @@ class RouteParser(object):
                 continue
 
             new_config = RouteScenarioConfiguration()
-            new_config.town = route.attrib['map']
+            new_config.town = route.attrib['town']
             new_config.name = "RouteScenario_{}".format(route_id)
             new_config.weather = RouteParser.parse_weather(route)
             new_config.scenario_file = scenario_file
@@ -88,7 +88,7 @@ class RouteParser(object):
         route_weather = route.find("weather")
         if route_weather is None:
 
-            weather = carla.WeatherParameters(sun_altitude_angle=70, cloudiness=70)
+            weather = carla.WeatherParameters(sun_altitude_angle=70, cloudiness=30)
 
         else:
             weather = carla.WeatherParameters()
