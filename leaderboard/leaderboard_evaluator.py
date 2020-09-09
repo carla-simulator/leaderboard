@@ -386,7 +386,7 @@ def main():
     # parser.add_argument('--trafficManagerPort', default='8000',
     #                     help='Port to use for the TrafficManager (default: 8000)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
-    parser.add_argument('--record', type=str, default='data',
+    parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
     parser.add_argument('--timeout', default="60.0",
                         help='Set the CARLA client timeout value in seconds')
