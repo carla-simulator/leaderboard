@@ -1,6 +1,8 @@
 from collections import OrderedDict
 from dictor import dictor
 
+import copy
+
 from srunner.scenarioconfigs.route_scenario_configuration import RouteScenarioConfiguration
 
 
@@ -14,7 +16,7 @@ class RouteIndexer():
         self._scenarios_file = scenarios_file
         self._repetitions = repetitions
         self._configs_dict = OrderedDict()
-        self._configs_list = None
+        self._configs_list = []
         self.routes_length = []
         self._index = 0
 
@@ -27,7 +29,7 @@ class RouteIndexer():
         for i, config in enumerate(route_configurations):
             for repetition in range(repetitions):
                 config.index = i * self._repetitions + repetition
-                self._configs_dict['{}.{}'.format(config.name, repetition)] = config
+                self._configs_dict['{}.{}'.format(config.name, repetition)] = copy.copy(config)
 
         self._configs_list = list(self._configs_dict.items())
 

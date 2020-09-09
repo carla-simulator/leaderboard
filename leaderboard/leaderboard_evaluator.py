@@ -75,6 +75,8 @@ class LeaderboardEvaluator(object):
             self.client_timeout = float(args.timeout)
         self.client.set_timeout(self.client_timeout)
 
+        # self.traffic_manager = self.client.get_trafficmanager(int(args.trafficManagerPort))
+
         dist = pkg_resources.get_distribution("carla")
         if LooseVersion(dist.version) < LooseVersion('0.9.9'):
             raise ImportError("CARLA version 0.9.9 or newer required. CARLA version found: {}".format(dist))
@@ -115,6 +117,7 @@ class LeaderboardEvaluator(object):
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
             self.world.apply_settings(settings)
+            # self.traffic_manager.set_synchronous_mode(False)
 
         CarlaDataProvider.cleanup()
 
@@ -180,7 +183,10 @@ class LeaderboardEvaluator(object):
 
         CarlaDataProvider.set_client(self.client)
         CarlaDataProvider.set_world(self.world)
-        CarlaDataProvider.set_traffic_manager_port(int(args.trafficManagerPort))
+        # CarlaDataProvider.set_traffic_manager_port(int(args.trafficManagerPort))
+
+        # self.traffic_manager.set_synchronous_mode(True)
+        # self.traffic_manager.set_random_device_seed(0)
 
         # Wait for the world to be ready
         if CarlaDataProvider.is_sync_mode():
@@ -380,7 +386,7 @@ def main():
     parser.add_argument('--trafficManagerPort', default='8000',
                         help='Port to use for the TrafficManager (default: 8000)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
-    parser.add_argument('--record', type=str, default='',
+    # parser.add_argument('--record', type=str, default='data',
                         help='Use CARLA recording feature to create a recording of the scenario')
     parser.add_argument('--timeout', default="60.0",
                         help='Set the CARLA client timeout value in seconds')

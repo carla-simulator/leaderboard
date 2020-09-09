@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
+python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --scenarios=${SCENARIOS}  \
 --routes=${ROUTES} \
 --repetitions=${REPETITIONS} \
