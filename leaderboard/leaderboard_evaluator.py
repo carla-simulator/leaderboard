@@ -22,8 +22,11 @@ import os
 import pkg_resources
 import sys
 import carla
+import signal
+
 from srunner.scenariomanager.carla_data_provider import *
 from srunner.scenariomanager.timer import GameTime
+from srunner.scenariomanager.watchdog import Watchdog
 
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
@@ -93,6 +96,19 @@ class LeaderboardEvaluator(object):
         self._start_time = GameTime.get_time()
         self._end_time = None
 
+        # Create the agent timer
+        self._agent_watchdog = Watchdog(int(float(args.timeout)))
+        signal.signal(signal.SIGINT, self._signal_handler)
+
+    def _signal_handler(self, signum, frame):
+        """
+        Terminate scenario ticking when receiving a signal interrupt
+        """
+        if self._agent_watchdog and not self._agent_watchdog.get_status():
+            raise RuntimeError("Timeout: Agent took too long to setup")
+        elif self.manager:
+            self.manager.signal_handler(signum, frame)
+
     def __del__(self):
         """
         Cleanup and delete actors, ScenarioManager and CARLA world
@@ -126,6 +142,9 @@ class LeaderboardEvaluator(object):
                 self.ego_vehicles[i].destroy()
                 self.ego_vehicles[i] = None
         self.ego_vehicles = []
+
+        if self._agent_watchdog:
+            self._agent_watchdog.stop()
 
         if hasattr(self, 'agent_instance') and self.agent_instance:
             self.agent_instance.destroy()
@@ -186,7 +205,7 @@ class LeaderboardEvaluator(object):
         CarlaDataProvider.set_traffic_manager_port(int(args.trafficManagerPort))
 
         self.traffic_manager.set_synchronous_mode(True)
-        self.traffic_manager.set_random_device_seed(0)
+        self.traffic_manager.set_random_device_seed(int(args.trafficManagerSeed))
 
         # Wait for the world to be ready
         if CarlaDataProvider.is_sync_mode():
@@ -225,8 +244,9 @@ class LeaderboardEvaluator(object):
         # Prepare the statistics of the route
         self.statistics_manager.set_route(config.name, config.index)
 
-        # Set up the user's agent
+        # Set up the user's agent, and the timer to avoid freezing the simulation
         try:
+            self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
             config.agent = self.agent_instance
@@ -240,6 +260,7 @@ class LeaderboardEvaluator(object):
                 self.statistics_manager.save_sensors(self.sensor_icons, args.checkpoint)
 
                 AgentWrapper.validate_sensor_configuration(self.sensors, track, args.track)
+            self._agent_watchdog.stop()
 
         except SensorConfigurationInvalid as e:
             # The sensors are invalid -> set the ejecution to rejected and stop
@@ -255,17 +276,16 @@ class LeaderboardEvaluator(object):
             sys.exit(-1)
 
         except Exception as e:
-            # The agent setup is invalid -> set the ejecution to rejected and stop
+            # The agent setup has failed -> start the next route
             print("\nCould not set up the required agent:")
             print("> {}\n".format(e))
             traceback.print_exc()
 
             crash_message = "Agent couldn't be set up"
-            entry_status = "Rejected"
 
             self._register_statistics(config, args.checkpoint, entry_status, crash_message)
             self._cleanup()
-            sys.exit(-1)
+            return
 
         print("Preparing scenario " + config.name)
 
@@ -310,7 +330,7 @@ class LeaderboardEvaluator(object):
             self.manager.run_scenario()
 
         except AgentError as e:
-            # The agent has failes -> stop the route
+            # The agent has failed -> stop the route
             print("\nStopping the route, the agent has crashed:")
             print("> {}\n".format(e))
             traceback.print_exc()
@@ -385,6 +405,8 @@ def main():
     parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
     parser.add_argument('--trafficManagerPort', default='8000',
                         help='Port to use for the TrafficManager (default: 8000)')
+    parser.add_argument('--trafficManagerSeed', default='0',
+                        help='Seed used by the TrafficManager (default: 0)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')

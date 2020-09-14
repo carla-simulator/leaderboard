@@ -303,7 +303,7 @@ class StatisticsManager(object):
         else:
             for route in route_records:
                 route_status = route["status"]
-                if "Agent crashed" in route_status:
+                if "Agent" in route_status:
                     entry_status = "Finished with agent errors"
                     break
 

@@ -60,9 +60,13 @@ class ScenarioManager(object):
         self._timestamp_last_run = 0.0
         self._timeout = float(timeout)
 
-        # Used to detect the simulation is down, but doesn't create any exception
+        # Used to detect if the simulation is down
         watchdog_timeout = max(5, self._timeout - 2)
         self._watchdog = Watchdog(watchdog_timeout)
+
+        # Avoid the agent from freezing the simulation
+        agent_timeout = watchdog_timeout - 1
+        self._agent_watchdog = Watchdog(agent_timeout)
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
@@ -72,13 +76,16 @@ class ScenarioManager(object):
 
         # Register the scenario tick as callback for the CARLA world
         # Use the callback_id inside the signal handler to allow external interrupts
-        signal.signal(signal.SIGINT, self._signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
 
-    def _signal_handler(self, signum, frame):
+    def signal_handler(self, signum, frame):
         """
         Terminate scenario ticking when receiving a signal interrupt
         """
-        self._running = False
+        if not self._agent_watchdog.get_status():
+            raise RuntimeError("Timeout: Agent's calculus took too long")
+        else:
+            self._running = False
 
     def _reset(self):
         """
@@ -144,7 +151,9 @@ class ScenarioManager(object):
             CarlaDataProvider.on_carla_tick()
 
             try:
+                self._agent_watchdog.start()
                 ego_action = self._agent()
+                self._agent_watchdog.stop()
             except Exception as e:
                 raise AgentError(e)
 
