@@ -98,6 +98,7 @@ class StatisticsManager(object):
 
     def set_route(self, route_id, index):
 
+        self._master_scenario = None
         route_record = RouteRecord()
         route_record.route_id = route_id
         route_record.index = index

@@ -135,6 +135,9 @@ class LeaderboardEvaluator(object):
             self.world.apply_settings(settings)
             self.traffic_manager.set_synchronous_mode(False)
 
+        if self.manager:
+            self.manager.cleanup()
+
         CarlaDataProvider.cleanup()
 
         for i, _ in enumerate(self.ego_vehicles):
@@ -343,7 +346,7 @@ class LeaderboardEvaluator(object):
             traceback.print_exc()
 
             crash_message = "Simulation crashed"
-            entry_status="Crashed"
+            entry_status = "Crashed"
 
         # Stop the scenario
         try:

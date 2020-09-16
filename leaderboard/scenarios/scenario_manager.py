@@ -87,24 +87,23 @@ class ScenarioManager(object):
         else:
             self._running = False
 
-    def _reset(self):
+    def cleanup(self):
         """
         Reset all parameters
         """
-        self._running = False
         self._timestamp_last_run = 0.0
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = None
         self.end_system_time = None
         self.end_game_time = None
-        GameTime.restart()
 
     def load_scenario(self, scenario, agent):
         """
         Load a new scenario
         """
-        self._reset()
+
+        GameTime.restart()
         self._agent = AgentWrapper(agent)
         self.scenario_class = scenario
         self.scenario = scenario.scenario
