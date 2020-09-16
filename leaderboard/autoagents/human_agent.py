@@ -87,7 +87,7 @@ class HumanAgent(AutonomousAgent):
 
         self.agent_engaged = False
         self._hic = HumanInterface()
-        self._controller = KeyboardControl(playback="test.json")
+        self._controller = KeyboardControl(path_to_conf_file)
         self._prev_timestamp = 0
 
     def sensors(self):
@@ -140,8 +140,19 @@ class KeyboardControl(object):
     """
     Keyboard control for the human agent
     """
+    STR_TO_MODE = {
+        "l": "L",
+        "log": "L",
+        "L": "L",
+        "Log": "L",
+        "p": "P",
+        "playback": "P",
+        "P": "P",
+        "Playback": "P"
+    }
 
-    def __init__(self, log=None, playback=None):
+
+    def __init__(self, config_string):
         """
         Init
         """
@@ -149,22 +160,29 @@ class KeyboardControl(object):
         self._steer_cache = 0.0
         self._clock = pygame.time.Clock()
 
-        self._log = log
-        
-        if self._log:
-            self._log_data = {'records': []}
+        # Get the mode
+        if config_string:
+            config_list = config_string.split("_space_")
+            self._mode = self.STR_TO_MODE[config_list[0]]
+            self._endpoint = config_list[1]
 
-        self._playback = playback
+            # Get the needed vars
+            if self._mode == "L":
+                self._log_data = {'records': []}
 
-        if self._playback:
-            self._index = 0
-            self._control_list = []
-            with open(playback) as fd:
-                try:
-                    self._records = json.load(fd)
-                    self._json_to_control()
-                except json.JSONDecodeError:
-                    pass
+            elif self._mode == "P":
+                self._index = 0
+                self._control_list = []
+
+                with open(self._endpoint) as fd:
+                    try:
+                        self._records = json.load(fd)
+                        self._json_to_control()
+                    except json.JSONDecodeError:
+                        pass
+        else:
+            self._mode = "N"
+            self._endpoint = None
 
     def _json_to_control(self):
 
@@ -183,12 +201,15 @@ class KeyboardControl(object):
         """
         Parse the keyboard events and set the vehicle controls accordingly
         """
-        if not self._playback:
-            self._parse_vehicle_keys(pygame.key.get_pressed(), timestamp*1000)
-            self._record_control()
-
-        else:
+        # Move the vehicle
+        if self._mode == "P":
             self._parse_json_control()
+        else:
+            self._parse_vehicle_keys(pygame.key.get_pressed(), timestamp*1000)
+
+        # Record the control
+        if self._mode == "L":
+            self._record_control()
 
         return self._control
 
@@ -244,6 +265,6 @@ class KeyboardControl(object):
 
     def __del__(self):
         # Get ready to log user commands
-        if self._log and self._log_data:
-            with open(self._log, 'w') as fd:
+        if self._mode == "L" and self._log_data:
+            with open(self._endpoint, 'w') as fd:
                 json.dump(self._log_data, fd, indent=4, sort_keys=True)

@@ -156,6 +156,8 @@ class ScenarioManager(object):
             except Exception as e:
                 raise AgentError(e)
 
+            self.ego_vehicles[0].apply_control(ego_action)
+
             # Tick scenario
             self.scenario_tree.tick_once()
 
@@ -173,7 +175,6 @@ class ScenarioManager(object):
             spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
                                                         carla.Rotation(pitch=-90)))
 
-            self.ego_vehicles[0].apply_control(ego_action)
 
         if self._running and self.get_running_status():
             CarlaDataProvider.get_world().tick(self._timeout)
