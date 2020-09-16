@@ -140,19 +140,8 @@ class KeyboardControl(object):
     """
     Keyboard control for the human agent
     """
-    STR_TO_MODE = {
-        "l": "L",
-        "log": "L",
-        "L": "L",
-        "Log": "L",
-        "p": "P",
-        "playback": "P",
-        "P": "P",
-        "Playback": "P"
-    }
 
-
-    def __init__(self, config_string):
+    def __init__(self, path_to_conf_file):
         """
         Init
         """
@@ -161,16 +150,18 @@ class KeyboardControl(object):
         self._clock = pygame.time.Clock()
 
         # Get the mode
-        if config_string:
-            config_list = config_string.split("_space_")
-            self._mode = self.STR_TO_MODE[config_list[0]]
-            self._endpoint = config_list[1]
+        if path_to_conf_file:
+
+            with (open(path_to_conf_file, "r")) as f:
+                lines = f.read().split("\n")
+                self._mode = lines[0].split(" ")[1]
+                self._endpoint = lines[1].split(" ")[1]
 
             # Get the needed vars
-            if self._mode == "L":
+            if self._mode == "log":
                 self._log_data = {'records': []}
 
-            elif self._mode == "P":
+            elif self._mode == "playback":
                 self._index = 0
                 self._control_list = []
 
@@ -181,7 +172,7 @@ class KeyboardControl(object):
                     except json.JSONDecodeError:
                         pass
         else:
-            self._mode = "N"
+            self._mode = "normal"
             self._endpoint = None
 
     def _json_to_control(self):
@@ -202,13 +193,13 @@ class KeyboardControl(object):
         Parse the keyboard events and set the vehicle controls accordingly
         """
         # Move the vehicle
-        if self._mode == "P":
+        if self._mode == "playback":
             self._parse_json_control()
         else:
             self._parse_vehicle_keys(pygame.key.get_pressed(), timestamp*1000)
 
         # Record the control
-        if self._mode == "L":
+        if self._mode == "log":
             self._record_control()
 
         return self._control
@@ -265,6 +256,6 @@ class KeyboardControl(object):
 
     def __del__(self):
         # Get ready to log user commands
-        if self._mode == "L" and self._log_data:
+        if self._mode == "log" and self._log_data:
             with open(self._endpoint, 'w') as fd:
                 json.dump(self._log_data, fd, indent=4, sort_keys=True)
