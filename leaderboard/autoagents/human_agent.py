@@ -24,6 +24,7 @@ try:
     from pygame.locals import K_d
     from pygame.locals import K_s
     from pygame.locals import K_w
+    from pygame.locals import K_q
 except ImportError:
     raise RuntimeError('cannot import pygame, make sure pygame package is installed')
 
@@ -212,6 +213,10 @@ class KeyboardControl(object):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return 
+            elif event.type == pygame.KEYUP:
+                if event.key == K_q:
+                    self._control.gear = 1 if self._control.reverse else -1
+                    self._control.reverse = self._control.gear < 0
 
         if keys[K_UP] or keys[K_w]:
             self._control.throttle = 0.6
