@@ -168,7 +168,7 @@ class AgentWrapper(object):
             self._sensors_list.append(sensor)
 
         # Tick once to spawn the sensors and wait until they send their first data
-        CarlaDataProvider.get_world().tick() 
+        CarlaDataProvider.get_world().tick()
         self._agent.wait_for_all_sensors_ready(debug_mode)
 
 

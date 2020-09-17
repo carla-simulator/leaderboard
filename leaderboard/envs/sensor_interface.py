@@ -10,6 +10,7 @@ from queue import Empty
 
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from srunner.scenariomanager.timer import GameTime
 
 
 def threaded(fn):
@@ -51,8 +52,6 @@ class BaseReader(object):
         self._vehicle = vehicle
         self._reading_frequency = reading_frequency
         self._callback = None
-        #  Counts the frames
-        self._frame = 0
         self._run_ps = True
         self.run()
 
@@ -61,14 +60,13 @@ class BaseReader(object):
 
     @threaded
     def run(self):
-        latest_read = time.time()
+        latest_time = None
         while self._run_ps:
             if self._callback is not None:
-                capture = time.time()
-                if capture - latest_read > (1 / self._reading_frequency):
-                    self._callback(GenericMeasurement(self.__call__(), self._frame))
-                    self._frame += 1
-                    latest_read = time.time()
+                current_time = GameTime.get_time()
+                if latest_time is None or current_time - latest_time > (1 / self._reading_frequency):
+                    self._callback(GenericMeasurement(self.__call__(), GameTime.get_frame()))
+                    latest_time = GameTime.get_time()
                 else:
                     time.sleep(0.001)
 
@@ -224,16 +222,16 @@ class SensorInterface(object):
             raise RuntimeError("A sensor took too long to send their data")
 
         # Used the first sensor data from the queue, so we tick again
-        CarlaDataProvider.get_world().tick() 
+        CarlaDataProvider.get_world().tick()
 
     def get_data(self):
         try: 
             data_dict = {}
-            while len(data_dict) < 4:
-
+            for _ in range(0, len(self._sensors_objects.keys())):
                 sensor_data = self._new_data_buffers.get(True, self._timeout)
                 # print("Getting {} - {}".format(sensor_data[0],sensor_data[1]))
-                data_dict[sensor_data[0]] = 0
+                data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
+
         except Empty:
             raise SensorReceivedNoData("A sensor took too long to send their data")
 
