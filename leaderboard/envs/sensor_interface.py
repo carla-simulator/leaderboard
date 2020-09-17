@@ -60,13 +60,19 @@ class BaseReader(object):
 
     @threaded
     def run(self):
-        latest_time = None
+        first_time = True
+        latest_time = GameTime.get_time()
         while self._run_ps:
             if self._callback is not None:
                 current_time = GameTime.get_time()
-                if latest_time is None or current_time - latest_time > (1 / self._reading_frequency):
+
+                # Second part forces the sensors to send data at the first tick, regardless of frequency
+                if current_time - latest_time > (1 / self._reading_frequency) \
+                        or (first_time and GameTime.get_frame() != 0):
                     self._callback(GenericMeasurement(self.__call__(), GameTime.get_frame()))
                     latest_time = GameTime.get_time()
+                    first_time = False
+
                 else:
                     time.sleep(0.001)
 
@@ -125,11 +131,11 @@ class OpenDriveMapReader(BaseReader):
 
 
 class CallBack(object):
-    def __init__(self, tag, sensor, data_provider):
+    def __init__(self, tag, sensor_type, sensor, data_provider):
         self._tag = tag
         self._data_provider = data_provider
 
-        self._data_provider.register_sensor(tag, sensor)
+        self._data_provider.register_sensor(tag, sensor_type, sensor)
 
     def __call__(self, data):
         if isinstance(data, carla.libcarla.Image):
@@ -193,15 +199,21 @@ class SensorInterface(object):
     def __init__(self):
         self._sensors_objects = {}
         self._data_buffers = {}
-        self._timeout = 10
-        
         self._new_data_buffers = Queue()
+        self._queue_timeout = 10
 
-    def register_sensor(self, tag, sensor):
+        # Only sensor that doesn't get the data on tick, needs special treatment
+        self._opendrive_tag = None
+
+
+    def register_sensor(self, tag, sensor_type, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
 
         self._sensors_objects[tag] = sensor
+
+        if sensor_type == 'sensor.opendrive_map': 
+            self._opendrive_tag = tag
 
     def update_sensor(self, tag, data, timestamp):
         # print("Updating {} - {}".format(tag, timestamp))
@@ -210,25 +222,18 @@ class SensorInterface(object):
 
         self._new_data_buffers.put((tag, timestamp, data))
 
-    def wait_for_all_sensors_ready(self, debug=False):
-
-        # Wait until the four sensors have received something
-        try:
-            for _ in range(0, len(self._sensors_objects.keys())):
-                sensor_data = self._new_data_buffers.get(True, self._timeout)
-                # print("Sensor {} ready - {}".format(sensor_data[0],sensor_data[1]))
-
-        except Empty:
-            raise RuntimeError("A sensor took too long to send their data")
-
-        # Used the first sensor data from the queue, so we tick again
-        CarlaDataProvider.get_world().tick()
-
     def get_data(self):
         try: 
             data_dict = {}
             for _ in range(0, len(self._sensors_objects.keys())):
-                sensor_data = self._new_data_buffers.get(True, self._timeout)
+
+                # Don't wait for the opendrive sensor
+                if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
+                        and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
+                    # print("Ignoring opendrive sensor")
+                    break
+
+                sensor_data = self._new_data_buffers.get(True, self._queue_timeout)
                 # print("Getting {} - {}".format(sensor_data[0],sensor_data[1]))
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
