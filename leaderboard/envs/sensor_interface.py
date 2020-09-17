@@ -5,6 +5,9 @@ import os
 import time
 from threading import Thread
 
+from queue import Queue
+from queue import Empty
+
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
@@ -26,6 +29,15 @@ class SensorConfigurationInvalid(Exception):
 
     def __init__(self, message):
         super(SensorConfigurationInvalid, self).__init__(message)
+
+
+class SensorReceivedNoData(Exception):
+    """
+    Exceptions thrown when the sensors used by the agent take too long to receive data
+    """
+
+    def __init__(self, message):
+        super(SensorReceivedNoData, self).__init__(message)
 
 
 class GenericMeasurement(object):
@@ -183,30 +195,46 @@ class SensorInterface(object):
     def __init__(self):
         self._sensors_objects = {}
         self._data_buffers = {}
-        self._timestamps = {}
+        self._timeout = 10
+        
+        self._new_data_buffers = Queue()
 
     def register_sensor(self, tag, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
 
         self._sensors_objects[tag] = sensor
-        self._data_buffers[tag] = None
-        self._timestamps[tag] = -1
 
     def update_sensor(self, tag, data, timestamp):
+        # print("Updating {} - {}".format(tag, timestamp))
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
-        self._data_buffers[tag] = data
-        self._timestamps[tag] = timestamp
 
-    def all_sensors_ready(self):
-        for key in self._sensors_objects.keys():
-            if self._data_buffers[key] is None:
-                return False
-        return True
+        self._new_data_buffers.put((tag, timestamp, data))
+
+    def wait_for_all_sensors_ready(self, debug=False):
+
+        # Wait until the four sensors have received something
+        try:
+            for _ in range(0, len(self._sensors_objects.keys())):
+                sensor_data = self._new_data_buffers.get(True, self._timeout)
+                # print("Sensor {} ready - {}".format(sensor_data[0],sensor_data[1]))
+
+        except Empty:
+            raise RuntimeError("A sensor took too long to send their data")
+
+        # Used the first sensor data from the queue, so we tick again
+        CarlaDataProvider.get_world().tick() 
 
     def get_data(self):
-        data_dict = {}
-        for key in self._sensors_objects.keys():
-            data_dict[key] = (self._timestamps[key], self._data_buffers[key])
+        try: 
+            data_dict = {}
+            while len(data_dict) < 4:
+
+                sensor_data = self._new_data_buffers.get(True, self._timeout)
+                # print("Getting {} - {}".format(sensor_data[0],sensor_data[1]))
+                data_dict[sensor_data[0]] = 0
+        except Empty:
+            raise SensorReceivedNoData("A sensor took too long to send their data")
+
         return data_dict

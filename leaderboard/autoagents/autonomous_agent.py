@@ -117,12 +117,12 @@ class AutonomousAgent(object):
 
         return control
 
-    def all_sensors_ready(self):
+    def wait_for_all_sensors_ready(self, debug=False):
         """
         Check if all sensors are ready
         Returns true if sensors are ready
         """
-        return self.sensor_interface.all_sensors_ready()
+        return self.sensor_interface.wait_for_all_sensors_ready(debug)
 
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
         """

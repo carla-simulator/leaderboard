@@ -23,6 +23,7 @@ from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.watchdog import Watchdog
 
 from leaderboard.autoagents.agent_wrapper import AgentWrapper, AgentError
+from leaderboard.envs.sensor_interface import SensorReceivedNoData
 from leaderboard.utils.result_writer import ResultOutputProvider
 
 
@@ -153,7 +154,14 @@ class ScenarioManager(object):
                 self._agent_watchdog.start()
                 ego_action = self._agent()
                 self._agent_watchdog.stop()
+
+            # Special exception inside the agent that isn't caused by the agent
+            except SensorReceivedNoData as e:
+                self._agent_watchdog.stop()
+                raise RuntimeError(e)
+
             except Exception as e:
+                self._agent_watchdog.stop()
                 raise AgentError(e)
 
             self.ego_vehicles[0].apply_control(ego_action)
@@ -178,6 +186,7 @@ class ScenarioManager(object):
 
         if self._running and self.get_running_status():
             CarlaDataProvider.get_world().tick(self._timeout)
+            # print("------ Starting frame: {} ------".format(CarlaDataProvider.get_world().get_snapshot().timestamp.frame))
 
     def get_running_status(self):
         """

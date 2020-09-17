@@ -12,6 +12,7 @@ Wrapper for autonomous agents required for tracking and checking of used sensors
 from __future__ import print_function
 import math
 import os
+import time
 
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
@@ -46,6 +47,16 @@ class AgentWrapper(object):
     """
     Wrapper for autonomous agents required for tracking and checking of used sensors
     """
+
+    allowed_sensors = [
+        'sensor.opendrive_map',
+        'sensor.speedometer',
+        'sensor.camera.rgb',
+        'sensor.lidar.ray_cast',
+        'sensor.other.radar',
+        'sensor.other.gnss',
+        'sensor.other.imu'
+    ]
 
     _agent = None
     _sensors_list = []
@@ -156,10 +167,10 @@ class AgentWrapper(object):
             sensor.listen(CallBack(sensor_spec['id'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        while not self._agent.all_sensors_ready():
-            if debug_mode:
-                print(" waiting for one data reading from sensors...")
-            CarlaDataProvider.get_world().tick()
+        # Tick once to spawn the sensors and wait until they send their first data
+        CarlaDataProvider.get_world().tick() 
+        self._agent.wait_for_all_sensors_ready(debug_mode)
+
 
     @staticmethod
     def validate_sensor_configuration(sensors, agent_track, selected_track):
@@ -198,6 +209,10 @@ class AgentWrapper(object):
                 sensor_count[sensor['type']] += 1
             else:
                 sensor_count[sensor['type']] = 1
+
+            # Check the sensors validity
+            if sensor['type'] not in AgentWrapper.allowed_sensors:
+                raise SensorConfigurationInvalid("Illegal sensor used. {} are not allowed!".format(sensor['type'])) 
 
         for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
             if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
