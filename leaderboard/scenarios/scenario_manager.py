@@ -83,10 +83,7 @@ class ScenarioManager(object):
         """
         Terminate scenario ticking when receiving a signal interrupt
         """
-        if not self._agent_watchdog.get_status():
-            raise RuntimeError("Timeout: Agent's calculus took too long")
-        else:
-            self._running = False
+        self._running = False
 
     def cleanup(self):
         """
@@ -99,7 +96,7 @@ class ScenarioManager(object):
         self.end_system_time = None
         self.end_game_time = None
 
-    def load_scenario(self, scenario, agent):
+    def load_scenario(self, scenario, agent, rep_number):
         """
         Load a new scenario
         """
@@ -111,6 +108,7 @@ class ScenarioManager(object):
         self.scenario_tree = self.scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
+        self.repetition_number = rep_number
 
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
@@ -151,17 +149,13 @@ class ScenarioManager(object):
             CarlaDataProvider.on_carla_tick()
 
             try:
-                self._agent_watchdog.start()
                 ego_action = self._agent()
-                self._agent_watchdog.stop()
 
             # Special exception inside the agent that isn't caused by the agent
             except SensorReceivedNoData as e:
-                self._agent_watchdog.stop()
                 raise RuntimeError(e)
 
             except Exception as e:
-                self._agent_watchdog.stop()
                 raise AgentError(e)
 
             self.ego_vehicles[0].apply_control(ego_action)

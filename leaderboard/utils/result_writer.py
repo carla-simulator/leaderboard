@@ -45,8 +45,8 @@ class ResultOutputProvider(object):
 
         # Create the title
         output = "\n"
-        output += " ======= Results of Scenario: {} ---- {} =======\n".format(
-            self._data.scenario_tree.name, self._global_result)
+        output += "\033[1m========= Results of {} (repetition {}) ------ {} \033[1m=========\033[0m\n".format(
+            self._data.scenario_tree.name, self._data.repetition_number, self._global_result)
         output += "\n"
 
         # Simulation part
@@ -112,6 +112,5 @@ class ResultOutputProvider(object):
 
         output += tabulate(list_statistics, tablefmt='fancy_grid')
         output += "\n"
-        output += " ================================================================="
 
         return output

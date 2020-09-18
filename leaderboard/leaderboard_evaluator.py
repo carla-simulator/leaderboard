@@ -231,6 +231,8 @@ class LeaderboardEvaluator(object):
             self.manager.scenario_duration_game,
             crash_message
         )
+
+        print("\033[1m> Registering the route statistics\033[0m")
         self.statistics_manager.save_record(current_stats_record, config.index, checkpoint)
         self.statistics_manager.save_entry_status(entry_status, False, checkpoint)
 
@@ -243,6 +245,9 @@ class LeaderboardEvaluator(object):
         """
         crash_message = ""
         entry_status = "Started"
+
+        print("\n\033[1m========= Preparing {} (repetition {}) =========".format(config.name, config.repetition_index))
+        print("> Setting up the agent\033[0m")
 
         # Prepare the statistics of the route
         self.statistics_manager.set_route(config.name, config.index)
@@ -268,8 +273,8 @@ class LeaderboardEvaluator(object):
 
         except SensorConfigurationInvalid as e:
             # The sensors are invalid -> set the ejecution to rejected and stop
-            print("\nThe sensor's configuration used is invalid:")
-            print("> {}\n".format(e))
+            print("\n\033[91mThe sensor's configuration used is invalid:")
+            print("> {}\033[0m\n".format(e))
             traceback.print_exc()
 
             crash_message = "Agent's sensors were invalid"
@@ -281,8 +286,8 @@ class LeaderboardEvaluator(object):
 
         except Exception as e:
             # The agent setup has failed -> start the next route
-            print("\nCould not set up the required agent:")
-            print("> {}\n".format(e))
+            print("\n\033[91mCould not set up the required agent:")
+            print("> {}\033[0m\n".format(e))
             traceback.print_exc()
 
             crash_message = "Agent couldn't be set up"
@@ -291,7 +296,7 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             return
 
-        print("Preparing scenario {}, repetition number {}".format(config.name, config.repetition_index))
+        print("\033[1m> Loading the world\033[0m")
 
         # Load the world and the scenario
         try:
@@ -308,12 +313,12 @@ class LeaderboardEvaluator(object):
             # Load scenario and run it
             if args.record:
                 self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(scenario, self.agent_instance)
+            self.manager.load_scenario(scenario, self.agent_instance, config.repetition_index)
 
         except Exception as e:
             # The scenario is wrong -> set the ejecution to crashed and stop
-            print("\nThe scenario could not be loaded:")
-            print("> {}\n".format(e))
+            print("\n\033[91mThe scenario could not be loaded:")
+            print("> {}\033[0m\n".format(e))
             traceback.print_exc()
 
             crash_message = "Simulation crashed"
@@ -327,7 +332,7 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             sys.exit(-1)
 
-        print("Running scenario {}, repetition number {}".format(config.name, config.repetition_index))
+        print("\033[1m> Running the route\033[0m")
 
         # Run the scenario
         try:
@@ -335,15 +340,15 @@ class LeaderboardEvaluator(object):
 
         except AgentError as e:
             # The agent has failed -> stop the route
-            print("\nStopping the route, the agent has crashed:")
-            print("> {}\n".format(e))
+            print("\n\033[91mStopping the route, the agent has crashed:")
+            print("> {}\033[0m\n".format(e))
             traceback.print_exc()
 
             crash_message = "Agent crashed"
 
         except Exception as e:
-            print("\nError during the simulation:")
-            print("> {}\n".format(e))
+            print("\n\033[91mError during the simulation:")
+            print("> {}\033[0m\n".format(e))
             traceback.print_exc()
 
             crash_message = "Simulation crashed"
@@ -351,6 +356,7 @@ class LeaderboardEvaluator(object):
 
         # Stop the scenario
         try:
+            print("\033[1m> Stopping the route\033[0m")
             self.manager.stop_scenario()
             self._register_statistics(config, args.checkpoint, entry_status, crash_message)
 
@@ -363,8 +369,8 @@ class LeaderboardEvaluator(object):
             self._cleanup()
 
         except Exception as e:
-            print("\nFailed to stop the scenario, the statistics might be empty:")
-            print("> {}\n".format(e))
+            print("\n\033[91mFailed to stop the scenario, the statistics might be empty:")
+            print("> {}\033[0m\n".format(e))
             traceback.print_exc()
 
             crash_message = "Simulation crashed"
@@ -395,6 +401,7 @@ class LeaderboardEvaluator(object):
             route_indexer.save_state(args.checkpoint)
 
         # save global statistics
+        print("\033[1m> Registering the global statistics\033[0m")
         global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
         StatisticsManager.save_global_record(global_stats_record, self.sensor_icons, route_indexer.total, args.checkpoint)
 
