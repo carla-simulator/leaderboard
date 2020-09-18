@@ -52,6 +52,7 @@ class AgentWrapper(object):
         'sensor.opendrive_map',
         'sensor.speedometer',
         'sensor.camera.rgb',
+        'sensor.camera',
         'sensor.lidar.ray_cast',
         'sensor.other.radar',
         'sensor.other.gnss',

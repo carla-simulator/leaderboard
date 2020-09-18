@@ -291,7 +291,7 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             return
 
-        print("Preparing scenario " + config.name)
+        print("Preparing scenario {}, repetition number {}".format(config.name, config.repetition_index))
 
         # Load the world and the scenario
         try:
@@ -327,7 +327,7 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             sys.exit(-1)
 
-        print("Running scenario " + config.name)
+        print("Running scenario {}, repetition number {}".format(config.name, config.repetition_index))
 
         # Run the scenario
         try:

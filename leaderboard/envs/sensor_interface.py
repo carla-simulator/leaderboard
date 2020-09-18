@@ -225,7 +225,7 @@ class SensorInterface(object):
     def get_data(self):
         try: 
             data_dict = {}
-            for _ in range(0, len(self._sensors_objects.keys())):
+            while len(data_dict.keys()) < len(self._sensors_objects.keys()):
 
                 # Don't wait for the opendrive sensor
                 if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
