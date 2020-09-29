@@ -12,6 +12,7 @@ Wrapper for autonomous agents required for tracking and checking of used sensors
 from __future__ import print_function
 import math
 import os
+import time
 
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
@@ -47,6 +48,17 @@ class AgentWrapper(object):
     Wrapper for autonomous agents required for tracking and checking of used sensors
     """
 
+    allowed_sensors = [
+        'sensor.opendrive_map',
+        'sensor.speedometer',
+        'sensor.camera.rgb',
+        'sensor.camera',
+        'sensor.lidar.ray_cast',
+        'sensor.other.radar',
+        'sensor.other.gnss',
+        'sensor.other.imu'
+    ]
+
     _agent = None
     _sensors_list = []
 
@@ -75,7 +87,9 @@ class AgentWrapper(object):
                 # The HDMap pseudo sensor is created directly here
                 sensor = OpenDriveMapReader(vehicle, sensor_spec['reading_frequency'])
             elif sensor_spec['type'].startswith('sensor.speedometer'):
-                sensor = SpeedometerReader(vehicle, sensor_spec['reading_frequency'])
+                delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+                frame_rate = 1 / delta_time
+                sensor = SpeedometerReader(vehicle, frame_rate)
             # These are the sensors spawned on the carla world
             else:
                 bp = bp_library.find(str(sensor_spec['type']))
@@ -153,13 +167,12 @@ class AgentWrapper(object):
                 sensor_transform = carla.Transform(sensor_location, sensor_rotation)
                 sensor = CarlaDataProvider.get_world().spawn_actor(bp, sensor_transform, vehicle)
             # setup callback
-            sensor.listen(CallBack(sensor_spec['id'], sensor, self._agent.sensor_interface))
+            sensor.listen(CallBack(sensor_spec['id'], sensor_spec['type'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        while not self._agent.all_sensors_ready():
-            if debug_mode:
-                print(" waiting for one data reading from sensors...")
-            CarlaDataProvider.get_world().tick()
+        # Tick once to spawn the sensors
+        CarlaDataProvider.get_world().tick()
+
 
     @staticmethod
     def validate_sensor_configuration(sensors, agent_track, selected_track):
@@ -187,6 +200,10 @@ class AgentWrapper(object):
                 if sensor['type'].startswith('sensor.opendrive_map'):
                     raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(agent_track))
 
+            # Check the sensors validity
+            if sensor['type'] not in AgentWrapper.allowed_sensors:
+                raise SensorConfigurationInvalid("Illegal sensor used. {} are not allowed!".format(sensor['type']))
+
             # Check the extrinsics of the sensor
             if 'x' in sensor and 'y' in sensor and 'z' in sensor:
                 if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
@@ -198,6 +215,7 @@ class AgentWrapper(object):
                 sensor_count[sensor['type']] += 1
             else:
                 sensor_count[sensor['type']] = 1
+
 
         for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
             if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:

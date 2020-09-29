@@ -23,6 +23,7 @@ from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.watchdog import Watchdog
 
 from leaderboard.autoagents.agent_wrapper import AgentWrapper, AgentError
+from leaderboard.envs.sensor_interface import SensorReceivedNoData
 from leaderboard.utils.result_writer import ResultOutputProvider
 
 
@@ -60,9 +61,13 @@ class ScenarioManager(object):
         self._timestamp_last_run = 0.0
         self._timeout = float(timeout)
 
-        # Used to detect the simulation is down, but doesn't create any exception
+        # Used to detect if the simulation is down
         watchdog_timeout = max(5, self._timeout - 2)
         self._watchdog = Watchdog(watchdog_timeout)
+
+        # Avoid the agent from freezing the simulation
+        agent_timeout = watchdog_timeout - 1
+        self._agent_watchdog = Watchdog(agent_timeout)
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
@@ -72,38 +77,38 @@ class ScenarioManager(object):
 
         # Register the scenario tick as callback for the CARLA world
         # Use the callback_id inside the signal handler to allow external interrupts
-        signal.signal(signal.SIGINT, self._signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
 
-    def _signal_handler(self, signum, frame):
+    def signal_handler(self, signum, frame):
         """
         Terminate scenario ticking when receiving a signal interrupt
         """
         self._running = False
 
-    def _reset(self):
+    def cleanup(self):
         """
         Reset all parameters
         """
-        self._running = False
         self._timestamp_last_run = 0.0
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = None
         self.end_system_time = None
         self.end_game_time = None
-        GameTime.restart()
 
-    def load_scenario(self, scenario, agent):
+    def load_scenario(self, scenario, agent, rep_number):
         """
         Load a new scenario
         """
-        self._reset()
+
+        GameTime.restart()
         self._agent = AgentWrapper(agent)
         self.scenario_class = scenario
         self.scenario = scenario.scenario
         self.scenario_tree = self.scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
+        self.repetition_number = rep_number
 
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
@@ -145,8 +150,15 @@ class ScenarioManager(object):
 
             try:
                 ego_action = self._agent()
+
+            # Special exception inside the agent that isn't caused by the agent
+            except SensorReceivedNoData as e:
+                raise RuntimeError(e)
+
             except Exception as e:
                 raise AgentError(e)
+
+            self.ego_vehicles[0].apply_control(ego_action)
 
             # Tick scenario
             self.scenario_tree.tick_once()
@@ -165,10 +177,9 @@ class ScenarioManager(object):
             spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
                                                         carla.Rotation(pitch=-90)))
 
-            self.ego_vehicles[0].apply_control(ego_action)
-
         if self._running and self.get_running_status():
             CarlaDataProvider.get_world().tick(self._timeout)
+            # print("------ Starting frame: {} ------".format(CarlaDataProvider.get_world().get_snapshot().timestamp.frame))
 
     def get_running_status(self):
         """
