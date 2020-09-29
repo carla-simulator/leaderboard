@@ -1,7 +1,5 @@
 dictor
 requests
 opencv-python
-carla
-srunner
 pygame
 tabulate
