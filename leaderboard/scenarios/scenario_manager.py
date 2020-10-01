@@ -179,7 +179,6 @@ class ScenarioManager(object):
 
         if self._running and self.get_running_status():
             CarlaDataProvider.get_world().tick(self._timeout)
-            # print("------ Starting frame: {} ------".format(CarlaDataProvider.get_world().get_snapshot().timestamp.frame))
 
     def get_running_status(self):
         """
