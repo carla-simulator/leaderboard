@@ -24,6 +24,7 @@ fi
 mkdir .tmp
 
 cp -fr ${CARLA_ROOT}/PythonAPI  .tmp
+mv .tmp/PythonAPI/carla/dist/carla-*.egg .tmp/PythonAPI/carla/dist/carla-leaderboard.egg
 cp -fr ${SCENARIO_RUNNER_ROOT}/ .tmp
 cp -fr ${LEADERBOARD_ROOT}/ .tmp
 cp -fr ${TEAM_CODE_ROOT}/ .tmp/team_code
