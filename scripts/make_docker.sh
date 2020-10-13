@@ -21,10 +21,12 @@ then echo "Error $TEAM_CODE_ROOT is empty. Set \$TEAM_CODE_ROOT as an environmen
     exit 1
 fi
 
-mkdir .tmp
+mkdir -p .tmp
 
 cp -fr ${CARLA_ROOT}/PythonAPI  .tmp
-mv .tmp/PythonAPI/carla/dist/carla-*.egg .tmp/PythonAPI/carla/dist/carla-leaderboard.egg
+mv .tmp/PythonAPI/carla/dist/carla*-py2*.egg .tmp/PythonAPI/carla/dist/carla-leaderboard-py2.7.egg
+mv .tmp/PythonAPI/carla/dist/carla*-py3*.egg .tmp/PythonAPI/carla/dist/carla-leaderboard-py3x.egg
+
 cp -fr ${SCENARIO_RUNNER_ROOT}/ .tmp
 cp -fr ${LEADERBOARD_ROOT}/ .tmp
 cp -fr ${TEAM_CODE_ROOT}/ .tmp/team_code
