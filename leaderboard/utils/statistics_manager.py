@@ -111,7 +111,11 @@ class StatisticsManager(object):
 
     def set_scenario(self, scenario):
         """
-        Sets the scenario from which the statistics willb e taken
+        Sets the scenario from which the statistics will be taken.
+        
+        This works in conjunction with set_route so that the variable
+        is only active when the simulation is active, to avoid statistic
+        errors in case something breaks between simulations 
         """
         self._master_scenario = scenario
 
@@ -206,6 +210,7 @@ class StatisticsManager(object):
         global_record.route_id = -1
         global_record.index = -1
         global_record.status = 'Completed'
+        global_record.infractions_std_dev = RouteRecord().infractions
 
         if self._registry_route_records:
             for route_record in self._registry_route_records:
@@ -228,9 +233,25 @@ class StatisticsManager(object):
                                                              route_record.index,
                                                              route_record.status))
 
-        global_record.scores['score_route'] /= float(total_routes)
-        global_record.scores['score_penalty'] /= float(total_routes)
-        global_record.scores['score_composed'] /= float(total_routes)
+            for key in global_record.scores.keys():
+                global_record.scores[key] /= float(total_routes)
+
+            for key in global_record.infractions.keys():
+                global_record.infractions[key] /= float(total_routes)
+
+            for route_record in self._registry_route_records:
+                for key in global_record.infractions_std_dev.keys():
+                    route_length_kms = max(route_record.scores['score_route'] * route_record.meta['route_length'] / 1000.0, 0.001)
+                    value = len(route_record.infractions[key]) / route_length_kms
+                    mean = global_record.infractions[key]
+                    if isinstance(global_record.infractions_std_dev[key], list):
+                        global_record.infractions_std_dev[key] = math.pow(value - mean, 2)
+                    else:
+                        temp1 = math.pow(value - mean, 2)
+                        global_record.infractions_std_dev[key] += temp1
+
+            for key in global_record.infractions_std_dev.keys():
+                global_record.infractions_std_dev[key] = math.sqrt(global_record.infractions_std_dev[key] / float(total_routes))
 
         return global_record
 
