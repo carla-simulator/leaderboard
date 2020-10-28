@@ -219,7 +219,7 @@ class StatisticsManager(object):
                 global_record.scores['score_composed'] += route_record.scores['score_composed']
 
                 for key in global_record.infractions.keys():
-                    route_length_kms = max(route_record.scores['score_route'] * route_record.meta['route_length'] / 1000.0, 0.001)
+                    route_length_kms = max(route_record.scores['score_route'] / 100 * route_record.meta['route_length'] / 1000.0, 0.001)
                     if isinstance(global_record.infractions[key], list):
                         global_record.infractions[key] = len(route_record.infractions[key]) / route_length_kms
                     else:
@@ -241,7 +241,7 @@ class StatisticsManager(object):
 
             for route_record in self._registry_route_records:
                 for key in global_record.infractions_std_dev.keys():
-                    route_length_kms = max(route_record.scores['score_route'] * route_record.meta['route_length'] / 1000.0, 0.001)
+                    route_length_kms = max(route_record.scores['score_route'] / 100 * route_record.meta['route_length'] / 1000.0, 0.001)
                     value = len(route_record.infractions[key]) / route_length_kms
                     mean = global_record.infractions[key]
                     if isinstance(global_record.infractions_std_dev[key], list):
