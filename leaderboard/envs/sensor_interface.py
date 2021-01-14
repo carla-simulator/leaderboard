@@ -216,7 +216,6 @@ class SensorInterface(object):
             self._opendrive_tag = tag
 
     def update_sensor(self, tag, data, timestamp):
-        # print("Updating {} - {}".format(tag, timestamp))
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
 
@@ -230,11 +229,9 @@ class SensorInterface(object):
                 # Don't wait for the opendrive sensor
                 if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
                         and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
-                    # print("Ignoring opendrive sensor")
                     break
 
                 sensor_data = self._new_data_buffers.get(True, self._queue_timeout)
-                # print("Getting {} - {}".format(sensor_data[0],sensor_data[1]))
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
         except Empty:
