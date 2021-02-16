@@ -42,7 +42,7 @@ class AutonomousAgent(object):
         self.sensor_interface = SensorInterface()
 
         # agent's initialization
-        self.setup(path_to_conf_file)
+        # self.setup(path_to_conf_file)
 
         self.wallclock_t0 = None
 
