@@ -45,7 +45,7 @@ class RosAgent(AutonomousAgent):
 
         self.ros_node = CompatibleNode("LeaderboardAgent")
         qos_profile=QoSProfile(depth=1, durability=latch_on)
-        self.waypoint_publisher = self.ros_node.new_publisher(Path, "/carla/hero/leaderboard_waypoints", qos_profile=qos_profile)
+        self.waypoint_publisher = self.ros_node.new_publisher(Path, "/carla/hero/global_plan", qos_profile=qos_profile)
         self.ctrl_subscriber = self.ros_node.create_subscriber(CarlaEgoVehicleControl, "/carla/hero/vehicle_control_cmd", self.new_control_callback, qos_profile=QoSProfile(depth=1, durability=False))
 
         self.leaderboard_executor = MultiThreadedExecutor()
@@ -126,7 +126,7 @@ class RosAgent(AutonomousAgent):
         cmd = carla.VehicleControl()
         try:
             limit_count = 0 
-            while self.new_control_cmd is None and limit_count < 100 :
+            while self.new_control_cmd is None and limit_count < 50 :
                 limit_count +=1
                 time.sleep(0.01)
             if self.new_control_cmd is None:
