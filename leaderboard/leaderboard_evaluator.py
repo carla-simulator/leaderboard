@@ -35,6 +35,7 @@ from leaderboard.autoagents.agent_wrapper import  AgentWrapper, AgentError
 from leaderboard.utils.statistics_manager import StatisticsManager
 from leaderboard.utils.route_indexer import RouteIndexer
 
+from carla_ros_scenario_runner.application_runner import ApplicationRunner, ApplicationStatus
 
 sensors_to_icons = {
     'sensor.camera.rgb':        'carla_camera',
@@ -125,7 +126,7 @@ class LeaderboardEvaluator(object):
         """
         Remove and destroy all actors
         """
-
+        self.bridge_runner.shutdown()
         # Simulation still running and in synchronous mode?
         if self.manager and self.manager.get_running_status() \
                 and hasattr(self, 'world') and self.world:
@@ -239,6 +240,19 @@ class LeaderboardEvaluator(object):
         self.statistics_manager.save_record(current_stats_record, config.index, checkpoint)
         self.statistics_manager.save_entry_status(entry_status, False, checkpoint)
 
+    def start_ros_bridge(self):
+        self.bridge_runner = ApplicationRunner(self.app_runner_status_updated,
+                                        lambda log: print(f'ROS_BRIDGE: {log}'),
+                                        "Passive mode is enabled")
+        cmd_line = ['xterm', '-e', 'ros2', 'run', 'carla_ros_bridge', 'bridge', '--ros-args', '-p' , 'passive:=True']
+        execute_bridge = self.bridge_runner.execute(cmd_line, env=os.environ)
+
+    def app_runner_status_updated(self, status):
+        """
+        Executed from application runner whenever the status changed
+        """
+        print("ROS-BRIDGE: Status updated to {}".format(status))
+
     def _load_and_run_scenario(self, args, config):
         """
         Load and run the scenario given by config.
@@ -261,6 +275,7 @@ class LeaderboardEvaluator(object):
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
             config.agent = self.agent_instance
+            self.start_ros_bridge()
 
             # Check and store the sensors
             if not self.sensors:
@@ -339,6 +354,7 @@ class LeaderboardEvaluator(object):
 
         # Run the scenario
         try:
+            self.agent_instance.setup(args.agent_config)
             self.manager.run_scenario()
 
         except AgentError as e:
