@@ -83,13 +83,15 @@ def _get_latlon_ref(world):
     return lat_ref, lon_ref
 
 
-def downsample_route(route, sample_factor):
+def downsample_route(route, gps_route, sample_factor):
     """
     Downsample the route by some factor.
     :param route: the trajectory , has to contain the waypoints and the road options
     :param sample_factor: Maximum distance between samples
     :return: returns the ids of the final route that can
     """
+    route_downsampled = []
+    gps_route_downsampled = []
 
     ids_to_sample = []
     prev_option = None
@@ -98,24 +100,38 @@ def downsample_route(route, sample_factor):
     for i, point in enumerate(route):
         curr_option = point[1]
 
+        # At the beginning
+        if prev_option is None:
+            route_downsampled.append(route[i])
+            gps_route_downsampled.append(gps_route[i])
+
         # Lane changing
-        if curr_option in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
-            ids_to_sample.append(i)
+        elif curr_option in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
+            route_downsampled.append(route[i])
+            gps_route_downsampled.append(gps_route[i])
             dist = 0
 
-        # When road option changes
+        # When entering or exitting intersections). To avoid problems with motion planners,
+        # points before / after the intersection are chosen instead (but keeping the RoadOption)
         elif prev_option != curr_option and prev_option not in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
-            ids_to_sample.append(i)
+            if curr_option == RoadOption.LANEFOLLOW:
+                route_downsampled.append([route[i+2][0], route[i][1]])
+                gps_route_downsampled.append([gps_route[i+2][0], gps_route[i][1]])
+            else:
+                route_downsampled.append([route[i-2][0], route[i][1]])
+                gps_route_downsampled.append([gps_route[i-2][0], gps_route[i][1]])
             dist = 0
 
         # After a certain max distance
         elif dist > sample_factor:
-            ids_to_sample.append(i)
+            route_downsampled.append(route[i])
+            gps_route_downsampled.append(gps_route[i])
             dist = 0
 
         # At the end
         elif i == len(route) - 1:
-            ids_to_sample.append(i)
+            route_downsampled.append(route[i])
+            gps_route_downsampled.append(gps_route[i])
             dist = 0
 
         # Compute the distance traveled
@@ -126,7 +142,7 @@ def downsample_route(route, sample_factor):
 
         prev_option = curr_option
 
-    return ids_to_sample
+    return route_downsampled, gps_route_downsampled
 
 
 def interpolate_trajectory(world, waypoints_trajectory, hop_resolution=1.0):
