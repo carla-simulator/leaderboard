@@ -4,17 +4,25 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 """
-This module provides an NPC agent to control the ego vehicle
+This module provides an example of an agent that doesn't use the carla.Map in order to
+navigate through the town, by using the (https://github.com/carla-simulator/map) library,
+which doesn't access any privileged information.
+
+This library isn't installed automatically by the leaderboard.
+
+This agent ignores all dynamic elements of the scene as well as traffic lights so it is
+recommended to remove the background activity when checking this example (to do so, go to
+"leaderboard/scenarios/route_scenario.py" and change the dictionary at "_initialize_actors")
 """
 
 from __future__ import print_function
 
-import time
 import carla
 import numpy as np
 import math
 import os
 import xml.etree.ElementTree as ET
+
 from leaderboard.autoagents.map_agent_controller import VehiclePIDController
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
@@ -24,8 +32,10 @@ def get_entry_point():
     return 'MapAgent'
 
 class MapAgent(AutonomousAgent):
-    """Autonomous agent to control the ego vehicle using the AD Map library
-    to parse the opendrive map information"""
+    """
+    Autonomous agent to control the ego vehicle using the AD Map library
+    to parse the opendrive map information
+    """
 
     def setup(self, path_to_conf_file):
         """
@@ -35,41 +45,35 @@ class MapAgent(AutonomousAgent):
 
         # Route
         self._route = []
-        self._route_assigned = False
+        self._route_index = 0  # Index of the closest route point to the vehicle
+        self._route_index_buffer = 5  # Amount of route points checked
+        self._added_target_index = 5  # How far will the target waypoint be (x*resolution [in meters])
 
         # Controller
         self._controller = None
-        self._prev_location = None
+        self._target_speed = 20
         self._args_lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.07, 'dt': 0.05}
         self._args_longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
 
-        self._route_index = 0
-        self._route_index_buffer = 5
-        self._added_target_index = 5  # This will mean the waypoint is at x*resolution meters
-
         # AD map library
         self._map_initialized = False
-        self._map_name = 'LeaderboardMap'
-
-        # Debugging, remove afterwards
-        self.client = carla.Client('127.0.0.1', 2000)
-        self.client.set_timeout(5.0)
-        self.world = self.client.get_world()
-        self._vehicle = None
+        self._txt_name = "LeaderboardMap.txt"
+        self._xodr_name = "LeaderboardMap.xodr"
 
     def sensors(self):
         """
-        Define the sensor suite required by the agent
+        Define the sensors required by the agent
         """
         sensors = [
-            {'type': 'sensor.opendrive_map', 'id': 'ODM', 'reading_frequency': 1},
+            {'type': 'sensor.opendrive_map', 'reading_frequency': 1, 'id': 'ODM'},
             {'type': 'sensor.speedometer', 'id': 'Speed'},
             {'type': 'sensor.other.gnss', 'x': 0, 'y': 0, 'z': 0, 'id': 'GNSS'},
+            {'type': 'sensor.other.imu', 'x': 0, 'y': 0, 'z': 0, 'roll': 0, 'pitch': 0, 'yaw': 0, 'id': 'IMU'}
         ]
 
         return sensors
 
-    def run_step(self, input_data, timestamp):
+    def run_step(self, data, timestamp):
         """
         Execute one step of navigation.
         """
@@ -77,49 +81,32 @@ class MapAgent(AutonomousAgent):
 
         # Initialize the map library
         if not self._map_initialized:
-            if 'ODM' in input_data:
-                self._initialize_map(input_data['ODM'][1]['opendrive'])
-                self._map_initialized = True
+            if 'ODM' in data:
+                self._map_initialized = self._initialize_map(data['ODM'][1]['opendrive'])
             else:
                 return control
-
-        # Find the vehicle agent
-        if not self._vehicle:
-            self._find_vehicle()
 
         # Create the route
         if not self._route:
             self._populate_route()
 
-        # Create the controller, or run it one step
+        # Create the controller, or run one step of it
         if not self._controller:
             self._controller = VehiclePIDController(self._args_lateral_pid, self._args_longitudinal_pid)
         else:
             # Longitudinal PID values
-            target_speed = 30
-            current_speed = self._get_current_speed(input_data)
+            current_speed = self._get_current_speed(data)
+            target_speed = self._get_target_speed(data)
 
             # Lateral PID values
-            current_location = self._get_current_location(input_data)
-            # self.world.debug.draw_point(current_location + carla.Location(z=1.5), life_time=0.1, color=carla.Color(255, 0, 0), size=0.2)
-
-            if self._vehicle:
-                current_heading = self._vehicle.get_transform().get_forward_vector()
-            elif self._prev_location is None:
-                current_heading = carla.Vector3D()
-            else:
-                current_heading = current_location - self._prev_location
-            # print(math.atan2(current_heading.y, current_heading.x) / math.pi * 180)
-
+            current_location = self._get_current_location(data)
             target_location = self._get_target_location(current_location)
-            # self.world.debug.draw_point(target_location + carla.Location(z=1.5), life_time=0.15, color=carla.Color(0, 0, 0), size=0.1)
+            current_heading = self._get_current_heading(data)
 
             control = self._controller.run_step(
                 target_speed, current_speed,
                 target_location, current_location, current_heading
             )
-
-            self._prev_location = current_location
 
         return control
 
@@ -130,32 +117,27 @@ class MapAgent(AutonomousAgent):
         lat_ref = 0.0
         lon_ref = 0.0
 
-        with open(self._map_name + '.xodr', 'w') as f:
+        # Save the opendrive data into a file
+        with open(self._xodr_name, 'w') as f:
             f.write(opendrive_contents)
 
         # Get geo reference
-        xml_tree = ET.parse(self._map_name + '.xodr')
+        xml_tree = ET.parse(self._xodr_name)
         for geo_elem in xml_tree.find('header').find('geoReference').text.split(' '):
             if geo_elem.startswith('+lat_0'):
                 lat_ref = float(geo_elem.split('=')[-1])
             elif geo_elem.startswith('+lon_0'):
                 lon_ref = float(geo_elem.split('=')[-1])
 
-        with open(self._map_name + '.txt', 'w') as f:
+        # Save the previous info 
+        with open(self._txt_name, 'w') as f:
             txt_content = "[ADMap]\n" \
-                          "map=" + self._map_name + ".xodr\n" \
+                          "map=" + self._xodr_name + "\n" \
                           "[ENUReference]\n" \
                           "default=" + str(lat_ref) + " " + str(lon_ref) + " 0.0"
             f.write(txt_content)
 
-        assert ad.map.access.init(self._map_name + '.txt')
-
-    def _find_vehicle(self):
-        vehicles = self.world.get_actors().filter('*vehicle*')
-        for vehicle in vehicles:
-            if vehicle.attributes['role_name'] == "hero":
-                self._vehicle = vehicle
-                break
+        return ad.map.access.init(self._txt_name)
 
     def _populate_route(self, resolution=1):
         """
@@ -168,9 +150,6 @@ class MapAgent(AutonomousAgent):
             # Get the stating and end location of the route segment
             start_location = self._global_plan_world_coord[i-1][0].location
             end_location = self._global_plan_world_coord[i][0].location
-
-            # self.world.debug.draw_point(start_location + carla.Location(z=1), life_time=200, color=carla.Color(255, 255, 0), size=0.1)
-            # self.world.debug.draw_point(end_location + carla.Location(z=1.5), life_time=200, color=carla.Color(0, 255, 255), size=0.1)
 
             # Get the route and increase the number of waypoints of the rotue
             routeResult = ad.map.route.planRoute(
@@ -218,33 +197,53 @@ class MapAgent(AutonomousAgent):
         distance = [float(mmap.matchedPointDistance) for mmap in match_results]
         return match_results[distance.index(min(distance))].lanePoint.paraPoint
 
-    def _get_current_speed(self, sensor_data):
-        """Calculates the speed of the vehicle"""
-        return 3.6 * sensor_data['Speed'][1]['speed']
+    def _get_current_speed(self, data):
+        """
+        Calculates the speed of the vehicle
+        """
+        return 3.6 * data['Speed'][1]['speed']
 
-    def _get_current_location(self, sensor_data):
-        """Calculates the transform of the vehicle"""
+    def _get_target_speed(self, data):
+        """
+        Returns the target speed.
+        For this case, this function isn't really needed, as no calculus is computed
+        """
+        return self._target_speed
+
+    def _get_current_location(self, data):
+        """
+        Calculates the transform of the vehicle
+        """
         R = 6378135
-        lat_rad = (np.deg2rad(sensor_data['GNSS'][1][0]) + np.pi) % (2 * np.pi) - np.pi
-        lon_rad = (np.deg2rad(sensor_data['GNSS'][1][1]) + np.pi) % (2 * np.pi) - np.pi
+        lat_rad = (np.deg2rad(data['GNSS'][1][0]) + np.pi) % (2 * np.pi) - np.pi
+        lon_rad = (np.deg2rad(data['GNSS'][1][1]) + np.pi) % (2 * np.pi) - np.pi
         x = R * np.sin(lon_rad) * np.cos(lat_rad) 
         y = R * np.sin(-lat_rad)
-        z = sensor_data['GNSS'][1][2]
+        z = data['GNSS'][1][2]
 
         return carla.Location(x, y, z)
     
         # TODO: use this one if changed
         # geo_point = ad.map.point.createGeoPoint(
-        #     sensor_data['GNSS'][1][1],  # Long
-        #     sensor_data['GNSS'][1][0],  # Lat
-        #     sensor_data['GNSS'][1][2]   # Alt
+        #     data['GNSS'][1][1],  # Long
+        #     data['GNSS'][1][0],  # Lat
+        #     data['GNSS'][1][2]   # Alt
         # )
         # enu_point = ad.map.point.toENU(geo_point)
         # return carla.Location(x=float(enu_point.x), y=-float(enu_point.y), z=float(enu_point.z))
 
-    def _get_target_location(self, current_location):
-        """Returns a location of the route that is a bit in front of the ego"""
+    def _get_current_heading(self, data):
+        """
+        Transform the compass data (radiants) into a 3D Vector corresponding to the heading of the vehicle
+        """
+        compass_data = data['IMU'][1][6]
+        compass_rad = (compass_data - math.pi / 2) % (2 * math.pi)  # Substract 90º and clip
+        return  carla.Vector3D(x=math.cos(compass_rad), y=math.sin(compass_rad))
 
+    def _get_target_location(self, current_location):
+        """
+        Returns a location of the route that is a bit in front of the ego
+        """
         min_distance = float('inf')
         start_index = self._route_index
         end_index = min(start_index + self._route_index_buffer, len(self._route))
@@ -264,9 +263,9 @@ class MapAgent(AutonomousAgent):
         """
         Destroy the agent
         """
-        if os.path.exists(self._map_name + '.txt'):
-            os.remove(self._map_name + '.txt')
-        if os.path.exists(self._map_name + '.xodr'):
-            os.remove(self._map_name + '.xodr')
+        if os.path.exists(self._txt_name):
+            os.remove(self._txt_name)
+        if os.path.exists(self._xodr_name):
+            os.remove(self._xodr_name)
 
         super(MapAgent, self).destroy()
