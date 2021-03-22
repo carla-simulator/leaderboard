@@ -11,9 +11,10 @@ import numpy as np
 import carla
 
 class VehiclePIDController():
-    """VehiclePIDController is the combination of two PID controllers
-    (lateral and longitudinal) to perform the
-    low level control a vehicle from client side"""
+    """
+    VehiclePIDController is the combination of two PID controllers
+    (lateral and longitudinal) to perform the low level control a vehicle
+    """
 
     def __init__(self, args_lateral, args_longitudinal, offset=0, max_throttle=0.75, max_brake=0.3, max_steering=0.8):
         """Constructor method."""
@@ -42,7 +43,6 @@ class VehiclePIDController():
             control.brake = min(abs(acceleration), self.max_brake)
 
         # Steering regulation: changes cannot happen abruptly, can't steer too much.
-
         if current_steering > self.past_steering + 0.1:
             current_steering = self.past_steering + 0.1
         elif current_steering < self.past_steering - 0.1:
@@ -76,7 +76,6 @@ class PIDLongitudinalController():
         """Execute one step of longitudinal control to reach a given target speed."""
 
         error = target_speed - current_speed
-        # print(error)
         self._error_buffer.append(error)
 
         if len(self._error_buffer) >= 2:
@@ -120,7 +119,6 @@ class PIDLateralController():
         _cross = np.cross(v_vec, w_vec)
         if _cross[2] < 0:
             _dot *= -1.0
-        # print(_dot / math.pi * 180)
 
         self._e_buffer.append(_dot)
         if len(self._e_buffer) >= 2:

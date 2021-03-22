@@ -52,6 +52,8 @@ class MapAgent(AutonomousAgent):
         # Controller
         self._controller = None
         self._target_speed = 20
+        self._prev_location = None
+        self._prev_heading = None
         self._args_lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.07, 'dt': 0.05}
         self._args_longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
 
@@ -107,6 +109,9 @@ class MapAgent(AutonomousAgent):
                 target_speed, current_speed,
                 target_location, current_location, current_heading
             )
+
+            self._prev_heading = current_heading
+            self._prev_location = current_location
 
         return control
 
@@ -220,9 +225,34 @@ class MapAgent(AutonomousAgent):
         x = R * np.sin(lon_rad) * np.cos(lat_rad) 
         y = R * np.sin(-lat_rad)
         z = data['GNSS'][1][2]
+        current_loc = carla.Location(x, y, z)
 
-        return carla.Location(x, y, z)
-    
+        # Remove some of the GNSS noise
+        if self._prev_location and self._prev_heading:
+            location_vec = current_loc - self._prev_location  # Displacement vector
+
+            dot1 = location_vec.x * self._prev_heading.x + \
+                   location_vec.y * self._prev_heading.y + \
+                   location_vec.z * self._prev_heading.z
+
+            dot2 = self._prev_heading.x * self._prev_heading.x + \
+                   self._prev_heading.y * self._prev_heading.y + \
+                   self._prev_heading.z * self._prev_heading.z
+
+            # Compute expected location
+            expected_loc = self._prev_location + self._prev_heading * dot1 / dot2
+
+            # Get the mean of the two locations
+            new_current_loc = carla.Location(
+                (expected_loc.x + current_loc.x) / 2,
+                (expected_loc.y + current_loc.y) / 2,
+                (expected_loc.z + current_loc.z) / 2
+            )
+            return new_current_loc
+
+        else:
+            return current_loc
+
         # TODO: use this one if changed
         # geo_point = ad.map.point.createGeoPoint(
         #     data['GNSS'][1][1],  # Long
