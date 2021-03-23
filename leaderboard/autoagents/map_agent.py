@@ -46,14 +46,15 @@ class MapAgent(AutonomousAgent):
         # Route
         self._route = []
         self._route_index = 0  # Index of the closest route point to the vehicle
-        self._route_index_buffer = 5  # Amount of route points checked
-        self._added_target_index = 5  # How far will the target waypoint be (x*resolution [in meters])
+        self._route_index_buffer = 3  # Amount of route points checked
+        self._added_target_index = 3  # How far will the target waypoint be (x*resolution [in meters])
 
         # Controller
         self._controller = None
         self._target_speed = 20
         self._prev_location = None
         self._prev_heading = None
+        self._weight = 0.95
         self._args_lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.07, 'dt': 0.05}
         self._args_longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
 
@@ -244,9 +245,9 @@ class MapAgent(AutonomousAgent):
 
             # Get the mean of the two locations
             new_current_loc = carla.Location(
-                (expected_loc.x + current_loc.x) / 2,
-                (expected_loc.y + current_loc.y) / 2,
-                (expected_loc.z + current_loc.z) / 2
+                self._weight * expected_loc.x + (1 - self._weight) * current_loc.x,
+                self._weight * expected_loc.y + (1 - self._weight) * current_loc.y,
+                self._weight * expected_loc.z + (1 - self._weight) * current_loc.z,
             )
             return new_current_loc
 

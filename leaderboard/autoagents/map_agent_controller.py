@@ -42,16 +42,11 @@ class VehiclePIDController():
             control.throttle = 0.0
             control.brake = min(abs(acceleration), self.max_brake)
 
-        # Steering regulation: changes cannot happen abruptly, can't steer too much.
-        if current_steering > self.past_steering + 0.1:
-            current_steering = self.past_steering + 0.1
-        elif current_steering < self.past_steering - 0.1:
-            current_steering = self.past_steering - 0.1
+        # Avoid drastic steering changes
+        steering = np.clip(current_steering, self.past_steering - 0.1, self.past_steering + 0.1)
 
-        if current_steering >= 0:
-            steering = min(self.max_steer, current_steering)
-        else:
-            steering = max(-self.max_steer, current_steering)
+        # Clip it between its edge values
+        steering = np.clip(steering, -self.max_steer, self.max_steer)
 
         control.steer = steering
         control.hand_brake = False
