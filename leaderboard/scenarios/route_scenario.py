@@ -218,15 +218,12 @@ class RouteScenario(BasicScenario):
         world_annotations = RouteParser.parse_annotations_file(config.scenario_file)
 
         # prepare route's trajectory (interpolate and add the GPS route)
-        gps_route, route = interpolate_trajectory(world, config.trajectory)
+        self.gps_route, self.route = interpolate_trajectory(world, config.trajectory)
 
         potential_scenarios_definitions, _ = RouteParser.scan_route_for_scenarios(
-            config.town, route, world_annotations)
+            config.town, self.route, world_annotations)
 
-        self.route = route
         CarlaDataProvider.set_ego_vehicle_route(convert_transform_to_location(self.route))
-
-        config.agent.set_global_plan(gps_route, self.route)
 
         # Sample the scenarios to be used for this route instance.
         self.sampled_scenarios_definitions = self._scenario_sampling(potential_scenarios_definitions)
