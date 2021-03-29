@@ -104,6 +104,7 @@ def downsample_route(route, gps_route, sample_factor):
         if prev_option is None:
             route_downsampled.append(route[i])
             gps_route_downsampled.append(gps_route[i])
+            dist = 0
 
         # Lane changing
         elif curr_option in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
@@ -114,12 +115,8 @@ def downsample_route(route, gps_route, sample_factor):
         # When entering or exitting intersections). To avoid problems with motion planners,
         # points before / after the intersection are chosen instead (but keeping the RoadOption)
         elif prev_option != curr_option and prev_option not in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
-            if curr_option == RoadOption.LANEFOLLOW:
-                route_downsampled.append([route[i+2][0], route[i][1]])
-                gps_route_downsampled.append([gps_route[i+2][0], gps_route[i][1]])
-            else:
-                route_downsampled.append([route[i-2][0], route[i][1]])
-                gps_route_downsampled.append([gps_route[i-2][0], gps_route[i][1]])
+            route_downsampled.append(route[i])
+            gps_route_downsampled.append(gps_route[i])
             dist = 0
 
         # After a certain max distance

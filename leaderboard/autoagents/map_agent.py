@@ -24,6 +24,11 @@ import os
 import xml.etree.ElementTree as ET
 
 from leaderboard.autoagents.map_agent_controller import VehiclePIDController
+from leaderboard.autoagents.map_helper import (get_route_segment,
+                                              to_ad_paraPoint,
+                                              get_lane_interval_list,
+                                              enu_to_carla_loc,
+                                              get_route_lane_list)
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
 import ad_map_access as ad
@@ -38,16 +43,19 @@ class MapAgent(AutonomousAgent):
     """
 
     def setup(self, path_to_conf_file):
-        """
-        Setup the agent parameters
-        """
+        """Setup the agent parameters"""
         self.track = Track.MAP
 
         # Route
-        self._route = []
+        self._route = []  # List of [carla.Waypoint, RoadOption]
         self._route_index = 0  # Index of the closest route point to the vehicle
-        self._route_index_buffer = 3  # Amount of route points checked
-        self._added_target_index = 3  # How far will the target waypoint be (x*resolution [in meters])
+        self._route_buffer = 3  # Amount of route points checked
+        self._min_target_dist = 2  # How far will the target waypoint be [in meters]
+
+        # AD map library
+        self._map_initialized = False
+        self._txt_name = "LeaderboardMap.txt"
+        self._xodr_name = "LeaderboardMap.xodr"
 
         # Controller
         self._controller = None
@@ -58,15 +66,10 @@ class MapAgent(AutonomousAgent):
         self._args_lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.07, 'dt': 0.05}
         self._args_longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
 
-        # AD map library
-        self._map_initialized = False
-        self._txt_name = "LeaderboardMap.txt"
-        self._xodr_name = "LeaderboardMap.xodr"
+        self.world = carla.Client('127.0.0.1', 2000).get_world()
 
     def sensors(self):
-        """
-        Define the sensors required by the agent
-        """
+        """Define the sensors required by the agent"""
         sensors = [
             {'type': 'sensor.opendrive_map', 'reading_frequency': 1, 'id': 'ODM'},
             {'type': 'sensor.speedometer', 'id': 'Speed'},
@@ -77,9 +80,7 @@ class MapAgent(AutonomousAgent):
         return sensors
 
     def run_step(self, data, timestamp):
-        """
-        Execute one step of navigation.
-        """
+        """Execute one step of navigation."""
         control = carla.VehicleControl()
 
         # Initialize the map library
@@ -91,20 +92,17 @@ class MapAgent(AutonomousAgent):
 
         # Create the route
         if not self._route:
-            self._populate_route()
+            self._get_route()
 
         # Create the controller, or run one step of it
         if not self._controller:
             self._controller = VehiclePIDController(self._args_lateral_pid, self._args_longitudinal_pid)
         else:
-            # Longitudinal PID values
-            current_speed = self._get_current_speed(data)
-            target_speed = self._get_target_speed(data)
-
-            # Lateral PID values
             current_location = self._get_current_location(data)
-            target_location = self._get_target_location(current_location)
             current_heading = self._get_current_heading(data)
+            current_speed = self._get_current_speed(data)
+            target_location = self._get_target_location(current_location, current_speed)
+            target_speed = self._get_target_speed(current_location)
 
             control = self._controller.run_step(
                 target_speed, current_speed,
@@ -116,110 +114,33 @@ class MapAgent(AutonomousAgent):
 
         return control
 
-    def _initialize_map(self, opendrive_contents):
-        """
-        Initialize the AD map library and, creates the file needed to do so.
-        """
-        lat_ref = 0.0
-        lon_ref = 0.0
-
-        # Save the opendrive data into a file
-        with open(self._xodr_name, 'w') as f:
-            f.write(opendrive_contents)
-
-        # Get geo reference
-        xml_tree = ET.parse(self._xodr_name)
-        for geo_elem in xml_tree.find('header').find('geoReference').text.split(' '):
-            if geo_elem.startswith('+lat_0'):
-                lat_ref = float(geo_elem.split('=')[-1])
-            elif geo_elem.startswith('+lon_0'):
-                lon_ref = float(geo_elem.split('=')[-1])
-
-        # Save the previous info 
-        with open(self._txt_name, 'w') as f:
-            txt_content = "[ADMap]\n" \
-                          "map=" + self._xodr_name + "\n" \
-                          "[ENUReference]\n" \
-                          "default=" + str(lat_ref) + " " + str(lon_ref) + " 0.0"
-            f.write(txt_content)
-
-        return ad.map.access.init(self._txt_name)
-
-    def _populate_route(self, resolution=1):
-        """
-        This method uses the ad map library to create a more dense route
-        with waypoints every 'resolution' meters.
-        """
-
-        for i in range (1, len(self._global_plan_world_coord)):
-
-            # Get the stating and end location of the route segment
-            start_location = self._global_plan_world_coord[i-1][0].location
-            end_location = self._global_plan_world_coord[i][0].location
-
-            # Get the route and increase the number of waypoints of the rotue
-            routeResult = ad.map.route.planRoute(
-                ad.map.route.createRoutingPoint(self._to_ad_paraPoint(start_location)),
-                ad.map.route.createRoutingPoint(self._to_ad_paraPoint(end_location))
-            )
-
-            # Increases the density of the waypoints
-            for road_segment in routeResult.roadSegments:
-                for lane_segment in road_segment.drivableLaneSegments:
-
-                    # Get the list of params that separate the route in meters of size 'resolution'
-                    start = float(lane_segment.laneInterval.start)
-                    end = float(lane_segment.laneInterval.end)
-                    length = float(ad.map.lane.calcLength(lane_segment.laneInterval.laneId))
-                    param_list = np.arange(start, end, np.sign(end - start) * resolution / length)
-
-                    for param in param_list:
-                        para_point = ad.map.point.createParaPoint(
-                            lane_segment.laneInterval.laneId,
-                            ad.physics.ParametricValue(param)
-                        )
-
-                        enu_point = ad.map.lane.getENULanePoint(para_point)
-                        carla_location = carla.Location(float(enu_point.x), float(-enu_point.y), float(enu_point.z))
-                        self._route.append(carla_location)
-
-    def _to_ad_paraPoint(self, location, distance=1, probability=0):
-        """
-        Transforms a carla.Location into an ad.map.point.ParaPoint()
-        """
-        # Get possible matchings
-        mapMatching = ad.map.match.AdMapMatching()
-        match_results = mapMatching.getMapMatchedPositions(
-            ad.map.point.createENUPoint(location.x, -location.y, location.z),
-            ad.physics.Distance(distance),
-            ad.physics.Probability(probability)
-        )
-
-        if not match_results:
-            raise ValueError("Couldn't find a para point for CARLA location {}. Consider "
-                             "increasing the distance or reducing the probability".format(location))
-
-        # Filter the closest one to the given location
-        distance = [float(mmap.matchedPointDistance) for mmap in match_results]
-        return match_results[distance.index(min(distance))].lanePoint.paraPoint
-
     def _get_current_speed(self, data):
-        """
-        Calculates the speed of the vehicle
-        """
+        """Calculates the speed of the vehicle"""
         return 3.6 * data['Speed'][1]['speed']
 
-    def _get_target_speed(self, data):
-        """
-        Returns the target speed.
-        For this case, this function isn't really needed, as no calculus is computed
-        """
+    def _get_target_speed(self, current_location):
+        """Returns the target speed"""
+        # # get para point of the ego location
+        # para_point = to_ad_paraPoint(current_location)
+
+        # # get all speed limits of the lane
+        # lane = ad.map.lane.getLane(para_point.laneId)
+        # speed_limits = ad.map.lane.getSpeedLimits(lane, ad.physics.ParametricRange())
+
+        # # get the one that is affecting the ego
+        # offset = float(para_point.parametricOffset)
+        # for sl in speed_limits:
+        #     min_piece = float(sl.lanePiece.minimum)
+        #     max_piece = float(sl.lanePiece.maximum)
+
+        #     if min_piece < offset < max_piece:
+        #         print(float(sl.speedLimit))
+        #         return float(sl.speedLimit)
+
         return self._target_speed
 
     def _get_current_location(self, data):
-        """
-        Calculates the transform of the vehicle
-        """
+        """Calculates the transform of the vehicle"""
         R = 6378135
         lat_rad = (np.deg2rad(data['GNSS'][1][0]) + np.pi) % (2 * np.pi) - np.pi
         lon_rad = (np.deg2rad(data['GNSS'][1][1]) + np.pi) % (2 * np.pi) - np.pi
@@ -261,23 +182,19 @@ class MapAgent(AutonomousAgent):
         #     data['GNSS'][1][2]   # Alt
         # )
         # enu_point = ad.map.point.toENU(geo_point)
-        # return carla.Location(x=float(enu_point.x), y=-float(enu_point.y), z=float(enu_point.z))
+        # return  enu_to_carla_loc(enu_point)
 
     def _get_current_heading(self, data):
-        """
-        Transform the compass data (radiants) into a 3D Vector corresponding to the heading of the vehicle
-        """
+        """Transform the compass data (radiants) into the vehicle heading"""
         compass_data = data['IMU'][1][6]
-        compass_rad = (compass_data - math.pi / 2) % (2 * math.pi)  # Substract 90º and clip
+        compass_rad = (compass_data - math.pi / 2) % (2 * math.pi)  # Substract 90º and clip it
         return  carla.Vector3D(x=math.cos(compass_rad), y=math.sin(compass_rad))
 
-    def _get_target_location(self, current_location):
-        """
-        Returns a location of the route that is a bit in front of the ego
-        """
+    def _get_target_location(self, current_location, current_speed):
+        """Returns the target location of the controller"""
         min_distance = float('inf')
         start_index = self._route_index
-        end_index = min(start_index + self._route_index_buffer, len(self._route))
+        end_index = min(start_index + self._route_buffer, len(self._route))
 
         for i in range(start_index, end_index):
             route_location = self._route[i]
@@ -286,17 +203,81 @@ class MapAgent(AutonomousAgent):
                 self._route_index = i
                 min_distance = distance
 
-        target_index = min(self._route_index + self._added_target_index, len(self._route) - 1)
+        added_target = max(int(self._min_target_dist + current_speed / (2*3.6)), 1)
+        target_index = min(self._route_index + added_target, len(self._route) - 1)
 
         return self._route[target_index]
 
+    def _initialize_map(self, opendrive_contents):
+        """Initialize the AD map library and, creates the file needed to do so."""
+        lat_ref = 0.0
+        lon_ref = 0.0
+
+        # Save the opendrive data into a file
+        with open(self._xodr_name, 'w') as f:
+            f.write(opendrive_contents)
+
+        # Get geo reference
+        xml_tree = ET.parse(self._xodr_name)
+        for geo_elem in xml_tree.find('header').find('geoReference').text.split(' '):
+            if geo_elem.startswith('+lat_0'):
+                lat_ref = float(geo_elem.split('=')[-1])
+            elif geo_elem.startswith('+lon_0'):
+                lon_ref = float(geo_elem.split('=')[-1])
+
+        # Save the previous info 
+        with open(self._txt_name, 'w') as f:
+            txt_content = "[ADMap]\n" \
+                          "map=" + self._xodr_name + "\n" \
+                          "[ENUReference]\n" \
+                          "default=" + str(lat_ref) + " " + str(lon_ref) + " 0.0"
+            f.write(txt_content)
+
+        return ad.map.access.init(self._txt_name)
+
+    def _get_route(self):
+        """Creates a route with waypoints every meter."""
+
+        for i in range (1, len(self._global_plan_world_coord)):
+
+            # Get the starting and end location of the route segment
+            start_location = self._global_plan_world_coord[i-1][0].location
+            end_location = self._global_plan_world_coord[i][0].location
+
+            # self.world.debug.draw_point(start_location + carla.Location(z=1.5), size=0.2, color=carla.Color(0,255,255))
+            # self.world.debug.draw_point(end_location + carla.Location(z=1.5), size=0.2, color=carla.Color(255,255,0))
+            # self.world.debug.draw_string(start_location + carla.Location(z=2), str(i), life_time=10000, color=carla.Color(0,0,0))
+
+            # Ignore the lane change parts
+            start_option = self._global_plan_world_coord[i-1][1]
+            end_option = self._global_plan_world_coord[i][1]
+            if start_option.value in (5, 6) and start_option == end_option:
+                if to_ad_paraPoint(start_location).laneId != to_ad_paraPoint(end_location).laneId:
+                    continue  # Ignore the lane change parts
+
+            # Get the route
+            route_segment, start_lane_id = get_route_segment(start_location, end_location)
+            if not route_segment:
+                continue  # No route found, move to the next segment
+
+            # Transform the AD map route representation into waypoints
+            for segment in get_route_lane_list(route_segment, start_lane_id):
+                for param in get_lane_interval_list(segment.laneInterval):
+                    para_point = ad.map.point.createParaPoint(
+                        segment.laneInterval.laneId, ad.physics.ParametricValue(param)
+                    )
+
+                    enu_point = ad.map.lane.getENULanePoint(para_point)
+                    self._route.append(enu_to_carla_loc(enu_point))
+
+                    # carla_location = enu_to_carla_loc(enu_point)
+                    # self.world.debug.draw_point(carla_location + carla.Location(z=1.5), life_time=-1)
+                    # self._route.append(carla_location)
+
     def destroy(self):
-        """
-        Destroy the agent
-        """
-        if os.path.exists(self._txt_name):
-            os.remove(self._txt_name)
-        if os.path.exists(self._xodr_name):
-            os.remove(self._xodr_name)
+        """Remove the AD map library files"""
+        for fname in [self._txt_name, self._xodr_name]:
+            if os.path.exists(fname):
+                os.remove(fname)
 
         super(MapAgent, self).destroy()
