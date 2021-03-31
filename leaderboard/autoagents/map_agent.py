@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-
+# Copyright (c) # Copyright (c) 2018-2021 CVC.
+#
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
@@ -24,11 +24,11 @@ import os
 import xml.etree.ElementTree as ET
 
 from leaderboard.autoagents.map_agent_controller import VehiclePIDController
-from leaderboard.autoagents.map_helper import (get_route_segment,
-                                              to_ad_paraPoint,
-                                              get_lane_interval_list,
-                                              enu_to_carla_loc,
-                                              get_route_lane_list)
+from leaderboard.autoagents.map_helper import (enu_to_carla_loc,
+                                               get_shortest_route,
+                                               get_route_lane_list,
+                                               to_ad_paraPoint,
+                                               get_lane_interval_list)
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
 import ad_map_access as ad
@@ -50,7 +50,6 @@ class MapAgent(AutonomousAgent):
         self._route = []  # List of [carla.Waypoint, RoadOption]
         self._route_index = 0  # Index of the closest route point to the vehicle
         self._route_buffer = 3  # Amount of route points checked
-        self._min_target_dist = 2  # How far will the target waypoint be [in meters]
 
         # AD map library
         self._map_initialized = False
@@ -59,14 +58,19 @@ class MapAgent(AutonomousAgent):
 
         # Controller
         self._controller = None
-        self._target_speed = 20
+
+        self._target_speed = 30 / 3.6 
+
+        self._target_rate = 0.75  # Target distance increase rate w.r.t ego's velocity
+        self._min_target_dist = 1  # How far will the target waypoint be [in meters]
+
+        self._weight = 0.95  # Weight of the expected location. Between 0 and 1
+
+        self._lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.05, 'dt': 0.05}
+        self._longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
+
         self._prev_location = None
         self._prev_heading = None
-        self._weight = 0.95
-        self._args_lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.07, 'dt': 0.05}
-        self._args_longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
-
-        self.world = carla.Client('127.0.0.1', 2000).get_world()
 
     def sensors(self):
         """Define the sensors required by the agent"""
@@ -96,7 +100,7 @@ class MapAgent(AutonomousAgent):
 
         # Create the controller, or run one step of it
         if not self._controller:
-            self._controller = VehiclePIDController(self._args_lateral_pid, self._args_longitudinal_pid)
+            self._controller = VehiclePIDController(self._lateral_pid, self._longitudinal_pid)
         else:
             current_location = self._get_current_location(data)
             current_heading = self._get_current_heading(data)
@@ -116,27 +120,10 @@ class MapAgent(AutonomousAgent):
 
     def _get_current_speed(self, data):
         """Calculates the speed of the vehicle"""
-        return 3.6 * data['Speed'][1]['speed']
+        return data['Speed'][1]['speed']
 
     def _get_target_speed(self, current_location):
-        """Returns the target speed"""
-        # # get para point of the ego location
-        # para_point = to_ad_paraPoint(current_location)
-
-        # # get all speed limits of the lane
-        # lane = ad.map.lane.getLane(para_point.laneId)
-        # speed_limits = ad.map.lane.getSpeedLimits(lane, ad.physics.ParametricRange())
-
-        # # get the one that is affecting the ego
-        # offset = float(para_point.parametricOffset)
-        # for sl in speed_limits:
-        #     min_piece = float(sl.lanePiece.minimum)
-        #     max_piece = float(sl.lanePiece.maximum)
-
-        #     if min_piece < offset < max_piece:
-        #         print(float(sl.speedLimit))
-        #         return float(sl.speedLimit)
-
+        """Returns the desired target speed"""
         return self._target_speed
 
     def _get_current_location(self, data):
@@ -175,15 +162,6 @@ class MapAgent(AutonomousAgent):
         else:
             return current_loc
 
-        # TODO: use this one if changed
-        # geo_point = ad.map.point.createGeoPoint(
-        #     data['GNSS'][1][1],  # Long
-        #     data['GNSS'][1][0],  # Lat
-        #     data['GNSS'][1][2]   # Alt
-        # )
-        # enu_point = ad.map.point.toENU(geo_point)
-        # return  enu_to_carla_loc(enu_point)
-
     def _get_current_heading(self, data):
         """Transform the compass data (radiants) into the vehicle heading"""
         compass_data = data['IMU'][1][6]
@@ -203,7 +181,7 @@ class MapAgent(AutonomousAgent):
                 self._route_index = i
                 min_distance = distance
 
-        added_target = max(int(self._min_target_dist + current_speed / (2*3.6)), 1)
+        added_target = int(self._min_target_dist + self._target_rate * current_speed)
         target_index = min(self._route_index + added_target, len(self._route) - 1)
 
         return self._route[target_index]
@@ -244,35 +222,25 @@ class MapAgent(AutonomousAgent):
             start_location = self._global_plan_world_coord[i-1][0].location
             end_location = self._global_plan_world_coord[i][0].location
 
-            # self.world.debug.draw_point(start_location + carla.Location(z=1.5), size=0.2, color=carla.Color(0,255,255))
-            # self.world.debug.draw_point(end_location + carla.Location(z=1.5), size=0.2, color=carla.Color(255,255,0))
-            # self.world.debug.draw_string(start_location + carla.Location(z=2), str(i), life_time=10000, color=carla.Color(0,0,0))
-
             # Ignore the lane change parts
             start_option = self._global_plan_world_coord[i-1][1]
             end_option = self._global_plan_world_coord[i][1]
             if start_option.value in (5, 6) and start_option == end_option:
                 if to_ad_paraPoint(start_location).laneId != to_ad_paraPoint(end_location).laneId:
-                    continue  # Ignore the lane change parts
+                    continue
 
             # Get the route
-            route_segment, start_lane_id = get_route_segment(start_location, end_location)
+            route_segment, start_lane_id = get_shortest_route(start_location, end_location)
             if not route_segment:
                 continue  # No route found, move to the next segment
 
             # Transform the AD map route representation into waypoints
             for segment in get_route_lane_list(route_segment, start_lane_id):
+                lane_id = segment.laneInterval.laneId
                 for param in get_lane_interval_list(segment.laneInterval):
-                    para_point = ad.map.point.createParaPoint(
-                        segment.laneInterval.laneId, ad.physics.ParametricValue(param)
-                    )
-
+                    para_point = ad.map.point.createParaPoint(lane_id, ad.physics.ParametricValue(param))
                     enu_point = ad.map.lane.getENULanePoint(para_point)
                     self._route.append(enu_to_carla_loc(enu_point))
-
-                    # carla_location = enu_to_carla_loc(enu_point)
-                    # self.world.debug.draw_point(carla_location + carla.Location(z=1.5), life_time=-1)
-                    # self._route.append(carla_location)
 
     def destroy(self):
         """Remove the AD map library files"""

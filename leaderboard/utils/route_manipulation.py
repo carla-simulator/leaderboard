@@ -112,8 +112,7 @@ def downsample_route(route, gps_route, sample_factor):
             gps_route_downsampled.append(gps_route[i])
             dist = 0
 
-        # When entering or exitting intersections). To avoid problems with motion planners,
-        # points before / after the intersection are chosen instead (but keeping the RoadOption)
+        # When entering or exitting intersections.
         elif prev_option != curr_option and prev_option not in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
             route_downsampled.append(route[i])
             gps_route_downsampled.append(gps_route[i])

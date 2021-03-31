@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-
+# Copyright (c) # Copyright (c) 2018-2021 CVC.
+#
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
@@ -21,37 +21,28 @@ def enu_to_carla_loc(enu_point):
     """Transform an ENU point into a CARLA location"""
     return carla.Location(float(enu_point.x), float(-enu_point.y), float(enu_point.z))
 
-def get_route_segment(start_location, end_location, distance=1, probability=0):
+def get_shortest_route(start_location, end_location, distance=1, probability=0):
     """Gets the shortest route between two points"""
-    route_segment = None
-    start_lane_id = None
-    distance_ = ad.physics.Distance(distance)
-    probability_ = ad.physics.Probability(probability)
+    ad_distance = ad.physics.Distance(distance)
+    ad_probability = ad.physics.Probability(probability)
+    ad_map_matching = ad.map.match.AdMapMatching()
 
-    # As the AD map library projects everything to ground level, remove the z component
-    start_z = start_location.z
-    start_location.z = 0
+    ad_start_location = carla_loc_to_enu(start_location)
+    ad_end_location = carla_loc_to_enu(end_location)
 
-    end_z = end_location.z
-    end_location.z = 0
+    # The AD map projects everything to ground level, so remove the z component
+    ad_start_location.z = 0
+    ad_end_location.z = 0
 
-    start_matches = ad.map.match.AdMapMatching().getMapMatchedPositions(
-        carla_loc_to_enu(start_location), distance_, probability_
-    )
-
+    start_matches = ad_map_matching.getMapMatchedPositions(ad_start_location, ad_distance, ad_probability)
     if not start_matches:
-        start_location.z = start_z
         print("WARNING: Couldn't find a paraPoint for location '{}'.".format(start_location))
-        return route_segment, start_lane_id
+        return None, None
 
-    end_matches = ad.map.match.AdMapMatching().getMapMatchedPositions(
-        carla_loc_to_enu(end_location), distance_, probability_
-    )
-
+    end_matches = ad_map_matching.getMapMatchedPositions(ad_end_location, ad_distance, ad_probability)
     if not end_matches:
-        end_location.z = end_z
         print("WARNING: Couldn't find a paraPoint for location '{}'.".format(end_location))
-        return route_segment, start_lane_id
+        return None, None
 
     min_length = float('inf')
 
@@ -65,7 +56,7 @@ def get_route_segment(start_location, end_location, distance=1, probability=0):
             if len(new_route_segment.roadSegments) == 0:
                 continue  # The route doesn't exist, ignore it
 
-            # Calculate route length (sum of the mean of the road's lanes length)
+            # Calculate route length, as a sum of the mean of the road's lanes length
             length = 0
             for road_segment in new_route_segment.roadSegments:
                 road_length = 0
@@ -88,10 +79,9 @@ def get_route_segment(start_location, end_location, distance=1, probability=0):
                 start_lane_id = start_point.laneId
 
     if not route_segment:
-        start_location.z = start_z
-        end_location.z = end_z
         print("WARNING: Couldn't find a viable route between locations "
               "'{}' and '{}'.".format(start_location, end_location))
+        return None, None
 
     return route_segment, start_lane_id
 
@@ -115,22 +105,18 @@ def get_route_lane_list(route, start_lane_id, prev_lane_id=None):
 
 def to_ad_paraPoint(location, distance=1, probability=0):
     """Transforms a carla.Location into an ad.map.point.ParaPoint()"""
-    location_z = location.z
+    ad_distance = ad.physics.Distance(distance)
+    ad_probability = ad.physics.Probability(probability)
+    ad_map_matching = ad.map.match.AdMapMatching()
+    ad_location = carla_loc_to_enu(location)
 
-    # As the AD map library projects everything to ground level, remove the z component
-    location.z = 0
+    # The AD map projects everything to ground level, so remove the z component
+    ad_location.z = 0
 
-    mapMatching = ad.map.match.AdMapMatching()
-    match_results = mapMatching.getMapMatchedPositions(
-        carla_loc_to_enu(location),
-        ad.physics.Distance(distance),
-        ad.physics.Probability(probability)
-    )
+    match_results = ad_map_matching.getMapMatchedPositions(ad_location, ad_distance, ad_probability)
 
     if not match_results:
-        location.z = location_z
-        print("WARNING: Couldn't find a para point for CARLA location {}. Consider "
-              "increasing the distance or reducing the probability".format(location))
+        print("WARNING: Couldn't find a para point for CARLA location {}".format(location))
         return None
 
     # Filter the closest one to the given location
@@ -138,7 +124,7 @@ def to_ad_paraPoint(location, distance=1, probability=0):
     return match_results[distance.index(min(distance))].lanePoint.paraPoint
 
 def get_lane_interval_list(lane_interval, distance=1):
-    """Separates a given lane interval smaller intervals of length equal to 'distance'"""
+    """Separates a given lane interval into smaller intervals of length equal to 'distance'"""
     start = float(lane_interval.start)
     end = float(lane_interval.end)
     length = float(ad.map.lane.calcLength(lane_interval.laneId))
