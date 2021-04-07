@@ -270,8 +270,9 @@ class LeaderboardEvaluator(object):
         try:
             self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
-            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
+            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.host, args.port, args.debug)
             self.agent_instance.set_global_plan(scenario.gps_route, scenario.route)
+            self.agent_instance.setup(args.agent_config)
 
             # Check and store the sensors
             if not self.sensors:

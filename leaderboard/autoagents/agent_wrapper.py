@@ -19,6 +19,7 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
+from leaderboard.autoagents.ros_base_agent import ROSBaseAgent
 
 MAX_ALLOWED_RADIUS_SENSOR = 3.0
 
@@ -40,6 +41,16 @@ class AgentError(Exception):
 
     def __init__(self, message):
         super(AgentError, self).__init__(message)
+
+
+class AgentWrapperFactory(object):
+
+    @staticmethod
+    def get_wrapper(agent):
+        if isinstance(agent, ROSBaseAgent):
+            return ROSAgentWrapper(agent)
+        else:
+            return AgentWrapper(agent)
 
 
 class AgentWrapper(object):
@@ -74,6 +85,99 @@ class AgentWrapper(object):
         """
         return self._agent()
 
+    def _preprocess_sensor_spec(self, sensor_spec):
+        type_ = sensor_spec["type"]
+        id_ = sensor_spec["id"]
+        attributes = {}
+
+        if type_.startswith('sensor.opendrive_map'):
+            attributes['reading_frequency'] = sensor_spec['reading_frequency']
+            sensor_location = carla.Location()
+            sensor_rotation = carla.Rotation()
+
+        elif type_.startswith('sensor.speedometer'):
+            delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+            attributes['frame_rate'] = 1 / delta_time
+            sensor_location = carla.Location()
+            sensor_rotation = carla.Rotation()
+
+        if type_.startswith('sensor.camera'):
+            attributes['image_size_x'] = str(sensor_spec['width'])
+            attributes['image_size_y'] = str(sensor_spec['height'])
+            attributes['fov'] = str(sensor_spec['fov'])
+            attributes['lens_circle_multiplier'] = str(3.0)
+            attributes['lens_circle_falloff'] = str(3.0)
+            attributes['chromatic_aberration_intensity'] = str(0.5)
+            attributes['chromatic_aberration_offset'] = str(0)
+
+            sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
+                                             z=sensor_spec['z'])
+            sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                             roll=sensor_spec['roll'],
+                                             yaw=sensor_spec['yaw'])
+
+        elif type_.startswith('sensor.lidar'):
+            attributes['range'] = str(85)
+            attributes['rotation_frequency'] = str(10)
+            attributes['channels'] = str(64)
+            attributes['upper_fov'] = str(10)
+            attributes['lower_fov'] = str(-30)
+            attributes['points_per_second'] = str(600000)
+            attributes['atmosphere_attenuation_rate'] = str(0.004)
+            attributes['dropoff_general_rate'] = str(0.45)
+            attributes['dropoff_intensity_limit'] = str(0.8)
+            attributes['dropoff_zero_intensity'] = str(0.4)
+
+            sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
+                                             z=sensor_spec['z'])
+            sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                             roll=sensor_spec['roll'],
+                                             yaw=sensor_spec['yaw'])
+
+        elif type_.startswith('sensor.other.radar'):
+            attributes['horizontal_fov'] = str(sensor_spec['fov'])  # degrees
+            attributes['vertical_fov'] = str(sensor_spec['fov'])  # degrees
+            attributes['points_per_second'] = '1500'
+            attributes['range'] = '100'  # meters
+
+            sensor_location = carla.Location(x=sensor_spec['x'],
+                                             y=sensor_spec['y'],
+                                             z=sensor_spec['z'])
+            sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                             roll=sensor_spec['roll'],
+                                             yaw=sensor_spec['yaw'])
+
+        elif type_.startswith('sensor.other.gnss'):
+            attributes['noise_alt_stddev'] = str(0.000005)
+            attributes['noise_lat_stddev'] = str(0.000005)
+            attributes['noise_lon_stddev'] = str(0.000005)
+            attributes['noise_alt_bias'] = str(0.0)
+            attributes['noise_lat_bias'] = str(0.0)
+            attributes['noise_lon_bias'] = str(0.0)
+
+            sensor_location = carla.Location(x=sensor_spec['x'],
+                                             y=sensor_spec['y'],
+                                             z=sensor_spec['z'])
+            sensor_rotation = carla.Rotation()
+
+        elif type_.startswith('sensor.other.imu'):
+            attributes['noise_accel_stddev_x'] = str(0.001)
+            attributes['noise_accel_stddev_y'] = str(0.001)
+            attributes['noise_accel_stddev_z'] = str(0.015)
+            attributes['noise_gyro_stddev_x'] = str(0.001)
+            attributes['noise_gyro_stddev_y'] = str(0.001)
+            attributes['noise_gyro_stddev_z'] = str(0.001)
+
+            sensor_location = carla.Location(x=sensor_spec['x'],
+                                             y=sensor_spec['y'],
+                                             z=sensor_spec['z'])
+            sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                             roll=sensor_spec['roll'],
+                                             yaw=sensor_spec['yaw'])
+        sensor_transform = carla.Transform(sensor_location, sensor_rotation)
+
+        return type_, id_, sensor_transform, attributes
+
     def setup_sensors(self, vehicle, debug_mode=False):
         """
         Create the sensors defined by the user and attach them to the ego-vehicle
@@ -82,97 +186,27 @@ class AgentWrapper(object):
         """
         bp_library = CarlaDataProvider.get_world().get_blueprint_library()
         for sensor_spec in self._agent.sensors():
+            type_, id_, sensor_transform, attributes = self._preprocess_sensor_spec(sensor_spec)
+
             # These are the pseudosensors (not spawned)
-            if sensor_spec['type'].startswith('sensor.opendrive_map'):
-                # The HDMap pseudo sensor is created directly here
-                sensor = OpenDriveMapReader(vehicle, sensor_spec['reading_frequency'])
+            if type_.startswith('sensor.opendrive_map'):
+                sensor = OpenDriveMapReader(vehicle, attributes['reading_frequency'])
             elif sensor_spec['type'].startswith('sensor.speedometer'):
-                delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
-                frame_rate = 1 / delta_time
-                sensor = SpeedometerReader(vehicle, frame_rate)
+                sensor = SpeedometerReader(vehicle, attributes['frame_rate'])
+
             # These are the sensors spawned on the carla world
             else:
-                bp = bp_library.find(str(sensor_spec['type']))
-                if sensor_spec['type'].startswith('sensor.camera'):
-                    bp.set_attribute('image_size_x', str(sensor_spec['width']))
-                    bp.set_attribute('image_size_y', str(sensor_spec['height']))
-                    bp.set_attribute('fov', str(sensor_spec['fov']))
-                    bp.set_attribute('lens_circle_multiplier', str(3.0))
-                    bp.set_attribute('lens_circle_falloff', str(3.0))
-                    bp.set_attribute('chromatic_aberration_intensity', str(0.5))
-                    bp.set_attribute('chromatic_aberration_offset', str(0))
-
-                    sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
-                elif sensor_spec['type'].startswith('sensor.lidar'):
-                    bp.set_attribute('range', str(85))
-                    bp.set_attribute('rotation_frequency', str(10))
-                    bp.set_attribute('channels', str(64))
-                    bp.set_attribute('upper_fov', str(10))
-                    bp.set_attribute('lower_fov', str(-30))
-                    bp.set_attribute('points_per_second', str(600000))
-                    bp.set_attribute('atmosphere_attenuation_rate', str(0.004))
-                    bp.set_attribute('dropoff_general_rate', str(0.45))
-                    bp.set_attribute('dropoff_intensity_limit', str(0.8))
-                    bp.set_attribute('dropoff_zero_intensity', str(0.4))
-                    sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
-                elif sensor_spec['type'].startswith('sensor.other.radar'):
-                    bp.set_attribute('horizontal_fov', str(sensor_spec['fov']))  # degrees
-                    bp.set_attribute('vertical_fov', str(sensor_spec['fov']))  # degrees
-                    bp.set_attribute('points_per_second', '1500')
-                    bp.set_attribute('range', '100')  # meters
-
-                    sensor_location = carla.Location(x=sensor_spec['x'],
-                                                     y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
-
-                elif sensor_spec['type'].startswith('sensor.other.gnss'):
-                    bp.set_attribute('noise_alt_stddev', str(0.000005))
-                    bp.set_attribute('noise_lat_stddev', str(0.000005))
-                    bp.set_attribute('noise_lon_stddev', str(0.000005))
-                    bp.set_attribute('noise_alt_bias', str(0.0))
-                    bp.set_attribute('noise_lat_bias', str(0.0))
-                    bp.set_attribute('noise_lon_bias', str(0.0))
-
-                    sensor_location = carla.Location(x=sensor_spec['x'],
-                                                     y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation()
-
-                elif sensor_spec['type'].startswith('sensor.other.imu'):
-                    bp.set_attribute('noise_accel_stddev_x', str(0.001))
-                    bp.set_attribute('noise_accel_stddev_y', str(0.001))
-                    bp.set_attribute('noise_accel_stddev_z', str(0.015))
-                    bp.set_attribute('noise_gyro_stddev_x', str(0.001))
-                    bp.set_attribute('noise_gyro_stddev_y', str(0.001))
-                    bp.set_attribute('noise_gyro_stddev_z', str(0.001))
-
-                    sensor_location = carla.Location(x=sensor_spec['x'],
-                                                     y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
-                # create sensor
-                sensor_transform = carla.Transform(sensor_location, sensor_rotation)
+                bp = bp_library.find(type_)
+                for key, value in attributes.items():
+                    bp.set_attribute(str(key), str(value))
                 sensor = CarlaDataProvider.get_world().spawn_actor(bp, sensor_transform, vehicle)
+
             # setup callback
             sensor.listen(CallBack(sensor_spec['id'], sensor_spec['type'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
         # Tick once to spawn the sensors
         CarlaDataProvider.get_world().tick()
-
 
     @staticmethod
     def validate_sensor_configuration(sensors, agent_track, selected_track):
@@ -235,3 +269,36 @@ class AgentWrapper(object):
                 self._sensors_list[i].destroy()
                 self._sensors_list[i] = None
         self._sensors_list = []
+
+        # Tick once to destroy the sensors
+        CarlaDataProvider.get_world().tick()
+
+
+class ROSAgentWrapper(AgentWrapper):
+
+    def __init__(self, agent):
+        super(ROSAgentWrapper, self).__init__(agent)
+
+    def setup_sensors(self, vehicle, debug_mode=False):
+        """
+        Create the sensors defined by the user and attach them to the ego-vehicle
+        :param vehicle: ego vehicle
+        :return:
+        """
+        for sensor_spec in self._agent.sensors():
+            type_, id_, transform, attributes = self._preprocess_sensor_spec(sensor_spec)
+            uid = self._agent.spawn_object(type_, id_, transform, attributes, attach_to=vehicle.id)
+            self._sensors_list.append(uid)
+
+        # Tick once to spawn the sensors
+        CarlaDataProvider.get_world().tick()
+        #self._agent._step_once_service.call(roslibpy.ServiceRequest({"command": 2}))
+
+    def cleanup(self):
+        for uid in self._sensors_list:
+            self._agent.destroy_object(uid)
+        self._sensors_list.clear()
+
+        # Tick once to destroy the sensors
+        CarlaDataProvider.get_world().tick()
+        #self._agent._step_once_service.call(roslibpy.ServiceRequest({"command": 2}))
