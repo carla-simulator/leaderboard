@@ -35,14 +35,31 @@ def wait_for_message(client, topic, topic_type, timeout=None):
     try:
         s = roslibpy.Topic(client, topic, topic_type, reconnect_on_close=False)
         s.subscribe(wfm.cb)
+        if timeout is not None:
+            timeout_t = time.time() + timeout
         while client.is_connected and wfm.msg is None:
             time.sleep(0.1)
+            if timeout is not None and time.time() >= timeout_t:
+                raise TimeoutError("timeout exceeded while waiting for message on topic {}".format(topic))
 
     finally:
         if s is not None:
             s.unsubscribe()
 
     return wfm.msg
+
+
+def wait_for_service(client, service, timeout=None):
+
+    if timeout is not None:
+        timeout_t = time.time() + timeout
+
+    services = client.get_services()
+    while service not in services:
+        time.sleep(0.1)
+        if timeout is not None and time.time() >= timeout_t:
+            raise TimeoutError("timeout exceeded while waiting for service {} to be ready".format(service))
+        services = client.get_services()
 
 
 class ROS1Agent(ROSBaseAgent):
@@ -65,6 +82,9 @@ class ROS1Agent(ROSBaseAgent):
 
         self._spawn_object_service = roslibpy.Service(client, "/carla/spawn_object", "carla_msgs/SpawnObject", reconnect_on_close=False)
         self._destroy_object_service = roslibpy.Service(client, "/carla/destroy_object", "carla_msgs/DestroyObject", reconnect_on_close=False)
+
+        wait_for_service(client, "/carla/spawn_object")
+        wait_for_service(client, "/carla/destroy_object")
 
         self._control_subscriber = roslibpy.Topic(client, "/carla/hero/vehicle_control_cmd", "carla_msgs/CarlaEgoVehicleControl", queue_length=1, reconnect_on_close=False)
         self._control_subscriber.subscribe(self._vehicle_control_cmd_callback)
