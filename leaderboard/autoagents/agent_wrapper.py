@@ -276,8 +276,18 @@ class AgentWrapper(object):
 
 class ROSAgentWrapper(AgentWrapper):
 
+    SENSOR_TYPE_REMAPS = {
+        "sensor.opendrive_map": "sensor.pseudo.opendrive_map",
+        "sensor.speedometer": "sensor.pseudo.speedometer"
+    }
+
     def __init__(self, agent):
         super(ROSAgentWrapper, self).__init__(agent)
+
+    def _preprocess_sensor_spec(self, sensor_spec):
+        type_, id_, sensor_transform, attributes = super(ROSAgentWrapper, self)._preprocess_sensor_spec(sensor_spec)
+        new_type = self.SENSOR_TYPE_REMAPS.get(type_, type_)
+        return new_type, id_, sensor_transform, attributes
 
     def setup_sensors(self, vehicle, debug_mode=False):
         """
