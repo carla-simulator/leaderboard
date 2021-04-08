@@ -30,6 +30,7 @@ from std_msgs.msg import Bool
 
 def wait_for_message(node, topic, topic_type, timeout=None):
 
+    s = None
     try:
         future = Future()
         s = node.create_subscription(
