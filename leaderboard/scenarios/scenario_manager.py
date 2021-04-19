@@ -61,13 +61,8 @@ class ScenarioManager(object):
         self._timestamp_last_run = 0.0
         self._timeout = float(timeout)
 
-        # Used to detect if the simulation is down
-        watchdog_timeout = max(5, self._timeout - 2)
-        self._watchdog = Watchdog(watchdog_timeout)
-
-        # Avoid the agent from freezing the simulation
-        agent_timeout = watchdog_timeout - 1
-        self._agent_watchdog = Watchdog(agent_timeout)
+        self._watchdog = Watchdog(self._timeout)  # Detects if the simulation is down
+        self._agent_watchdog = Watchdog(self._timeout)  # Stop the agent from freezing the simulation
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
@@ -83,6 +78,10 @@ class ScenarioManager(object):
         """
         Terminate scenario ticking when receiving a signal interrupt
         """
+        if self._agent_watchdog and not self._agent_watchdog.get_status():
+            raise RuntimeError("Agent took longer than {}s to send its command".format(self._timeout))
+        elif self._watchdog and not self._watchdog.get_status():
+            raise RuntimeError("The simulation took longer than {}s to update".format(self._timeout))
         self._running = False
 
     def cleanup(self):
@@ -123,6 +122,7 @@ class ScenarioManager(object):
         self.start_game_time = GameTime.get_time()
 
         self._watchdog.start()
+        self._agent_watchdog.start()
         self._running = True
 
         while self._running:
@@ -147,9 +147,13 @@ class ScenarioManager(object):
             # Update game time and actor information
             GameTime.on_carla_tick(timestamp)
             CarlaDataProvider.on_carla_tick()
+            self._watchdog.pause()
 
             try:
+                self._agent_watchdog.resume()
+                self._agent_watchdog.update()
                 ego_action = self._agent()
+                self._agent_watchdog.pause()
 
             # Special exception inside the agent that isn't caused by the agent
             except SensorReceivedNoData as e:
@@ -158,6 +162,7 @@ class ScenarioManager(object):
             except Exception as e:
                 raise AgentError(e)
 
+            self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
 
             # Tick scenario
@@ -192,6 +197,7 @@ class ScenarioManager(object):
         This function triggers a proper termination of a scenario
         """
         self._watchdog.stop()
+        self._agent_watchdog.stop()
 
         self.end_system_time = time.time()
         self.end_game_time = GameTime.get_time()
