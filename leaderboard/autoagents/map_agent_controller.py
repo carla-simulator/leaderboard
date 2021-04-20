@@ -55,6 +55,11 @@ class VehiclePIDController():
 
         return control
 
+    def emergency_brake(self, control):
+        """Returns an emergency brake when encountering an obstacle"""
+        control.throttle = 0
+        control.brake = self.max_brake
+        return control
 
 class PIDLongitudinalController():
     """PIDLongitudinalController implements longitudinal control using a PID."""

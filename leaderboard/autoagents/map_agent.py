@@ -29,6 +29,7 @@ from leaderboard.autoagents.map_helper import (enu_to_carla_loc,
                                                get_route_lane_list,
                                                to_ad_paraPoint,
                                                get_lane_interval_list)
+
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
 import ad_map_access as ad
@@ -56,29 +57,63 @@ class MapAgent(AutonomousAgent):
         self._txt_name = "LeaderboardMap.txt"
         self._xodr_name = "LeaderboardMap.xodr"
 
-        # Controller
+        # Controller constants
         self._controller = None
-
-        self._target_speed = 30 / 3.6 
-
-        self._target_rate = 0.75  # Target distance increase rate w.r.t ego's velocity
-        self._min_target_dist = 1  # How far will the target waypoint be [in meters]
-
-        self._weight = 0.95  # Weight of the expected location. Between 0 and 1
-
         self._lateral_pid = {'K_P': 1.95, 'K_D': 0.2, 'K_I': 0.05, 'dt': 0.05}
         self._longitudinal_pid = {'K_P': 1.0, 'K_D': 0, 'K_I': 0.05, 'dt': 0.05}
+        self._max_brake = 0.75
+
+        # Current location constants
+        self._weight = 0.95  # Weight of the expected location. Between 0 and 1
+
+        # Target location constants
+        self._target_min_dist = 1  # How far will the target waypoint be [in meters]
+        self._target_index_rate = 0.75  # Target distance increase rate w.r.t ego's velocity
+
+        # Target speed constants
+        self._target_speed = 30 / 3.6 
+
+        # Obstacle detection constants
+        self._obstacle_min_dist = 5  # Min obstacle distance to be checked [in meters]
+        self._obstacle_index_rate = 1  # Target distance increase rate w.r.t ego's velocity
+        self._obstacle_threshold = 0.5  # Threshold used to discern between obstacles
 
         self._prev_location = None
         self._prev_heading = None
 
+        self._world = carla.Client('127.0.0.1', 2000).get_world()
+
     def sensors(self):
-        """Define the sensors required by the agent"""
+        """Define the sensors required by the agent. IMU and GNSS are setup at the
+        same position to avoid having to change between those two coordinate references"""
+        self._sensor_z = 1.8
         sensors = [
-            {'type': 'sensor.opendrive_map', 'reading_frequency': 1, 'id': 'ODM'},
-            {'type': 'sensor.speedometer', 'id': 'Speed'},
-            {'type': 'sensor.other.gnss', 'x': 0, 'y': 0, 'z': 0, 'id': 'GNSS'},
-            {'type': 'sensor.other.imu', 'x': 0, 'y': 0, 'z': 0, 'roll': 0, 'pitch': 0, 'yaw': 0, 'id': 'IMU'}
+            {
+                'type': 'sensor.opendrive_map',
+                'reading_frequency': 1,
+                'id': 'ODM'
+            },
+            {
+                'type': 'sensor.speedometer',
+                'id': 'Speed'
+            },
+            {
+                'type': 'sensor.other.gnss',
+                'x': 0, 'y': 0, 'z': self._sensor_z,
+                'id': 'GNSS'
+            },
+            {
+                'type': 'sensor.other.imu',
+                'x': 0, 'y': 0, 'z': 0,
+                'roll': 0, 'pitch': 0, 'yaw': 0,
+                'id': 'IMU'
+            },
+            {
+                'type': 'sensor.lidar.ray_cast',
+                'x': 0.7, 'y': 0.0, 'z': self._sensor_z,
+                'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+                'id': 'LIDAR'
+            }
         ]
 
         return sensors
@@ -100,31 +135,33 @@ class MapAgent(AutonomousAgent):
 
         # Create the controller, or run one step of it
         if not self._controller:
-            self._controller = VehiclePIDController(self._lateral_pid, self._longitudinal_pid)
+            self._controller = VehiclePIDController(self._lateral_pid, self._longitudinal_pid, max_brake=self._max_brake)
         else:
             current_location = self._get_current_location(data)
             current_heading = self._get_current_heading(data)
+            current_transform = self._get_current_transform(current_location, current_heading)
             current_speed = self._get_current_speed(data)
             target_location = self._get_target_location(current_location, current_speed)
             target_speed = self._get_target_speed(current_location)
+
+            # Traffic Light tests, missing some attributes at the AD map library
+            # ego_lane_id = to_ad_paraPoint(current_location).laneId
+            # print(ego_lane_id)
+            # tls = ad.map.landmark.getVisibleTrafficLights(ego_lane_id)
+            # for tl in tls:
+            #     print(tl)
 
             control = self._controller.run_step(
                 target_speed, current_speed,
                 target_location, current_location, current_heading
             )
+            if self._is_obstacle_detected(data, current_transform, current_speed):
+                control = self._controller.emergency_brake(control)
 
             self._prev_heading = current_heading
             self._prev_location = current_location
 
         return control
-
-    def _get_current_speed(self, data):
-        """Calculates the speed of the vehicle"""
-        return data['Speed'][1]['speed']
-
-    def _get_target_speed(self, current_location):
-        """Returns the desired target speed"""
-        return self._target_speed
 
     def _get_current_location(self, data):
         """Calculates the transform of the vehicle"""
@@ -168,6 +205,15 @@ class MapAgent(AutonomousAgent):
         compass_rad = (compass_data - math.pi / 2) % (2 * math.pi)  # Substract 90º and clip it
         return  carla.Vector3D(x=math.cos(compass_rad), y=math.sin(compass_rad))
 
+    def _get_current_transform(self, location, heading):
+        """Returns the current ego vehicle transform"""
+        yaw = math.degrees(math.atan2(heading.y, heading.x))
+        return carla.Transform(location, carla.Rotation(yaw=yaw))
+
+    def _get_current_speed(self, data):
+        """Calculates the speed of the vehicle"""
+        return data['Speed'][1]['speed']
+
     def _get_target_location(self, current_location, current_speed):
         """Returns the target location of the controller"""
         min_distance = float('inf')
@@ -181,10 +227,77 @@ class MapAgent(AutonomousAgent):
                 self._route_index = i
                 min_distance = distance
 
-        added_target = int(self._min_target_dist + self._target_rate * current_speed)
-        target_index = min(self._route_index + added_target, len(self._route) - 1)
+        # Get the target waypoint for both route and obstacle detection
+        route_added_target = int(self._target_min_dist + self._target_index_rate * current_speed)
+        target_route_index = min(self._route_index + route_added_target, len(self._route) - 1)
 
-        return self._route[target_index]
+        return self._route[target_route_index]
+
+    def _get_target_speed(self, current_location):
+        """Returns the desired target speed"""
+        return self._target_speed
+
+    def _is_obstacle_detected(self, data, base_transform, current_speed):
+        """Detects whether there is an obstacle in front of the ego"""
+        target_locations = []
+        obstacle_range = [[0, 0], [0, 0]]  # Simplify the route lcoation to a square [[min_x, max_x], [min_y, max_y]]
+
+        obstacle_added_target = int(self._obstacle_min_dist + self._obstacle_index_rate * current_speed)
+        obstacle_target_index = min(self._route_index + obstacle_added_target, len(self._route) - 1)
+
+        # Get a list of the route waypoints (in sensor coordinates)
+        for i in range(self._route_index + 1, obstacle_target_index):
+
+            # Copy the route location as some of its attributes will be changed
+            temp = self._route[i]
+            route_location = carla.Location(temp.x , temp.y, temp.z)  
+
+            # Displace the route upwards to avoid false positives with the ground and change it to array
+            route_location.z += 2 * self._obstacle_threshold
+            route_location_ = np.array([[route_location.x, route_location.y, route_location.z, 1]])
+
+            self._world.debug.draw_point(route_location, size=0.2, life_time=0.25, color=carla.Color(0,255,255))
+
+            # Get the location array in sensor coordinates, change it back to carla.Location adn store it
+            target_location_ = np.matmul(base_transform.get_inverse_matrix(), np.transpose(route_location_))
+            target_location = carla.Location(target_location_[0][0], target_location_[1][0], target_location_[2][0])
+            target_locations.append(target_location)
+
+            # Update the square dimensions
+            if target_location.x < obstacle_range[0][0]:
+                obstacle_range[0][0] = target_location.x
+            elif target_location.x > obstacle_range[0][1]:
+                obstacle_range[0][1] = target_location.x
+            if target_location.y < obstacle_range[1][0]:
+                obstacle_range[1][0] = target_location.y
+            elif target_location.y > obstacle_range[1][1]:
+                obstacle_range[1][1] = target_location.y
+
+        for lidar_point in data['LIDAR'][1]:
+            lidar_location = carla.Location(float(lidar_point[0]), float(lidar_point[1]), float(lidar_point[2]))
+
+            # Points outside the interest zone are ignored
+            if lidar_location.x < obstacle_range[0][0] - self._obstacle_threshold:
+                continue
+            if lidar_location.x > obstacle_range[0][1] + self._obstacle_threshold:
+                continue
+            if lidar_location.y < obstacle_range[1][0] - self._obstacle_threshold:
+                continue
+            if lidar_location.y > obstacle_range[1][1] + self._obstacle_threshold:
+                continue
+
+            for target_location in target_locations:
+                dist = math.pow(target_location.x - lidar_location.x, 2) + \
+                       math.pow(target_location.y - lidar_location.y, 2) + \
+                       math.pow(target_location.z - lidar_location.z, 2)
+                if dist < self._obstacle_threshold:
+                    # loc__ = np.array([[lidar_location.x, lidar_location.y, lidar_location.z, 1]])
+                    # loc_ = np.matmul(base_transform.get_matrix(), np.transpose(loc__))
+                    # loc = carla.Location(loc_[0][0], loc_[1][0], loc_[2][0])
+                    # self._world.debug.draw_point(loc, size=0.07, life_time=0.25, color=carla.Color(0,255,255))
+                    return True
+
+        return False
 
     def _initialize_map(self, opendrive_contents):
         """Initialize the AD map library and, creates the file needed to do so."""
@@ -227,20 +340,50 @@ class MapAgent(AutonomousAgent):
             end_option = self._global_plan_world_coord[i][1]
             if start_option.value in (5, 6) and start_option == end_option:
                 if to_ad_paraPoint(start_location).laneId != to_ad_paraPoint(end_location).laneId:
-                    continue
+                    continue  # Two points signifying a lane change, move to the next segment
 
             # Get the route
             route_segment, start_lane_id = get_shortest_route(start_location, end_location)
             if not route_segment:
                 continue  # No route found, move to the next segment
 
-            # Transform the AD map route representation into waypoints
-            for segment in get_route_lane_list(route_segment, start_lane_id):
-                lane_id = segment.laneInterval.laneId
+            # Transform the AD map route representation into waypoints (When needed to parse the altitude).
+            # The parameters must be precomputed to know its final length, and interpolate the height
+            params = []
+            route_lanes = get_route_lane_list(route_segment, start_lane_id)
+            for i, segment in enumerate(route_lanes):
                 for param in get_lane_interval_list(segment.laneInterval):
-                    para_point = ad.map.point.createParaPoint(lane_id, ad.physics.ParametricValue(param))
-                    enu_point = ad.map.lane.getENULanePoint(para_point)
-                    self._route.append(enu_to_carla_loc(enu_point))
+                    params.append([param, i])
+
+            altitudes = self._get_lane_altitude_list(start_location.z, end_location.z, len(params))
+            for i, param in enumerate(params):
+                lane_id = route_lanes[param[1]].laneInterval.laneId
+                para_point = ad.map.point.createParaPoint(lane_id, ad.physics.ParametricValue(param[0]))
+                enu_point = ad.map.lane.getENULanePoint(para_point)
+                carla_point = enu_to_carla_loc(enu_point)
+                carla_point.z = altitudes[i]  # AD Map doesn't parse the altitude
+                self._route.append(carla_point)
+                self._world.debug.draw_point(carla_point, size=0.1, life_time=100, color=carla.Color(0,0,0))
+
+            # # Transform the AD map route representation into waypoints (If not needed to parse the altitude)
+            # for segment in get_route_lane_list(route_segment, start_lane_id):
+            #     lane_id = segment.laneInterval.laneId
+            #     param_list = get_lane_interval_list(segment.laneInterval)
+            #     for i in range(len(param_list)):
+            #         para_point = ad.map.point.createParaPoint(lane_id, ad.physics.ParametricValue(param_list[i]))
+            #         enu_point = ad.map.lane.getENULanePoint(para_point)
+            #         carla_point = enu_to_carla_loc(enu_point)
+            #         self._route.append(carla_point)
+            #         # self._world.debug.draw_point(carla_point, size=0.1, life_time=100, color=carla.Color(0,0,0))
+
+    def _get_lane_altitude_list(self, start_z, end_z, length):
+        """Gets the z values of a lane. This is a simple linear interpolation
+        and it won't be necessary whenever the AD map parses the altitude"""
+        if length == 0:
+            return []
+        if start_z == end_z:
+            return start_z*np.ones(length)
+        return np.arange(start_z, end_z, (end_z - start_z) / length)
 
     def destroy(self):
         """Remove the AD map library files"""

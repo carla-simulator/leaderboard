@@ -26,6 +26,7 @@ def get_shortest_route(start_location, end_location, distance=1, probability=0):
     ad_distance = ad.physics.Distance(distance)
     ad_probability = ad.physics.Probability(probability)
     ad_map_matching = ad.map.match.AdMapMatching()
+    route_segment = None
 
     ad_start_location = carla_loc_to_enu(start_location)
     ad_end_location = carla_loc_to_enu(end_location)
