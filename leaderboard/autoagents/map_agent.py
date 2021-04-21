@@ -245,20 +245,21 @@ class MapAgent(AutonomousAgent):
         obstacle_added_target = int(self._obstacle_min_dist + self._obstacle_index_rate * current_speed)
         obstacle_target_index = min(self._route_index + obstacle_added_target, len(self._route) - 1)
 
+        # Displace the route up / down depending on the terrain 
+        route_z_increase = (base_transform.location.z - self._sensor_z) - self._route[self._route_index].z
+        route_z_increase += 2 * self._obstacle_threshold  # And a bit more to avoid false positives with the ground
+
         # Get a list of the route waypoints (in sensor coordinates)
         for i in range(self._route_index + 1, obstacle_target_index):
 
-            # Copy the route location as some of its attributes will be changed
+            # Copy the route location as some of its attributes will be changed (upwards shift)
             temp = self._route[i]
-            route_location = carla.Location(temp.x , temp.y, temp.z)  
+            route_location = carla.Location(temp.x , temp.y, temp.z)
+            route_location.z += route_z_increase
 
-            # Displace the route upwards to avoid false positives with the ground and change it to array
-            route_location.z += 2 * self._obstacle_threshold
+            # Change it to sensor coordinates
             route_location_ = np.array([[route_location.x, route_location.y, route_location.z, 1]])
-
             self._world.debug.draw_point(route_location, size=0.2, life_time=0.25, color=carla.Color(0,255,255))
-
-            # Get the location array in sensor coordinates, change it back to carla.Location adn store it
             target_location_ = np.matmul(base_transform.get_inverse_matrix(), np.transpose(route_location_))
             target_location = carla.Location(target_location_[0][0], target_location_[1][0], target_location_[2][0])
             target_locations.append(target_location)
@@ -273,6 +274,7 @@ class MapAgent(AutonomousAgent):
             elif target_location.y > obstacle_range[1][1]:
                 obstacle_range[1][1] = target_location.y
 
+        # Check all LIDAR points for possible obstacles
         for lidar_point in data['LIDAR'][1]:
             lidar_location = carla.Location(float(lidar_point[0]), float(lidar_point[1]), float(lidar_point[2]))
 
@@ -286,17 +288,22 @@ class MapAgent(AutonomousAgent):
             if lidar_location.y > obstacle_range[1][1] + self._obstacle_threshold:
                 continue
 
-            for target_location in target_locations:
-                dist = math.pow(target_location.x - lidar_location.x, 2) + \
-                       math.pow(target_location.y - lidar_location.y, 2) + \
-                       math.pow(target_location.z - lidar_location.z, 2)
-                if dist < self._obstacle_threshold:
-                    # loc__ = np.array([[lidar_location.x, lidar_location.y, lidar_location.z, 1]])
-                    # loc_ = np.matmul(base_transform.get_matrix(), np.transpose(loc__))
-                    # loc = carla.Location(loc_[0][0], loc_[1][0], loc_[2][0])
-                    # self._world.debug.draw_point(loc, size=0.07, life_time=0.25, color=carla.Color(0,255,255))
-                    return True
+            if self._is_location_obstacle(target_locations, lidar_location):
+                # loc__ = np.array([[lidar_location.x, lidar_location.y, lidar_location.z, 1]])
+                # loc_ = np.matmul(base_transform.get_matrix(), np.transpose(loc__))
+                # loc = carla.Location(loc_[0][0], loc_[1][0], loc_[2][0])
+                # self._world.debug.draw_point(loc, size=0.2, life_time=0.25, color=carla.Color(0,255,255))
+                return True
 
+        return False
+
+    def _is_location_obstacle(self, targets, location):
+        """Calculates whether or not a location can be considered an obstacle"""
+        location_ = np.array([location.x, location.y, location.z])
+        for target in targets:
+            target_ = np.array([target.x, target.y, target.z])
+            if np.linalg.norm(target_ - location_) < self._obstacle_threshold:
+                return True
         return False
 
     def _initialize_map(self, opendrive_contents):
