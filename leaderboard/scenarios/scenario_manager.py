@@ -22,7 +22,7 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.watchdog import Watchdog
 
-from leaderboard.autoagents.agent_wrapper import AgentWrapper, AgentError
+from leaderboard.autoagents.agent_wrapper import AgentWrapperFactory, AgentError
 from leaderboard.envs.sensor_interface import SensorReceivedNoData
 from leaderboard.utils.result_writer import ResultOutputProvider
 
@@ -102,7 +102,7 @@ class ScenarioManager(object):
         """
 
         GameTime.restart()
-        self._agent = AgentWrapper(agent)
+        self._agent = AgentWrapperFactory.get_wrapper(agent)
         self.scenario_class = scenario
         self.scenario = scenario.scenario
         self.scenario_tree = self.scenario.scenario_tree
@@ -126,19 +126,16 @@ class ScenarioManager(object):
         self._running = True
 
         while self._running:
-            timestamp = None
-            world = CarlaDataProvider.get_world()
-            if world:
-                snapshot = world.get_snapshot()
-                if snapshot:
-                    timestamp = snapshot.timestamp
-            if timestamp:
-                self._tick_scenario(timestamp)
+            self._tick_scenario()
 
-    def _tick_scenario(self, timestamp):
+    def _tick_scenario(self):
         """
         Run next tick of scenario and the agent and tick the world.
         """
+        if self._running and self.get_running_status():
+            CarlaDataProvider.get_world().tick(self._timeout)
+
+        timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp
 
         if self._timestamp_last_run < timestamp.elapsed_seconds and self._running:
             self._timestamp_last_run = timestamp.elapsed_seconds
@@ -176,9 +173,6 @@ class ScenarioManager(object):
             ego_trans = self.ego_vehicles[0].get_transform()
             spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
                                                         carla.Rotation(pitch=-90)))
-
-        if self._running and self.get_running_status():
-            CarlaDataProvider.get_world().tick(self._timeout)
 
     def get_running_status(self):
         """

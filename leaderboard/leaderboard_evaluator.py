@@ -157,43 +157,25 @@ class LeaderboardEvaluator(object):
         if hasattr(self, 'statistics_manager') and self.statistics_manager:
             self.statistics_manager.scenario = None
 
-    def _prepare_ego_vehicles(self, ego_vehicles, wait_for_ego_vehicles=False):
+    def _prepare_ego_vehicles(self, ego_vehicles):
         """
         Spawn or update the ego vehicles
         """
-
-        if not wait_for_ego_vehicles:
-            for vehicle in ego_vehicles:
-                self.ego_vehicles.append(CarlaDataProvider.request_new_actor(vehicle.model,
-                                                                             vehicle.transform,
-                                                                             vehicle.rolename,
-                                                                             color=vehicle.color,
-                                                                             vehicle_category=vehicle.category))
-
-        else:
-            ego_vehicle_missing = True
-            while ego_vehicle_missing:
-                self.ego_vehicles = []
-                ego_vehicle_missing = False
-                for ego_vehicle in ego_vehicles:
-                    ego_vehicle_found = False
-                    carla_vehicles = CarlaDataProvider.get_world().get_actors().filter('vehicle.*')
-                    for carla_vehicle in carla_vehicles:
-                        if carla_vehicle.attributes['role_name'] == ego_vehicle.rolename:
-                            ego_vehicle_found = True
-                            self.ego_vehicles.append(carla_vehicle)
-                            break
-                    if not ego_vehicle_found:
-                        ego_vehicle_missing = True
-                        break
-
-            for i, _ in enumerate(self.ego_vehicles):
-                self.ego_vehicles[i].set_transform(ego_vehicles[i].transform)
+        for vehicle in ego_vehicles:
+            self.ego_vehicles.append(
+                CarlaDataProvider.request_new_actor(
+                    vehicle.model,
+                    vehicle.transform,
+                    vehicle.rolename,
+                    color=vehicle.color,
+                    vehicle_category=vehicle.category
+                )
+            )
 
         # sync state
         CarlaDataProvider.get_world().tick()
 
-    def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
+    def _load_and_wait_for_world(self, args, town):
         """
         Load a new CARLA world and provide data to CarlaDataProvider
         """
@@ -249,18 +231,48 @@ class LeaderboardEvaluator(object):
         crash_message = ""
         entry_status = "Started"
 
-        print("\n\033[1m========= Preparing {} (repetition {}) =========".format(config.name, config.repetition_index))
-        print("> Setting up the agent\033[0m")
+        print("\n\033[1m========= Preparing {} (repetition {}) =========\033[0m".format(config.name, config.repetition_index))
 
         # Prepare the statistics of the route
         self.statistics_manager.set_route(config.name, config.index)
+
+        print("\033[1m> Loading the world\033[0m")
+
+        # Load the world and the scenario
+        try:
+            self._load_and_wait_for_world(args, config.town)
+            self._prepare_ego_vehicles(config.ego_vehicles)
+            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
+            self.statistics_manager.set_scenario(scenario.scenario)
+
+            # Night mode
+            if config.weather.sun_altitude_angle < 0.0:
+                for vehicle in scenario.ego_vehicles:
+                    vehicle.set_light_state(carla.VehicleLightState(self._vehicle_lights))
+
+        except Exception as e:
+            # The scenario is wrong -> set the ejecution to crashed and stop
+            print("\n\033[91mThe scenario could not be loaded:")
+            print("> {}\033[0m\n".format(e))
+            traceback.print_exc()
+
+            crash_message = "Simulation crashed"
+            entry_status = "Crashed"
+
+            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+
+            self._cleanup()
+            sys.exit(-1)
+
+        print("\033[1m> Setting up the agent\033[0m")
 
         # Set up the user's agent, and the timer to avoid freezing the simulation
         try:
             self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
-            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
-            config.agent = self.agent_instance
+            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.host, args.port, args.debug)
+            self.agent_instance.set_global_plan(scenario.gps_route, scenario.route)
+            self.agent_instance.setup(args.agent_config)
 
             # Check and store the sensors
             if not self.sensors:
@@ -299,46 +311,14 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             return
 
-        print("\033[1m> Loading the world\033[0m")
-
-        # Load the world and the scenario
-        try:
-            self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
-            self._prepare_ego_vehicles(config.ego_vehicles, False)
-            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
-            self.statistics_manager.set_scenario(scenario.scenario)
-
-            # Night mode
-            if config.weather.sun_altitude_angle < 0.0:
-                for vehicle in scenario.ego_vehicles:
-                    vehicle.set_light_state(carla.VehicleLightState(self._vehicle_lights))
-
-            # Load scenario and run it
-            if args.record:
-                self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(scenario, self.agent_instance, config.repetition_index)
-
-        except Exception as e:
-            # The scenario is wrong -> set the ejecution to crashed and stop
-            print("\n\033[91mThe scenario could not be loaded:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
-
-            crash_message = "Simulation crashed"
-            entry_status = "Crashed"
-
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
-
-            if args.record:
-                self.client.stop_recorder()
-
-            self._cleanup()
-            sys.exit(-1)
-
         print("\033[1m> Running the route\033[0m")
 
         # Run the scenario
         try:
+            # Load scenario and run it
+            if args.record:
+                self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
+            self.manager.load_scenario(scenario, self.agent_instance, config.repetition_index)
             self.manager.run_scenario()
 
         except AgentError as e:
