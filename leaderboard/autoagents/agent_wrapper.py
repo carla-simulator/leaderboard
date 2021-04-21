@@ -97,7 +97,7 @@ class AgentWrapper(object):
 
         elif type_.startswith('sensor.speedometer'):
             delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
-            attributes['frame_rate'] = 1 / delta_time
+            attributes['reading_frequency'] = 1 / delta_time
             sensor_location = carla.Location()
             sensor_rotation = carla.Rotation()
 
@@ -192,7 +192,7 @@ class AgentWrapper(object):
             if type_.startswith('sensor.opendrive_map'):
                 sensor = OpenDriveMapReader(vehicle, attributes['reading_frequency'])
             elif sensor_spec['type'].startswith('sensor.speedometer'):
-                sensor = SpeedometerReader(vehicle, attributes['frame_rate'])
+                sensor = SpeedometerReader(vehicle, attributes['reading_frequency'])
 
             # These are the sensors spawned on the carla world
             else:
