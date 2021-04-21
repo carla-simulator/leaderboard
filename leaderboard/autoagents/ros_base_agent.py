@@ -60,16 +60,16 @@ class ROSLogger(object):
 
 class ROSLauncher(object):
 
-    def __init__(self, app_name, ros_version, debug=True):
+    def __init__(self, app_name, ros_version, debug=False):
         self.app_name = app_name
         self.ros_version = ros_version
         self.debug = debug
 
         self._process = None
 
+        self._log_thread = threading.Thread(target=self.log)
         if self.debug:
             self._logger = ROSLogger(self.app_name)
-            self._log_thread = threading.Thread(target=self.log)
 
     def run(self, package, launch_file, parameters={}, wait=False):
         cmdline = [
@@ -81,8 +81,7 @@ class ROSLauncher(object):
         ]
         cmdline = " ".join(cmdline)
         self._process = pexpect.spawn(cmdline, encoding="utf-8", logfile=self._logger if self.debug else None)
-        if self.debug:
-            self._log_thread.start()
+        self._log_thread.start()
 
     def log(self):
         while True:
@@ -100,8 +99,8 @@ class ROSLauncher(object):
         assert self._process is not None
         self._process.terminate()
 
+        self._log_thread.join()
         if self.debug:
-            self._log_thread.join()
             self._logger.destroy()
 
 
@@ -138,7 +137,7 @@ class ROSBaseAgent(AutonomousAgent):
     def __init__(self, ros_version, carla_host, carla_port, debug=False):
         super(ROSBaseAgent, self).__init__(carla_host, carla_port, debug)
 
-        self._bridge_process = ROSLauncher("bridge", ros_version=ros_version)
+        self._bridge_process = ROSLauncher("bridge", ros_version=ros_version, debug=debug)
         self._bridge_process.run(
             package="carla_ros_bridge",
             launch_file="carla_ros_bridge.launch" if ros_version == 1 else "carla_ros_bridge.launch.py",
@@ -151,7 +150,7 @@ class ROSBaseAgent(AutonomousAgent):
             wait=False
         )
 
-        self._agent_process = ROSLauncher("agent", ros_version=ros_version)
+        self._agent_process = ROSLauncher("agent", ros_version=ros_version, debug=debug)
         self._agent_process.run(
             **self.get_ros_entrypoint(),
             wait=True

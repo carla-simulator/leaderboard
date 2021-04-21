@@ -66,10 +66,10 @@ class ROS1Agent(ROSBaseAgent):
 
     ROS_VERSION = 1
 
-    def __init__(self, carla_host, carla_port, debug):
+    def __init__(self, carla_host, carla_port, debug=False):
         super(ROS1Agent, self).__init__(self.ROS_VERSION, carla_host, carla_port, debug)
 
-        self._server_process = ROSLauncher("server", self.ROS_VERSION)
+        self._server_process = ROSLauncher("server", ros_version=self.ROS_VERSION, debug=debug)
         self._server_process.run(
             package="rosbridge_server",
             launch_file="rosbridge_websocket.launch",
