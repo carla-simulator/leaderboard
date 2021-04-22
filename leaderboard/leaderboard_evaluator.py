@@ -106,7 +106,7 @@ class LeaderboardEvaluator(object):
         Terminate scenario ticking when receiving a signal interrupt
         """
         if self._agent_watchdog and not self._agent_watchdog.get_status():
-            raise RuntimeError("Timeout: Agent took too long to setup")
+            raise RuntimeError("Timeout: Agent took longer than {}s to setup".format(self.client_timeout))
         elif self.manager:
             self.manager.signal_handler(signum, frame)
 
