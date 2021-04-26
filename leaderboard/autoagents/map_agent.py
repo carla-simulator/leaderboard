@@ -81,8 +81,6 @@ class MapAgent(AutonomousAgent):
         self._prev_location = None
         self._prev_heading = None
 
-        self._world = carla.Client('127.0.0.1', 2000).get_world()
-
     def sensors(self):
         """Define the sensors required by the agent. IMU and GNSS are setup at the
         same position to avoid having to change between those two coordinate references"""
@@ -139,10 +137,10 @@ class MapAgent(AutonomousAgent):
         else:
             current_location = self._get_current_location(data)
             current_heading = self._get_current_heading(data)
-            current_transform = self._get_current_transform(current_location, current_heading)
             current_speed = self._get_current_speed(data)
             target_location = self._get_target_location(current_location, current_speed)
             target_speed = self._get_target_speed(current_location)
+            current_transform = self._get_current_transform(current_location, current_heading)
 
             # Traffic Light tests, missing some attributes at the AD map library
             # ego_lane_id = to_ad_paraPoint(current_location).laneId
@@ -201,14 +199,24 @@ class MapAgent(AutonomousAgent):
 
     def _get_current_heading(self, data):
         """Transform the compass data (radiants) into the vehicle heading"""
-        compass_data = data['IMU'][1][6]
+        compass_data = float(data['IMU'][1][6])
+        if str(compass_data) == 'nan':
+            return self._prev_heading  # Compass might return nan, so use the previous heading instead
         compass_rad = (compass_data - math.pi / 2) % (2 * math.pi)  # Substract 90º and clip it
         return  carla.Vector3D(x=math.cos(compass_rad), y=math.sin(compass_rad))
 
     def _get_current_transform(self, location, heading):
         """Returns the current ego vehicle transform"""
+        # The compass doesn't register the changes in z, so use the route to get the pitch
+        if self._route_index < len(self._route) - 1:
+            current_route_loc = self._route[self._route_index]
+            next_route_loc = self._route[self._route_index + 1]
+            route_heading = next_route_loc - current_route_loc
+            heading.z = route_heading.z
+
+        pitch = math.degrees(math.asin(heading.z))
         yaw = math.degrees(math.atan2(heading.y, heading.x))
-        return carla.Transform(location, carla.Rotation(yaw=yaw))
+        return carla.Transform(location, carla.Rotation(roll=0, pitch=pitch, yaw=yaw))
 
     def _get_current_speed(self, data):
         """Calculates the speed of the vehicle"""
@@ -259,7 +267,6 @@ class MapAgent(AutonomousAgent):
 
             # Change it to sensor coordinates
             route_location_ = np.array([[route_location.x, route_location.y, route_location.z, 1]])
-            self._world.debug.draw_point(route_location, size=0.2, life_time=0.25, color=carla.Color(0,255,255))
             target_location_ = np.matmul(base_transform.get_inverse_matrix(), np.transpose(route_location_))
             target_location = carla.Location(target_location_[0][0], target_location_[1][0], target_location_[2][0])
             target_locations.append(target_location)
@@ -346,6 +353,8 @@ class MapAgent(AutonomousAgent):
             start_option = self._global_plan_world_coord[i-1][1]
             end_option = self._global_plan_world_coord[i][1]
             if start_option.value in (5, 6) and start_option == end_option:
+                start_parapoint = to_ad_paraPoint(start_location)
+                end_parapoint = to_ad_paraPoint(end_location)
                 if to_ad_paraPoint(start_location).laneId != to_ad_paraPoint(end_location).laneId:
                     continue  # Two points signifying a lane change, move to the next segment
 
@@ -358,19 +367,22 @@ class MapAgent(AutonomousAgent):
             # The parameters must be precomputed to know its final length, and interpolate the height
             params = []
             route_lanes = get_route_lane_list(route_segment, start_lane_id)
-            for i, segment in enumerate(route_lanes):
+            for j, segment in enumerate(route_lanes):
                 for param in get_lane_interval_list(segment.laneInterval):
-                    params.append([param, i])
+                    params.append([param, j])
+
+            # The firstest point of the route isn't at ground level (for some reason)
+            if i == 1:
+                start_location.z = end_location.z
 
             altitudes = self._get_lane_altitude_list(start_location.z, end_location.z, len(params))
-            for i, param in enumerate(params):
+            for k, param in enumerate(params):
                 lane_id = route_lanes[param[1]].laneInterval.laneId
                 para_point = ad.map.point.createParaPoint(lane_id, ad.physics.ParametricValue(param[0]))
                 enu_point = ad.map.lane.getENULanePoint(para_point)
                 carla_point = enu_to_carla_loc(enu_point)
-                carla_point.z = altitudes[i]  # AD Map doesn't parse the altitude
+                carla_point.z = altitudes[k]  # AD Map doesn't parse the altitude
                 self._route.append(carla_point)
-                self._world.debug.draw_point(carla_point, size=0.1, life_time=100, color=carla.Color(0,0,0))
 
             # # Transform the AD map route representation into waypoints (If not needed to parse the altitude)
             # for segment in get_route_lane_list(route_segment, start_lane_id):
