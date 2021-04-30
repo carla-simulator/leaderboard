@@ -124,6 +124,8 @@ class ScenarioManager(object):
 
         self._watchdog.start()
         self._running = True
+        self._spectator = CarlaDataProvider.get_world().get_spectator()
+        self._map = CarlaDataProvider.get_map()
 
         while self._running:
             timestamp = None
@@ -172,10 +174,13 @@ class ScenarioManager(object):
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
                 self._running = False
 
-            spectator = CarlaDataProvider.get_world().get_spectator()
             ego_trans = self.ego_vehicles[0].get_transform()
-            spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
-                                                        carla.Rotation(pitch=-90)))
+            ego_wp = self._map.get_waypoint(ego_trans.location)
+            while not ego_wp.is_junction:
+                ego_wp = ego_wp.next(5)[0]
+            junction_loc = ego_wp.get_junction().bounding_box.location
+            self._spectator.set_transform(carla.Transform(junction_loc + carla.Location(z=150),
+                                                          carla.Rotation(pitch=-90)))
 
         if self._running and self.get_running_status():
             CarlaDataProvider.get_world().tick(self._timeout)

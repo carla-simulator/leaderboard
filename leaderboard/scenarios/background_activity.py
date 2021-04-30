@@ -53,29 +53,6 @@ class BackgroundActivity(BasicScenario):
         """
         pass
 
-        # # Spawn the vehicles in the opposite lane
-        # oppo_dir_points = []
-        # for wp in oppo_dir_wps:
-        #     # Spawn one in front
-        #     next_wp = wp
-        #     trans = next_wp.transform
-        #     oppo_dir_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
-
-        #     # Spawn several behind
-        #     prev_wp = wp
-        #     for _ in range(self._num_front_vehicles):
-        #         prev_wps = prev_wp.previous(self._start_distance)
-        #         if len(prev_wps) == 0:
-        #             break  # Stop when there's no next
-        #         prev_wp = prev_wps[0]
-        #         trans = prev_wp.transform
-        #         oppo_dir_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
-
-        # oppo_lane_actors = CarlaDataProvider.request_new_batch_actors(
-        #     'vehicle.*', len(oppo_dir_points), oppo_dir_points, True, False, 'background', safe=True)
-        # self._oppo_dir_vehicles = [actor for actor in oppo_lane_actors]
-
-
     def _create_behavior(self):
         """
         Basic behavior do nothing, i.e. Idle
@@ -99,7 +76,7 @@ class BackgroundActivity(BasicScenario):
         """
         Remove all actors upon deletion
         """
-        self.remove_all_actors()
+        pass
 
 
 class BackgroundBehavior(AtomicBehavior):
@@ -120,9 +97,11 @@ class BackgroundBehavior(AtomicBehavior):
         self._ego_actor = ego_actor
         self._same_dir_actors = []
         self._junction_actors = []
+        self._background_actors = []
         self._actor_configuration = []
         self._actor_dict = {}
-        self._actor_dict[ego_actor] = ['road', None]
+        self._ego_state = 'road'
+        self._current_junction = None
 
         # Route variables
         self._route = route
@@ -133,49 +112,169 @@ class BackgroundBehavior(AtomicBehavior):
 
         # Radius variables
         self._num_front_vehicles = 3
-        self._start_distance = 10
-        self._radius = self._num_front_vehicles * self._start_distance + 0.5 * self._start_distance
-        self._junction_radius = self._radius * 2
+        self._vehicle_dist = 10
+        self._radius = 35  # If too small, the furthest vehicle will never activate
+        self._junction_dist = 60
 
-    def initialise(self):
-        """Creates the background activity actors"""
-        # Get the road topology
-        ego_location = self._ego_actor.get_transform().location
-        ego_wp = self._map.get_waypoint(ego_location)
-        same_dir_wps, oppo_dir_wps = self._get_lanes(ego_wp)
-
-        # Spawn the vehicles with the same direction as the ego
-        same_dir_points = []
-        for wp in same_dir_wps:
+    def _spawn_road_actors(self, lane_wps, interval, num_vehicles):
+        """Spawns X vehicles forward"""
+        spawn_points = []
+        for wp in lane_wps:
             # Spawn one behind
-            prev_wp = wp.previous(self._start_distance)[0]
+            prev_wp = wp.previous(interval)[0]
             trans = prev_wp.transform
-            same_dir_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
+            spawn_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
 
             # Spawn several in front
             next_wp = wp
-            for _ in range(self._num_front_vehicles):
-                next_wps = next_wp.next(self._start_distance)
+            for _ in range(num_vehicles):
+                next_wps = next_wp.next(interval)
                 if len(next_wps) == 0:
                     break  # Stop when there's no next
                 next_wp = next_wps[0]
                 trans = next_wp.transform
-                same_dir_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
+                spawn_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
 
-        same_lane_actors = CarlaDataProvider.request_new_batch_actors(
-            'vehicle.*', len(same_dir_points), same_dir_points, True, False, 'background', safe=True)
-        self._same_dir_actors = [actor for actor in same_lane_actors]
+        actors = CarlaDataProvider.request_new_batch_actors(
+            'vehicle.*', len(spawn_points), spawn_points, True, False, 'background', safe=True)
 
-        for actor in self._same_dir_actors:
+        # Add the actors the database and remove their lane changes
+        for actor in actors:
+            self._background_actors.append(actor)
+            self._actor_dict[actor] = ['road_active', None]
             self._tm.auto_lane_change(actor, False)
-            self._actor_dict[actor] = ['active', None]
+
+    def _spawn_junction_actors(self, lane_wps, interval, num_vehicles):
+        """Spawns X vehicles forward"""
+        spawn_points = []
+        for wp in lane_wps:
+            prev_wp = wp
+            for _ in range(num_vehicles):
+                prev_wps = prev_wp.previous(interval)
+                if len(prev_wps) == 0:
+                    break  # Stop when there's no prev
+                prev_wp = prev_wps[0]
+                trans = prev_wp.transform
+                spawn_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
+
+        actors = CarlaDataProvider.request_new_batch_actors(
+            'vehicle.*', len(spawn_points), spawn_points, True, False, 'background', safe=True)
+
+        # Add the actors the database and remove their lane changes
+        for actor in actors:
+            self._background_actors.append(actor)
+            self._actor_dict[actor] = ['junction_entering', None]
+            self._tm.auto_lane_change(actor, False)
+
+    def _spawn_junction_exit_actors(self, lane_wps, interval, num_vehicles):
+        """asdasd"""
+        self._actor_configuration = []
+
+        for wp in lane_wps:
+
+            exiting_points = []
+
+            # Spawn the actors
+            next_wp = wp
+            for _ in range(num_vehicles):
+                next_wps = next_wp.next(interval)
+                if len(next_wps) == 0:
+                    break  # Stop when there's no next
+                next_wp = next_wps[0]
+                trans = next_wp.transform
+                exiting_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
+
+            actors = CarlaDataProvider.request_new_batch_actors(
+                'vehicle.*', len(exiting_points), exiting_points, True, False, 'background', safe=True)
+
+            self._actor_configuration.append([wp.road_id, wp.lane_id, actors])
+            for actor in actors:
+                self._background_actors.append(actor)
+                self._tm.auto_lane_change(actor, False)
+                self._actor_dict[actor] = ['road_active', wp.transform.location]
+
+    def initialise(self):
+        """Creates the background activity actors. Pressuposes that the ego is at a road"""
+        ego_location = self._ego_actor.get_transform().location
+        ego_wp = self._map.get_waypoint(ego_location)
+        same_dir_wps = self._get_lanes(ego_wp)
+        self._spawn_road_actors(same_dir_wps, self._vehicle_dist, self._num_front_vehicles)
+
+    def _handle_ego_state(self, location):
+        """Handle the trace of the status of the ego. This serves as a way to know whether or not
+        junction related behaviors have to start being triggered (or ended)"""
+        route_wp = self._map.get_waypoint(location)
+
+        # At a road -> monitor if there is a junction nearby
+        if self._ego_state == 'road' and len(route_wp.next(self._junction_dist)) > 1:
+            self._ego_state = 'entering_junction'
+
+            # Set all created vehicles to junction mode
+            for actor in self._background_actors:
+                # TODO: Check if this breaks vehicles already inside junctions
+                self._actor_dict[actor] = ['junction_entering', None]
+
+            # Prepare the junction and the route exit lane
+            self._prepare_junction(route_wp)
+
+        # Junction found -> monitor the entrance to the junction
+        elif self._ego_state == 'entering_junction' and route_wp.is_junction:
+            self._ego_state = 'at_junction'
+
+        # At a junction -> monitor the ego exiting a junction
+        elif self._ego_state == 'at_junction' and not route_wp.is_junction:
+            self._ego_state = 'road'
+
+            # Set all actors to road mode
+            for actor in self._background_actors:
+                # Note: this activates all inactive actors but they'll be deactivated again at the same step
+                self._actor_dict[actor] = ['road_active', None]
+
+    def _handle_background_actor(self, actor, location, ego_transform):
+        """Handle the background actors depending on their previous state"""
+        current_state, current_ref_point = self._actor_dict[actor]
+        # print(current_state)
+
+        # Calculate the distance to the reference point (by default, to the route)
+        if current_ref_point is None: 
+            ref_location = ego_transform.location
+        else:
+            ref_location = self._actor_dict[actor][1]
+        distance = location.distance(ref_location)
+
+        # Active -> Deactivate if far from the reference point
+        if current_state == 'road_active':
+            if distance > self._radius + 1:
+                self._deactivate_actor(actor)
+
+        # Inactive -> Activate if close to the reference point or remove if behind it
+        elif current_state == 'road_inactive':
+            # Remove the vehicle that are behind the ego
+            ego_heading = ego_transform.get_forward_vector()
+            ego_actor_vec = location - ego_transform.location
+            if ego_heading.x * ego_actor_vec.x + ego_heading.y * ego_actor_vec.y < 0:
+                self._destroy_actor(actor)
+                return
+            # Or activate them if they are in front and closeby
+            if distance < self._radius - 1:
+                self._activate_actor(actor)
+
+        # Entering a junction -> monitor its entrance
+        elif current_state == 'junction_entering':
+            actor_wp = self._map.get_waypoint(location)
+            if actor_wp.is_junction:
+                self._actor_dict[actor][0] = 'junction_exiting'
+
+        # At a junction -> Monitor its exit
+        elif current_state == 'junction_exiting':
+            actor_wp = self._map.get_waypoint(location)
+            if not actor_wp.is_junction:
+                self._check_exit_lane(actor, actor_wp)
+                self._actor_dict[actor] = ['road_active', actor_wp.transform.location]
 
     def _get_lanes(self, waypoint):
         """Gets all the lanes of the road the ego starts at"""
-        same_dir_wps = []
-        oppo_dir_wps = []
-        opposite_lane_wp = None
-        same_dir_wps.append(waypoint)
+        same_dir_wps = [waypoint]
 
         # Check roads on the right
         right_wp = waypoint
@@ -193,130 +292,99 @@ class BackgroundBehavior(AtomicBehavior):
             if possible_left_wp is None or possible_left_wp.lane_type != carla.LaneType.Driving:
                 break
             if possible_left_wp.lane_id * left_wp.lane_id < 0:
-                opposite_lane_wp = possible_left_wp
                 break
             left_wp = possible_left_wp
             same_dir_wps.append(left_wp)
 
-        if opposite_lane_wp is None:
-            return same_dir_wps, oppo_dir_wps
+        return same_dir_wps
 
-        # Check opposite direction lanes
-        right_wp = opposite_lane_wp
-        oppo_dir_wps.append(right_wp)
-        while True:
-            possible_right_wp = right_wp.get_right_lane()
-            if possible_right_wp is None or possible_right_wp.lane_type != carla.LaneType.Driving:
-                break
-            right_wp = possible_right_wp
-            oppo_dir_wps.append(right_wp)
+    def _get_junction_topology(self, junction, route_wp):
+        """Gets the entering and exiting lanes of a junction. Needed as junction.get_waypoints
+        gets the wps inside the junction. Needs some filter as two entering / exiting points
+        might originate from the same lane"""
+        used_entering_roads = [route_wp.road_id]
+        used_exiting_roads = []
+        entering_lane_wps = []
+        exiting_lane_wps = []
 
-        return same_dir_wps, oppo_dir_wps
+        for enter_wp, exit_wp in junction.get_waypoints(carla.LaneType.Driving):
 
-    def _populate_junction(self, wp):
+            # Entering waypoints. Move them a bit to the back and get the lane
+            enter_wps = enter_wp.previous(1)
+            if len(enter_wps) == 0:
+                continue  # Stop when there's no prev
+            enter_wp = enter_wps[0]
+            if enter_wp.road_id not in used_entering_roads:
+                # The road hasn't been used
+                used_entering_roads.append(enter_wp.road_id)
+                entering_lane_wps.append(enter_wp)
+
+            # Exiting waypoints. Move them a bit to the front and get the lane
+            exit_wps = enter_wp.next(1)
+            if len(exit_wps) == 0:
+                continue  # Stop when there's no prev
+            exit_wp = exit_wps[0]
+            if exit_wp.road_id not in used_exiting_roads:
+                # The road hasn't been used
+                used_exiting_roads.append(exit_wp.road_id)
+                exiting_lane_wps.append(exit_wp)
+
+        return entering_lane_wps, exiting_lane_wps
+
+    def _prepare_junction(self, route_wp):
         """ Populate the junction with vehicle"""
-        next_wp = wp
+
+        # Get the junction
+        next_wp = route_wp
         while True:
             next_wp = next_wp.next(5)[0]
             if next_wp.is_junction:
                 break
         junction = next_wp.get_junction()
-        used_roads = [wp.road_id]
-        enter_wps = []
-        for enter, exit in junction.get_waypoints(carla.LaneType.Driving):
-            enter_wp = enter.previous(1)[0]
-            if enter_wp.road_id not in used_roads:
-                used_roads.append(enter_wp.road_id)
-                enter_wps.append(enter_wp)
+        if junction is None:
+            raise ValueError("Couldn't find the approaching junction")
 
-        junction_points = []
-        for wp in enter_wps:
-            # Spawn several behind
-            prev_wp = wp
-            for _ in range(self._num_front_vehicles):
-                prev_wps = prev_wp.previous(self._start_distance)
-                if len(prev_wps) == 0:
-                    break  # Stop when there's no next
-                prev_wp = prev_wps[0]
-                trans = prev_wp.transform
-                junction_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
+        # Get the junction topology
+        entering_lane_wps, exiting_lane_wps = self._get_junction_topology(junction, route_wp)
 
-        junction_actors = CarlaDataProvider.request_new_batch_actors(
-            'vehicle.*', len(junction_points), junction_points, True, False, 'background', safe=True)
-        for actor in junction_actors:
-            self._junction_actors.append(actor)
-            self._tm.auto_lane_change(actor, False)
-            self._actor_dict[actor] = ['immune', None]
+        # Spawn the actors
+        self._spawn_junction_actors(entering_lane_wps, self._vehicle_dist, self._num_front_vehicles)
 
-        for actor in self._same_dir_actors:
-            self._actor_dict[actor][0] = 'immune'
-
-    def _prepare_junction_exit(self):
-        """Populates the exit of the junction to continue with traffic after exiting the junction"""
-        found_junction = False
-        for i in range(self._route_index, self._route_length):
-            route_tran = self._waypoints[i]
-            route_wp = self._map.get_waypoint(route_tran.location)
-            if found_junction and not route_wp.is_junction:
+        # Get the first route waypoint outside the junction
+        found_junction_exit = False
+        for i in range(self._route_index, self._route_length - 1):
+            route_wp = self._map.get_waypoint(self._waypoints[i].location)
+            route_next_wp = self._map.get_waypoint(self._waypoints[i+1].location)
+            if route_wp.is_junction and not route_next_wp.is_junction:
+                found_junction_exit = True
                 break
-            elif not found_junction and route_wp.is_junction:
-                found_junction = True
 
-        same_dir_wps, _ = self._get_lanes(route_wp)
+        if not found_junction_exit:
+            return
 
-        # Spawn the vehicles with the same direction as the ego
-        self._actor_configuration = []
-        for wp in same_dir_wps:
+        exiting_junction_wps = self._get_lanes(route_next_wp)
+        self._spawn_junction_exit_actors(exiting_junction_wps, self._vehicle_dist, self._num_front_vehicles)
 
-            same_dir_points = []
-            # Spawn several in front
-            next_wps = wp.next(self._radius - self._start_distance)
-            if len(next_wps) == 0:
-                continue  # Stop when there's no next
-            next_wp = next_wps[0]
-            for _ in range(self._num_front_vehicles):
-                next_wps = next_wp.next(self._start_distance)
-                if len(next_wps) == 0:
-                    break  # Stop when there's no next
-                next_wp = next_wps[0]
-                trans = next_wp.transform
-                same_dir_points.append(carla.Transform(trans.location + carla.Location(z=1), trans.rotation))
-
-            same_lane_actors = CarlaDataProvider.request_new_batch_actors(
-                'vehicle.*', len(same_dir_points), same_dir_points, True, False, 'background', safe=True)
-
-            self._actor_configuration.append([wp.road_id, wp.lane_id, same_lane_actors])
-            for actor in same_lane_actors:
-                self._same_dir_actors.append(actor)
-                self._tm.auto_lane_change(actor, False)
-                self._actor_dict[actor] = ['active', wp.transform.location]
-
-    def _end_junction_state(self):
-        """Ends the junction state"""
-        for actor in self._actor_dict:
-            if self._actor_dict[actor][0] == 'immune':
-                self._actor_dict[actor][0] = 'active'
+        # TODO 1: make self._get_junction_topology get all the lanes groups by roads, to avoid using get_lanes
+        # TODO 2: make self._actor_configuration register all exiting lanes, not just the route
+        # TODO 3: Create actor sources at each entering lane
 
     def _destroy_actor(self, actor):
         """Reposition an actor back to its lane"""
-        if actor in self._same_dir_actors:
-            self._same_dir_actors.remove(actor)
-        elif actor in self._junction_actors:
-            self._junction_actors.remove(actor)
+        if actor in self._background_actors:
+            self._background_actors.remove(actor)
         self._actor_dict.pop(actor, None)
         actor.destroy()
 
     def _deactivate_actor(self, actor):
         """Stops the actor from moving"""
-        print("Deactivating one actor")
         self._tm.vehicle_percentage_speed_difference(actor, 100)
-        self._actor_dict[actor][0] = 'inactive'
+        self._actor_dict[actor][0] = 'road_inactive'
 
     def _activate_actor(self, actor):
         """Makes the vehicle move again"""
-        print("Activating one actor")
         self._tm.vehicle_percentage_speed_difference(actor, 0)
-        self._actor_dict[actor][0] = 'active'
+        self._actor_dict[actor][0] = 'road_active'
 
     def _check_exit_lane(self, actor, wp):
         """asdasd"""
@@ -329,7 +397,7 @@ class BackgroundBehavior(AtomicBehavior):
                 self._actor_configuration[i][2].insert(0, actor)
                 self._destroy_actor(removed_actor)
 
-    def _get_route_ego_location(self, location):
+    def _get_route_location(self, location):
         """Returns the closest route location to the ego"""
         shortest_distance = float('inf')
         closest_index = -1
@@ -350,109 +418,19 @@ class BackgroundBehavior(AtomicBehavior):
     def update(self):
         new_status = py_trees.common.Status.RUNNING
 
+        # Get ego location and waypoint
         ego_location = CarlaDataProvider.get_location(self._ego_actor)
         if ego_location is None:
             return new_status
-        route_transform = self._get_route_ego_location(ego_location)
-        route_location = route_transform.location
-        route_wp = self._map.get_waypoint(route_location)
+        route_transform = self._get_route_location(ego_location)
+        self._handle_ego_state(route_transform.location)
 
-        # Ego state handler
-        if self._actor_dict[self._ego_actor][0] == 'road' and len(route_wp.next(self._junction_radius)) > 1:
-            # Ego close to a junction
-            self._populate_junction(route_wp)
-            self._prepare_junction_exit()
-            self._actor_dict[self._ego_actor][0] = 'entering_junction'
-        elif self._actor_dict[self._ego_actor][0] == 'entering_junction' and route_wp.is_junction:
-            # Ego entered the junction
-            self._actor_dict[self._ego_actor][0] = 'at_junction'
-        elif self._actor_dict[self._ego_actor][0] == 'at_junction' and not route_wp.is_junction:
-            # Ego exited the junction
-            self._end_junction_state()
-            self._actor_dict[self._ego_actor][0] = 'road'
-            for actor in self._actor_dict:
-                self._actor_dict[actor][1] = None
-
-        # Handle lane actors
-        for actor in self._same_dir_actors:
+        for actor in self._background_actors:
+            # Get its location and Handle its behavior
             location = CarlaDataProvider.get_location(actor)
             if location is None:
                 continue
-
-            # Calculate the distance to a specific point
-            ref_location = route_location if self._actor_dict[actor][1] is None else self._actor_dict[actor][1]
-            distance_to_route = location.distance(ref_location)
-
-            if self._actor_dict[actor][0] == 'active':
-                if distance_to_route > self._radius + 1:
-                    self._deactivate_actor(actor)
-            elif self._actor_dict[actor][0] == 'inactive':
-                if distance_to_route < self._radius - 1:
-                    self._activate_actor(actor)
-                else:
-                    # Remove the vehicle that have turned away from the route at junctions
-                    route_heading = route_transform.get_forward_vector()
-                    route_actor_vec = location - route_location
-                    if route_heading.x * route_actor_vec.x + route_heading.y * route_actor_vec.y < 0:
-                        self._destroy_actor(actor)
-            elif self._actor_dict[actor][0] == 'immune':
-                # Actor has entered the junction
-                actor_wp = self._map.get_waypoint(location)
-                if actor_wp.is_junction:
-                    self._actor_dict[actor][0] = 'protected'
-                continue
-            elif self._actor_dict[actor][0] == 'protected':
-                actor_wp = self._map.get_waypoint(location)
-                if not actor_wp.is_junction:
-                    self._check_exit_lane(actor, actor_wp)
-                    self._actor_dict[actor] = ['active', actor_wp.transform.location]
-                continue
-
-        # Handle junction actors
-        for actor in self._junction_actors:
-            location = CarlaDataProvider.get_location(actor)
-            if location is None:
-                continue
-
-            # Calculate the distance to a specific point
-            ref_location = route_location if self._actor_dict[actor][1] is None else self._actor_dict[actor][1]
-            distance_to_route = location.distance(ref_location)
-
-            if self._actor_dict[actor][0] == 'active':
-                if distance_to_route > self._radius + 1:
-                    self._deactivate_actor(actor)
-            elif self._actor_dict[actor][0] == 'inactive':
-                if distance_to_route < self._radius - 1:
-                    self._activate_actor(actor)
-                else:
-                    # Remove the vehicle that have turned away from the route at junctions
-                    route_heading = route_transform.get_forward_vector()
-                    route_actor_vec = location - route_location
-                    if route_heading.x * route_actor_vec.x + route_heading.y * route_actor_vec.y < 0:
-                        self._destroy_actor(actor)
-            elif self._actor_dict[actor][0] == 'immune':
-                # Actor has entered the junction
-                actor_wp = self._map.get_waypoint(location)
-                if actor_wp.is_junction:
-                    self._actor_dict[actor][0] = 'protected'
-                continue
-            elif self._actor_dict[actor][0] == 'protected':
-                actor_wp = self._map.get_waypoint(location)
-                if not actor_wp.is_junction:
-                    self._check_exit_lane(actor, actor_wp)
-                    self._actor_dict[actor] = ['active', actor_wp.transform.location]
-                continue
-
-        # for actor in self._oppo_dir_actors:
-        #     location = CarlaDataProvider.get_location(actor)
-        #     if location is None:
-        #         continue
-
-        #     distance_to_ego = math.pow(location.x - ego_location.x, 2) + \
-        #                       math.pow(location.y - ego_location.y, 2)
-
-        #     if distance_to_ego > self._active_radius * self._active_radius:
-        #         print("Teleporting one car"))
+            self._handle_background_actor(actor, location, route_transform)
 
         return new_status
 
