@@ -43,6 +43,7 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningStopTest,
                                                                      ActorSpeedAboveThresholdTest)
 
+from leaderboard.scenarios.background_activity import BackgroundActivity
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
@@ -196,6 +197,8 @@ class RouteScenario(BasicScenario):
                                                              scenarios_per_tick=10,
                                                              timeout=self.timeout,
                                                              debug_mode=debug_mode>1)
+
+        self.list_scenarios.append(BackgroundActivity(world, ego_vehicle, self.config, self.route, timeout=self.timeout))
 
         super(RouteScenario, self).__init__(name=config.name,
                                             ego_vehicles=[ego_vehicle],
@@ -445,35 +448,6 @@ class RouteScenario(BasicScenario):
         """
         Set other_actors to the superset of all scenario actors
         """
-        # Create the background activity of the route
-        town_amount = {
-            'Town01': 120,
-            'Town02': 100,
-            'Town03': 120,
-            'Town04': 200,
-            'Town05': 120,
-            'Town06': 150,
-            'Town07': 110,
-            'Town08': 180,
-            'Town09': 300,
-            'Town10': 120,
-        }
-
-        amount = town_amount[config.town] if config.town in town_amount else 0
-
-        new_actors = CarlaDataProvider.request_new_batch_actors('vehicle.*',
-                                                                amount,
-                                                                carla.Transform(),
-                                                                autopilot=True,
-                                                                random_location=True,
-                                                                rolename='background')
-
-        if new_actors is None:
-            raise Exception("Error: Unable to add the background activity, all spawn points were occupied")
-
-        for _actor in new_actors:
-            self.other_actors.append(_actor)
-
         # Add all the actors of the specific scenarios to self.other_actors
         for scenario in self.list_scenarios:
             self.other_actors.extend(scenario.other_actors)
