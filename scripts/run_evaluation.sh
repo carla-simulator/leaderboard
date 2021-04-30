@@ -8,6 +8,7 @@ python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --checkpoint=${CHECKPOINT_ENDPOINT} \
 --agent=${TEAM_AGENT} \
 --agent-config=${TEAM_CONFIG} \
+--trafficManagerHybrid \
 --debug=${DEBUG_CHALLENGE} \
 --record=${RECORD_PATH} \
 --resume=${RESUME}
