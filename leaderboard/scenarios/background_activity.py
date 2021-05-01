@@ -95,13 +95,10 @@ class BackgroundBehavior(AtomicBehavior):
 
         # Actor variables
         self._ego_actor = ego_actor
-        self._same_dir_actors = []
-        self._junction_actors = []
-        self._background_actors = []
-        self._actor_configuration = []
-        self._actor_dict = {}
         self._ego_state = 'road'
-        self._current_junction = None
+        self._background_actors = []
+        self._actor_dict = {}  # Dict with {actor: [state, reference_point]}
+        self._junction_dict = {}  # Dict {lane_key: [actors in that lane]}
 
         # Route variables
         self._route = route
@@ -168,7 +165,6 @@ class BackgroundBehavior(AtomicBehavior):
 
     def _spawn_junction_exit_actors(self, lane_wps, interval, num_vehicles):
         """asdasd"""
-        self._actor_configuration = []
 
         for wp in lane_wps:
 
@@ -187,8 +183,8 @@ class BackgroundBehavior(AtomicBehavior):
             actors = CarlaDataProvider.request_new_batch_actors(
                 'vehicle.*', len(exiting_points), exiting_points, True, False, 'background', safe=True)
 
-            self._actor_configuration.append([wp.road_id, wp.lane_id, actors])
             for actor in actors:
+                self._junction_dict[self._get_lane_key(wp)].append(actor)
                 self._background_actors.append(actor)
                 self._tm.auto_lane_change(actor, False)
                 self._actor_dict[actor] = ['road_active', wp.transform.location]
@@ -269,7 +265,7 @@ class BackgroundBehavior(AtomicBehavior):
         elif current_state == 'junction_exiting':
             actor_wp = self._map.get_waypoint(location)
             if not actor_wp.is_junction:
-                self._check_exit_lane(actor, actor_wp)
+                self._manage_exiting_lane(actor, actor_wp)
                 self._actor_dict[actor] = ['road_active', actor_wp.transform.location]
 
     def _get_lanes(self, waypoint):
@@ -298,41 +294,52 @@ class BackgroundBehavior(AtomicBehavior):
 
         return same_dir_wps
 
+    def _get_lane_key(self, wp):
+        """Returns a key corresponding to the lane"""
+        return self._get_road_key(wp) + str(wp.lane_id)
+
+    def _get_road_key(self, wp):
+        """Returns a key corresponding to the road"""
+        return str(wp.road_id) + "*"
+
     def _get_junction_topology(self, junction, route_wp):
         """Gets the entering and exiting lanes of a junction. Needed as junction.get_waypoints
         gets the wps inside the junction. Needs some filter as two entering / exiting points
         might originate from the same lane"""
-        used_entering_roads = [route_wp.road_id]
-        used_exiting_roads = []
+        used_entering_lanes = [self._get_lane_key(route_wp)]
+        used_exiting_lanes = []
         entering_lane_wps = []
         exiting_lane_wps = []
 
         for enter_wp, exit_wp in junction.get_waypoints(carla.LaneType.Driving):
 
-            # Entering waypoints. Move them a bit to the back and get the lane
+            # Entering waypoints. Move them out of the junction and save them
             enter_wps = enter_wp.previous(1)
             if len(enter_wps) == 0:
                 continue  # Stop when there's no prev
             enter_wp = enter_wps[0]
-            if enter_wp.road_id not in used_entering_roads:
+            if self._get_lane_key(enter_wp) not in used_entering_lanes:
                 # The road hasn't been used
-                used_entering_roads.append(enter_wp.road_id)
+                used_entering_lanes.append(self._get_lane_key(enter_wp))
                 entering_lane_wps.append(enter_wp)
 
-            # Exiting waypoints. Move them a bit to the front and get the lane
-            exit_wps = enter_wp.next(1)
+            # Exiting waypoints. Move them out of the junction and save them
+            exit_wps = exit_wp.next(1)
             if len(exit_wps) == 0:
                 continue  # Stop when there's no prev
             exit_wp = exit_wps[0]
-            if exit_wp.road_id not in used_exiting_roads:
+            if self._get_lane_key(exit_wp) not in used_exiting_lanes:
                 # The road hasn't been used
-                used_exiting_roads.append(exit_wp.road_id)
+                used_exiting_lanes.append(self._get_lane_key(exit_wp))
                 exiting_lane_wps.append(exit_wp)
 
         return entering_lane_wps, exiting_lane_wps
 
     def _prepare_junction(self, route_wp):
-        """ Populate the junction with vehicle"""
+        """Populate the junction with vehicle. This is divided in handling two:
+        - Getting the junction topology
+        - Creating actor sources to infinitely populate the intersection at the entering lanes
+        - Create vehicles at the road the route exits the junction"""
 
         # Get the junction
         next_wp = route_wp
@@ -345,10 +352,10 @@ class BackgroundBehavior(AtomicBehavior):
             raise ValueError("Couldn't find the approaching junction")
 
         # Get the junction topology
-        entering_lane_wps, exiting_lane_wps = self._get_junction_topology(junction, route_wp)
+        entering_junction_wps, exiting_junction_wps = self._get_junction_topology(junction, route_wp)
 
         # Spawn the actors
-        self._spawn_junction_actors(entering_lane_wps, self._vehicle_dist, self._num_front_vehicles)
+        self._spawn_junction_actors(entering_junction_wps, self._vehicle_dist, self._num_front_vehicles)
 
         # Get the first route waypoint outside the junction
         found_junction_exit = False
@@ -362,18 +369,45 @@ class BackgroundBehavior(AtomicBehavior):
         if not found_junction_exit:
             return
 
-        exiting_junction_wps = self._get_lanes(route_next_wp)
-        self._spawn_junction_exit_actors(exiting_junction_wps, self._vehicle_dist, self._num_front_vehicles)
+        self._junction_dict = {}
+        for wp in exiting_junction_wps:
+            self._junction_dict[self._get_lane_key(wp)] = []
 
-        # TODO 1: make self._get_junction_topology get all the lanes groups by roads, to avoid using get_lanes
-        # TODO 2: make self._actor_configuration register all exiting lanes, not just the route
-        # TODO 3: Create actor sources at each entering lane
+        # Filter the exiting lanes to those of the same road as the route
+        route_road = self._get_road_key(route_next_wp)
+        exiting_route_wps = [wp for wp in exiting_junction_wps if self._get_road_key(wp) == route_road]
+
+        self._spawn_junction_exit_actors(exiting_route_wps, self._vehicle_dist, self._num_front_vehicles)
+
+        # TODO 1: Create actor sources at each entering lane
+        # TODO 2: Don't tick! check sensor frame
+
+    def _manage_exiting_lane(self, actor, wp):
+        """When a vehicle exits the junction, check the state of that lane, removing
+        a vehicle if needed to avoid crowding the exit"""
+        lane_key = self._get_lane_key(wp)
+        if lane_key in self._junction_dict:
+            # Remove the frontest vehicle and add the new one at the end
+            if len(self._junction_dict[lane_key]) >= self._num_front_vehicles:
+                removed_actor = self._junction_dict[lane_key][-1]
+                self._destroy_actor(removed_actor)
+            self._junction_dict[lane_key].insert(0, actor)
 
     def _destroy_actor(self, actor):
-        """Reposition an actor back to its lane"""
+        """Destroy the actor and all its references"""
+        # Remove it from actor list
         if actor in self._background_actors:
             self._background_actors.remove(actor)
+        
+        # From the dictionary
         self._actor_dict.pop(actor, None)
+
+        # And from the junction dictionary, if ego is at a junction
+        if 'junction' in self._ego_state:
+            for lane_key in self._junction_dict:
+                if actor in self._junction_dict[lane_key]:
+                    self._junction_dict[lane_key].remove(actor)
+
         actor.destroy()
 
     def _deactivate_actor(self, actor):
@@ -385,17 +419,6 @@ class BackgroundBehavior(AtomicBehavior):
         """Makes the vehicle move again"""
         self._tm.vehicle_percentage_speed_difference(actor, 0)
         self._actor_dict[actor][0] = 'road_active'
-
-    def _check_exit_lane(self, actor, wp):
-        """asdasd"""
-        for i, info in enumerate(self._actor_configuration):
-            print(wp.road_id)
-            print(wp.lane_id)
-            if wp.road_id == info[0] and wp.lane_id == info[1]:
-                # Remove the frontest vehicle and add the new one
-                removed_actor = self._actor_configuration[i][2].pop(-1)
-                self._actor_configuration[i][2].insert(0, actor)
-                self._destroy_actor(removed_actor)
 
     def _get_route_location(self, location):
         """Returns the closest route location to the ego"""
