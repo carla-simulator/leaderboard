@@ -108,11 +108,9 @@ def main():
 
     # simulation setup
     parser.add_argument('--routes',
-                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data",)
                         help='Name of the route to be executed. Point to the route_xml_file to be executed.',
                         required=True)
     parser.add_argument('--scenarios',
-                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data",)
                         help='Name of the scenario annotation file to be mixed with the route.',
                         required=True)
     parser.add_argument('--repetitions',
