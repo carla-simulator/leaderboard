@@ -212,8 +212,7 @@ class LeaderboardEvaluator(object):
 
         self.traffic_manager.set_synchronous_mode(True)
         self.traffic_manager.set_random_device_seed(int(args.trafficManagerSeed))
-        self.traffic_manager.set_hybrid_physics_mode(args.trafficManagerHybrid)
-        self.traffic_manager.set_hybrid_physics_radius(args.trafficManagerHybridRadius)
+        self.traffic_manager.set_hybrid_physics_mode(True)
 
         # Wait for the world to be ready
         if CarlaDataProvider.is_sync_mode():
@@ -423,10 +422,6 @@ def main():
                         help='Port to use for the TrafficManager (default: 8000)')
     parser.add_argument('--trafficManagerSeed', default='0',
                         help='Seed used by the TrafficManager (default: 0)')
-    parser.add_argument('--trafficManagerHybrid', action='store_true',
-                        help='Enable the hybrid physics mode')
-    parser.add_argument('--trafficManagerHybridRadius', type=float, default=50,
-                        help='Change the radius of the area of influence where physics are enabled (default: 50m)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
