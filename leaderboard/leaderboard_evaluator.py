@@ -73,12 +73,12 @@ class LeaderboardEvaluator(object):
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
         # requests in the localhost at port 2000.
-        self.client = carla.Client(args.host, int(args.port))
+        self.client = carla.Client(args.host, args.port)
         if args.timeout:
-            self.client_timeout = float(args.timeout)
+            self.client_timeout = args.timeout
         self.client.set_timeout(self.client_timeout)
 
-        self.traffic_manager = self.client.get_trafficmanager(int(args.trafficManagerPort))
+        self.traffic_manager = self.client.get_trafficmanager(args.traffic_manager_port)
 
         dist = pkg_resources.get_distribution("carla")
         if dist.version != 'leaderboard':
@@ -98,7 +98,7 @@ class LeaderboardEvaluator(object):
         self._end_time = None
 
         # Create the agent timer
-        self._agent_watchdog = Watchdog(int(float(args.timeout)))
+        self._agent_watchdog = Watchdog(args.timeout)
         signal.signal(signal.SIGINT, self._signal_handler)
 
     def _signal_handler(self, signum, frame):
@@ -208,10 +208,10 @@ class LeaderboardEvaluator(object):
 
         CarlaDataProvider.set_client(self.client)
         CarlaDataProvider.set_world(self.world)
-        CarlaDataProvider.set_traffic_manager_port(int(args.trafficManagerPort))
+        CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
 
         self.traffic_manager.set_synchronous_mode(True)
-        self.traffic_manager.set_random_device_seed(int(args.trafficManagerSeed))
+        self.traffic_manager.set_random_device_seed(args.traffic_manager_seed)
         self.traffic_manager.set_hybrid_physics_mode(True)
 
         # Wait for the world to be ready
@@ -417,15 +417,15 @@ def main():
     parser = argparse.ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
     parser.add_argument('--host', default='localhost',
                         help='IP of the host server (default: localhost)')
-    parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
-    parser.add_argument('--trafficManagerPort', default='8000',
+    parser.add_argument('--port', default=2000, type=int, help='TCP port to listen to (default: 2000)')
+    parser.add_argument('--traffic-manager-port', default=8000, type=int,
                         help='Port to use for the TrafficManager (default: 8000)')
-    parser.add_argument('--trafficManagerSeed', default='0',
+    parser.add_argument('--traffic-manager-seed', default=0, type=int,
                         help='Seed used by the TrafficManager (default: 0)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
-    parser.add_argument('--timeout', default="60.0",
+    parser.add_argument('--timeout', default=60.0, type=float,
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup
