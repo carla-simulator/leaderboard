@@ -89,21 +89,21 @@ class LeaderboardBenchmarkEvaluator(LeaderboardEvaluator):
 
 
 def main():
-    description = "CARLA AD Leaderboard Evaluation: evaluate your Agent in CARLA scenarios\n"
+    description = "CARLA AD Leaderboard Benchmark Evaluation: benchmark your Agent in CARLA scenarios\n"
 
     # general parameters
     parser = argparse.ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
     parser.add_argument('--host', default='localhost',
                         help='IP of the host server (default: localhost)')
-    parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
-    parser.add_argument('--trafficManagerPort', default='8000',
+    parser.add_argument('--port', default=2000, type=int, help='TCP port to listen to (default: 2000)')
+    parser.add_argument('--traffic-manager-port', default=8000, type=int,
                         help='Port to use for the TrafficManager (default: 8000)')
-    parser.add_argument('--trafficManagerSeed', default='0',
+    parser.add_argument('--traffic-manager-seed', default=0, type=int,
                         help='Seed used by the TrafficManager (default: 0)')
     parser.add_argument('--debug', type=int, help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
-    parser.add_argument('--timeout', default="60.0",
+    parser.add_argument('--timeout', default=60.0, type=float,
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup
@@ -132,7 +132,6 @@ def main():
     parser.add_argument("--benchmark-filename", type=str,
                         default='benchmark.md',
                         help="File used for saving benchmark results")
-
 
     arguments = parser.parse_args()
 
