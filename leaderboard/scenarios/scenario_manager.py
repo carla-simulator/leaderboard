@@ -95,6 +95,8 @@ class ScenarioManager(object):
         self.end_system_time = None
         self.end_game_time = None
 
+        self._spectator = None
+
     def load_scenario(self, scenario, agent, rep_number):
         """
         Load a new scenario
@@ -108,6 +110,8 @@ class ScenarioManager(object):
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
         self.repetition_number = rep_number
+
+        self._spectator = CarlaDataProvider.get_world().get_spectator()
 
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
@@ -133,13 +137,45 @@ class ScenarioManager(object):
                 if snapshot:
                     timestamp = snapshot.timestamp
             if timestamp:
-                self._tick_scenario(timestamp)
+                self._tick(timestamp)
 
-    def _tick_scenario(self, timestamp):
+    def _tick_agent(self):
+        """
+        Tick the agent.
+        """
+        try:
+            self._agent_watchdog.resume()
+            self._agent_watchdog.update()
+            ego_action = self._agent()
+            self._agent_watchdog.pause()
+
+        # Special exception inside the agent that isn't caused by the agent
+        except SensorReceivedNoData as e:
+            raise RuntimeError(e)
+
+        except Exception as e:
+            raise AgentError(e)
+
+        self.ego_vehicles[0].apply_control(ego_action)
+        
+    def _tick_scenario(self):
+        """
+        Tick the scenario tree.
+        """
+        self.scenario_tree.tick_once()
+
+    def _tick_carla(self):
+        """
+        Tick the CARLA server.
+        """
+        CarlaDataProvider.get_world().tick(self._timeout)
+
+    def _tick(self, timestamp):
         """
         Run next tick of scenario and the agent and tick the world.
-        """
 
+        The tick is separated into different methods to ease profiler annotations.
+        """
         if self._timestamp_last_run < timestamp.elapsed_seconds and self._running:
             self._timestamp_last_run = timestamp.elapsed_seconds
 
@@ -149,24 +185,12 @@ class ScenarioManager(object):
             CarlaDataProvider.on_carla_tick()
             self._watchdog.pause()
 
-            try:
-                self._agent_watchdog.resume()
-                self._agent_watchdog.update()
-                ego_action = self._agent()
-                self._agent_watchdog.pause()
-
-            # Special exception inside the agent that isn't caused by the agent
-            except SensorReceivedNoData as e:
-                raise RuntimeError(e)
-
-            except Exception as e:
-                raise AgentError(e)
+            self._tick_agent()
 
             self._watchdog.resume()
-            self.ego_vehicles[0].apply_control(ego_action)
 
             # Tick scenario
-            self.scenario_tree.tick_once()
+            self._tick_scenario()
 
             if self._debug_mode:
                 print("\n")
@@ -177,13 +201,12 @@ class ScenarioManager(object):
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
                 self._running = False
 
-            spectator = CarlaDataProvider.get_world().get_spectator()
             ego_trans = self.ego_vehicles[0].get_transform()
-            spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
-                                                        carla.Rotation(pitch=-90)))
+            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+                                                          carla.Rotation(pitch=-90)))
 
         if self._running and self.get_running_status():
-            CarlaDataProvider.get_world().tick(self._timeout)
+            self._tick_carla()
 
     def get_running_status(self):
         """
