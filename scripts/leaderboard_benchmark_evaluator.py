@@ -76,16 +76,17 @@ class LeaderboardBenchmarkEvaluator(LeaderboardEvaluator):
             config, checkpoint, entry_status, crash_message
         )
 
-        serialize_records(
-            self.benchmark_file,
-            config.town,
-            config.name,
-            config.repetition_index,
-            self.manager.scenario_class.background_amount,
-            self.manager.scenario_duration_game,
-            self.manager.scenario_duration_system,
-            self.sensors
-        )
+        if not crash_message:
+            serialize_records(
+                self.benchmark_file,
+                config.town,
+                config.name,
+                config.repetition_index,
+                self.manager.scenario_class.background_amount,
+                self.manager.scenario_duration_game,
+                self.manager.scenario_duration_system,
+                self.sensors
+            )
 
 
 def main():
