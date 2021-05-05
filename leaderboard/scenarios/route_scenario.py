@@ -185,6 +185,7 @@ class RouteScenario(BasicScenario):
         self.config = config
         self.route = None
         self.sampled_scenarios_definitions = None
+        self.background_amount = 0
 
         self._update_route(world, config, debug_mode>0)
 
@@ -459,10 +460,10 @@ class RouteScenario(BasicScenario):
             'Town10': 120,
         }
 
-        amount = town_amount[config.town] if config.town in town_amount else 0
+        self.background_amount = town_amount.get(config.town, 0)
 
         new_actors = CarlaDataProvider.request_new_batch_actors('vehicle.*',
-                                                                amount,
+                                                                self.background_amount,
                                                                 carla.Transform(),
                                                                 autopilot=True,
                                                                 random_location=True,

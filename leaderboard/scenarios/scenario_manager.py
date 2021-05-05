@@ -95,6 +95,8 @@ class ScenarioManager(object):
         self.end_system_time = None
         self.end_game_time = None
 
+        self._spectator = None
+
     def load_scenario(self, scenario, agent, rep_number):
         """
         Load a new scenario
@@ -108,6 +110,8 @@ class ScenarioManager(object):
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
         self.repetition_number = rep_number
+
+        self._spectator = CarlaDataProvider.get_world().get_spectator()
 
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
@@ -177,10 +181,9 @@ class ScenarioManager(object):
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
                 self._running = False
 
-            spectator = CarlaDataProvider.get_world().get_spectator()
             ego_trans = self.ego_vehicles[0].get_transform()
-            spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
-                                                        carla.Rotation(pitch=-90)))
+            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+                                                          carla.Rotation(pitch=-90)))
 
         if self._running and self.get_running_status():
             CarlaDataProvider.get_world().tick(self._timeout)
