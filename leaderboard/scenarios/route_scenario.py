@@ -186,6 +186,7 @@ class RouteScenario(BasicScenario):
         self.config = config
         self.route = None
         self.sampled_scenarios_definitions = None
+        self.background_amount = 0
 
         self._update_route(world, config, debug_mode>0)
 
