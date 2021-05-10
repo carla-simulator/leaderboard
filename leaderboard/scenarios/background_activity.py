@@ -180,8 +180,8 @@ class BackgroundBehavior(AtomicBehavior):
         """Extracts the junction th ego vehicle will pass through"""
         # Get the junction data the route passes through, filter, group them and get their topology
         data = self._get_junctions_data()
-        filtered_data, _ = self._filter_fake_junctions(data)
-        multi_data = self._join_junctions(filtered_data)
+        # filtered_data, _ = self._filter_fake_junctions(data)
+        multi_data = self._join_junctions(data)
         self._add_junctions_topology(multi_data)
         self._junctions_data = multi_data
 
@@ -203,16 +203,23 @@ class BackgroundBehavior(AtomicBehavior):
 
             # Searching for the junction exit
             if len(junctions) != 0 and junctions[-1]['route_exit_index'] is None:
-                if not next_wp.is_junction or next_wp.get_junction().id != last_junction_id:
+                if not next_wp.is_junction or next_wp.get_junction().id != junction_id:
                     junctions[-1]['route_exit_index'] = i+1
             # Searching for a junction
             elif next_wp.is_junction:
-                junctions.append({
-                    'junctions': [next_wp.get_junction()],  # For multijunction later on
-                    'route_enter_index': i,
-                    'route_exit_index': None
-                })
-                last_junction_id = next_wp.get_junction().id
+                junction_id = next_wp.get_junction().id
+                if len(junctions) != 0 and junctions[-1]['junctions'][-1].id == junction_id:
+                    junctions[-1]['junctions'].append(next_wp.get_junction())
+                    junctions[-1]['route_exit_index'] = None
+                else:
+                    junctions.append({
+                        'junctions': [next_wp.get_junction()],  # For multijunction later on
+                        'route_enter_index': i,
+                        'route_exit_index': None
+                    })
+
+        if junctions[-1]['route_exit_index'] is None:
+            junctions[-1]['route_exit_index'] = self._route_length - 1
 
         return junctions
 
@@ -253,9 +260,6 @@ class BackgroundBehavior(AtomicBehavior):
             if enter_accum_dist - prev_exit_accum_dist < self._junction_dist:
                 multi_junctions[-1]['junctions'].append(junction_data['junctions'][0])
                 multi_junctions[-1]['route_exit_index'] = junction_data['route_exit_index']
-                if junction_data['junctions'][0].id != multi_junctions[-1]['junctions'][-1].id:
-                    # Due to topology, the same junction might be detected twice
-                    multi_junctions[-1]['route_exit_index'] = junction_data['route_exit_index']
 
             # New junction entrance
             else:
@@ -360,7 +364,8 @@ class BackgroundBehavior(AtomicBehavior):
         return "" if wp is None else str(wp.road_id) + "*"
 
     def _is_actor_at_exit_road(self, actor, ego_road):
-        """Searches the exit lanes dictionary for a specific actor. Returns False if not found"""
+        """Searches the exit lanes dictionary for a specific actor (Faster than
+        checking their waypoint's road adn lane ids)"""
         road = None
         for lane_key in self._junction_exits:
             if actor in self._junction_exits[lane_key]:
@@ -384,6 +389,7 @@ class BackgroundBehavior(AtomicBehavior):
             self._tm.vehicle_percentage_speed_difference(actor, 0)
             if actor in self._prev_actors:  # Remnants of previous junction
                 self._actor_dict[actor] = {'state': 'road_active', 'ref_wp': None}
+                self._tm.ignore_lights_percentage(actor, 100)
             else:
                 self._actor_dict[actor] = {'state': 'junction', 'ref_wp': None}
 
@@ -392,7 +398,6 @@ class BackgroundBehavior(AtomicBehavior):
         behidng the ego, remembering the ones that are in front and cleaning up junction variables"""
         self._ego_state = 'road'
         ego_wp = self._waypoints[self._route_index]
-
         ego_road = ego_wp.road_id
 
         for actor in list(self._background_actors):
@@ -417,12 +422,16 @@ class BackgroundBehavior(AtomicBehavior):
     def _search_for_junction(self):
         """Search for closest frontal junction. When junction move ends, the jucntion data is
         removed, so it is only needed to check the first junction"""
+        if not self._junctions_data:
+            return None
+
         junction_data = self._junctions_data[0]
         ego_accum_dist = self._route_accum_dist[self._route_index]
         junction_accum_dist = self._route_accum_dist[junction_data['route_enter_index']]
 
         if junction_accum_dist - ego_accum_dist < self._junction_dist:  # Junctions closeby
             return junction_data
+
         return None
 
     def _monitor_nearby_junctions(self):
@@ -434,7 +443,7 @@ class BackgroundBehavior(AtomicBehavior):
         self._switch_to_junction_mode(junction)
 
         route_enter_wp = self._waypoints[junction['route_enter_index']]
-        route_exit_wp = self._waypoints[junction['route_exit_index']]
+        route_exit_wp = self._waypoints[junction['route_exit_index']] if junction['route_exit_index'] else None
         self._initialise_junction_entrances(junction['enter_wps'], route_enter_wp)
         self._initialise_junction_exits(junction['exit_wps'], route_exit_wp)
 
@@ -458,7 +467,7 @@ class BackgroundBehavior(AtomicBehavior):
                     break  # Stop when there's no next
                 next_wp = next_wps[0]
                 spawn_points.append(carla.Transform(
-                    next_wp.transform.location + carla.Location(z=0.2),
+                    next_wp.transform.location + carla.Location(z=0.1),
                     next_wp.transform.rotation
                 ))
 
@@ -488,7 +497,7 @@ class BackgroundBehavior(AtomicBehavior):
                 distance += step
 
             source_transform = carla.Transform(
-                prev_wp.transform.location + carla.Location(z=0.2),
+                prev_wp.transform.location + carla.Location(z=0.1),
                 prev_wp.transform.rotation
             )
             self._junction_sources.append([source_transform, []])
@@ -512,7 +521,7 @@ class BackgroundBehavior(AtomicBehavior):
                     break  # Stop when there's no next
                 next_wp = next_wps[0]
                 exiting_points.append(carla.Transform(
-                    next_wp.transform.location + carla.Location(z=0.2),
+                    next_wp.transform.location + carla.Location(z=0.1),
                     next_wp.transform.rotation
                 ))
 
@@ -627,10 +636,10 @@ class BackgroundBehavior(AtomicBehavior):
                 break
 
         # This will make sources possibly create infinite actors
-        # for i, [_, actors] in enumerate(self._junction_sources):
-        #     if actor in actors:
-        #         self._junction_sources[i][1].remove(actor)
-        #         break
+        for i, [_, actors] in enumerate(self._junction_sources):
+            if actor in actors:
+                self._junction_sources[i][1].remove(actor)
+                break
 
     def _destroy_actor(self, actor):
         """Destroy the actor and all its references"""
