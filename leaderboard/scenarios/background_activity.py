@@ -108,7 +108,7 @@ class BackgroundBehavior(AtomicBehavior):
         self._radius = 35  # Must be higher than nº_veh * veh_dist or the furthest vehicle will never activate 
 
         # Junction variables
-        self._junction_dist = 34  # Junction detection distance. TODO: Higher breaks roundabout (fake junctions)
+        self._junction_dist = 36  # Junction detection distance.
         self._junction_exits = OrderedDict()  # Keep track of the amount of actors per lane
         self._junction_sources = []  # Tracks actors spawned by the sources
         self._junction_ids = []
@@ -180,9 +180,10 @@ class BackgroundBehavior(AtomicBehavior):
         """Extracts the junction th ego vehicle will pass through"""
         # Get the junction data the route passes through, filter, group them and get their topology
         data = self._get_junctions_data()
-        # filtered_data, _ = self._filter_fake_junctions(data)
-        multi_data = self._join_junctions(data)
-        self._add_junctions_topology(multi_data)
+        filtered_data, fake_junctions = self._filter_fake_junctions(data)
+        lane_pair_keys = self._get_fake_lane_pairs(fake_junctions)
+        multi_data = self._join_junctions(filtered_data)
+        self._add_junctions_topology(multi_data, lane_pair_keys)
         self._junctions_data = multi_data
 
     def _get_junctions_data(self):
@@ -267,14 +268,40 @@ class BackgroundBehavior(AtomicBehavior):
 
         return multi_junctions
 
-    def _add_junctions_topology(self, junctions):
+    def _get_fake_lane_pairs(self, junctions):
+        """Gets a list of enter-exit lanes of jucntions. Used for fake junctions to detect them when
+        computing the multijunctions"""
+        lane_pairs = []
+        for junction_data in junctions:
+            for junction in junction_data['junctions']:
+                for enter_wp, exit_wp in junction.get_waypoints(carla.LaneType.Driving):
+                    while enter_wp.is_junction:
+                        enter_wps = enter_wp.previous(0.5)
+                        if len(enter_wps) == 0:
+                            break  # Stop when there's no prev
+                        enter_wp = enter_wps[0]
+                    if enter_wp.is_junction:
+                        continue  # Triggered by the loops break
+
+                    while exit_wp.is_junction:
+                        exit_wps = exit_wp.next(0.5)
+                        if len(exit_wps) == 0:
+                            break  # Stop when there's no prev
+                        exit_wp = exit_wps[0]
+                    if exit_wp.is_junction:
+                        continue  # Triggered by the loops break
+
+                    lane_pairs.append([self._lane_key(enter_wp), self._lane_key(exit_wp)])
+
+        return lane_pairs
+
+    def _add_junctions_topology(self, junctions, lane_pair_keys):
         """Gets the entering and exiting lanes of a multijunction"""
         for junction_data in junctions:
             used_entering_lanes = []
             used_exiting_lanes = []
             entering_lane_wps = []
             exiting_lane_wps = []
-
             for junction in junction_data['junctions']:
                 for enter_wp, exit_wp in junction.get_waypoints(carla.LaneType.Driving):
 
@@ -300,29 +327,45 @@ class BackgroundBehavior(AtomicBehavior):
                         used_exiting_lanes.append(self._lane_key(exit_wp))
                         exiting_lane_wps.append(exit_wp)
 
-            if len(junctions) > 1:
-                # TODO: This fails if there are fake junction betweens two junctions
-                exiting_lane_keys = [self._lane_key(wp) for wp in exiting_lane_wps]
-                entering_lane_wps_ = [wp for wp in entering_lane_wps if self._lane_key(wp) not in exiting_lane_keys]
+            # Due to roundabouts, do this event if there's only one junctions
+            exiting_lane_keys = [self._lane_key(wp) for wp in exiting_lane_wps]
+            entering_lane_keys = [self._lane_key(wp) for wp in entering_lane_wps]
 
-                entering_lane_keys = [self._lane_key(wp) for wp in entering_lane_wps]
-                exiting_lane_wps_ = [wp for wp in exiting_lane_wps if self._lane_key(wp) not in entering_lane_keys]
+            # Connecting lanes
+            for wp in list(entering_lane_wps):
+                if self._lane_key(wp) in exiting_lane_keys:
+                    entering_lane_wps.remove(wp)
+            for wp in list(exiting_lane_wps):
+                if self._lane_key(wp) in entering_lane_keys:
+                    exiting_lane_wps.remove(wp)
 
-            else:
-                entering_lane_wps_ = entering_lane_wps
-                exiting_lane_wps_ = exiting_lane_wps
+            # Connecting lanes with a fake junction in the middle
+            for enter_key, exit_key in lane_pair_keys:
+                entry_wp = None
+                exit_wp = None
+                for wp in entering_lane_wps:
+                    if self._lane_key(wp) == exit_key:
+                        entry_wp = wp
+                        break
+                for wp in exiting_lane_wps:
+                    if self._lane_key(wp) == enter_key:
+                        exit_wp = wp
+                        break
+                if entry_wp and exit_wp:  # If there is a fake junction betweem two junctions
+                    entering_lane_wps.remove(entry_wp)
+                    exiting_lane_wps.remove(exit_wp)
 
-            junction_data['enter_wps'] = entering_lane_wps_
-            junction_data['exit_wps'] = exiting_lane_wps_
+            junction_data['enter_wps'] = entering_lane_wps
+            junction_data['exit_wps'] = exiting_lane_wps
 
-            # for enter_wp in entering_lane_wps_:
-            #     self._world.debug.draw_point(enter_wp.transform.location + carla.Location(z=1), size=0.1, color=carla.Color(255,255,0), life_time=10000)
-            # for exit_wp in exiting_lane_wps_:
-            #     self._world.debug.draw_point(exit_wp.transform.location + carla.Location(z=1), size=0.1, color=carla.Color(0,255,255), life_time=10000)
+            for enter_wp in entering_lane_wps:
+                self._world.debug.draw_point(enter_wp.transform.location + carla.Location(z=1), size=0.1, color=carla.Color(255,255,0), life_time=10000)
+            for exit_wp in exiting_lane_wps:
+                self._world.debug.draw_point(exit_wp.transform.location + carla.Location(z=1), size=0.1, color=carla.Color(0,255,255), life_time=10000)
 
-        # for enter_wp in junctions[2]['enter_wps']:
+        # for enter_wp in junctions[1]['enter_wps']:
         #     self._world.debug.draw_point(enter_wp.transform.location + carla.Location(z=1), size=0.1, color=carla.Color(255,255,0), life_time=10000)
-        # for exit_wp in junctions[2]['exit_wps']:
+        # for exit_wp in junctions[1]['exit_wps']:
         #     self._world.debug.draw_point(exit_wp.transform.location + carla.Location(z=1), size=0.1, color=carla.Color(0,255,255), life_time=10000)
 
     ################################

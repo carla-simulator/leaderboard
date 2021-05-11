@@ -240,7 +240,7 @@ class RouteScenario(BasicScenario):
 
         # Print route in debug mode
         if debug_mode:
-            self._draw_waypoints(world, self.route, vertical_shift=1.0, persistency=50000.0)
+            self._draw_waypoints(world, self.route, vertical_shift=0.2, persistency=50000.0)
 
     def _update_ego_vehicle(self):
         """
@@ -283,7 +283,7 @@ class RouteScenario(BasicScenario):
         for w in waypoints:
             wp = w[0].location + carla.Location(z=vertical_shift)
 
-            size = 0.2
+            size = 0.05
             if w[1] == RoadOption.LEFT:  # Yellow
                 color = carla.Color(255, 255, 0)
             elif w[1] == RoadOption.RIGHT:  # Cyan
@@ -300,9 +300,9 @@ class RouteScenario(BasicScenario):
 
             world.debug.draw_point(wp, size=size, color=color, life_time=persistency)
 
-        world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.2,
+        world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.05,
                                color=carla.Color(0, 0, 255), life_time=persistency)
-        world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.2,
+        world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.05,
                                color=carla.Color(255, 0, 0), life_time=persistency)
 
     def _scenario_sampling(self, potential_scenarios_definitions, random_seed=0):
