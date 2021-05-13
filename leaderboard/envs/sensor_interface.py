@@ -198,7 +198,6 @@ class CallBack(object):
 class SensorInterface(object):
     def __init__(self):
         self._sensors_objects = {}
-        self._data_buffers = {}
         self._new_data_buffers = Queue()
         self._queue_timeout = 10
 
@@ -238,3 +237,7 @@ class SensorInterface(object):
             raise SensorReceivedNoData("A sensor took too long to send their data")
 
         return data_dict
+
+    def clear(self):
+        with self._new_data_buffers.mutex:
+            self._new_data_buffers.queue.clear()
