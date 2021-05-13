@@ -125,6 +125,9 @@ class ScenarioManager(object):
         self._watchdog.start()
         self._running = True
 
+        # Clear previous sensor data to ensure we wait for the sensor data of the current frame.
+        self._agent._agent.sensor_interface.clear()
+
         while self._running:
             self._tick_scenario()
 

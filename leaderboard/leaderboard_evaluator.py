@@ -125,17 +125,6 @@ class LeaderboardEvaluator(object):
         """
         Remove and destroy all actors
         """
-
-        # Simulation still running and in synchronous mode?
-        if self.manager and self.manager.get_running_status() \
-                and hasattr(self, 'world') and self.world:
-            # Reset to asynchronous mode
-            settings = self.world.get_settings()
-            settings.synchronous_mode = False
-            settings.fixed_delta_seconds = None
-            self.world.apply_settings(settings)
-            self.traffic_manager.set_synchronous_mode(False)
-
         if self.manager:
             self.manager.cleanup()
 
@@ -156,6 +145,16 @@ class LeaderboardEvaluator(object):
 
         if hasattr(self, 'statistics_manager') and self.statistics_manager:
             self.statistics_manager.scenario = None
+
+        # Simulation still running and in synchronous mode?
+        if self.manager and self.manager.get_running_status() \
+                and hasattr(self, 'world') and self.world:
+            # Reset to asynchronous mode
+            settings = self.world.get_settings()
+            settings.synchronous_mode = False
+            settings.fixed_delta_seconds = None
+            self.world.apply_settings(settings)
+            self.traffic_manager.set_synchronous_mode(False)
 
     def _prepare_ego_vehicles(self, ego_vehicles):
         """

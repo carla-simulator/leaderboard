@@ -20,7 +20,7 @@ import carla
 import pexpect
 import transforms3d
 
-from srunner.scenariomanager.timer import GameTime
+from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
@@ -144,7 +144,9 @@ class ROSBaseAgent(AutonomousAgent):
             parameters={
                 "host": carla_host,
                 "port": carla_port,
+                "synchronous_mode": True,
                 "passive": True,
+                "register_all_sensors": False,
                 "ego_vehicle_role_name": "\"''\""
             },
             wait=False
@@ -157,6 +159,7 @@ class ROSBaseAgent(AutonomousAgent):
         )
 
         self._control_queue = queue.Queue(1)
+        self._last_control_timestamp = None
 
     def get_ros_entrypoint(self):
         raise NotImplementedError
@@ -185,6 +188,24 @@ class ROSBaseAgent(AutonomousAgent):
                 hand_brake=False
             )
 
+        # Checks that the received control timestamp is not received.
+        if self._last_control_timestamp is not None and abs(self._last_control_timestamp - control_timestamp) < EPSILON:
+            print(
+                "\033[93mWARNING: A new vehicle command with a repeated timestamp has been received {} .\033[0m".format(control_timestamp),
+                "\033[93mThis vehicle command will be ignored.\033[0m",
+                sep=" ")
+            return
+
+        # Checks that the received control timestamp is the expected one.
+        carla_timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
+        if abs(control_timestamp - carla_timestamp) > EPSILON:
+            print(
+                "\033[93mWARNING: Expecting a vehicle command with timestamp {} but the timestamp received was {} .\033[0m".format(carla_timestamp, control_timestamp),
+                "\033[93mThis vehicle command will be ignored.\033[0m",
+                sep=" ")
+            return
+
+        self._last_control_timestamp = control_timestamp
         try:
             self._control_queue.put_nowait((control_timestamp, control))
         except queue.Full:
@@ -193,24 +214,14 @@ class ROSBaseAgent(AutonomousAgent):
                 "\033[93mThis vehicle command will be ignored.\033[0m",
                 sep=" ")
 
-        # # Checks that the received control timestamp is the expected one.
-        # carla_timestamp = GameTime.get_carla_time()
-        # if abs(control_timestamp - carla_timestamp) > EPSILON:
-        #     print(
-        #         "\033[93mWARNING: Expecting a vehicle command with timestamp {} but the timestamp received was {} .\033[0m".format(carla_timestamp, control_timestamp),
-        #         "\033[93mThis vehicle command will be ignored.\033[0m",
-        #         sep=" ")
-        #     # TODO: Synchronize first ticks.
-        #     return
 
     def run_step(self, _, timestamp):
         assert self._bridge_process.is_alive()
         assert self._agent_process.is_alive()
 
-        #self._step_once_service.call(roslibpy.ServiceRequest({"command": 2}))
         control_timestamp, control = self._control_queue.get(True)
-        
-        carla_timestamp = GameTime.get_carla_time()
+
+        carla_timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
         if abs(control_timestamp - carla_timestamp) > EPSILON:
             print(
                 "\033[93mWARNING: Expecting a vehicle command with timestamp {} but the timestamp received was {} .\033[0m".format(carla_timestamp, control_timestamp),
