@@ -212,7 +212,6 @@ class LeaderboardEvaluator(object):
 
         self.traffic_manager.set_synchronous_mode(True)
         self.traffic_manager.set_random_device_seed(args.traffic_manager_seed)
-        # self.traffic_manager.set_hybrid_physics_mode(True)
 
         # Wait for the world to be ready
         if CarlaDataProvider.is_sync_mode():

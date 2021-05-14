@@ -185,7 +185,7 @@ class ScenarioManager(object):
 
             ego_trans = self.ego_vehicles[0].get_transform()
             ego_wp = self._map.get_waypoint(ego_trans.location)
-            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=100),
                                                           carla.Rotation(pitch=-90)))
 
         if self._running and self.get_running_status():

@@ -240,7 +240,7 @@ class RouteScenario(BasicScenario):
 
         # Print route in debug mode
         if debug_mode:
-            self._draw_waypoints(world, self.route, vertical_shift=0.2, persistency=50000.0)
+            self._draw_waypoints(world, self.route, vertical_shift=0.1, persistency=50000.0)
 
     def _update_ego_vehicle(self):
         """
