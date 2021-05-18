@@ -12,6 +12,7 @@ import math
 
 import carla
 import numpy as np
+import numpy.random as random
 import math
 import py_trees
 from collections import OrderedDict
@@ -19,6 +20,7 @@ from collections import OrderedDict
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.scenarioatomics.atomic_behaviors import AtomicBehavior
 from srunner.scenarios.basic_scenario import BasicScenario
+from srunner.scenariomanager.timer import GameTime
 
 
 class BackgroundActivity(BasicScenario):
@@ -92,9 +94,10 @@ class BackgroundBehavior(AtomicBehavior):
         super(BackgroundBehavior, self).__init__(name)
         self._map = CarlaDataProvider.get_map()
         self._world = CarlaDataProvider.get_world()
+        self._timestep = self._world.get_settings().fixed_delta_seconds
         self._tm = CarlaDataProvider.get_client().get_trafficmanager(
             CarlaDataProvider.get_traffic_manager_port())
-        self._tm.set_global_distance_to_leading_vehicle(5)
+        self._rng = random.RandomState(2000)
 
         # Actor variables
         self._ego_actor = ego_actor
@@ -105,14 +108,25 @@ class BackgroundBehavior(AtomicBehavior):
         # Road variables (these are very much hardcoded so watch out when changing them)
         self._num_road_vehicles = 3  # Amount of vehicles in front of the ego
         self._road_vehicle_dist = 10  # Starting distance between spawned vehicles
-        self._radius = 38  # Must be higher than nº_veh * veh_dist or the furthest vehicle will never activate 
+        self._base_min_radius = 30  # Vehicles further than this will start to slow down
+        self._base_max_radius = 35  # Must be higher than nº_veh * veh_dist or the furthest vehicle will never activate
+        self._radius_increase_ratio = 1.8  # Meters the radius increases per m/s of the ego
+
+        # Scenario variables
+        self._is_scenario_active = False
+        self._scenario_min_time = 30  # min time between scenarios
+        self._scenario_max_time = 40  # max time between scenarios
+        self._scenario_duration = 7  # duration of the scenario
+        self._scenario_timer = 0  # Counts the time between scenarios
+        self._get_next_scenario_time()
 
         # Junction variables
-        self._junction_dist = 34  # Junction detection distance.
+        self._junction_join_dist = 34  # Junction detection distance.
+        self._junction_detection_dist = 45  # Distance from a junction at which the junction mode starts
+        self._junction_exit_dist = 35  # There needs to be space enough for self._num_road_vehicles plus another
         self._junction_exits = OrderedDict()  # Keep track of the amount of actors per lane
         self._junction_sources = []  # Tracks actors spawned by the sources
-        self._junction_ids = []
-        self._road_exit_key = ""  # Key of the road through which the route exits the junction
+        self._junction_exit_key = ""  # Key of the road through which the route exits the junction
         self._sources_dist = 25  # Distance from the sources to the junction
         self._prev_actors = []  # Actors created at the previous junction
         self._max_actors_per_source = 6  # Maximum vehicles alive at the same time per source
@@ -144,20 +158,23 @@ class BackgroundBehavior(AtomicBehavior):
     def update(self):
         new_status = py_trees.common.Status.RUNNING
 
-        assert len(self._actor_dict.keys()) == len(self._background_actors)
-
         # Get ego location and waypoint
         ego_location = CarlaDataProvider.get_location(self._ego_actor)
         if ego_location is None:
             return new_status
         self._update_ego_route_location(ego_location)
+        if self._ego_state == 'road' or self._is_scenario_active:
+            self._manage_road_scenario()
 
         # Monitor the background activity's state
         if self._ego_state == 'road':
+            self._manage_road_radius()
             self._monitor_nearby_junctions()
         elif self._ego_state == 'junction':
             self._monitor_ego_junction_exit()
             self._manage_junction_entrances()
+        else:
+            raise ValueError("ego state is " + str(self._ego_state))
 
         # Manage the background actors
         for actor in self._background_actors:
@@ -310,7 +327,7 @@ class BackgroundBehavior(AtomicBehavior):
             prev_exit_accum_dist = self._route_accum_dist[multi_junctions[-1]['route_exit_index']]
 
             # Group closeby junctions
-            if enter_accum_dist - prev_exit_accum_dist < self._junction_dist:
+            if enter_accum_dist - prev_exit_accum_dist < self._junction_join_dist:
                 multi_junctions[-1]['junctions'].append(junction_data['junctions'][0])
                 multi_junctions[-1]['route_exit_index'] = junction_data['route_exit_index']
             # New junction entrance
@@ -364,7 +381,7 @@ class BackgroundBehavior(AtomicBehavior):
         """For a junction waypoint, returns a waypoint outside of it that enters into its lane"""
         # Exit the junction
         while enter_wp.is_junction:
-            enter_wps = enter_wp.previous(0.5)
+            enter_wps = enter_wp.previous(0.2)
             if len(enter_wps) == 0:
                 break  # Stop when there's no prev
             enter_wp = enter_wps[0]
@@ -385,7 +402,7 @@ class BackgroundBehavior(AtomicBehavior):
     def _get_junction_exit_wp(self, exit_wp):
         """For a junction waypoint, returns a waypoint outside of it from which the lane exits the junction"""
         while exit_wp.is_junction:
-            exit_wps = exit_wp.next(0.5)
+            exit_wps = exit_wp.next(0.2)
             if len(exit_wps) == 0:
                 break  # Stop when there's no prev
             exit_wp = exit_wps[0]
@@ -461,6 +478,7 @@ class BackgroundBehavior(AtomicBehavior):
             junction_data['exit_wps'] = exiting_lane_wps
 
             print(" --------------------- ")
+            print(self._lane_key(self._waypoints[junction_data['route_enter_index']]))
             print("Entering lanes")
             for enter_wp in entering_lane_wps:
                 print(self._lane_key(enter_wp))
@@ -524,31 +542,22 @@ class BackgroundBehavior(AtomicBehavior):
     ##       Mode functions       ##
     ################################
 
-    def _switch_to_junction_mode(self, junction):
-        """Prepares the junction mode, storing some junction values and changing the state of the actors"""
-        self._ego_state = 'junction'
-
-        self._junction_ids = [j.id for j in junction['junctions']]
-        self._junction_exit_index = junction['route_exit_index']
-        self._road_exit_key = self._road_key(self._waypoints[junction['route_exit_index']])
-
+    def _change_actors_to_junction_state(self):
+        """Changes the state of all active actors to prepare the junction mode"""
         for actor in self._background_actors:
             self._tm.vehicle_percentage_speed_difference(actor, 0)
-            if actor in self._prev_actors:  # Remnants of previous junction
-                self._actor_dict[actor] = {'state': 'road_active', 'ref_wp': None}
-                self._tm.ignore_lights_percentage(actor, 100)
+            if actor not in self._prev_actors:
+                self._actor_dict[actor] = {'state': 'junction_entry', 'ref_wp': None}
             else:
-                self._actor_dict[actor] = {'state': 'junction', 'ref_wp': None}
+                self._actor_dict[actor] = {'state': 'road', 'ref_wp': None}
 
-    def _switch_to_road_mode(self):
-        """Prepares the road mode, destroying uneeded actors, remembering the rest and cleaning up variables"""
-        self._ego_state = 'road'
+    def _change_actors_to_road_state(self):
+        """Removes actor behind the ego and changes the state of the rest to prepare the road mode"""
         ego_wp = self._waypoints[self._route_index]
         ego_road = ego_wp.road_id
 
         for actor in list(self._background_actors):
             location = CarlaDataProvider.get_location(actor)
-
             if not location or self._is_actor_behind(location, ego_wp.transform):
                 self._destroy_actor(actor)
                 continue
@@ -556,13 +565,26 @@ class BackgroundBehavior(AtomicBehavior):
             if not self._is_actor_at_exit_road(actor, ego_road):
                 self._prev_actors.append(actor)
             self._tm.vehicle_percentage_speed_difference(actor, 0)
-            self._actor_dict[actor] = {'state': 'road_active', 'ref_wp': None}
+            self._actor_dict[actor] = {'state': 'road', 'ref_wp': None}
 
-        self._road_exit_key = ""
+    def _switch_to_junction_mode(self, junction):
+        """Prepares the junction mode, storing some junction values and changing the state of the actors"""
+        self._ego_state = 'junction'
+        if not self._is_scenario_active:
+            self._change_actors_to_junction_state()
+
+        self._junction_exit_index = junction['route_exit_index']
+        self._junction_exit_key = self._road_key(self._waypoints[junction['route_exit_index']])
+
+    def _switch_to_road_mode(self):
+        """Prepares the road mode, destroying uneeded actors, remembering the rest and cleaning up variables"""
+        self._ego_state = 'road'
+        self._change_actors_to_road_state()
+
+        self._junction_exit_key = ""
         self._junction_exit_index = None
         self._junction_exits.clear()
         self._junction_sources.clear()
-        self._junction_ids.clear()
         self._junctions_data.pop(0)  # Remove the junction data
 
     def _search_for_junction(self):
@@ -572,7 +594,7 @@ class BackgroundBehavior(AtomicBehavior):
 
         ego_accum_dist = self._route_accum_dist[self._route_index]
         junction_accum_dist = self._route_accum_dist[self._junctions_data[0]['route_enter_index']]
-        if junction_accum_dist - ego_accum_dist < self._junction_dist:  # Junctions closeby
+        if junction_accum_dist - ego_accum_dist < self._junction_detection_dist:  # Junctions closeby
             return self._junctions_data[0]
 
         return None
@@ -598,6 +620,19 @@ class BackgroundBehavior(AtomicBehavior):
     ## Behavior related functions ##
     ################################
 
+    def _save_actor_info(self, actor, state='road', ref_wp=None):
+        """Saved the actor information"""
+        def get_random_leading_distance():
+            interval_length = 5
+            min_distance = 1
+            return min_distance + interval_length * self._rng.rand()
+
+        self._background_actors.append(actor)
+        self._actor_dict[actor] = {'state': state, 'ref_wp': ref_wp}
+
+        self._tm.distance_to_leading_vehicle(actor, get_random_leading_distance())
+        self._tm.auto_lane_change(actor, False)
+
     def _initialise_road_behavior(self, road_wps):
         """Intialises the road behavior, consisting on several vehicle in front of the ego"""
         spawn_points = []
@@ -609,7 +644,7 @@ class BackgroundBehavior(AtomicBehavior):
                     break  # Stop when there's no next
                 next_wp = next_wps[0]
                 spawn_points.append(carla.Transform(
-                    next_wp.transform.location + carla.Location(z=0.15),
+                    next_wp.transform.location + carla.Location(z=0.2),
                     next_wp.transform.rotation
                 ))
 
@@ -617,9 +652,7 @@ class BackgroundBehavior(AtomicBehavior):
             'vehicle.*', len(spawn_points), spawn_points, True, False, 'background', safe_blueprint=True, tick=False)
 
         for actor in actors:
-            self._background_actors.append(actor)
-            self._actor_dict[actor] = {'state': 'road_active', 'ref_wp': None}
-            self._tm.auto_lane_change(actor, False)
+            self._save_actor_info(actor, 'road')
 
     def _initialise_junction_entrances(self, enter_wps, route_enter_wp):
         """Initializes the actor sources to ensure the junction is always populated"""
@@ -633,7 +666,7 @@ class BackgroundBehavior(AtomicBehavior):
             prev_wp = prev_wps[0]
 
             source_transform = carla.Transform(
-                prev_wp.transform.location + carla.Location(z=0.15),
+                prev_wp.transform.location + carla.Location(z=0.2),
                 prev_wp.transform.rotation
             )
             self._junction_sources.append([source_transform, []])
@@ -664,10 +697,8 @@ class BackgroundBehavior(AtomicBehavior):
                 safe_blueprint=True, tick=False
             )
             for actor in actors:
+                self._save_actor_info(actor, 'junction_exit', wp)
                 self._junction_exits[self._lane_key(wp)].append(actor)
-                self._background_actors.append(actor)
-                self._tm.auto_lane_change(actor, False)
-                self._actor_dict[actor] = {'state': 'road_active', 'ref_wp': wp}
 
     def _manage_junction_entrances(self):
         """Checks the actor sources to see if new actors have to be created"""
@@ -695,10 +726,41 @@ class BackgroundBehavior(AtomicBehavior):
                 if actor is None:
                     continue
 
-                self._background_actors.append(actor)
-                self._actor_dict[actor] = {'state': 'junction', 'ref_wp': None}
-                self._tm.auto_lane_change(actor, False)
+                self._save_actor_info(actor, 'junction_entry', None)
                 self._junction_sources[i][1].insert(0, actor)
+
+    def _manage_road_radius(self):
+        """Changed the radius dependent on the speed of the ego"""
+        speed = CarlaDataProvider.get_velocity(self._ego_actor)
+        self._min_radius = self._base_min_radius + self._radius_increase_ratio*speed
+        self._max_radius = self._base_max_radius + self._radius_increase_ratio*speed
+
+    def _get_next_scenario_time(self):
+        """Gets the time for the next scenario"""
+        a = self._scenario_min_time
+        b = self._scenario_max_time - self._scenario_min_time
+        self._next_scenario_time = a + b*(self._rng.rand())
+
+    def _manage_road_scenario(self):
+        """Randomly makes the vehicles in front of the ego suddenly break. Use a timer to avoid hving to
+        reset it after junctions, making the scenario never trigger when multiple junctions are nearby"""
+        self._next_scenario_time -= self._timestep  # TODO: This just works on sync mode
+        print(self._next_scenario_time)
+        if self._is_scenario_active and self._next_scenario_time <= 0:
+            print("Ending the scenario")
+            self._is_scenario_active = False
+            for actor in self._background_actors:
+                self._tm.vehicle_percentage_speed_difference(actor, 0)
+            if self._ego_state == 'junction':
+                self._change_actors_to_junction_state()
+            else:
+                self._get_next_scenario_time()
+        elif not self._is_scenario_active and self._next_scenario_time <= 0:
+            print("Starting the scenario")
+            self._is_scenario_active = True
+            for actor in self._background_actors:
+                self._tm.vehicle_percentage_speed_difference(actor, 100)
+            self._next_scenario_time = self._scenario_duration
 
     #############################
     ##     Actor functions     ##
@@ -714,6 +776,12 @@ class BackgroundBehavior(AtomicBehavior):
 
     def _manage_background_actor(self, actor, location):
         """Handles an actor depending on their previous state"""
+        def set_actor_max_speed(distance):
+            speed_red = (distance - self._min_radius) / (self._max_radius - self._min_radius) * 100
+            speed_red = np.clip(speed_red, 0, 100)
+            self._tm.vehicle_percentage_speed_difference(actor, speed_red)
+            return speed_red
+
         state, ref_wp = self._actor_dict[actor].values()
         route_transform = self._waypoints[self._route_index].transform
 
@@ -724,35 +792,38 @@ class BackgroundBehavior(AtomicBehavior):
             ref_location = ref_wp.transform.location
         distance = location.distance(ref_location)
 
-        # Deactivate if far from the reference point
-        if state == 'road_active':
-            if distance > self._radius + 0.5:
-                self._tm.vehicle_percentage_speed_difference(actor, 100)
-                if self._road_exit_key and self._road_key(ref_wp) == self._road_exit_key:
-                    self._actor_dict[actor]['state'] = 'road_standby'
-                else:
-                    self._actor_dict[actor]['state'] = 'road_inactive'
+        # Dynamically change the actor speed if far from the reference point 
+        if state == 'road' and not self._is_scenario_active:
+            speed_red = set_actor_max_speed(distance)
+            # If stopped and behind, remove it
+            if speed_red == 100 and self._is_actor_behind(location, route_transform):
+                self._destroy_actor(actor)
 
-        # Activate if closeby or destroy it if behind
-        elif state == 'road_inactive':
-            if distance < self._radius - 0.5:
-                self._tm.vehicle_percentage_speed_difference(actor, 0)
-                self._actor_dict[actor]['state'] = 'road_active'
-            elif self._is_actor_behind(location, route_transform):
+        elif state == 'junction_exit':
+            if distance > self._junction_exit_dist:
+                self._tm.vehicle_percentage_speed_difference(actor, 100)
+                if self._junction_exit_key and self._road_key(ref_wp) == self._junction_exit_key:
+                    self._actor_dict[actor]['state'] = 'junction_standby'
+                else:
+                    self._actor_dict[actor]['state'] = 'junction_inactive'
+
+        # Destroy it if behind
+        elif state == 'junction_inactive':
+            if self._is_actor_behind(location, route_transform):
                 self._destroy_actor(actor)
 
         # Monitor its exit and destroy an actor if needed
-        elif state == 'junction':
+        elif state == 'junction_entry':
             actor_wp = self._map.get_waypoint(location)
             actor_lane_key = self._lane_key(actor_wp)
             if actor_lane_key in self._junction_exits:
-                self._actor_dict[actor] = {'state': 'road_active', 'ref_wp': actor_wp}
+                self._actor_dict[actor] = {'state': 'junction_exit', 'ref_wp': actor_wp}
                 if len(self._junction_exits[actor_lane_key]) >= self._num_road_vehicles:
                     self._destroy_actor(self._junction_exits[actor_lane_key][-1])  # Remove last vehicle
                 self._junction_exits[actor_lane_key].insert(0, actor)
 
         # Special state to avoid destroying the road behavior actors at the end of the junction
-        elif state == 'road_standby':
+        elif state == 'junction_standby':
             pass
 
     def _destroy_actor(self, actor):
