@@ -99,12 +99,12 @@ class AgentWrapper(object):
                         if key not in ("id", "type", "x", "y", "z", "pitch", "roll", "yaw"):
                             bp.set_attribute(str(key), str(value))
 
-                    sensor_location = carla.Location(x=sensor_spec['x'],
-                                                     y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
+                    sensor_location = carla.Location(x=sensor_spec.get('x', 0.0),
+                                                     y=sensor_spec.get('y', 0.0),
+                                                     z=sensor_spec.get('z', 0.0))
+                    sensor_rotation = carla.Rotation(pitch=sensor_spec.get('pitch', 0.0),
+                                                     roll=sensor_spec.get('roll', 0.0),
+                                                     yaw=sensor_spec.get('yaw', 0.0))
                 else:
                     if sensor_spec['type'].startswith('sensor.camera'):
                         bp.set_attribute('image_size_x', str(sensor_spec['width']))
@@ -235,9 +235,7 @@ class AgentWrapper(object):
                 if sensor_count[sensor['type']] > SENSORS_LIMITS[sensor['type']]:
                     raise SensorConfigurationInvalid(
                         "Too many {} used! "
-                        "Maximum number allowed is {}, but {} were requested.".format(sensor['type'],
-                                                                                      SENSORS_LIMITS[sensor['type']],
-                                                                                      sensor_count[sensor['type']]))
+                        "Maximum number allowed is {}.".format(sensor['type'], SENSORS_LIMITS[sensor['type']]))
 
     def cleanup(self):
         """
