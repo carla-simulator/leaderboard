@@ -70,7 +70,7 @@ class ROS2Agent(ROSBaseAgent):
         self._path_publisher = self.ros_node.create_publisher(Path, "/carla/hero/global_plan", qos_profile=QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.ctrl_subscriber = self.ros_node.create_subscription(CarlaEgoVehicleControl, "/carla/hero/vehicle_control_cmd", self._vehicle_control_cmd_callback, qos_profile=QoSProfile(depth=1))
 
-        status = wait_for_message(self.ros_node, "/carla/hero/status", Bool)
+        wait_for_message(self.ros_node, "/carla/hero/status", Bool)
 
         spin_thread = threading.Thread(target=rclpy.spin, args=(self.ros_node,))
         spin_thread.start()
@@ -92,8 +92,10 @@ class ROS2Agent(ROSBaseAgent):
             KeyValue(key=str(k), value=str(v)) for k,v in attributes.items()
         ])
 
-        # Call the service synchornously.
+        # Call the service synchronously.
         response = self._spawn_object_service.call(request)
+        if response["id"] == -1:
+            raise RuntimeError("{} could not be spawned. {}".format(type_, response["error_string"]))
         return response.id
 
     def destroy_object(self, uid):
@@ -101,6 +103,8 @@ class ROS2Agent(ROSBaseAgent):
 
         # Call the servive syncrhonoulsy
         response = self._destroy_object_service.call(request)
+        if not response["success"]:
+            raise RuntimeError("{} could not be destroyed".format(uid))
         return response.success
 
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):

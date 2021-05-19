@@ -188,7 +188,7 @@ class ROSBaseAgent(AutonomousAgent):
                 hand_brake=False
             )
 
-        # Checks that the received control timestamp is not received.
+        # Checks that the received control timestamp is not repeated.
         if self._last_control_timestamp is not None and abs(self._last_control_timestamp - control_timestamp) < EPSILON:
             print(
                 "\033[93mWARNING: A new vehicle command with a repeated timestamp has been received {} .\033[0m".format(control_timestamp),
@@ -197,6 +197,8 @@ class ROSBaseAgent(AutonomousAgent):
             return
 
         # Checks that the received control timestamp is the expected one.
+        # We need to retrieve the simulation time directly from the CARLA snapshot instead of using the GameTime object to avoid
+        # a race condition between the execution of this callback and the update of the GameTime internal variables.
         carla_timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
         if abs(control_timestamp - carla_timestamp) > EPSILON:
             print(

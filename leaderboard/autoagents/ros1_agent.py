@@ -78,8 +78,6 @@ class ROS1Agent(ROSBaseAgent):
 
         client.run(30)
 
-        #self._step_once_service = roslibpy.Service(client, "/carla/simulation_control", "carla_msgs/CarlaControl", reconnect_on_close=False)
-
         self._spawn_object_service = roslibpy.Service(client, "/carla/spawn_object", "carla_msgs/SpawnObject", reconnect_on_close=False)
         self._destroy_object_service = roslibpy.Service(client, "/carla/destroy_object", "carla_msgs/DestroyObject", reconnect_on_close=False)
 
@@ -91,7 +89,7 @@ class ROS1Agent(ROSBaseAgent):
 
         self._path_publisher = roslibpy.Topic(client, "/carla/hero/global_plan", "nav_msgs/Path", latch=True, reconnect_on_close=False)
 
-        status = wait_for_message(client, "/carla/hero/status", "std_msgs/Bool")
+        wait_for_message(client, "/carla/hero/status", "std_msgs/Bool")
 
     def spawn_object(self, type_, id_, transform, attributes, attach_to=0):
         spawn_point = BridgeHelper.carla2ros_pose(
@@ -111,13 +109,15 @@ class ROS1Agent(ROSBaseAgent):
         })
 
         response = self._spawn_object_service.call(request)
-        # TODO: raise error when a error ocurred (i.e. response["id"] == -1)?
+        if response["id"] == -1:
+            raise RuntimeError("{} could not be spawned. {}".format(type_, response["error_string"]))
         return response["id"]
 
     def destroy_object(self, uid):
         request = roslibpy.ServiceRequest({"id": uid})
         response = self._destroy_object_service.call(request)
-        # TODO: raise error when a error ocurred (i.e. response["success"] == False)?
+        if not response["success"]:
+            raise RuntimeError("{} could not be destroyed".format(uid))
         return response["success"]
 
     def run_step(self, input_data, timestamp):

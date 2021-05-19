@@ -198,7 +198,7 @@ class CallBack(object):
 class SensorInterface(object):
     def __init__(self):
         self._sensors_objects = {}
-        self._new_data_buffers = Queue()
+        self._data_buffers = Queue()
         self._queue_timeout = 10
 
         # Only sensor that doesn't get the data on tick, needs special treatment
@@ -218,7 +218,7 @@ class SensorInterface(object):
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
 
-        self._new_data_buffers.put((tag, timestamp, data))
+        self._data_buffers.put((tag, timestamp, data))
 
     def get_data(self):
         try: 
@@ -230,7 +230,7 @@ class SensorInterface(object):
                         and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
                     break
 
-                sensor_data = self._new_data_buffers.get(True, self._queue_timeout)
+                sensor_data = self._data_buffers.get(True, self._queue_timeout)
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
         except Empty:
@@ -239,5 +239,5 @@ class SensorInterface(object):
         return data_dict
 
     def clear(self):
-        with self._new_data_buffers.mutex:
-            self._new_data_buffers.queue.clear()
+        with self._data_buffers.mutex:
+            self._data_buffers.queue.clear()
