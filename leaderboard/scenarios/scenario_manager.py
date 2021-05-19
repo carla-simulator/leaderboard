@@ -66,9 +66,9 @@ class ScenarioManager(object):
 
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
-        self.start_system_time = None
-        self.end_system_time = None
-        self.end_game_time = None
+        self.start_system_time = 0.0
+        self.end_system_time = 0.0
+        self.end_game_time = 0.0
 
         # Register the scenario tick as callback for the CARLA world
         # Use the callback_id inside the signal handler to allow external interrupts
@@ -91,9 +91,9 @@ class ScenarioManager(object):
         self._timestamp_last_run = 0.0
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
-        self.start_system_time = None
-        self.end_system_time = None
-        self.end_game_time = None
+        self.start_system_time = 0.0
+        self.end_system_time = 0.0
+        self.end_game_time = 0.0
 
         self._spectator = None
 
