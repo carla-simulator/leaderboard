@@ -10,5 +10,5 @@ python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --agent-config=${TEAM_CONFIG} \
 --debug=${DEBUG_CHALLENGE} \
 --record=${RECORD_PATH} \
+--allow-all-sensors=${ALLOW_ALL_SENSORS} \
 --resume=${RESUME}
-

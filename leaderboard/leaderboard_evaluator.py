@@ -15,7 +15,6 @@ from __future__ import print_function
 import traceback
 import argparse
 from argparse import RawTextHelpFormatter
-from datetime import datetime
 from distutils.version import LooseVersion
 import importlib
 import os
@@ -35,7 +34,8 @@ from leaderboard.autoagents.agent_wrapper import  AgentWrapper, AgentError
 from leaderboard.utils.statistics_manager import StatisticsManager
 from leaderboard.utils.route_indexer import RouteIndexer
 
-
+# This dictionary represents the name of the sensor at the checkpoint.
+# If a sensor is not in this dictionary its blueprint will be used instead.
 sensors_to_icons = {
     'sensor.camera.rgb':        'carla_camera',
     'sensor.lidar.ray_cast':    'carla_lidar',
@@ -91,7 +91,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.timeout, args.debug > 1)
+        self.manager = ScenarioManager(args.timeout, args.debug > 1, args.allow_all_sensors)
 
         # Time control for summary purposes
         self._start_time = GameTime.get_time()
@@ -268,9 +268,10 @@ class LeaderboardEvaluator(object):
                 self.sensors = self.agent_instance.sensors()
                 track = self.agent_instance.track
 
-                AgentWrapper.validate_sensor_configuration(self.sensors, track, args.track)
+                AgentWrapper.validate_agent_track(track, args.track)
+                AgentWrapper.validate_sensor_configuration(self.sensors, track, args.allow_all_sensors)
 
-                self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
+                self.sensor_icons = [sensors_to_icons.get(sensor['type'], sensor['type']) for sensor in self.sensors]
                 self.statistics_manager.save_sensors(self.sensor_icons, args.checkpoint)
 
             self._agent_watchdog.stop()
@@ -407,7 +408,7 @@ class LeaderboardEvaluator(object):
         # save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
         global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
-        StatisticsManager.save_global_record(global_stats_record, self.sensor_icons, route_indexer.total, args.checkpoint)
+        StatisticsManager.save_global_record(global_stats_record, route_indexer.total, args.checkpoint)
 
 
 def main():
@@ -445,6 +446,7 @@ def main():
     parser.add_argument("--agent-config", type=str, help="Path to Agent's configuration file", default="")
 
     parser.add_argument("--track", type=str, default='SENSORS', help="Participation track: SENSORS, MAP")
+    parser.add_argument("--allow-all-sensors", type=bool, default=False, help="Allow using all sensor types")
     parser.add_argument('--resume', type=bool, default=False, help='Resume execution from last checkpoint?')
     parser.add_argument("--checkpoint", type=str,
                         default='./simulation_results.json',

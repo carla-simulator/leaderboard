@@ -268,7 +268,7 @@ class StatisticsManager(object):
         save_dict(endpoint, data)
 
     @staticmethod
-    def save_global_record(route_record, sensors, total_routes, endpoint):
+    def save_global_record(route_record, total_routes, endpoint):
         data = fetch_dict(endpoint)
         if not data:
             data = create_default_json_msg()

@@ -45,7 +45,7 @@ class ScenarioManager(object):
     """
 
 
-    def __init__(self, timeout, debug_mode=False):
+    def __init__(self, timeout, debug_mode=False, allow_all_sensors=False):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
@@ -56,6 +56,7 @@ class ScenarioManager(object):
         self.other_actors = None
 
         self._debug_mode = debug_mode
+        self._allow_all_sensors = allow_all_sensors
         self._agent = None
         self._running = False
         self._timestamp_last_run = 0.0
@@ -116,7 +117,7 @@ class ScenarioManager(object):
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
-        self._agent.setup_sensors(self.ego_vehicles[0], self._debug_mode)
+        self._agent.setup_sensors(self.ego_vehicles[0], self._allow_all_sensors)
 
     def run_scenario(self):
         """

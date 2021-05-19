@@ -74,7 +74,7 @@ class AgentWrapper(object):
         """
         return self._agent()
 
-    def setup_sensors(self, vehicle, debug_mode=False):
+    def setup_sensors(self, vehicle, allow_all_sensors=False):
         """
         Create the sensors defined by the user and attach them to the ego-vehicle
         :param vehicle: ego vehicle
@@ -90,44 +90,14 @@ class AgentWrapper(object):
                 delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
                 frame_rate = 1 / delta_time
                 sensor = SpeedometerReader(vehicle, frame_rate)
-            # These are the sensors spawned on the carla world
             else:
+                # These are the sensors spawned on the carla world
                 bp = bp_library.find(str(sensor_spec['type']))
-                if sensor_spec['type'].startswith('sensor.camera'):
-                    bp.set_attribute('image_size_x', str(sensor_spec['width']))
-                    bp.set_attribute('image_size_y', str(sensor_spec['height']))
-                    bp.set_attribute('fov', str(sensor_spec['fov']))
-                    bp.set_attribute('lens_circle_multiplier', str(3.0))
-                    bp.set_attribute('lens_circle_falloff', str(3.0))
-                    bp.set_attribute('chromatic_aberration_intensity', str(0.5))
-                    bp.set_attribute('chromatic_aberration_offset', str(0))
 
-                    sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
-                elif sensor_spec['type'].startswith('sensor.lidar'):
-                    bp.set_attribute('range', str(85))
-                    bp.set_attribute('rotation_frequency', str(10))
-                    bp.set_attribute('channels', str(64))
-                    bp.set_attribute('upper_fov', str(10))
-                    bp.set_attribute('lower_fov', str(-30))
-                    bp.set_attribute('points_per_second', str(600000))
-                    bp.set_attribute('atmosphere_attenuation_rate', str(0.004))
-                    bp.set_attribute('dropoff_general_rate', str(0.45))
-                    bp.set_attribute('dropoff_intensity_limit', str(0.8))
-                    bp.set_attribute('dropoff_zero_intensity', str(0.4))
-                    sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
-                elif sensor_spec['type'].startswith('sensor.other.radar'):
-                    bp.set_attribute('horizontal_fov', str(sensor_spec['fov']))  # degrees
-                    bp.set_attribute('vertical_fov', str(sensor_spec['fov']))  # degrees
-                    bp.set_attribute('points_per_second', '1500')
-                    bp.set_attribute('range', '100')  # meters
+                if allow_all_sensors:
+                    for key, value in sensor_spec.items():
+                        if key not in ("id", "type", "x", "y", "z", "pitch", "roll", "yaw"):
+                            bp.set_attribute(str(key), str(value))
 
                     sensor_location = carla.Location(x=sensor_spec['x'],
                                                      y=sensor_spec['y'],
@@ -135,34 +105,78 @@ class AgentWrapper(object):
                     sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
                                                      roll=sensor_spec['roll'],
                                                      yaw=sensor_spec['yaw'])
+                else:
+                    if sensor_spec['type'].startswith('sensor.camera'):
+                        bp.set_attribute('image_size_x', str(sensor_spec['width']))
+                        bp.set_attribute('image_size_y', str(sensor_spec['height']))
+                        bp.set_attribute('fov', str(sensor_spec['fov']))
+                        bp.set_attribute('lens_circle_multiplier', str(3.0))
+                        bp.set_attribute('lens_circle_falloff', str(3.0))
+                        bp.set_attribute('chromatic_aberration_intensity', str(0.5))
+                        bp.set_attribute('chromatic_aberration_offset', str(0))
 
-                elif sensor_spec['type'].startswith('sensor.other.gnss'):
-                    bp.set_attribute('noise_alt_stddev', str(0.000005))
-                    bp.set_attribute('noise_lat_stddev', str(0.000005))
-                    bp.set_attribute('noise_lon_stddev', str(0.000005))
-                    bp.set_attribute('noise_alt_bias', str(0.0))
-                    bp.set_attribute('noise_lat_bias', str(0.0))
-                    bp.set_attribute('noise_lon_bias', str(0.0))
+                        sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
+                                                        z=sensor_spec['z'])
+                        sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                                         roll=sensor_spec['roll'],
+                                                        yaw=sensor_spec['yaw'])
+                    elif sensor_spec['type'].startswith('sensor.lidar'):
+                        bp.set_attribute('range', str(85))
+                        bp.set_attribute('rotation_frequency', str(10))
+                        bp.set_attribute('channels', str(64))
+                        bp.set_attribute('upper_fov', str(10))
+                        bp.set_attribute('lower_fov', str(-30))
+                        bp.set_attribute('points_per_second', str(600000))
+                        bp.set_attribute('atmosphere_attenuation_rate', str(0.004))
+                        bp.set_attribute('dropoff_general_rate', str(0.45))
+                        bp.set_attribute('dropoff_intensity_limit', str(0.8))
+                        bp.set_attribute('dropoff_zero_intensity', str(0.4))
+                        sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
+                                                        z=sensor_spec['z'])
+                        sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                                        roll=sensor_spec['roll'],
+                                                        yaw=sensor_spec['yaw'])
+                    elif sensor_spec['type'].startswith('sensor.other.radar'):
+                        bp.set_attribute('horizontal_fov', str(sensor_spec['fov']))  # degrees
+                        bp.set_attribute('vertical_fov', str(sensor_spec['fov']))  # degrees
+                        bp.set_attribute('points_per_second', '1500')
+                        bp.set_attribute('range', '100')  # meters
 
-                    sensor_location = carla.Location(x=sensor_spec['x'],
-                                                     y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation()
+                        sensor_location = carla.Location(x=sensor_spec['x'],
+                                                        y=sensor_spec['y'],
+                                                        z=sensor_spec['z'])
+                        sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                                        roll=sensor_spec['roll'],
+                                                        yaw=sensor_spec['yaw'])
 
-                elif sensor_spec['type'].startswith('sensor.other.imu'):
-                    bp.set_attribute('noise_accel_stddev_x', str(0.001))
-                    bp.set_attribute('noise_accel_stddev_y', str(0.001))
-                    bp.set_attribute('noise_accel_stddev_z', str(0.015))
-                    bp.set_attribute('noise_gyro_stddev_x', str(0.001))
-                    bp.set_attribute('noise_gyro_stddev_y', str(0.001))
-                    bp.set_attribute('noise_gyro_stddev_z', str(0.001))
+                    elif sensor_spec['type'].startswith('sensor.other.gnss'):
+                        bp.set_attribute('noise_alt_stddev', str(0.000005))
+                        bp.set_attribute('noise_lat_stddev', str(0.000005))
+                        bp.set_attribute('noise_lon_stddev', str(0.000005))
+                        bp.set_attribute('noise_alt_bias', str(0.0))
+                        bp.set_attribute('noise_lat_bias', str(0.0))
+                        bp.set_attribute('noise_lon_bias', str(0.0))
 
-                    sensor_location = carla.Location(x=sensor_spec['x'],
-                                                     y=sensor_spec['y'],
-                                                     z=sensor_spec['z'])
-                    sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
-                                                     roll=sensor_spec['roll'],
-                                                     yaw=sensor_spec['yaw'])
+                        sensor_location = carla.Location(x=sensor_spec['x'],
+                                                        y=sensor_spec['y'],
+                                                        z=sensor_spec['z'])
+                        sensor_rotation = carla.Rotation()
+
+                    elif sensor_spec['type'].startswith('sensor.other.imu'):
+                        bp.set_attribute('noise_accel_stddev_x', str(0.001))
+                        bp.set_attribute('noise_accel_stddev_y', str(0.001))
+                        bp.set_attribute('noise_accel_stddev_z', str(0.015))
+                        bp.set_attribute('noise_gyro_stddev_x', str(0.001))
+                        bp.set_attribute('noise_gyro_stddev_y', str(0.001))
+                        bp.set_attribute('noise_gyro_stddev_z', str(0.001))
+
+                        sensor_location = carla.Location(x=sensor_spec['x'],
+                                                        y=sensor_spec['y'],
+                                                        z=sensor_spec['z'])
+                        sensor_rotation = carla.Rotation(pitch=sensor_spec['pitch'],
+                                                        roll=sensor_spec['roll'],
+                                                        yaw=sensor_spec['yaw'])
+
                 # create sensor
                 sensor_transform = carla.Transform(sensor_location, sensor_rotation)
                 sensor = CarlaDataProvider.get_world().spawn_actor(bp, sensor_transform, vehicle)
@@ -173,57 +187,57 @@ class AgentWrapper(object):
         # Tick once to spawn the sensors
         CarlaDataProvider.get_world().tick()
 
+    @staticmethod
+    def validate_agent_track(agent_track, selected_track):
+        if Track(selected_track) != agent_track:
+            raise ValueError("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
 
     @staticmethod
-    def validate_sensor_configuration(sensors, agent_track, selected_track):
+    def validate_sensor_configuration(sensors, agent_track, allow_all_sensors=False):
         """
         Ensure that the sensor configuration is valid, in case the challenge mode is used
         Returns true on valid configuration, false otherwise
         """
-        if Track(selected_track) != agent_track:
-            raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
-
         sensor_count = {}
         sensor_ids = []
 
         for sensor in sensors:
 
-            # Check if the is has been already used
+            # Check if the id has been already used
             sensor_id = sensor['id']
             if sensor_id in sensor_ids:
                 raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(sensor_id))
             else:
                 sensor_ids.append(sensor_id)
 
-            # Check if the sensor is valid
-            if agent_track == Track.SENSORS:
-                if sensor['type'].startswith('sensor.opendrive_map'):
-                    raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(agent_track))
+            if not allow_all_sensors:
+                # Check if the sensor is valid
+                if agent_track == Track.SENSORS:
+                    if sensor['type'].startswith('sensor.opendrive_map'):
+                        raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(agent_track))
 
-            # Check the sensors validity
-            if sensor['type'] not in AgentWrapper.allowed_sensors:
-                raise SensorConfigurationInvalid("Illegal sensor used. {} are not allowed!".format(sensor['type']))
+                # Check the sensors validity
+                if sensor['type'] not in AgentWrapper.allowed_sensors:
+                    raise SensorConfigurationInvalid("Illegal sensor used. {} are not allowed!".format(sensor['type']))
 
-            # Check the extrinsics of the sensor
-            if 'x' in sensor and 'y' in sensor and 'z' in sensor:
-                if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
+                # Check the extrinsics of the sensor
+                if 'x' in sensor and 'y' in sensor and 'z' in sensor:
+                    if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
+                        raise SensorConfigurationInvalid(
+                            "Illegal sensor extrinsics used. Sensor is further than {}m from the ego's origin".format(MAX_ALLOWED_RADIUS_SENSOR))
+
+                # Check the amount of sensors
+                if sensor['type'] in sensor_count:
+                    sensor_count[sensor['type']] += 1
+                else:
+                    sensor_count[sensor['type']] = 1
+
+                if sensor_count[sensor['type']] > SENSORS_LIMITS[sensor['type']]:
                     raise SensorConfigurationInvalid(
-                        "Illegal sensor extrinsics used for Track [{}]!".format(agent_track))
-
-            # Check the amount of sensors
-            if sensor['type'] in sensor_count:
-                sensor_count[sensor['type']] += 1
-            else:
-                sensor_count[sensor['type']] = 1
-
-
-        for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
-            if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
-                raise SensorConfigurationInvalid(
-                    "Too many {} used! "
-                    "Maximum number allowed is {}, but {} were requested.".format(sensor_type,
-                                                                                  max_instances_allowed,
-                                                                                  sensor_count[sensor_type]))
+                        "Too many {} used! "
+                        "Maximum number allowed is {}, but {} were requested.".format(sensor['type'],
+                                                                                      SENSORS_LIMITS[sensor['type']],
+                                                                                      sensor_count[sensor['type']]))
 
     def cleanup(self):
         """
