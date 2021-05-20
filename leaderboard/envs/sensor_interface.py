@@ -204,7 +204,6 @@ class SensorInterface(object):
         # Only sensor that doesn't get the data on tick, needs special treatment
         self._opendrive_tag = None
 
-
     def register_sensor(self, tag, sensor_type, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
@@ -214,30 +213,27 @@ class SensorInterface(object):
         if sensor_type == 'sensor.opendrive_map': 
             self._opendrive_tag = tag
 
-    def update_sensor(self, tag, data, timestamp):
+    def update_sensor(self, tag, data, frame):
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
 
-        self._data_buffers.put((tag, timestamp, data))
+        self._data_buffers.put((tag, frame, data))
 
-    def get_data(self):
-        try: 
+    def get_data(self, frame):
+        try:
             data_dict = {}
             while len(data_dict.keys()) < len(self._sensors_objects.keys()):
-
                 # Don't wait for the opendrive sensor
                 if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
                         and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
                     break
 
                 sensor_data = self._data_buffers.get(True, self._queue_timeout)
+                if sensor_data[1] != frame:
+                    continue
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
         except Empty:
             raise SensorReceivedNoData("A sensor took too long to send their data")
 
         return data_dict
-
-    def clear(self):
-        with self._data_buffers.mutex:
-            self._data_buffers.queue.clear()
