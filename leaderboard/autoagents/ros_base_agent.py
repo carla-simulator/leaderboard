@@ -177,7 +177,10 @@ class ROSBaseAgent(AutonomousAgent):
                 steer=control_msg["steer"],
                 throttle=control_msg["throttle"],
                 brake=control_msg["brake"],
-                hand_brake=False
+                hand_brake=control_msg["hand_brake"],
+                reverse=control_msg["reverse"],
+                manual_gear_shift=control_msg["manual_gear_shift"],
+                gear=control_msg["gear"]
             )
         else:
             control_timestamp = control_msg.header.stamp.sec + control_msg.header.stamp.nanosec * 1e-9
@@ -185,7 +188,10 @@ class ROSBaseAgent(AutonomousAgent):
                 steer=control_msg.steer,
                 throttle=control_msg.throttle,
                 brake=control_msg.brake,
-                hand_brake=False
+                hand_brake=control_msg.hand_brake,
+                reverse=control_msg.reverse,
+                manual_gear_shift=control_msg.manual_gear_shift,
+                gear=control_msg.gear
             )
 
         # Checks that the received control timestamp is not repeated.
