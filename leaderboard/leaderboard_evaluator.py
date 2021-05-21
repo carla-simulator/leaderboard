@@ -156,24 +156,6 @@ class LeaderboardEvaluator(object):
             self.world.apply_settings(settings)
             self.traffic_manager.set_synchronous_mode(False)
 
-    def _prepare_ego_vehicles(self, ego_vehicles):
-        """
-        Spawn or update the ego vehicles
-        """
-        for vehicle in ego_vehicles:
-            self.ego_vehicles.append(
-                CarlaDataProvider.request_new_actor(
-                    vehicle.model,
-                    vehicle.transform,
-                    vehicle.rolename,
-                    color=vehicle.color,
-                    vehicle_category=vehicle.category
-                )
-            )
-
-        # sync state
-        CarlaDataProvider.get_world().tick()
-
     def _load_and_wait_for_world(self, args, town):
         """
         Load a new CARLA world and provide data to CarlaDataProvider
@@ -241,7 +223,6 @@ class LeaderboardEvaluator(object):
         # Load the world and the scenario
         try:
             self._load_and_wait_for_world(args, config.town)
-            self._prepare_ego_vehicles(config.ego_vehicles)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             self.statistics_manager.set_scenario(scenario.scenario)
 
