@@ -57,6 +57,8 @@ class Junction(object):
         self.route_exit_index = route_exit_index
         self.route_entry_keys = []
         self.route_exit_keys = []
+        self.route_opposite_entry_keys = []
+        self.route_opposite_exit_keys = []
         self.entry_wps = []
         self.exit_wps = []
 
@@ -235,10 +237,13 @@ class BackgroundBehavior(AtomicBehavior):
 
         prev_ego_index = self._route_index
 
-        # TODO: Recycle heroes
-        #   1) 360º opposite-exit
-        #   2) 360º opposite-previous
-        #   3) Entry - exit connecting lanes (Checking if exiting actors are part of new junction entries)
+        # TODO: initialise road behavior, exit sources, opposite sources (No need to check for recycled actors?)
+        # TODO: initialise junction exit
+        # 1) Entry sources
+        #   - Connecting lanes
+        #   - Weird junction connections
+        # 2) Junction exits
+        #   - 360º junctions
 
         # Get ego's odometry. For robustness, the closest route point will be used
         location = CarlaDataProvider.get_location(self._ego_actor)
@@ -280,8 +285,7 @@ class BackgroundBehavior(AtomicBehavior):
         """returns a list of all actors part of the background activity"""
         actors = self._road_actors + self._previous_actors + self._opposite_actors
         for junction in self._active_junctions:
-            if hasattr(junction, 'actor_dict') and junction.actor_dict:
-                actors.extend(list(junction.actor_dict))
+            actors.extend(list(junction.actor_dict))
         return actors
 
     ################################
@@ -380,7 +384,6 @@ class BackgroundBehavior(AtomicBehavior):
 
     def _join_roundabout_junctions(self, filtered_data):
         """Joins roundabout junctions into one, adding the whole roundabout"""
-        print(len(filtered_data))
         route_data = []
         roundabout_junctions = self._get_roundabouts_info()
 
@@ -456,18 +459,26 @@ class BackgroundBehavior(AtomicBehavior):
 
         return exit_wp
 
-    def _get_closest_junction_waypoint(self, route_wp, junction_wps):
-        """a"""
+    def _get_closest_junction_waypoint(self, wp, junction_wps):
+        """matches a given wp to another one inside the list. This is first donw by checking its key,
+        and if this fails, the closest wp is chosen"""
+
+        # Check the lane keys
+        junction_keys = [self._lane_key(wp_) for wp_ in junction_wps]
+        if self._lane_key(wp) in junction_keys:
+            return wp
+
+        # Get the closest one
         closest_dist = float('inf')
-        closest_wp = None
-        route_location = route_wp.transform.location
-        for wp in junction_wps:
-            distance = wp.transform.location.distance(route_location)
+        junction_wp = None
+        route_location = wp.transform.location
+        for wp_ in junction_wps:
+            distance = wp_.transform.location.distance(route_location)
             if distance < closest_dist:
                 closest_dist = distance
-                closest_wp = wp
+                junction_wp = wp_
 
-        return closest_wp
+        return junction_wp
 
     def _is_route_wp_behind_junction_wp(self, route_wp, junction_wp):
         """Checks if an actor is behind the ego. Uses the route transform"""
@@ -475,7 +486,7 @@ class BackgroundBehavior(AtomicBehavior):
         junction_transform = junction_wp.transform
         junction_heading = junction_transform.get_forward_vector()
         wps_vec = route_location - junction_transform.location
-        if junction_heading.x * wps_vec.x + junction_heading.y * wps_vec.y < - 0.17:  # 100º
+        if junction_heading.x * wps_vec.x + junction_heading.y * wps_vec.y < - 0.09: # 85º
             return True
         return False
 
@@ -562,34 +573,29 @@ class BackgroundBehavior(AtomicBehavior):
 
             # Filter the entries and exits that correspond to the route
             route_entry_wp = self._waypoints[junction_data.route_entry_index]
-            route_entry_wps = self._get_same_dir_lanes(route_entry_wp)
-
-            for wp in route_entry_wps:
-                junction_entry_wp = None
-                for junction_wp in entry_lane_wps:
-                    if self._lane_key(wp) in self._lane_key(junction_wp):
-                        junction_entry_wp = junction_wp
-                if not junction_entry_wp:
-                    junction_entry_wp = self._get_closest_junction_waypoint(wp, entry_lane_wps)
-                junction_data.route_entry_keys.append(self._lane_key(junction_entry_wp))
-
             route_exit_wp = self._waypoints[junction_data.route_exit_index]
-            route_exit_wps = self._get_same_dir_lanes(route_exit_wp)
 
-            for wp in route_exit_wps:
-                junction_entry_wp = None
-                for junction_wp in exit_lane_wps:
-                    if self._lane_key(wp) in self._lane_key(junction_wp):
-                        junction_exit_wp = junction_wp
-                if not junction_entry_wp:
-                    junction_exit_wp = self._get_closest_junction_waypoint(wp, exit_lane_wps)
-                junction_data.route_exit_keys.append(self._lane_key(junction_exit_wp))
+            # Same direction
+            for wp in self._get_same_dir_lanes(route_entry_wp):
+                junction_wp = self._get_closest_junction_waypoint(wp, entry_lane_wps)
+                junction_data.route_entry_keys.append(self._lane_key(junction_wp))
+            for wp in self._get_same_dir_lanes(route_exit_wp):
+                junction_wp = self._get_closest_junction_waypoint(wp, exit_lane_wps)
+                junction_data.route_exit_keys.append(self._lane_key(junction_wp))
+
+            # Opposite direction
+            for wp in self._get_opposite_dir_lanes(route_entry_wp):
+                junction_wp = self._get_closest_junction_waypoint(wp, exit_lane_wps)
+                junction_data.route_opposite_exit_keys.append(self._lane_key(junction_wp))
+            for wp in self._get_opposite_dir_lanes(route_exit_wp):
+                junction_wp = self._get_closest_junction_waypoint(wp, entry_lane_wps)
+                junction_data.route_opposite_entry_keys.append(self._lane_key(junction_wp))
 
             if self.debug:
                 exit_lane = self._waypoints[junction_data.route_exit_index] if junction_data.route_exit_index else None
-                print('> R Enter Lane: {}'.format(self._lane_key(self._waypoints[junction_data.route_entry_index])))
+                print('> R Entry Lane: {}'.format(self._lane_key(self._waypoints[junction_data.route_entry_index])))
                 print('> R Exit  Lane: {}'.format(self._lane_key(exit_lane)))
-                entry = '> J Enter Lanes: '
+                entry = '> J Entry Lanes: '
                 for entry_wp in entry_lane_wps:
                     key = self._lane_key(entry_wp)
                     entry += key + ' ' * (6 - len(key))
@@ -599,14 +605,22 @@ class BackgroundBehavior(AtomicBehavior):
                     key = self._lane_key(exit_wp)
                     exit += key + ' ' * (6 - len(key))
                 print(exit)
-                route_entry = '> J Route Enter Lanes: '
+                route_entry = '> R-J Entry Lanes: '
                 for entry_key in junction_data.route_entry_keys:
                     route_entry += entry_key + ' ' * (6 - len(entry_key))
                 print(route_entry)
-                route_exit = '> J Route Exit  Lanes: '
+                route_exit = '> R-J Route Exit  Lanes: '
                 for exit_key in junction_data.route_exit_keys:
                     route_exit += exit_key + ' ' * (6 - len(exit_key))
                 print(route_exit)
+                route_oppo_entry = '> R-J Oppo Entry Lanes: '
+                for oppo_entry_key in junction_data.route_opposite_entry_keys:
+                    route_oppo_entry += oppo_entry_key + ' ' * (6 - len(oppo_entry_key))
+                print(route_oppo_entry)
+                route_oppo_exit = '> R-J Oppo Exit  Lanes: '
+                for oppo_exit_key in junction_data.route_opposite_exit_keys:
+                    route_oppo_exit += oppo_exit_key + ' ' * (6 - len(oppo_exit_key))
+                print(route_oppo_exit)
 
     ################################
     ## Waypoint related functions ##
@@ -827,7 +841,7 @@ class BackgroundBehavior(AtomicBehavior):
             if self.debug:
                 self._world.debug.draw_point(
                     source.wp.transform.location + carla.Location(z=1), size=0.1,
-                    color=carla.Color(255,0,0), life_time=0.2)
+                    color=carla.Color(0,0,0), life_time=0.2)
 
             if len(source.actors) >= self._road_back_vehicles:
                 self._exit_sources.remove(source)
@@ -984,7 +998,6 @@ class BackgroundBehavior(AtomicBehavior):
 
             junction.exit_dict[self._lane_key(wp)]['max_distance'] = max_distance
             junction.exit_dict[self._lane_key(wp)]['max_actors'] = max_actors
-            print("Max Distance: {} -- Max Actors: {}".format(max_distance, max_actors))
 
             actors = CarlaDataProvider.request_new_batch_actors(
                 'vehicle.*', len(exiting_points), exiting_points, True, False, 'background',
@@ -1192,11 +1205,16 @@ class BackgroundBehavior(AtomicBehavior):
         for i, junction in enumerate(self._active_junctions):
             if self.debug:
                 route_keys = junction.route_entry_keys + junction.route_exit_keys
+                route_oppo_keys = junction.route_opposite_entry_keys + junction.route_opposite_exit_keys
                 for wp in junction.entry_wps + junction.exit_wps:
                     if self._lane_key(wp) in route_keys:
                         self._world.debug.draw_point(
                             wp.transform.location + carla.Location(z=0.8), size=0.15,
                             color=carla.Color(0,0,0), life_time=0.1)
+                    elif self._lane_key(wp) in route_oppo_keys:
+                        self._world.debug.draw_point(
+                            wp.transform.location + carla.Location(z=0.8), size=0.15,
+                            color=carla.Color(0,0,255), life_time=0.1)
                     else:
                         self._world.debug.draw_point(
                             wp.transform.location + carla.Location(z=0.8), size=0.15,
@@ -1205,6 +1223,7 @@ class BackgroundBehavior(AtomicBehavior):
             actor_dict = junction.actor_dict
             exit_dict = junction.exit_dict
             route_exit_keys = junction.route_exit_keys
+            route_oppo_exit_keys = junction.route_opposite_exit_keys
             for actor in list(actor_dict):
                 if actor not in actor_dict:
                     continue  # Actor was removed during the loop
@@ -1222,8 +1241,14 @@ class BackgroundBehavior(AtomicBehavior):
                     actor_lane_key = self._lane_key(actor_wp)
                     if not self._is_junction(actor_wp) and actor_lane_key in exit_dict:
                         if actor_lane_key in route_exit_keys and i < len(self._active_junctions) - 1:
-                            # Connecting lane between active junctions. Move it to the next junction behavior
+                            # Exited through a connecting lane in the route direction.
                             self._active_junctions[i+1].actor_dict[actor] = {
+                                'state': 'junction_entry', 'exit_lane_key': None
+                            }
+                            actor_dict.pop(actor, None)
+                        elif actor_lane_key in route_oppo_exit_keys and i > 0:
+                            # Exited through a connecting lane in the opposite direction.
+                            self._active_junctions[i-1].actor_dict[actor] = {
                                 'state': 'junction_entry', 'exit_lane_key': None
                             }
                             actor_dict.pop(actor, None)
