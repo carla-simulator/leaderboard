@@ -121,23 +121,12 @@ class BackgroundActivity(BasicScenario):
                                                  terminate_on_failure=True,
                                                  criteria_enable=True)
 
-    def _initialize_actors(self, config):
-        """
-        Create the necessary initial actors
-        """
-        pass
-
     def _create_behavior(self):
         """
         Basic behavior do nothing, i.e. Idle
         """
         # Check if a vehicle is further than X, destroy it if necessary and respawn it
-        background_checker = py_trees.composites.Sequence()
-        background_checker.add_child(BackgroundBehavior(
-            self.ego_vehicle,
-            self.route
-        ))
-        return background_checker
+        return BackgroundBehavior(self.ego_vehicle, self.route)
 
     def _create_test_criteria(self):
         """
@@ -198,12 +187,14 @@ class BackgroundBehavior(AtomicBehavior):
         # Road variables (these are very much hardcoded so watch out when changing them)
         self._road_actors = []
         self._exit_sources = []
+        self._road_checker_index = 0
 
         self._road_front_vehicles = 3  # Amount of vehicles in front of the ego. Must be > 0
         self._road_back_vehicles = 3  # Amount of vehicles behind the ego
         self._road_vehicle_dist = 15  # Starting distance between spawned vehicles
         self._base_min_radius = 38  # Vehicles further than this will start to slow down
         self._base_max_radius = 42  # Must be higher than nº_veh * veh_dist or the furthest vehicle will never activate
+        self._max_radius = 45
         self._radius_increase_ratio = 1.8  # Meters the radius increases per m/s of the ego
         self._leading_dist_interval = [6, 10]
 
@@ -219,10 +210,9 @@ class BackgroundBehavior(AtomicBehavior):
         # Break scenario variables
         self._is_scenario_active = False
         self._break_actors = []
-
-        self._break_time_interval = [30, 40]  # Min, max time between scenarios
+        
+        self._activate_break_scenario = False
         self._break_duration = 7  # Duration of the scenario
-        self._get_next_scenario_time()
 
         # Lane change variables
         self._is_lane_change_active = False
@@ -257,6 +247,7 @@ class BackgroundBehavior(AtomicBehavior):
         same_dir_wps = self._get_same_dir_lanes(ego_wp)
         self._initialise_road_behavior(same_dir_wps, ego_wp)
         self._initialise_opposite_sources()
+        self._initialise_road_checker(ego_wp)
 
     def update(self):
         new_status = py_trees.common.Status.RUNNING
@@ -299,6 +290,7 @@ class BackgroundBehavior(AtomicBehavior):
             self._update_junction_sources()
         else:
             self._update_road_actors(ego_transform)
+            self._move_road_checker(prev_ego_index, self._route_index)
             self._move_opposite_sources(prev_ego_index, self._route_index)
             self._update_opposite_sources()
 
@@ -795,7 +787,12 @@ class BackgroundBehavior(AtomicBehavior):
     def _lane_key(self, wp):
         """Returns a key corresponding to the waypoint lane. Equivalent to a 'Lane'
         object and used to compare waypoint lanes"""
-        return '' if wp is None else str(wp.road_id) + '*' + str(wp.lane_id)
+        return '' if wp is None else self._road_key(wp) + '*' + str(wp.lane_id)
+
+    def _road_key(self, wp):
+        """Returns a key corresponding to the waypoint road. Equivalent to a 'Road'
+        object and used to compare waypoint roads"""
+        return '' if wp is None else str(wp.road_id)
 
     ################################
     ##       Mode functions       ##
@@ -857,6 +854,7 @@ class BackgroundBehavior(AtomicBehavior):
         if not self._active_junctions:
             self._ego_state = 'road'
             self._initialise_opposite_sources()
+            self._initialise_road_checker(ego_wp)
 
     def _switch_junction_exit_sources(self, junction):
         """
@@ -1055,6 +1053,26 @@ class BackgroundBehavior(AtomicBehavior):
         for wp in self._get_opposite_dir_lanes(oppo_wp):
             self._opposite_sources.append(Source(wp, []))
 
+    def _initialise_road_checker(self, ego_wp):
+        """
+        Gets the waypoints in front of the ego to continuously check if the road changes
+        """
+        # TODO: Check this first 'max_radius' meters too
+        self._road_checker_index = None
+
+        if not self._junctions:
+            upper_limit = self._route_length - 1
+        else:
+            upper_limit = self._junctions[0].route_entry_index
+
+        ego_accum_dist = self._route_accum_dist[self._route_index]
+        for i in range(self._route_index, upper_limit):
+            if self._route_accum_dist[i] - ego_accum_dist > self._max_radius:
+                self._road_checker_index = i
+                break
+        if not self._road_checker_index:
+            self._road_checker_index = upper_limit
+
     def _initialise_junction_sources(self, junction):
         """
         Initializes the actor sources to ensure the junction is always populated. They are 
@@ -1152,27 +1170,85 @@ class BackgroundBehavior(AtomicBehavior):
                     self._add_actor_dict_element(actor_dict, actor, entry_lane_key=source.junction_entry_lane_key)
                     source.actors.append(actor)
 
+    def _found_a_road_change(self, old_index, new_index):
+        """Checks if the new route waypoint is part of a new road (excluding fake junctions)"""
+        if new_index == old_index:
+            return False
+
+        new_wp = self._waypoints[new_index]
+        old_wp = self._waypoints[old_index]
+        if self._road_key(new_wp) == self._road_key(old_wp):
+            return False
+
+        new_wp_junction = new_wp.get_junction()
+        if new_wp_junction and new_wp_junction.id in self._fake_junction_ids:
+            return False
+
+        return True
+
+    def _move_road_checker(self, prev_index, current_index):
+        """
+        Continually check the road in front to see if it has changed its topology.
+        If so and the number of lanes have reduced, remove the actor of the lane that merges into others
+        """
+        if self.debug:
+            checker_wp = self._waypoints[self._road_checker_index]
+            draw_point(self._world, checker_wp.transform.location, 'small', 'road', False)
+
+        if prev_index == current_index:
+            return
+
+        # Get the new route tracking wp
+        checker_index = None
+        last_index = self._junctions[0].route_entry_index if self._junctions else self._route_length - 1
+        current_accum_dist = self._route_accum_dist[current_index]
+        for i in range(self._road_checker_index, last_index):
+            accum_dist = self._route_accum_dist[i]
+            if accum_dist - current_accum_dist >= self._max_radius:
+                checker_index = i
+                break
+        if not checker_index:
+            checker_index = last_index
+
+        if self._found_a_road_change(self._road_checker_index, checker_index):
+            # Do something
+            new_wps = self._get_same_dir_lanes(self._waypoints[checker_index])
+            old_wps = self._get_same_dir_lanes(self._waypoints[self._road_checker_index])
+
+            if len(new_wps) >= len(old_wps):
+                pass  # TODO: Add new vehicles at the new lanes
+            else:
+                new_accum_dist = self._route_accum_dist[checker_index]
+                prev_accum_dist = self._route_accum_dist[self._road_checker_index]
+                route_move_dist = new_accum_dist - prev_accum_dist
+                unmapped_lane_keys = []
+
+                for old_wp in list(old_wps):
+                    location = old_wp.transform.location
+                    mapped_wp = None
+                    for new_wp in new_wps:
+                        if location.distance(new_wp.transform.location ) < 1.1 * route_move_dist:
+                            mapped_wp = new_wp
+                            break
+
+                    if not mapped_wp:
+                        unmapped_lane_keys.append(self._lane_key(old_wp))
+
+                for actor in list(self._road_actors):
+                    location = CarlaDataProvider.get_location(actor)
+                    if not location:
+                        continue
+                    wp = self._map.get_waypoint(location)
+                    if self._lane_key(wp) in unmapped_lane_keys:
+                        self._destroy_actor(actor)
+
+        self._road_checker_index = checker_index
+
     def _move_opposite_sources(self, prev_index, current_index):
         """
         Moves the sources of the opposite direction back. Additionally, tracks a point a certain distance
         in front of the ego to see if the road topology has to be recalculated
         """
-        def reset_sources(old_index, new_index):
-            """Checks if the new route waypoint is part of a new road (excluding fake junctions)"""
-            if new_index == old_index:
-                return False
-
-            new_wp = self._waypoints[new_index]
-            old_wp = self._waypoints[old_index]
-            if new_wp.road_id == old_wp.road_id:
-                return False
-
-            new_wp_junction = new_wp.get_junction()
-            if new_wp_junction and new_wp_junction.id in self._fake_junction_ids:
-                return False
-
-            return True
-
         if self.debug:
             for source in self._opposite_sources:
                 draw_point(self._world, source.wp.transform.location, 'small', 'opposite', False)
@@ -1194,7 +1270,7 @@ class BackgroundBehavior(AtomicBehavior):
         if not oppo_route_index:
             oppo_route_index = last_index
 
-        if reset_sources(self._opposite_route_index, oppo_route_index):
+        if self._found_a_road_change(self._opposite_route_index, oppo_route_index):
             # Recheck the left lanes as the topology might have changed
             new_opposite_sources = []
             new_opposite_wps = self._get_opposite_dir_lanes(self._waypoints[oppo_route_index])
@@ -1265,6 +1341,15 @@ class BackgroundBehavior(AtomicBehavior):
 
     def _update_parameters(self):
         """Changed the radius dependent on the speed of the ego"""
+        break_duration = py_trees.blackboard.Blackboard().get("BA_BreakScenario")
+        if break_duration:
+            if self._is_scenario_active:
+                print("WARNING: A break scenario was requested but another one is being triggered.")
+            else:
+                self._activate_break_scenario = True
+                self._break_duration = break_duration
+            py_trees.blackboard.Blackboard().set("BA_BreakScenario", None, True)
+
         speed = CarlaDataProvider.get_velocity(self._ego_actor)
         self._min_radius = self._base_min_radius + self._radius_increase_ratio*speed
         self._max_radius = self._base_max_radius + self._radius_increase_ratio*speed
@@ -1277,34 +1362,28 @@ class BackgroundBehavior(AtomicBehavior):
 
     def _manage_break_scenario(self):
         """
-        Randomly makes the vehicles in front of the ego break. The countdown is stopped during junctions,
-        instead of reset, so that the scenario triggers even if there are many junctions one after another
+        Manages the break scenario, where all road vehicles in front of the ego suddenly stop,
+        wait for a bit, and start moving again. This will never trigger unless done so from outside.
         """
+        if self._is_scenario_active:
+            self._next_scenario_time -= self._world.get_snapshot().timestamp.delta_seconds
+            if self._next_scenario_time <= 0:
+                for actor in self._break_actors:
+                    self._tm.vehicle_percentage_speed_difference(actor, 0)
+                self._break_actors = []
 
-        if not self._is_scenario_active and not self._ego_state == 'road':
-            return
+                self._is_scenario_active = False
 
-        self._next_scenario_time -= self._world.get_snapshot().timestamp.delta_seconds
-        if self._is_scenario_active and self._next_scenario_time <= 0:
-            self._is_scenario_active = False
-            self._get_next_scenario_time()
-
-            # Reset vehicles to normal behavior
-            for actor in self._break_actors:
-                self._tm.vehicle_percentage_speed_difference(actor, 0)
-
-            self._break_actors = []
-
-        elif not self._is_scenario_active and self._next_scenario_time <= 0:
-            self._is_scenario_active = True
-            self._next_scenario_time = self._break_duration
-
-            # Stop all road actors in front of the ego
+        elif self._activate_break_scenario:
             for actor in self._road_actors:
                 location = CarlaDataProvider.get_location(actor)
                 if location and not self._is_location_behind_ego(location):
                     self._break_actors.append(actor)
                     self._tm.vehicle_percentage_speed_difference(actor, 100)
+
+            self._is_scenario_active = True
+            self._activate_break_scenario = False
+            self._next_scenario_time = self._break_duration
 
     def _manage_lane_change_scenario(self):
         """
