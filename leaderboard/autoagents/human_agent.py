@@ -87,8 +87,8 @@ class HumanAgent(AutonomousAgent):
         self.track = Track.SENSORS
 
         self.agent_engaged = False
-        self.camera_width = 1400
-        self.camera_height = 600
+        self.camera_width = 800
+        self.camera_height = 500
 
         self._hic = HumanInterface(self.camera_width, self.camera_height)
         self._controller = KeyboardControl(path_to_conf_file)

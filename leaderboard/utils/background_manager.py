@@ -1,38 +1,140 @@
-from os import stat
+#!/usr/bin/env python
+
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
+
+"""
+Several atomic behaviors to help with the communication with the bacground activity
+"""
+
 import py_trees
+from srunner.scenariomanager.scenarioatomics.atomic_behaviors import AtomicBehavior
 
-class BackgroundManager(object):
+class RoadBehaviorManager(AtomicBehavior):
+    """
+    Updates the blackboard to change the parameters of the road behavior.
+    None values imply that these values won't be changed
 
-    # TODO: Just here to know all the parameters. To be removed
-    # Road variables (these are very much hardcoded so watch out when changing them)
-    _road_front_vehicles = 3  # Amount of vehicles in front of the ego. Must be > 0
-    _road_back_vehicles = 3  # Amount of vehicles behind the ego
+    Args:
+        num_front_vehicles (int): Amount of vehicles in front of the ego. Can't be negative
+        num_back_vehicles (int): Amount of vehicles behind it. Can't be negative
+        vehicle_dist (float): Minimum distance between the road vehicles. Must between 0 and 'spawn_dist'
+        spawn_dist (float): Minimum distance between spawned vehicles. Must be positive
+    """
+    def __init__(self, num_front_vehicles=None, num_back_vehicles=None,
+                 vehicle_dist=None, spawn_dist=None, name="RoadBehaviorManager"):
+        self._num_front_vehicles = num_front_vehicles
+        self._num_back_vehicles = num_back_vehicles
+        self._vehicle_dist = vehicle_dist
+        self._spawn_dist = spawn_dist
+        super(RoadBehaviorManager, self).__init__(name)
 
-    _road_vehicle_dist = 15  # Starting distance between spawned vehicles
-    _leading_dist_interval = [6, 10]
-
-    _base_min_radius = 38  # Should be calculated 
-    _base_max_radius = 42
-
-    # Opposite lane variables
-    _opposite_sources_dist = 60
-    _opposite_vehicle_dist = 15
-    _opposite_sources_max_actors = 6  # Maximum vehicles alive at the same time per source
-
-    # Break and lane change scenario
-    _lane_change_dist = 50
-    _lane_change_leading_dist_interval = [8, 14]
-
-    # Junction variables
-    _junction_detection_dist = 45  # Higher than max radius or junction exit dist
-    _junction_entry_source_dist = 15  # Distance between spawned actors by the entry sources
-    _junction_exit_dist = 15  # Distance between actors at the junction exit
-    _junction_exit_space = 15  # Distance between the junction and first actor.
-    _entry_sources_dist = 35  # Distance from the entry sources to the junction
-    _entry_sources_max_actors = 6  # Maximum vehicles alive at the same time per source
-
-    @staticmethod
-    def activate_break_scenario(stop_duration=10):
-        """Starts the break scenario"""
+    def update(self):
         py_trees.blackboard.Blackboard().set(
-            "BA_BreakScenario", stop_duration, overwrite=True)
+            "BA_RoadBehavior",
+            [self._num_front_vehicles, self._num_back_vehicles, self._vehicle_dist, self._spawn_dist],
+            overwrite=True
+        )
+        return py_trees.common.Status.SUCCESS
+
+
+class OppositeBehaviorManager(AtomicBehavior):
+    """
+    Updates the blackboard to change the parameters of the opposite road behavior.
+    None values imply that these values won't be changed
+
+    Args:
+        source_dist (float): Distance between the opposite sources and the ego vehicle. Must be positive
+        vehicle_dist (float) Minimum distance between the opposite vehicles. Must between 0 and 'spawn_dist'
+        spawn_dist (float): Minimum distance between spawned vehicles. Must be positive
+        max_actors (int): Max amount of concurrent alive actors spawned by the same source. Can't be negative
+    """
+    def __init__(self, source_dist=None, vehicle_dist=None, spawn_dist=None,
+                 max_actors=None, name="RoadBehaviorManager"):
+        self._source_dist = source_dist
+        self._vehicle_dist = vehicle_dist
+        self._spawn_dist = spawn_dist
+        self._max_actors = max_actors
+        super(RoadBehaviorManager, self).__init__(name)
+
+    def update(self):
+        py_trees.blackboard.Blackboard().set(
+            "BA_OppositeBehavior",
+            [self._source_dist, self._vehicle_dist, self._spawn_dist, self._max_actors],
+            overwrite=True
+        )
+        return py_trees.common.Status.SUCCESS
+
+
+class JunctionBehaviorManager(AtomicBehavior):
+    """
+    Updates the blackboard to change the parameters of the junction behavior.
+    None values imply that these values won't be changed
+
+    Args:
+        source_dist (float): Distance between the junctiob sources and the junction entry. Must be positive
+        vehicle_dist (float) Minimum distance between the junction vehicles. Must between 0 and 'spawn_dist'
+        spawn_dist (float): Minimum distance between spawned vehicles. Must be positive
+        max_actors (int): Max amount of concurrent alive actors spawned by the same source. Can't be negative
+
+    """
+    def __init__(self, source_dist=None, vehicle_dist=None, spawn_dist=None,
+                 max_actors=None, name="RoadBehaviorManager"):
+        self._source_dist = source_dist
+        self._vehicle_dist = vehicle_dist
+        self._spawn_dist = spawn_dist
+        self._max_actors = max_actors
+        super(RoadBehaviorManager, self).__init__(name)
+
+    def update(self):
+        py_trees.blackboard.Blackboard().set(
+            "BA_JunctionBehavior",
+            [self._source_dist, self._vehicle_dist, self._spawn_dist, self._max_actors],
+            overwrite=True
+        )
+        return py_trees.common.Status.SUCCESS
+
+
+class Scenario2Manager(AtomicBehavior):
+    """
+    Updates the blackboard to tell the background activity that a Scenario2 has to be triggered.
+    'stop_duration' is the amount of time, in seconds, the vehicles will be stopped
+    """
+    def __init__(self, stop_duration=10, name="Scenario2Manager"):
+        self._stop_duration = stop_duration
+        super(Scenario2Manager, self).__init__(name)
+
+    def update(self):
+        py_trees.blackboard.Blackboard().set("BA_Scenario2", self._stop_duration, overwrite=True)
+        return py_trees.common.Status.SUCCESS
+
+class Scenario4Manager(AtomicBehavior):
+    """
+    Updates the blackboard to tell the background activity that a Scenario4 has been triggered.
+    'crossing_dist' is the distance between the crossing actor and the junction
+    """
+    def __init__(self, crossing_dist=10, name="Scenario4Manager"):
+        self._crossing_dist = crossing_dist
+        super(Scenario4Manager, self).__init__(name)
+
+    def update(self):
+        """Updates the blackboard and succeds"""
+        py_trees.blackboard.Blackboard().set("BA_Scenario4", self._crossing_dist, overwrite=True)
+        return py_trees.common.Status.SUCCESS
+
+class Scenario7To9Manager(AtomicBehavior):
+    """
+    Updates the blackboard to tell the background activity that a Scenario7to9 has been triggered
+    'entry_direction' is the direction from which the incoming traffic enters the junction. It should be
+    something like 'left', 'right' or 'opposite'
+    """
+    def __init__(self, entry_direction, name="Scenario7To9Manager"):
+        self._entry_direction = entry_direction
+        super(Scenario7To9Manager, self).__init__(name)
+
+    def update(self):
+        """Updates the blackboard and succeds"""
+        py_trees.blackboard.Blackboard().set("BA_Scenario7To9", self._entry_direction, overwrite=True)
+        return py_trees.common.Status.SUCCESS
+
