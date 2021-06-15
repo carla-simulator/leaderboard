@@ -123,18 +123,18 @@ class Scenario4Manager(AtomicBehavior):
         py_trees.blackboard.Blackboard().set("BA_Scenario4", self._crossing_dist, overwrite=True)
         return py_trees.common.Status.SUCCESS
 
-class Scenario7To9Manager(AtomicBehavior):
+class JunctionScenarioManager(AtomicBehavior):
     """
     Updates the blackboard to tell the background activity that a Scenario7to9 has been triggered
     'entry_direction' is the direction from which the incoming traffic enters the junction. It should be
     something like 'left', 'right' or 'opposite'
     """
-    def __init__(self, entry_direction, name="Scenario7To9Manager"):
+    def __init__(self, entry_direction, name="JunctionScenarioManager"):
         self._entry_direction = entry_direction
-        super(Scenario7To9Manager, self).__init__(name)
+        super(JunctionScenarioManager, self).__init__(name)
 
     def update(self):
         """Updates the blackboard and succeds"""
-        py_trees.blackboard.Blackboard().set("BA_Scenario7To9", self._entry_direction, overwrite=True)
+        py_trees.blackboard.Blackboard().set("BA_JunctionScenario", self._entry_direction, overwrite=True)
         return py_trees.common.Status.SUCCESS
 
