@@ -129,11 +129,11 @@ class Source(object):
     Source object to store its position and its responsible actors
     """
 
-    def __init__(self, wp, actors, junction_entry_lane_key=''):
+    def __init__(self, wp, actors, entry_lane_wp=''):
         self.wp = wp
         self.actors = actors
-        self.junction_entry_lane_key = junction_entry_lane_key
-        self.lane_keys = []  # Source lane and connecting lanes of the previous junction
+        self.entry_lane_wp = entry_lane_wp
+        self.previous_lane_keys = []  # Source lane and connecting lanes of the previous junction
 
 
 class Junction(object):
@@ -151,8 +151,8 @@ class Junction(object):
         self.exit_road_length = 0
         self.route_entry_keys = []
         self.route_exit_keys = []
-        self.route_opposite_entry_keys = []
-        self.route_opposite_exit_keys = []
+        self.opposite_entry_keys = []
+        self.opposite_exit_keys = []
         self.entry_wps = []
         self.exit_wps = []
         self.entry_directions = {'ref': [], 'opposite': [], 'left': [], 'right': []}
@@ -161,7 +161,6 @@ class Junction(object):
         # State
         self.entry_sources = []
         self.exit_sources = []
-        self.entry_dict = OrderedDict()  # Doesn't include the road actors 
         self.exit_dict = OrderedDict()
         self.actor_dict = OrderedDict()
 
@@ -280,19 +279,19 @@ class BackgroundBehavior(AtomicBehavior):
         self._opposite_spawn_dist = 15  # Initial distance between spawned opposite vehicles [m]
         self._opposite_sources_max_actors = 6  # Maximum vehicles alive at the same time per source
 
-        # Scenario2 variables
+        # Scenario 2 variables
         self._is_scenario_2_active = False
         self._scenario_2_actors = []
         self._activate_break_scenario = False
         self._break_duration = 7  # Duration of the scenario
 
-        # Scenario4 variables
+        # Scenario 4 variables
         self._is_scenario_4_active = False
         self._scenario_4_actors = []
         self._ego_exitted_junction = False
         self._crossing_dist = None  # Distance between the crossing object and the junction exit
 
-        # Scenario7to9 variables
+        # Junction scenarios variables
         self._is_junction_scenario_active = False
         self._direction = None
 
@@ -337,11 +336,8 @@ class BackgroundBehavior(AtomicBehavior):
         # TODO
         #################### Minor improvements? ####################
         # 1) For 360º junctions, the road and opposite actors overlap, so they should be reused
-        # 3) Entry dict is mising road actors and connecting ones (when not added by a source). Change to at_route_oppo_entry
-        # 4) When initialising road checker, check this first 'max_radius' meters too
-        # 5) When road checker detects new lanes, add the vehicles
-        # 6) Scenario 4, 7, 8, 9 flags should be part of the junction to allow multiple active scenarios
-        # 7) Change actor states to allow connecting actors to be part of both junctions
+        # 2) When initialising road checker, check this first 'max_radius' meters too
+        # 3) When road checker detects new lanes, add the vehicles
         #################
         # 0) Filter junctions code is kinda like a duplicate of the topology one
         # 1) Add scenario 3 interacion
@@ -770,7 +766,7 @@ class BackgroundBehavior(AtomicBehavior):
                 junction_data.route_entry_keys.append(get_lane_key(junction_wp))
             for wp in get_opposite_dir_lanes(route_entry_wp):
                 junction_wp = self._get_closest_junction_waypoint(wp, exit_lane_wps)
-                junction_data.route_opposite_exit_keys.append(get_lane_key(junction_wp))
+                junction_data.opposite_exit_keys.append(get_lane_key(junction_wp))
 
             # Junction exit
             if junction_data.route_exit_index:  # Can be None if route ends at a junction
@@ -780,7 +776,7 @@ class BackgroundBehavior(AtomicBehavior):
                     junction_data.route_exit_keys.append(get_lane_key(junction_wp))
                 for wp in get_opposite_dir_lanes(route_exit_wp):
                     junction_wp = self._get_closest_junction_waypoint(wp, entry_lane_wps)
-                    junction_data.route_opposite_entry_keys.append(get_lane_key(junction_wp))
+                    junction_data.opposite_entry_keys.append(get_lane_key(junction_wp))
 
             # Add the entry directions of each lane with respect to the route. Used for scenarios 7 to 9
             route_entry_yaw = route_entry_wp.transform.rotation.yaw
@@ -842,11 +838,11 @@ class BackgroundBehavior(AtomicBehavior):
                     route_exit += exit_key + ' ' * (6 - len(exit_key))
                 print(route_exit)
                 route_oppo_entry = '> R-J Oppo Entry Lanes: '
-                for oppo_entry_key in junction_data.route_opposite_entry_keys:
+                for oppo_entry_key in junction_data.opposite_entry_keys:
                     route_oppo_entry += oppo_entry_key + ' ' * (6 - len(oppo_entry_key))
                 print(route_oppo_entry)
                 route_oppo_exit = '> R-J Oppo Exit  Lanes: '
-                for oppo_exit_key in junction_data.route_opposite_exit_keys:
+                for oppo_exit_key in junction_data.opposite_exit_keys:
                     route_oppo_exit += oppo_exit_key + ' ' * (6 - len(oppo_exit_key))
                 print(route_oppo_exit)
 
@@ -863,12 +859,12 @@ class BackgroundBehavior(AtomicBehavior):
     ##       Mode functions       ##
     ################################
 
-    def _add_actor_dict_element(self, actor_dict, actor, exit_lane_key='', entry_lane_key=''):
+    def _add_actor_dict_element(self, actor_dict, actor, exit_lane_key='', at_oppo_entry_lane=False):
         """Adds a new actor to the actor dictionary"""
         actor_dict[actor] = {
             'state': 'junction_entry' if not exit_lane_key else 'junction_exit',
             'exit_lane_key': exit_lane_key,
-            'entry_lane_key': entry_lane_key
+            'at_oppo_entry_lane': at_oppo_entry_lane
         }
 
     def _switch_to_junction_mode(self, junction):
@@ -895,9 +891,8 @@ class BackgroundBehavior(AtomicBehavior):
             actor_dict = scenario_junction.actor_dict
 
             for entry_source in scenario_junction.entry_sources:
-                if entry_source.junction_entry_lane_key in entry_direction_keys:
+                if get_lane_key(entry_source.entry_lane_wp) in entry_direction_keys:
                     # Source is affected
-                    print(entry_source.junction_entry_lane_key)
                     actors = entry_source.actors
                     for actor in list(actors):
                         if actor_dict[actor]['state'] == 'junction_entry':
@@ -923,25 +918,6 @@ class BackgroundBehavior(AtomicBehavior):
         Handles the interation between the scenario 4 of the Leaderboard and the background activity.
         This removes all vehicles near the bycicle path, and stops the others so that they don't interfere
         """
-        def is_actor_blocking(actor, wp_location, crossing_space=2):
-            """Checks if the actor is blocking the crossing obstacle"""
-            actor_location = CarlaDataProvider.get_location(actor)
-            junction_distance = wp_location.distance(actor_location)
-            if not actor_location:
-                return True
-
-            distance = junction_distance - self._crossing_dist
-            actor_length = actor.bounding_box.extent.x
-
-            if distance > 0 and distance < actor_length + crossing_space:
-                return True
-
-            actor_exit_lane = junction.actor_dict[actor]['exit_lane_key']
-            if distance < 0 and get_lane_key(ego_wp) == actor_exit_lane:
-                return True  # Actors between the ego and the crossing obstacle
-
-            return False
-
         if not self._is_scenario_4_active:
             return
 
@@ -949,46 +925,51 @@ class BackgroundBehavior(AtomicBehavior):
         self._start_ego_wp = ego_wp
         min_crossing_space = 2
 
-        for wp in junction.exit_wps:
-            lane_key = get_lane_key(wp)
-            wp_location = wp.transform.location
-            if lane_key in junction.route_exit_keys:
-                for actor in list(junction.exit_dict[lane_key]['actors']):
+        exit_dict = junction.exit_dict
+        for exit_key in exit_dict:
+            if exit_key not in junction.route_exit_keys:
+                continue
+            actors = exit_dict[exit_key]['actors']
+            exit_lane_wp = exit_dict[exit_key]['ref_wp']
+            exit_lane_location = exit_lane_wp.transform.location
+            for actor in actors:
+                actor_location = CarlaDataProvider.get_location(actor)
+                if not actor_location:
+                    self._destroy_actor(actor)
+                    continue
+
+                dist_to_scenario = exit_lane_location.distance(actor_location) - self._crossing_dist
+                actor_length = actor.bounding_box.extent.x
+                if abs(dist_to_scenario) < actor_length + min_crossing_space:
+                    self._destroy_actor(actor)
+                    continue
+
+                if dist_to_scenario > 0:
+                    continue  # Don't stop the actors that have already passed the scenario
+
+                if get_lane_key(ego_wp) == get_lane_key(exit_lane_wp):
+                    self._destroy_actor(actor)
+                    continue  # Actor at the ego lane and between the ego and scenario
+
+                self._scenario_4_actors.append(actor)
+
+        for entry_source in junction.entry_sources:
+            entry_lane_wp = entry_source.entry_lane_wp
+            if get_lane_key(entry_lane_wp) in junction.opposite_entry_keys:
+                # Source is affected
+                actors = entry_source.actors
+                entry_lane_location = entry_lane_wp.transform.location
+                for actor in list(actors):
                     actor_location = CarlaDataProvider.get_location(actor)
                     if not actor_location:
                         self._destroy_actor(actor)
                         continue
 
-                    dist_to_scenario = wp_location.distance(actor_location) - self._crossing_dist
-                    actor_length = actor.bounding_box.extent.x
-                    if abs(dist_to_scenario) < actor_length + min_crossing_space:
-                        self._destroy_actor(actor)
-                        continue
-
-                    if dist_to_scenario > 0:
-                        continue  # Don't stop the actors that have already passed the scenario
-
-                    if get_lane_key(ego_wp) == junction.actor_dict[actor]['exit_lane_key']:
-                        self._destroy_actor(actor)
-                        continue  # Actor at the ego lane and between the ego and scenario
-
-                    self._scenario_4_actors.append(actor)
-
-        for wp in junction.entry_wps:
-            lane_key = get_lane_key(wp)
-            wp_location = wp.transform.location
-            if lane_key in junction.route_opposite_entry_keys:
-                for actor in list(junction.entry_dict[lane_key]['actors']):
-                    actor_location = CarlaDataProvider.get_location(actor)
-                    if not actor_location:
-                        self._destroy_actor(actor)
-                        continue
-
-                    crossing_space = abs(wp_location.distance(actor_location) - self._crossing_dist)
+                    crossing_space = abs(entry_lane_location.distance(actor_location) - self._crossing_dist)
                     actor_length = actor.bounding_box.extent.x
                     if crossing_space < actor_length + min_crossing_space:
                         self._destroy_actor(actor)
-                        continue
+                        continue  # Actors blocking the path of the crossing obstacle
 
                     self._scenario_4_actors.append(actor)
 
@@ -1002,7 +983,6 @@ class BackgroundBehavior(AtomicBehavior):
         and cleans up the variables. If no other junctions are active, starts road mode
         """
         actor_dict = junction.actor_dict
-        route_oppo_entry_keys = junction.route_opposite_entry_keys
         route_exit_keys = junction.route_exit_keys
 
         active_junctions = len(self._active_junctions)
@@ -1014,7 +994,7 @@ class BackgroundBehavior(AtomicBehavior):
                 continue
 
             self._tm.vehicle_percentage_speed_difference(actor, 0)
-            if actor_dict[actor]['entry_lane_key'] in route_oppo_entry_keys:
+            if actor_dict[actor]['at_oppo_entry_lane']:
                 self._opposite_actors.append(actor)
                 self._tm.ignore_lights_percentage(actor, 100)
                 self._tm.ignore_signs_percentage(actor, 100)
@@ -1023,16 +1003,6 @@ class BackgroundBehavior(AtomicBehavior):
             if active_junctions <= 1 and actor_dict[actor]['exit_lane_key'] in route_exit_keys:
                 self._road_actors.append(actor)
                 continue
-
-            if active_junctions > 1:
-                next_junction = self._active_junctions[1]
-                next_actor_dict = next_junction.actor_dict
-                next_route_oppo_exit_keys = next_junction.route_opposite_exit_keys
-                if actor in next_actor_dict and next_actor_dict[actor]['exit_lane_key'] in next_route_oppo_exit_keys:
-                    self._opposite_actors.append(actor)
-                    self._tm.ignore_lights_percentage(actor, 100)
-                    self._tm.ignore_signs_percentage(actor, 100)
-                    continue
 
             self._destroy_actor(actor)
 
@@ -1110,9 +1080,9 @@ class BackgroundBehavior(AtomicBehavior):
     def _add_incoming_actors(self, junction, source):
         """Checks nearby actors that will pass through the source, adding them to it"""
         source_location = source.wp.transform.location
-        if not source.lane_keys:
-            source.lane_keys = [get_lane_key(prev_wp) for prev_wp in source.wp.previous(self._reuse_dist)]
-            source.lane_keys.append(get_lane_key(source.wp))
+        if not source.previous_lane_keys:
+            source.previous_lane_keys = [get_lane_key(prev_wp) for prev_wp in source.wp.previous(self._reuse_dist)]
+            source.previous_lane_keys.append(get_lane_key(source.wp))
 
         for actor in self._get_actors():
             if actor in source.actors:
@@ -1125,16 +1095,15 @@ class BackgroundBehavior(AtomicBehavior):
                 continue  # Don't use actors far away
 
             actor_wp = self._map.get_waypoint(actor_location)
-            if get_lane_key(actor_wp) not in source.lane_keys:
+            if get_lane_key(actor_wp) not in source.previous_lane_keys:
                 continue  # Don't use actors that won't pass through the source
 
             self._tm.vehicle_percentage_speed_difference(actor, 0)
             self._remove_actor_info(actor)
             source.actors.append(actor)
 
-            entry_lane_key = source.junction_entry_lane_key
-            self._add_actor_dict_element(junction.actor_dict, actor, entry_lane_key=entry_lane_key)
-            junction.entry_dict[entry_lane_key]['actors'].append(actor)
+            at_oppo_entry_lane = get_lane_key(source.entry_lane_wp) in junction.opposite_entry_keys
+            self._add_actor_dict_element(junction.actor_dict, actor, at_oppo_entry_lane=at_oppo_entry_lane)
 
             return actor
 
@@ -1270,9 +1239,6 @@ class BackgroundBehavior(AtomicBehavior):
         to ensure the spawned actors always move towards the activated one
         """
         for wp in junction.entry_wps:
-            junction.entry_dict[get_lane_key(wp)] = {
-                'actors': [], 'ref_wp': wp
-            }
             if get_lane_key(wp) in junction.route_entry_keys:
                 continue  # Ignore the road from which the route enters
 
@@ -1285,7 +1251,7 @@ class BackgroundBehavior(AtomicBehavior):
                 prev_wp = prev_wps[0]
                 moved_dist += 5
 
-            junction.entry_sources.append(Source(prev_wp, [], junction_entry_lane_key=get_lane_key(wp)))
+            junction.entry_sources.append(Source(prev_wp, [], entry_lane_wp=wp))
 
     def _initialise_junction_exits(self, junction):
         """
@@ -1325,19 +1291,19 @@ class BackgroundBehavior(AtomicBehavior):
                 'actors': [], 'max_actors': max_actors, 'ref_wp': wp, 'max_distance': max_distance
             }
 
-            entry_lane_key = get_lane_key(wp)
-            if self._direction and entry_lane_key in junction.exit_directions[self._direction]:
+            exit_lane_key = get_lane_key(wp)
+            if self._direction and exit_lane_key in junction.exit_directions[self._direction]:
                 continue  # The direction is prohibited as a junction scenario is active
 
-            if entry_lane_key in route_exit_keys:
+            if exit_lane_key in route_exit_keys:
                 junction.exit_sources.append(Source(wp, []))
 
                 actors = self._spawn_actors(exiting_wps)
                 for actor in actors:
                     self._tm.distance_to_leading_vehicle(actor, self._junction_vehicle_dist)
                     self._tm.auto_lane_change(actor, False)
-                    self._add_actor_dict_element(junction.actor_dict, actor, exit_lane_key=entry_lane_key)
-                junction.exit_dict[entry_lane_key]['actors'] = actors
+                    self._add_actor_dict_element(junction.actor_dict, actor, exit_lane_key=exit_lane_key)
+                junction.exit_dict[exit_lane_key]['actors'] = actors
 
     def _update_junction_sources(self):
         """Checks the actor sources to see if new actors have to be created"""
@@ -1347,7 +1313,8 @@ class BackgroundBehavior(AtomicBehavior):
                 draw_point(self._world, source.wp.transform.location, 'small', 'junction', False)
                 draw_string(self._world, source.wp.transform.location, str(len(source.actors)), 'junction', False)
 
-                entry_lane_key = source.junction_entry_lane_key
+                entry_lane_key = get_lane_key(source.entry_lane_wp)
+                at_oppo_entry_lane = entry_lane_key in junction.opposite_entry_keys
 
                 # The direction is prohibited as a junction scenario is active
                 if self._direction and entry_lane_key in junction.entry_directions[self._direction]:
@@ -1376,8 +1343,7 @@ class BackgroundBehavior(AtomicBehavior):
 
                     self._tm.distance_to_leading_vehicle(actor, self._junction_vehicle_dist)
                     self._tm.auto_lane_change(actor, False)
-                    self._add_actor_dict_element(actor_dict, actor, entry_lane_key=entry_lane_key)
-                    junction.entry_dict[entry_lane_key]['actors'].append(actor)
+                    self._add_actor_dict_element(actor_dict, actor, at_oppo_entry_lane=at_oppo_entry_lane)
                     source.actors.append(actor)
 
     def _found_a_road_change(self, old_index, new_index):
@@ -1737,7 +1703,7 @@ class BackgroundBehavior(AtomicBehavior):
         for i, junction in enumerate(self._active_junctions):
             if self.debug:
                 route_keys = junction.route_entry_keys + junction.route_exit_keys
-                route_oppo_keys = junction.route_opposite_entry_keys + junction.route_opposite_exit_keys
+                route_oppo_keys = junction.opposite_entry_keys + junction.opposite_exit_keys
                 for wp in junction.entry_wps + junction.exit_wps:
                     if get_lane_key(wp) in route_keys:
                         draw_point(self._world, wp.transform.location, 'medium', 'road', False)
@@ -1747,7 +1713,6 @@ class BackgroundBehavior(AtomicBehavior):
                         draw_point(self._world, wp.transform.location, 'medium', 'junction', False)
 
             actor_dict = junction.actor_dict
-            entry_dict = junction.entry_dict
             exit_dict = junction.exit_dict
             for actor in list(actor_dict):
                 if actor not in actor_dict:
@@ -1756,7 +1721,7 @@ class BackgroundBehavior(AtomicBehavior):
                 if not location:
                     continue
 
-                state, exit_lane_key, entry_lane_key = actor_dict[actor].values()
+                state, exit_lane_key, _ = actor_dict[actor].values()
                 if self.debug:
                     string = 'J' + str(i+1) + "_" + state[9:11]
                     draw_string(self._world, location, string, self._ego_state, False)
@@ -1768,10 +1733,7 @@ class BackgroundBehavior(AtomicBehavior):
                         if self._is_junction_scenario_active:
                             self._destroy_actor(actor)  # Don't clutter the junction if a junction scenario is active
                             continue
-                        if entry_lane_key:
-                            entry_dict[entry_lane_key]['actors'].remove(actor)
                         actor_dict[actor]['state'] = 'junction_middle'
-                        actor_dict[actor]['entry_lane_key'] = ''
 
                 # Monitor its exit and destroy an actor if needed
                 elif state == 'junction_middle':
@@ -1784,13 +1746,13 @@ class BackgroundBehavior(AtomicBehavior):
                             other_junction = self._active_junctions[i+1]
                             self._add_actor_dict_element(other_junction.actor_dict, actor)
 
-                        elif i > 0 and actor_lane_key in junction.route_opposite_exit_keys:
+                        elif i > 0 and actor_lane_key in junction.opposite_exit_keys:
                             # Exited through a connecting lane in the opposite direction.
-                            # This should never happen, an entry source should have already added it.
+                            # THIS SHOULD NEVER HAPPEN, an entry source should have already added it.
                             other_junction = self._active_junctions[i-1]
-                            if actor not in other_junction.actor_dict:  
+                            if actor not in other_junction.actor_dict:
                                 self._remove_actor_info(actor)
-                                self._add_actor_dict_element(other_junction.actor_dict, actor)
+                                self._add_actor_dict_element(other_junction.actor_dict, actor, at_oppo_entry_lane=True)
 
                         else:
                             # Check the lane capacity
@@ -1858,12 +1820,6 @@ class BackgroundBehavior(AtomicBehavior):
             for entry_source in junction.entry_sources:
                 if actor in entry_source.actors:
                     entry_source.actors.remove(actor)
-                    break
-
-            for entry_keys in junction.entry_dict:
-                entry_actors = junction.entry_dict[entry_keys]['actors']
-                if actor in entry_actors:
-                    entry_actors.remove(actor)
                     break
 
             for exit_keys in junction.exit_dict:
