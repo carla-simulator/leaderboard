@@ -5,7 +5,8 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 """
-Several atomic behaviors to help with the communication with the bacground activity
+Several atomic behaviors to help with the communication with the background activity,
+removing its interference with other scenarios
 """
 
 import py_trees
@@ -109,6 +110,7 @@ class Scenario2Manager(AtomicBehavior):
         py_trees.blackboard.Blackboard().set("BA_Scenario2", self._stop_duration, overwrite=True)
         return py_trees.common.Status.SUCCESS
 
+
 class Scenario4Manager(AtomicBehavior):
     """
     Updates the blackboard to tell the background activity that a Scenario4 has been triggered.
@@ -123,18 +125,66 @@ class Scenario4Manager(AtomicBehavior):
         py_trees.blackboard.Blackboard().set("BA_Scenario4", self._crossing_dist, overwrite=True)
         return py_trees.common.Status.SUCCESS
 
-class JunctionScenarioManager(AtomicBehavior):
+
+class Scenario7Manager(AtomicBehavior):
     """
-    Updates the blackboard to tell the background activity that a Scenario7to9 has been triggered
+    Updates the blackboard to tell the background activity that a Scenario7 has been triggered
     'entry_direction' is the direction from which the incoming traffic enters the junction. It should be
     something like 'left', 'right' or 'opposite'
     """
-    def __init__(self, entry_direction, name="JunctionScenarioManager"):
+    def __init__(self, entry_direction, name="Scenario7Manager"):
         self._entry_direction = entry_direction
-        super(JunctionScenarioManager, self).__init__(name)
+        super(Scenario7Manager, self).__init__(name)
 
     def update(self):
         """Updates the blackboard and succeds"""
-        py_trees.blackboard.Blackboard().set("BA_JunctionScenario", self._entry_direction, overwrite=True)
+        py_trees.blackboard.Blackboard().set("BA_Scenario7", self._entry_direction, overwrite=True)
         return py_trees.common.Status.SUCCESS
 
+
+class Scenario8Manager(AtomicBehavior):
+    """
+    Updates the blackboard to tell the background activity that a Scenario8 has been triggered
+    'entry_direction' is the direction from which the incoming traffic enters the junction. It should be
+    something like 'left', 'right' or 'opposite'
+    """
+    def __init__(self, entry_direction, name="Scenario8Manager"):
+        self._entry_direction = entry_direction
+        super(Scenario8Manager, self).__init__(name)
+
+    def update(self):
+        """Updates the blackboard and succeds"""
+        py_trees.blackboard.Blackboard().set("BA_Scenario8", self._entry_direction, overwrite=True)
+        return py_trees.common.Status.SUCCESS
+
+
+class Scenario9Manager(AtomicBehavior):
+    """
+    Updates the blackboard to tell the background activity that a Scenario9 has been triggered
+    'entry_direction' is the direction from which the incoming traffic enters the junction. It should be
+    something like 'left', 'right' or 'opposite'
+    """
+    def __init__(self, entry_direction, name="Scenario9Manager"):
+        self._entry_direction = entry_direction
+        super(Scenario9Manager, self).__init__(name)
+
+    def update(self):
+        """Updates the blackboard and succeds"""
+        py_trees.blackboard.Blackboard().set("BA_Scenario9", self._entry_direction, overwrite=True)
+        return py_trees.common.Status.SUCCESS
+
+
+class Scenario10Manager(AtomicBehavior):
+    """
+    Updates the blackboard to tell the background activity that a Scenario10 has been triggered
+    'entry_direction' is the direction from which the incoming traffic enters the junction. It should be
+    something like 'left', 'right' or 'opposite'
+    """
+    def __init__(self, entry_direction, name="Scenario10Manager"):
+        self._entry_direction = entry_direction
+        super(Scenario10Manager, self).__init__(name)
+
+    def update(self):
+        """Updates the blackboard and succeds"""
+        py_trees.blackboard.Blackboard().set("BA_Scenario10", self._entry_direction, overwrite=True)
+        return py_trees.common.Status.SUCCESS

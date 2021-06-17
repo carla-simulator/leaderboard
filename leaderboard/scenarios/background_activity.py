@@ -13,7 +13,6 @@ import pprint
 
 import carla
 import numpy as np
-import numpy.random as random
 import math
 import py_trees
 from collections import OrderedDict
@@ -236,7 +235,6 @@ class BackgroundBehavior(AtomicBehavior):
         self._world = CarlaDataProvider.get_world()
         self._tm = CarlaDataProvider.get_client().get_trafficmanager(
             CarlaDataProvider.get_traffic_manager_port())
-        self._rng = random.RandomState(2000)
 
         # Global variables
         self._ego_actor = ego_actor
@@ -291,8 +289,10 @@ class BackgroundBehavior(AtomicBehavior):
         self._ego_exitted_junction = False
         self._crossing_dist = None  # Distance between the crossing object and the junction exit
 
-        # Junction scenarios variables
-        self._is_junction_scenario_active = False
+        # Junction scenario variables
+        self._remove_entries = False  # Remove all actors in the direction entry when triggering the scenario
+        self._remove_exits = False  # Remove all actors at the direction exit when triggering the scenario
+        self._remove_middle = False  # Remove all actors in the junction when triggering the scenario
         self._direction = None
 
     def _get_route_data(self, route):
@@ -342,6 +342,7 @@ class BackgroundBehavior(AtomicBehavior):
         # 0) Filter junctions code is kinda like a duplicate of the topology one
         # 1) Add scenario 3 interacion
         # 2) Add scenario 5 and 6
+        # 3) Improve scenario
 
         # Get ego's odometry. For robustness, the closest route point will be used
         location = CarlaDataProvider.get_location(self._ego_actor)
@@ -637,11 +638,8 @@ class BackgroundBehavior(AtomicBehavior):
         while self._is_junction(entry_wp):
             entry_wps = entry_wp.previous(0.2)
             if len(entry_wps) == 0:
-                break  # Stop when there's no prev
+                return None  # Stop when there's no prev
             entry_wp = entry_wps[0]
-        if self._is_junction(entry_wp):
-            return None  # Triggered by the loops break
-
         return entry_wp
 
     def _get_junction_exit_wp(self, exit_wp):
@@ -649,11 +647,8 @@ class BackgroundBehavior(AtomicBehavior):
         while self._is_junction(exit_wp):
             exit_wps = exit_wp.next(0.2)
             if len(exit_wps) == 0:
-                break  # Stop when there's no prev
+                return None  # Stop when there's no prev
             exit_wp = exit_wps[0]
-        if self._is_junction(exit_wp):
-            return None  # Triggered by the loops break
-
         return exit_wp
 
     def _get_closest_junction_waypoint(self, wp, junction_wps):
@@ -878,40 +873,47 @@ class BackgroundBehavior(AtomicBehavior):
 
         self._opposite_sources.clear()
 
-    def _initialise_junction_scenario(self, direction):
+    def _initialise_junction_scenario(self, direction, remove_entries, remove_exits, remove_middle):
         """
         Removes all vehicles in a particular 'direction' as well as all actors inside the junction.
         Additionally, activates some flags to ensure the junction is empty at all times
         """
-        self._is_junction_scenario_active = True
         self._direction = direction.lower()
         if self._active_junctions:
             scenario_junction = self._active_junctions[0]
             entry_direction_keys = scenario_junction.entry_directions[direction]
             actor_dict = scenario_junction.actor_dict
 
-            for entry_source in scenario_junction.entry_sources:
-                if get_lane_key(entry_source.entry_lane_wp) in entry_direction_keys:
-                    # Source is affected
-                    actors = entry_source.actors
-                    for actor in list(actors):
-                        if actor_dict[actor]['state'] == 'junction_entry':
-                            # Actor is at the entry lane
-                            self._destroy_actor(actor)
+            if remove_entries:
+                self._remove_entries = True
+                for entry_source in scenario_junction.entry_sources:
+                    if get_lane_key(entry_source.entry_lane_wp) in entry_direction_keys:
+                        # Source is affected
+                        actors = entry_source.actors
+                        for actor in list(actors):
+                            if actor_dict[actor]['state'] == 'junction_entry':
+                                # Actor is at the entry lane
+                                self._destroy_actor(actor)
 
-            for exit in scenario_junction.exit_directions[direction]:
-                for actor in list(scenario_junction.exit_dict[exit]['actors']):
-                    self._destroy_actor(actor)
+            if remove_exits:
+                self._remove_exits = True
+                for exit in scenario_junction.exit_directions[direction]:
+                    for actor in list(scenario_junction.exit_dict[exit]['actors']):
+                        self._destroy_actor(actor)
 
-            actor_dict = scenario_junction.actor_dict
-            for actor in list(actor_dict):
-                if actor_dict[actor]['state'] == 'junction_middle':
-                    self._destroy_actor(actor)
+            if remove_middle:
+                self._remove_middle = True
+                actor_dict = scenario_junction.actor_dict
+                for actor in list(actor_dict):
+                    if actor_dict[actor]['state'] == 'junction_middle':
+                        self._destroy_actor(actor)
 
     def _handle_junction_scenario_end(self):
         """Ends the junction scenario interaction"""
-        self._is_junction_scenario_active = False
         self._direction = None
+        self._remove_entries = None
+        self._remove_exits = None
+        self._remove_middle = None
 
     def _handle_scenario_4_interaction(self, junction, ego_wp):
         """
@@ -1292,7 +1294,7 @@ class BackgroundBehavior(AtomicBehavior):
             }
 
             exit_lane_key = get_lane_key(wp)
-            if self._direction and exit_lane_key in junction.exit_directions[self._direction]:
+            if self._remove_exits and exit_lane_key in junction.exit_directions[self._direction]:
                 continue  # The direction is prohibited as a junction scenario is active
 
             if exit_lane_key in route_exit_keys:
@@ -1317,7 +1319,7 @@ class BackgroundBehavior(AtomicBehavior):
                 at_oppo_entry_lane = entry_lane_key in junction.opposite_entry_keys
 
                 # The direction is prohibited as a junction scenario is active
-                if self._direction and entry_lane_key in junction.entry_directions[self._direction]:
+                if self._remove_entries and entry_lane_key in junction.entry_directions[self._direction]:
                     continue
 
                 self._add_incoming_actors(junction, source)
@@ -1576,28 +1578,32 @@ class BackgroundBehavior(AtomicBehavior):
 
         crossing_dist = py_trees.blackboard.Blackboard().get("BA_Scenario4")
         if crossing_dist:
-            print("Activating scenario 4")
             self._is_scenario_4_active = True
             self._crossing_dist = crossing_dist
             py_trees.blackboard.Blackboard().set("BA_Scenario4", None, True)
 
-        direction = py_trees.blackboard.Blackboard().get("BA_JunctionScenario")
+        direction = py_trees.blackboard.Blackboard().get("BA_Scenario7")
         if direction:
-            print("Activating junction scenario")
-            self._initialise_junction_scenario(direction)
-            py_trees.blackboard.Blackboard().set("BA_JunctionScenario", None, True)
+            self._initialise_junction_scenario(direction, True, True, True)
+            py_trees.blackboard.Blackboard().set("BA_Scenario7", None, True)
+        direction = py_trees.blackboard.Blackboard().get("BA_Scenario8")
+        if direction:
+            self._initialise_junction_scenario(direction, True, True, True)
+            py_trees.blackboard.Blackboard().set("BA_Scenario8", None, True)
+        direction = py_trees.blackboard.Blackboard().get("BA_Scenario9")
+        if direction:
+            self._initialise_junction_scenario(direction, True, False, True)
+            py_trees.blackboard.Blackboard().set("BA_Scenario9", None, True)
+        direction = py_trees.blackboard.Blackboard().get("BA_Scenario10")
+        if direction:
+            self._initialise_junction_scenario(direction, False, False, True)
+            py_trees.blackboard.Blackboard().set("BA_Scenario10", None, True)
 
         speed = CarlaDataProvider.get_velocity(self._ego_actor)
         self._min_radius = self._base_min_radius + self._radius_increase_ratio*speed
         self._max_radius = self._base_max_radius + self._radius_increase_ratio*speed
         self._junction_detection_dist = self._max_radius
         # self._tm.set_hybrid_physics_radius(self._max_radius)
-
-    def _get_next_scenario_time(self):
-        """Gets the time for the next scenario"""
-        a = self._break_time_interval[0]
-        b = self._break_time_interval[1] - self._break_time_interval[0]
-        self._next_scenario_time = a + b*(self._rng.rand())
 
     def _manage_break_scenario(self):
         """
@@ -1730,7 +1736,7 @@ class BackgroundBehavior(AtomicBehavior):
                 if state == 'junction_entry':
                     actor_wp = self._map.get_waypoint(location)
                     if self._is_junction(actor_wp) and junction.contains(actor_wp.get_junction()):
-                        if self._is_junction_scenario_active:
+                        if self._remove_middle:
                             self._destroy_actor(actor)  # Don't clutter the junction if a junction scenario is active
                             continue
                         actor_dict[actor]['state'] = 'junction_middle'
