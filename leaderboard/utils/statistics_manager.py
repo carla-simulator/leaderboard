@@ -275,20 +275,24 @@ class StatisticsManager(object):
 
         stats_dict = route_record.__dict__
         data['_checkpoint']['global_record'] = stats_dict
-        data['values'] = ['{:.3f}'.format(stats_dict['scores']['score_composed']),
-                          '{:.3f}'.format(stats_dict['scores']['score_route']),
-                          '{:.3f}'.format(stats_dict['scores']['score_penalty']),
-                          # infractions
-                          '{:.3f}'.format(stats_dict['infractions']['collisions_pedestrian']),
-                          '{:.3f}'.format(stats_dict['infractions']['collisions_vehicle']),
-                          '{:.3f}'.format(stats_dict['infractions']['collisions_layout']),
-                          '{:.3f}'.format(stats_dict['infractions']['red_light']),
-                          '{:.3f}'.format(stats_dict['infractions']['stop_infraction']),
-                          '{:.3f}'.format(stats_dict['infractions']['outside_route_lanes']),
-                          '{:.3f}'.format(stats_dict['infractions']['route_dev']),
-                          '{:.3f}'.format(stats_dict['infractions']['route_timeout']),
-                          '{:.3f}'.format(stats_dict['infractions']['vehicle_blocked'])
-                          ]
+        try:
+            data['values'] = ['{:.3f}'.format(stats_dict['scores']['score_composed']),
+                            '{:.3f}'.format(stats_dict['scores']['score_route']),
+                            '{:.3f}'.format(stats_dict['scores']['score_penalty']),
+                            # infractions
+                            '{:.3f}'.format(stats_dict['infractions']['collisions_pedestrian']),
+                            '{:.3f}'.format(stats_dict['infractions']['collisions_vehicle']),
+                            '{:.3f}'.format(stats_dict['infractions']['collisions_layout']),
+                            '{:.3f}'.format(stats_dict['infractions']['red_light']),
+                            '{:.3f}'.format(stats_dict['infractions']['stop_infraction']),
+                            '{:.3f}'.format(stats_dict['infractions']['outside_route_lanes']),
+                            '{:.3f}'.format(stats_dict['infractions']['route_dev']),
+                            '{:.3f}'.format(stats_dict['infractions']['route_timeout']),
+                            '{:.3f}'.format(stats_dict['infractions']['vehicle_blocked'])
+                            ]
+        except TypeError:
+            # This happens when an invalid route id is given, as the infractions is a list
+            data['values'] = 12 * ['NaN']
 
         data['labels'] = ['Avg. driving score',
                           'Avg. route completion',

@@ -386,7 +386,7 @@ class LeaderboardEvaluator(object):
         """
         Run the challenge mode
         """
-        route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions)
+        route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions, args.route_id)
 
         if args.resume:
             route_indexer.resume(args.checkpoint)
@@ -432,6 +432,8 @@ def main():
     parser.add_argument('--routes',
                         help='Name of the route to be executed. Point to the route_xml_file to be executed.',
                         required=True)
+    parser.add_argument('--route-id', default='', type=str,
+                        help='Execute a specific route')
     parser.add_argument('--scenarios',
                         help='Name of the scenario annotation file to be mixed with the route.',
                         required=True)
