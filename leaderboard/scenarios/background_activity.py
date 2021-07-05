@@ -255,7 +255,7 @@ class BackgroundBehavior(AtomicBehavior):
         self._road_back_vehicles = 3  # Amount of vehicles behind the ego
         self._road_vehicle_dist = 8  # Distance road vehicles leave betweeen each other[m]
         self._road_spawn_dist = 13  # Initial distance between spawned road vehicles [m]
-        self._radius_increase_ratio = 1.8  # Meters the radius increases per m/s of the ego
+        self._radius_increase_ratio = 2.0  # Meters the radius increases per m/s of the ego
         self._get_road_radius()
 
         # Junction variables
@@ -927,6 +927,7 @@ class BackgroundBehavior(AtomicBehavior):
         self._start_ego_wp = ego_wp
         min_crossing_space = 2
 
+        # Actor exitting the junction
         exit_dict = junction.exit_dict
         for exit_key in exit_dict:
             if exit_key not in junction.route_exit_keys:
@@ -934,7 +935,7 @@ class BackgroundBehavior(AtomicBehavior):
             actors = exit_dict[exit_key]['actors']
             exit_lane_wp = exit_dict[exit_key]['ref_wp']
             exit_lane_location = exit_lane_wp.transform.location
-            for actor in actors:
+            for actor in list(actors):
                 actor_location = CarlaDataProvider.get_location(actor)
                 if not actor_location:
                     self._destroy_actor(actor)
@@ -955,6 +956,7 @@ class BackgroundBehavior(AtomicBehavior):
 
                 self._scenario_4_actors.append(actor)
 
+        # Actor entering the junction
         for entry_source in junction.entry_sources:
             entry_lane_wp = entry_source.entry_lane_wp
             if get_lane_key(entry_lane_wp) in junction.opposite_entry_keys:
@@ -975,8 +977,39 @@ class BackgroundBehavior(AtomicBehavior):
 
                     self._scenario_4_actors.append(actor)
 
+        # Actors entering the next junction
+        if len(self._active_junctions) > 1:
+            next_junction = self._active_junctions[1]
+            actors_dict = next_junction.actor_dict
+            for actor in list(actors_dict):
+                if actors_dict[actor]['state'] != 'junction_entry':
+                    continue
+
+                actor_location = CarlaDataProvider.get_location(actor)
+                if not actor_location:
+                    self._destroy_actor(actor)
+                    continue
+
+                dist_to_scenario = exit_lane_location.distance(actor_location) - self._crossing_dist
+                actor_length = actor.bounding_box.extent.x
+                if abs(dist_to_scenario) < actor_length + min_crossing_space:
+                    self._destroy_actor(actor)
+                    continue
+
+                if dist_to_scenario > 0:
+                    continue  # Don't stop the actors that have already passed the scenario
+
+                actor_wp = self._map.get_waypoint(actor_location)
+                if get_lane_key(ego_wp) == get_lane_key(actor_wp):
+                    self._destroy_actor(actor)
+                    continue  # Actor at the ego lane and between the ego and scenario
+
+                self._scenario_4_actors.append(actor)
+
+
+        # Immediately freeze the actors
         for actor in self._scenario_4_actors:
-            actor.set_target_velocity(carla.Vector3D(0,0,0))  # Immediately freeze the actor
+            actor.set_target_velocity(carla.Vector3D(0,0,0))
             self._tm.vehicle_percentage_speed_difference(actor, 100)
 
     def _end_junction_behavior(self, ego_wp, junction):
@@ -1596,14 +1629,13 @@ class BackgroundBehavior(AtomicBehavior):
             py_trees.blackboard.Blackboard().set("BA_Scenario9", None, True)
         direction = py_trees.blackboard.Blackboard().get("BA_Scenario10")
         if direction:
-            self._initialise_junction_scenario(direction, False, False, True)
+            self._initialise_junction_scenario(direction, False, False, False)
             py_trees.blackboard.Blackboard().set("BA_Scenario10", None, True)
 
         speed = CarlaDataProvider.get_velocity(self._ego_actor)
         self._min_radius = self._base_min_radius + self._radius_increase_ratio*speed
         self._max_radius = self._base_max_radius + self._radius_increase_ratio*speed
         self._junction_detection_dist = self._max_radius
-        # self._tm.set_hybrid_physics_radius(self._max_radius)
 
     def _manage_break_scenario(self):
         """
