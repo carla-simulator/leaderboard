@@ -9,7 +9,6 @@ Scenario spawning elements to make the town dynamic and interesting
 """
 
 import math
-import pprint
 
 import carla
 import numpy as np
@@ -243,6 +242,7 @@ class BackgroundBehavior(AtomicBehavior):
 
         self._spawn_vertical_shift = 0.2
         self._reuse_dist = 10  # When spawning actors, might reuse actors closer to this distance
+        self._spawn_free_radius = 30  # Sources closer to the ego will not spawn actors
         self._fake_junction_ids = []
         self._fake_lane_pair_keys = []
 
@@ -265,17 +265,18 @@ class BackgroundBehavior(AtomicBehavior):
         self._junction_sources_dist = 40  # Distance from the entry sources to the junction [m]
         self._junction_vehicle_dist = 8  # Distance junction vehicles leave betweeen each other[m]
         self._junction_spawn_dist = 10  # Initial distance between spawned junction vehicles [m]
-        self._junction_sources_max_actors = 6  # Maximum vehicles alive at the same time per source
+        self._junction_sources_max_actors = 5  # Maximum vehicles alive at the same time per source
 
         # Opposite lane variables
         self._opposite_actors = []
         self._opposite_sources = []
         self._opposite_route_index = 0
 
+        self._opposite_removal_dist = 30  # Distance at which actors are destroyed
         self._opposite_sources_dist = 60  # Distance from the ego to the opposite sources [m]
         self._opposite_vehicle_dist = 8  # Distance opposite vehicles leave betweeen each other[m]
-        self._opposite_spawn_dist = 15  # Initial distance between spawned opposite vehicles [m]
-        self._opposite_sources_max_actors = 6  # Maximum vehicles alive at the same time per source
+        self._opposite_spawn_dist = 20  # Initial distance between spawned opposite vehicles [m]
+        self._opposite_sources_max_actors = 5  # Maximum vehicles alive at the same time per source
 
         # Scenario 2 variables
         self._is_scenario_2_active = False
@@ -333,16 +334,9 @@ class BackgroundBehavior(AtomicBehavior):
         new_status = py_trees.common.Status.RUNNING
 
         prev_ego_index = self._route_index
-        # TODO
-        #################### Minor improvements? ####################
-        # 1) For 360º junctions, the road and opposite actors overlap, so they should be reused
-        # 2) When initialising road checker, check this first 'max_radius' meters too
-        # 3) When road checker detects new lanes, add the vehicles
-        #################
-        # 0) Filter junctions code is kinda like a duplicate of the topology one
-        # 1) Add scenario 3 interacion
-        # 2) Add scenario 5 and 6
-        # 3) Improve scenario
+        # Check if the TM destroyed an actor
+        if self._route_index > 0:
+            self._check_background_actors()
 
         # Get ego's odometry. For robustness, the closest route point will be used
         location = CarlaDataProvider.get_location(self._ego_actor)
@@ -394,17 +388,13 @@ class BackgroundBehavior(AtomicBehavior):
             actors.extend(list(junction.actor_dict))
         return actors
 
-    def _monitor_scenario_4_end(self, ego_location):
-        """Monitors the ego distance to the junction to know if the scenario 4 has ended"""
-        if self._ego_exitted_junction:
-            ref_location = self._start_ego_wp.transform.location
-            if ego_location.distance(ref_location) > self._crossing_dist:
-                for actor in self._scenario_4_actors:
-                    self._tm.vehicle_percentage_speed_difference(actor, 0)
-                self._is_scenario_4_active = False
-                self._scenario_4_actors.clear()
-                self._ego_exitted_junction = False
-                self._crossing_dist = None
+    def _check_background_actors(self):
+        """Checks if the Traffic Manager has removed a backgroudn actor"""
+        background_actors = self._get_actors()
+        alive_ids = [actor.id for actor in self._world.get_actors().filter('vehicle*')]
+        for actor in background_actors:
+            if actor.id not in alive_ids:
+                self._remove_actor_info(actor)
 
     ################################
     ##       Junction cache       ##
@@ -418,11 +408,6 @@ class BackgroundBehavior(AtomicBehavior):
         route_data = self._join_complex_junctions(filtered_data)
         self._add_junctions_topology(route_data)
         self._junctions = route_data
-
-        if self.debug:
-            pp = pprint.PrettyPrinter(indent=4)
-            junction_dict = [j.__dict__ for j in self._junctions]
-            pp.pprint(junction_dict)
 
     def _get_junctions_data(self):
         """Gets all the junctions the ego passes through"""
@@ -789,8 +774,6 @@ class BackgroundBehavior(AtomicBehavior):
                     direction = 'ref'
 
                 junction_data.entry_directions[direction].append(get_lane_key(wp))
-                if self.debug:
-                    draw_string(self._world, wp.transform.location, direction, 'junction', True)
 
             # Supposing scenario vehicles go straight, these correspond to the exit lanes of the entry directions
             for wp in exit_lane_wps:
@@ -807,8 +790,6 @@ class BackgroundBehavior(AtomicBehavior):
                     direction = 'ref'
 
                 junction_data.exit_directions[direction].append(get_lane_key(wp))
-                if self.debug:
-                    draw_string(self._world, wp.transform.location, direction, 'junction', True)
 
             if self.debug:
                 exit_lane = self._route[junction_data.route_exit_index] if junction_data.route_exit_index else None
@@ -914,6 +895,18 @@ class BackgroundBehavior(AtomicBehavior):
         self._remove_entries = None
         self._remove_exits = None
         self._remove_middle = None
+
+    def _monitor_scenario_4_end(self, ego_location):
+        """Monitors the ego distance to the junction to know if the scenario 4 has ended"""
+        if self._ego_exitted_junction:
+            ref_location = self._start_ego_wp.transform.location
+            if ego_location.distance(ref_location) > self._crossing_dist:
+                for actor in self._scenario_4_actors:
+                    self._tm.vehicle_percentage_speed_difference(actor, 0)
+                self._is_scenario_4_active = False
+                self._scenario_4_actors.clear()
+                self._ego_exitted_junction = False
+                self._crossing_dist = None
 
     def _handle_scenario_4_interaction(self, junction, ego_wp):
         """
@@ -1159,13 +1152,15 @@ class BackgroundBehavior(AtomicBehavior):
             if len(source.actors) == 0:
                 location = ego_location
             else:
-                location = source.actors[-1].get_location()
+                location = CarlaDataProvider.get_location(source.actors[-1])
+                if not location:
+                    continue
 
             distance = location.distance(source.wp.transform.location)
 
             # Spawn a new actor if the last one is far enough
             if distance > self._road_spawn_dist:
-                actor = self._spawn_source_actor(source)
+                actor = self._spawn_source_actor(source, ego_stop=False)
                 if actor is None:
                     continue
 
@@ -1647,6 +1642,9 @@ class BackgroundBehavior(AtomicBehavior):
             if self._next_scenario_time <= 0:
                 for actor in self._scenario_2_actors:
                     self._tm.vehicle_percentage_speed_difference(actor, 0)
+                    lights = actor.get_light_state()
+                    lights &= ~carla.VehicleLightState.Brake
+                    actor.set_light_state(carla.VehicleLightState(lights))
                 self._scenario_2_actors = []
 
                 self._is_scenario_2_active = False
@@ -1657,11 +1655,13 @@ class BackgroundBehavior(AtomicBehavior):
                 if location and not self._is_location_behind_ego(location):
                     self._scenario_2_actors.append(actor)
                     self._tm.vehicle_percentage_speed_difference(actor, 100)
+                    lights = actor.get_light_state()
+                    lights |= carla.VehicleLightState.Brake
+                    actor.set_light_state(carla.VehicleLightState(lights))
 
             self._is_scenario_2_active = True
             self._activate_break_scenario = False
             self._next_scenario_time = self._break_duration
-
 
     #############################
     ##     Actor functions     ##
@@ -1681,15 +1681,16 @@ class BackgroundBehavior(AtomicBehavior):
             safe_blueprint=True, tick=False)
         return actors
 
-    def _spawn_source_actor(self, source):
-        """Search for a close by actor that will pass through the source, or spawn an actor if none is found"""
+    def _spawn_source_actor(self, source, ego_stop=True):
+        """Given a source, spawns an actor at that source"""
         ego_location = CarlaDataProvider.get_location(self._ego_actor)
-        if ego_location.distance(source.wp.transform.location) < 20:
+        source_transform = source.wp.transform
+        if ego_stop and ego_location.distance(source_transform.location) < self._spawn_free_radius:
             return None
 
         new_transform = carla.Transform(
-            source.wp.transform.location + carla.Location(z=self._spawn_vertical_shift),
-            source.wp.transform.rotation
+            source_transform.location + carla.Location(z=self._spawn_vertical_shift),
+            source_transform.rotation
         )
         actor = CarlaDataProvider.request_new_actor(
             'vehicle.*', new_transform, rolename='background',
@@ -1819,7 +1820,7 @@ class BackgroundBehavior(AtomicBehavior):
         Updates the opposite actors. This involves tracking their position,
         removing if too far behind the ego
         """
-        max_dist = max(self._max_radius, self._opposite_spawn_dist)
+        max_dist = max(self._opposite_removal_dist, self._opposite_spawn_dist)
         for actor in list(self._opposite_actors):
             location = CarlaDataProvider.get_location(actor)
             if not location:

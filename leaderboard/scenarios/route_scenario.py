@@ -225,7 +225,7 @@ class RouteScenario(BasicScenario):
         world_annotations = RouteParser.parse_annotations_file(config.scenario_file)
 
         # prepare route's trajectory (interpolate and add the GPS route)
-        gps_route, route = interpolate_trajectory(world, config.trajectory)
+        gps_route, route = interpolate_trajectory(config.trajectory)
 
         potential_scenarios_definitions, _ = RouteParser.scan_route_for_scenarios(
             config.town, route, world_annotations)
@@ -286,7 +286,6 @@ class RouteScenario(BasicScenario):
         for w in waypoints:
             wp = w[0].location + carla.Location(z=vertical_shift)
 
-            size = 0.05
             if w[1] == RoadOption.LEFT:  # Yellow
                 color = carla.Color(255, 255, 0)
             elif w[1] == RoadOption.RIGHT:  # Cyan
@@ -299,9 +298,8 @@ class RouteScenario(BasicScenario):
                 color = carla.Color(128, 128, 128)
             else:  # LANEFOLLOW
                 color = carla.Color(0, 255, 0) # Green
-                size = 0.1
 
-            world.debug.draw_point(wp, size=size, color=color, life_time=persistency)
+            world.debug.draw_point(wp, size=0.1, color=color, life_time=persistency)
 
         world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.05,
                                color=carla.Color(0, 0, 255), life_time=persistency)

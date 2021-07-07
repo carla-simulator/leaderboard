@@ -105,8 +105,8 @@ def draw_scenarios(world, scenarios, args):
                 spectator = world.get_spectator()
                 spectator.set_transform(carla.Transform(location + carla.Location(z=50),
                                                             carla.Rotation(pitch=-90)))
-                print(" Scenario [{}/{}]. Press Enter for the next scenario".format(i+1, len(event_list)))
-                input()
+                input(" Scenario [{}/{}] at (x={}, y={}, z={}). Press Enter for the next scenario".format(
+                    i+1, len(event_list), round(location.x,2), round(location.y,2), round(location.z,2)))
         world.wait_for_tick()
 
 def modify_junction_scenarios(world, scenarios, args):
@@ -144,7 +144,7 @@ def modify_junction_scenarios(world, scenarios, args):
             save_from_wp(args.endpoint, scenario_waypoint)
 
             spectator = world.get_spectator()
-            spectator.set_transform(carla.Transform(scenario_waypoint.transform.location + carla.Location(z=70),
+            spectator.set_transform(carla.Transform(scenario_waypoint.transform.location + carla.Location(z=100),
                                                         carla.Rotation(pitch=-90)))
 
             print(" Scenario [{}/{}]. Press Enter for the next scenario".format(i+1, len(event_list)))
@@ -177,42 +177,45 @@ def main():
 
     args = parser.parse_args()
 
-    # 0) Set the world
-    client = carla.Client(args.host, int(args.port))
-    client.set_timeout(20)
-    if args.reload:
-        world = client.load_world(args.town)
-    else:
-        world = client.get_world()
-
-    settings = world.get_settings()
-    settings.fixed_delta_seconds = None
-    settings.synchronous_mode = False
-    world.apply_settings(settings)
-
-    # 1) Read the json file
-    data = fetch_dict(args.inipoint)
-    data = data["available_scenarios"][0]
-
-    town_data = data[args.town]
-
-    new_args_scenario = []
-    for ar_sc in args.scenarios:
-        new_args_scenario.append("Scenario" + ar_sc)
-    args.scenarios = new_args_scenario
-
-    for scenarios in town_data:
-
-        if args.modify:
-            modify_junction_scenarios(world, scenarios, args)
+    try:
+        # 0) Set the world
+        client = carla.Client(args.host, int(args.port))
+        client.set_timeout(20)
+        if args.reload:
+            world = client.load_world(args.town)
         else:
-            draw_scenarios(world, scenarios, args)
+            world = client.get_world()
 
-    print(" ---------------------------- ")
-    for ar_sc in args.scenarios:
-        print(" {} is colored as {}".format(ar_sc, SCENARIO_COLOR[ar_sc][1]))
-    print(" ---------------------------- ")
+        settings = world.get_settings()
+        settings.fixed_delta_seconds = None
+        settings.synchronous_mode = False
+        world.apply_settings(settings)
 
+        # 1) Read the json file
+        data = fetch_dict(args.inipoint)
+        data = data["available_scenarios"][0]
+
+        town_data = data[args.town]
+
+        new_args_scenario = []
+        for ar_sc in args.scenarios:
+            new_args_scenario.append("Scenario" + ar_sc)
+        args.scenarios = new_args_scenario
+
+        for scenarios in town_data:
+
+            if args.modify:
+                modify_junction_scenarios(world, scenarios, args)
+            else:
+                draw_scenarios(world, scenarios, args)
+
+        print(" ---------------------------- ")
+        for ar_sc in args.scenarios:
+            print(" {} is colored as {}".format(ar_sc, SCENARIO_COLOR[ar_sc][1]))
+        print(" ---------------------------- ")
+
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == '__main__':
     main()
