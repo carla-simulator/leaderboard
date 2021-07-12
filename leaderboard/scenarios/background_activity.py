@@ -180,7 +180,7 @@ class BackgroundActivity(BasicScenario):
     This is a single ego vehicle scenario
     """
 
-    def __init__(self, world, ego_vehicle, config, route, debug_mode=False, timeout=0):
+    def __init__(self, world, ego_vehicle, config, route, night_mode=False, debug_mode=False, timeout=0):
         """
         Setup all relevant parameters and create scenario
         """
@@ -188,6 +188,7 @@ class BackgroundActivity(BasicScenario):
         self.ego_vehicle = ego_vehicle
         self.route = route
         self.config = config
+        self._night_mode = night_mode
         self.debug = debug_mode
         self.timeout = timeout  # Timeout of scenario in seconds
 
@@ -204,7 +205,7 @@ class BackgroundActivity(BasicScenario):
         Basic behavior do nothing, i.e. Idle
         """
         # Check if a vehicle is further than X, destroy it if necessary and respawn it
-        return BackgroundBehavior(self.ego_vehicle, self.route)
+        return BackgroundBehavior(self.ego_vehicle, self.route, self._night_mode)
 
     def _create_test_criteria(self):
         """
@@ -224,7 +225,7 @@ class BackgroundBehavior(AtomicBehavior):
     """
     Handles the background activity
     """
-    def __init__(self, ego_actor, route, debug=True, name="BackgroundBehavior"):
+    def __init__(self, ego_actor, route, night_mode=False, debug=False, name="BackgroundBehavior"):
         """
         Setup class members
         """
@@ -234,6 +235,7 @@ class BackgroundBehavior(AtomicBehavior):
         self._world = CarlaDataProvider.get_world()
         self._tm = CarlaDataProvider.get_client().get_trafficmanager(
             CarlaDataProvider.get_traffic_manager_port())
+        self._night_mode = night_mode
 
         # Global variables
         self._ego_actor = ego_actor
@@ -1679,6 +1681,11 @@ class BackgroundBehavior(AtomicBehavior):
         actors = CarlaDataProvider.request_new_batch_actors(
             'vehicle.*', len(spawn_transforms), spawn_transforms, True, False, 'background',
             safe_blueprint=True, tick=False)
+
+        if self._night_mode:
+            for actor in actors:
+                actor.set_light_state(
+                    carla.VehicleLightState(carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam))
         return actors
 
     def _spawn_source_actor(self, source, ego_stop=True):
@@ -1694,8 +1701,11 @@ class BackgroundBehavior(AtomicBehavior):
         )
         actor = CarlaDataProvider.request_new_actor(
             'vehicle.*', new_transform, rolename='background',
-            autopilot=True, random_location=False, safe_blueprint=True, tick=False
-        )
+            autopilot=True, random_location=False, safe_blueprint=True, tick=False)
+
+        if self._night_mode:
+            actor.set_light_state(
+                carla.VehicleLightState(carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam))
         return actor
 
     def _is_location_behind_ego(self, location):

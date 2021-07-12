@@ -202,7 +202,12 @@ class RouteScenario(BasicScenario):
                                                              timeout=self.timeout,
                                                              debug_mode=debug_mode>1)
 
-        self.list_scenarios.append(BackgroundActivity(world, ego_vehicle, self.config, self.route, timeout=self.timeout))
+        self.list_scenarios.append(BackgroundActivity(world,
+                                                      ego_vehicle,
+                                                      self.config,
+                                                      self.route,
+                                                      night_mode=config.weather.sun_altitude_angle < 0.0,
+                                                      timeout=self.timeout))
 
         super(RouteScenario, self).__init__(name=config.name,
                                             ego_vehicles=[ego_vehicle],

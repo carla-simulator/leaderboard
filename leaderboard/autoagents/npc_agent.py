@@ -92,7 +92,6 @@ class NpcAgent(AutonomousAgent):
 
                 for w in route_with_options:
                     wp = w[0].transform.location + carla.Location(z=0.2)
-                    CarlaDataProvider.get_world().debug.draw_point(wp, size=0.03, color=carla.Color(0,0,0), life_time=10000)
 
         else:
             control = self._agent.run_step()

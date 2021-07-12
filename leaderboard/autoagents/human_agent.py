@@ -9,9 +9,6 @@ This module provides a human agent to control the ego vehicle via keyboard
 
 import time
 import json
-from threading import Thread
-import cv2
-import numpy as np
 
 try:
     import pygame
