@@ -132,10 +132,8 @@ def interpolate_trajectory(trajectory, hop_resolution=2.0):
     """
     Given some raw keypoints interpolate a full dense trajectory to be used by the user.
     returns the full interpolated route both in GPS coordinates and also in its original form.
-    
-    Args:
-        - trajectory: the current coarse trajectory, as a list of carla.Location
-        - hop_resolution: distance between points in the provided trajectory
+    :param trajectory: the current coarse trajectory, as a list of carla.Location
+    :param hop_resolution: distance between points in the provided trajectory
     """
     interpolated_trace = []
     route = []
