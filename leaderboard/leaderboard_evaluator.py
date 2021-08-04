@@ -97,8 +97,8 @@ class LeaderboardEvaluator(object):
         self._start_time = GameTime.get_time()
         self._end_time = None
 
-        # Create the agent timer
-        self._agent_watchdog = Watchdog(args.timeout)
+        # Prepare the agent timer
+        self._agent_watchdog = None
         signal.signal(signal.SIGINT, self._signal_handler)
 
     def _signal_handler(self, signum, frame):
@@ -220,9 +220,10 @@ class LeaderboardEvaluator(object):
         else:
             self.world.wait_for_tick()
 
-        if CarlaDataProvider.get_map().name != town:
+        map_name = CarlaDataProvider.get_map().name.split("/")[-1]
+        if map_name != town:
             raise Exception("The CARLA server uses the wrong map!"
-                            "This scenario requires to use map {}".format(town))
+                            " This scenario requires the use of map {}".format(town))
 
     def _register_statistics(self, config, checkpoint, entry_status, crash_message=""):
         """
@@ -258,6 +259,7 @@ class LeaderboardEvaluator(object):
 
         # Set up the user's agent, and the timer to avoid freezing the simulation
         try:
+            self._agent_watchdog = Watchdog(args.timeout)
             self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
@@ -274,6 +276,7 @@ class LeaderboardEvaluator(object):
                 self.statistics_manager.save_sensors(self.sensor_icons, args.checkpoint)
 
             self._agent_watchdog.stop()
+            self._agent_watchdog = None
 
         except SensorConfigurationInvalid as e:
             # The sensors are invalid -> set the ejecution to rejected and stop
