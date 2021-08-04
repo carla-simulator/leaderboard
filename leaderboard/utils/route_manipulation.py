@@ -136,6 +136,8 @@ def interpolate_trajectory(trajectory, hop_resolution=2.0):
     :param hop_resolution: distance between points in the provided trajectory
     """
     interpolated_trace = []
+
+    # Obtain route plan
     route = []
 
     prev_wp = None
