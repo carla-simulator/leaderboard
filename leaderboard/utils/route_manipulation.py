@@ -128,29 +128,27 @@ def downsample_route(route, sample_factor):
     return ids_to_sample
 
 
-def interpolate_trajectory(trajectory, hop_resolution=2.0):
+def interpolate_trajectory(waypoints_trajectory, hop_resolution=1.0):
     """
     Given some raw keypoints interpolate a full dense trajectory to be used by the user.
     returns the full interpolated route both in GPS coordinates and also in its original form.
-    :param trajectory: the current coarse trajectory, as a list of carla.Location
-    :param hop_resolution: distance between points in the provided trajectory
+    
+    Args:
+        - waypoints_trajectory: the current coarse trajectory
+        - hop_resolution: distance between the trajectory's waypoints
     """
-    interpolated_trace = []
 
+    grp = GlobalRoutePlanner(CarlaDataProvider.get_map(), hop_resolution)
     # Obtain route plan
     route = []
+    for i in range(len(waypoints_trajectory) - 1):
 
-    prev_wp = None
-    grp = GlobalRoutePlanner(CarlaDataProvider.get_map(), hop_resolution)
-    for location in trajectory:
-        wp = CarlaDataProvider.get_map().get_waypoint(location)
-        if prev_wp:
-            interpolated_trace.extend(grp.trace_route(prev_wp, wp, with_options=False))
-        prev_wp = wp
-
-    route_with_options = grp.add_options_to_route(interpolated_trace)
-    for wp_tuple in route_with_options:
-        route.append((wp_tuple[0].transform, wp_tuple[1]))
+        waypoint = waypoints_trajectory[i]
+        waypoint_next = waypoints_trajectory[i + 1]
+        interpolated_trace = grp.trace_route(waypoint, waypoint_next)
+        for wp_tuple in interpolated_trace:
+            route.append((wp_tuple[0].transform, wp_tuple[1]))
 
     lat_ref, lon_ref = _get_latlon_ref(CarlaDataProvider.get_world())
+
     return location_route_to_gps(route, lat_ref, lon_ref), route

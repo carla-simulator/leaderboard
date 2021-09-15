@@ -1,22 +1,24 @@
 import argparse
-import json
-import math
 from argparse import RawTextHelpFormatter
-from leaderboard.utils.checkpoint_tools import fetch_dict
-import carla
+import math
 import os
+import sys
+
+import carla
+
+from leaderboard.utils.checkpoint_tools import fetch_dict
 
 SCENARIO_COLOR = {
-    "Scenario1": [carla.Color(255, 0, 0), "Red"],        # Red
-    "Scenario2": [carla.Color(0, 255, 0), "Green"],        # Green
-    "Scenario3": [carla.Color(0, 0, 255), "Blue"],        # Blue
-    "Scenario4": [carla.Color(255, 100, 0), "Orange"],      # Orange
-    "Scenario5": [carla.Color(0, 255, 100), "Blueish green"],      # Blueish green
-    "Scenario6": [carla.Color(100, 0, 255), "Purple"],      # Purple
-    "Scenario7": [carla.Color(255, 100, 255), "Pink"],    # Pink
-    "Scenario8": [carla.Color(255, 255, 100), "Yellow"],    # Yellow
-    "Scenario9": [carla.Color(100, 255, 255), "Light Blue"],    # Light Blue
-    "Scenario10": [carla.Color(100, 100, 100), "Gray"]   # Gray
+    "Scenario1": [carla.Color(255, 0, 0), "Red"],
+    "Scenario2": [carla.Color(0, 255, 0), "Green"],
+    "Scenario3": [carla.Color(0, 0, 255), "Blue"],
+    "Scenario4": [carla.Color(255, 100, 0), "Orange"],
+    "Scenario5": [carla.Color(0, 255, 100), "Blueish green"],
+    "Scenario6": [carla.Color(100, 0, 255), "Purple"],
+    "Scenario7": [carla.Color(255, 100, 255), "Pink"],
+    "Scenario8": [carla.Color(255, 255, 100), "Yellow"],
+    "Scenario9": [carla.Color(100, 255, 255), "Light Blue"], 
+    "Scenario10": [carla.Color(100, 100, 100), "Gray"]
 }
 
 def apart_enough(world, _waypoint, scenario_waypoint):
@@ -35,56 +37,19 @@ def apart_enough(world, _waypoint, scenario_waypoint):
     dist_angle = math.sqrt(dyaw * dyaw)
 
     if distance < TRIGGER_THRESHOLD and dist_angle < TRIGGER_ANGLE_THRESHOLD:
-    # if distance < TRIGGER_THRESHOLD:
         world.debug.draw_point(scenario_waypoint.transform.location + carla.Location(z=1),
                                size=float(0.15), color=carla.Color(255, 0, 0))
     else:
         world.debug.draw_point(scenario_waypoint.transform.location + carla.Location(z=1),
                                size=float(0.15), color=carla.Color(0, 255, 0))
 
-def save_from_wp(endpoint, wp):
-    """
-    Creates a mini json with the data from the scenario location.
-    used to copy paste it to the .json
-    """
-    with open(endpoint, mode='w') as fd:
-
-        entry = {}
-        transform = {
-            "x": str(round(wp.transform.location.x, 2)),
-            "y": str(round(wp.transform.location.y, 2)),
-            "z": "1.0",
-            "yaw": str(round(wp.transform.rotation.yaw, 0)),
-            "pitch": str(round(wp.transform.rotation.pitch, 0)),
-        }
-        entry["transform"] = transform
-        entry["other_actors"] = {}
-        json.dump(entry, fd, indent=4)
-
-def save_from_dict(endpoint, wp):
-    """
-    Creates a mini json with the data from the scenario waypoint.
-    used to copy paste it to the .json
-    """
-    with open(endpoint, mode='w') as fd:
-
-        entry = {}
-        transform = {
-            "x": str(round(float(wp["x"]), 2)),
-            "y": str(round(float(wp["y"]), 2)),
-            "z": "1.0",
-            "yaw": str(round(float(wp["yaw"]), 0)),
-            "pitch": str(round(float(wp["pitch"]), 0)),
-        }
-        entry["transform"] = transform
-        entry["other_actors"] = {}
-        json.dump(entry, fd, indent=4)
-
 def draw_scenarios(world, scenarios, args):
     """
     Draws all the points related to args.scenarios
     """
     z = 3
+
+    tmap = world.get_map()
 
     if scenarios["scenario_type"] in args.scenarios:
         number = float(scenarios["scenario_type"][8:])
@@ -95,124 +60,96 @@ def draw_scenarios(world, scenarios, args):
             event = event_list[i]
             _waypoint = event['transform']  # trigger point of this scenario
             location = carla.Location(float(_waypoint["x"]), float(_waypoint["y"]), float(_waypoint["z"]))
+            yaw = float(_waypoint["yaw"])
 
             scenario_location = location + carla.Location(z=number / z)
             world.debug.draw_point(scenario_location, size=float(0.15), color=color)
             world.debug.draw_string(scenario_location + carla.Location(z=0.1), text=str(i+1), color=carla.Color(0, 0, 0), life_time=1000)
 
             if args.debug:
-                save_from_dict(args.endpoint, _waypoint)
                 spectator = world.get_spectator()
                 spectator.set_transform(carla.Transform(location + carla.Location(z=50),
                                                             carla.Rotation(pitch=-90)))
-                input(" Scenario [{}/{}] at (x={}, y={}, z={}). Press Enter for the next scenario".format(
-                    i+1, len(event_list), round(location.x,2), round(location.y,2), round(location.z,2)))
+
+                if args.modify:
+                    wp = tmap.get_waypoint(location)
+                    new_transform = wp.previous(5)[0].transform
+                    new_location = new_transform.location
+                    new_yaw = new_transform.rotation.yaw
+
+                    input(" Scenario [{}/{}] at (x={}, y={}, z={}, yaw={}). Press Enter to continue".format(
+                        i+1, len(event_list), round(new_location.x,1), round(new_location.y,1), round(new_location.z,1), round(new_yaw,1)))
+                else:
+                    input(" Scenario [{}/{}] at (x={}, y={}, z={}, yaw={}). Press Enter to continue".format(
+                        i+1, len(event_list), round(location.x,1), round(location.y,1), round(location.z,1), round(yaw,1)))
         world.wait_for_tick()
 
-def modify_junction_scenarios(world, scenarios, args):
-    """
-    Used to move scenario trigger points:
-        1) a certain distance to the front (follows the lane)
-        2) a certain distance to the back (does not follow the lane)
-    """
-
-    if scenarios["scenario_type"] in args.scenarios:
-        event_list = scenarios["available_event_configurations"]
-
-        for i in range(len(event_list)):
-            event = event_list[i]
-            _waypoint = event['transform']  # trigger point of this scenario
-            location = carla.Location(float(_waypoint["x"]), float(_waypoint["y"]), float(_waypoint["z"]))
-            rotation = carla.Rotation(float(0), float(_waypoint["pitch"]), float(_waypoint["yaw"]))
-            world.debug.draw_point(location, size=float(0.15), color=carla.Color(0, 255, 255))
-            world.debug.draw_string(location + carla.Location(x=1), text=str(i+1), color=carla.Color(0, 0, 0))
-
-            # # Case 1)
-            # DISTANCE = 10
-            # new_waypoint = world.get_map().get_waypoint(location)
-            # scenario_waypoint = new_waypoint.next(DISTANCE)[0]
-
-            # Case 2)
-            DISTANCE = 5
-            new_waypoint = world.get_map().get_waypoint(location)
-            wp_vec = new_waypoint.transform.get_forward_vector()
-            new_location = new_waypoint.transform.location - wp_vec*DISTANCE
-            scenario_waypoint = world.get_map().get_waypoint(new_location)
-
-            # Drawing and waiting for input
-            apart_enough(world, _waypoint, scenario_waypoint)
-            save_from_wp(args.endpoint, scenario_waypoint)
-
-            spectator = world.get_spectator()
-            spectator.set_transform(carla.Transform(scenario_waypoint.transform.location + carla.Location(z=100),
-                                                        carla.Rotation(pitch=-90)))
-
-            print(" Scenario [{}/{}]. Press Enter for the next scenario".format(i+1, len(event_list)))
-            input()
-        world.wait_for_tick()
+def print_final_message(args):
+    """Prints the final message about the scenario colors"""
+    print("\n ---------------------------- ")
+    end_color= "\x1b[0m"
+    for ar_sc in args.scenarios:
+        color = SCENARIO_COLOR[ar_sc][0]
+        true_color = "\x1b[38;2;" + str(color.r) +";" + str(color.g) + ";" + str(color.b) + "m"
+        print(" {}{} is colored as {}{}".format(true_color, ar_sc, SCENARIO_COLOR[ar_sc][1], end_color))
+    print(" (Colors shown are just orientative, as they might not correspond with the CARLA view)")
+    print(" ---------------------------- \n")
 
 def main():
-    """
-    Used to help with the visualization of the scenario trigger points, as well as its
-    modifications.
-        --town: Selects the town
-        --scenario: The scenario that will be printed. Use the number of the scenarios 1 2 3 ...
-        --modify: Used to modify the trigger_points of the given scenario in args.scenarios.
-          debug is auto-enabled here. It will be shown red if they aren't apart enough or green, if they are
-        --debug: If debug is selected, the points will be shown one by one, and stored at --endpoint,
-    in case some copy-pasting is required.
-    """
-
+    """Used to help with the visualization of the scenario trigger points"""
     # general parameters
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
-    parser.add_argument('--town', default='Town08')
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--reload', action='store_true')
-    parser.add_argument('--inipoint', default="")
-    parser.add_argument('--endpoint', default="set_new_scenarios.json")
-    parser.add_argument('--scenarios', nargs='+', default='Scenario7')
-    parser.add_argument('--modify', action='store_true')
-    parser.add_argument('--host', default='localhost', help='IP of the host server (default: localhost)')
-    parser.add_argument('--port', default='2000', help='TCP port to listen to (default: 2000)')
+    parser.add_argument('--host', default='localhost',
+                        help='IP of the host server (default: localhost)')
+    parser.add_argument('--port', default='2000',
+                        help='TCP port to listen to (default: 2000)')
 
+    parser.add_argument('--file-path', required=True,
+                        help='path to the .json file containing the scenarios')
+    parser.add_argument('--scenarios', nargs='+', required=True,
+                        help='scenarios to be checked. To check multiple scenarios separate them by spaces (example "1 3 6 9")')
+
+    parser.add_argument('--debug', action='store_true',
+                        help='Scenarios are printed one by one, and additional information is given')
+    parser.add_argument('--modify', action='store_true',
+                        help='Create new scenarios behind the given ones')
+    parser.add_argument('--load-town',
+                        help='Loads a specific town on which to check the scenarios (example "Town01")')
+    parser.add_argument('--reload', action='store_true',
+                        help='Loads a specific town on which to check the scenarios (example "Town01")')
     args = parser.parse_args()
 
+    if args.modify:
+        args.debug = True
+
+    if args.load_town and args.reload:
+        raise ValueError("'load_town' and 'reload' can't be active at the same time")
+
     try:
-        # 0) Set the world
+        # Set the world
         client = carla.Client(args.host, int(args.port))
         client.set_timeout(20)
-        if args.reload:
-            world = client.load_world(args.town)
+        if args.load_town:
+            world = client.load_world(args.load_town)
+        elif args.reload:
+            world = client.reload_world()
         else:
             world = client.get_world()
+        args.town = world.get_map().name.split("/")[-1]
 
         settings = world.get_settings()
         settings.fixed_delta_seconds = None
         settings.synchronous_mode = False
         world.apply_settings(settings)
 
-        # 1) Read the json file
-        data = fetch_dict(args.inipoint)
+        # Read the json file
+        data = fetch_dict(args.file_path)
         data = data["available_scenarios"][0]
+        args.scenarios = ["Scenario" + ar_sc for ar_sc in args.scenarios]
 
-        town_data = data[args.town]
-
-        new_args_scenario = []
-        for ar_sc in args.scenarios:
-            new_args_scenario.append("Scenario" + ar_sc)
-        args.scenarios = new_args_scenario
-
-        for scenarios in town_data:
-
-            if args.modify:
-                modify_junction_scenarios(world, scenarios, args)
-            else:
-                draw_scenarios(world, scenarios, args)
-
-        print(" ---------------------------- ")
-        for ar_sc in args.scenarios:
-            print(" {} is colored as {}".format(ar_sc, SCENARIO_COLOR[ar_sc][1]))
-        print(" ---------------------------- ")
+        for scenarios in data[args.town]:
+            draw_scenarios(world, scenarios, args)
+        print_final_message(args)
 
     except KeyboardInterrupt:
         pass
