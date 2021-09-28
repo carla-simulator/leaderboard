@@ -61,11 +61,12 @@ def to_route_record(record_dict):
 
 
 def compute_route_length(config):
-    trajectory = config.trajectory
+    route = config.route
 
     route_length = 0.0
     previous_location = None
-    for location in trajectory:
+    for transform, _ in route:
+        location = transform.location
         if previous_location:
             dist = math.sqrt((location.x-previous_location.x)*(location.x-previous_location.x) +
                              (location.y-previous_location.y)*(location.y-previous_location.y) +
