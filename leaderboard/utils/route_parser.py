@@ -44,7 +44,7 @@ class RouteParser(object):
         return final_dict  # the file has a current maps name that is an one element vec
 
     @staticmethod
-    def parse_routes_file(route_filename, scenario_file, single_route=None):
+    def parse_routes_file(route_filename, scenario_file, single_route_id=''):
         """
         Returns a list of route elements.
         :param route_filename: the path to a set of routes.
@@ -57,7 +57,7 @@ class RouteParser(object):
         for route in tree.iter("route"):
 
             route_id = route.attrib['id']
-            if single_route and route_id != single_route:
+            if single_route_id and route_id != single_route_id:
                 continue
 
             new_config = RouteScenarioConfiguration()
