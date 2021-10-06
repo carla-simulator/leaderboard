@@ -125,7 +125,7 @@ class ScenarioManager(object):
         """
         self.start_system_time = time.time()
         self.start_game_time = GameTime.get_time()
-        
+
         # Detects if the simulation is down
         self._watchdog = Watchdog(self._timeout)
         self._watchdog.start()
