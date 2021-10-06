@@ -61,9 +61,6 @@ class ScenarioManager(object):
         self._timestamp_last_run = 0.0
         self._timeout = float(timeout)
 
-        self._watchdog = Watchdog(self._timeout)  # Detects if the simulation is down
-        self._agent_watchdog = Watchdog(self._timeout)  # Stop the agent from freezing the simulation
-
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = None
@@ -96,6 +93,8 @@ class ScenarioManager(object):
         self.end_game_time = None
 
         self._spectator = None
+        self._watchdog = None
+        self._agent_watchdog = None
 
     def load_scenario(self, scenario, agent, rep_number):
         """
@@ -125,8 +124,14 @@ class ScenarioManager(object):
         self.start_system_time = time.time()
         self.start_game_time = GameTime.get_time()
 
+        # Detects if the simulation is down
+        self._watchdog = Watchdog(self._timeout)
         self._watchdog.start()
+
+        # Stop the agent from freezing the simulation
+        self._agent_watchdog = Watchdog(self._timeout)
         self._agent_watchdog.start()
+
         self._running = True
 
         while self._running:
@@ -193,14 +198,19 @@ class ScenarioManager(object):
         returns:
            bool: False if watchdog exception occured, True otherwise
         """
-        return self._watchdog.get_status()
+        if self._watchdog:
+            return self._watchdog.get_status()
+        return False
 
     def stop_scenario(self):
         """
         This function triggers a proper termination of a scenario
         """
-        self._watchdog.stop()
-        self._agent_watchdog.stop()
+        if self._watchdog:
+            self._watchdog.stop()
+
+        if self._agent_watchdog:
+            self._agent_watchdog.stop()
 
         self.end_system_time = time.time()
         self.end_game_time = GameTime.get_time()
