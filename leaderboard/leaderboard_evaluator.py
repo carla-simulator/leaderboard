@@ -310,6 +310,7 @@ class LeaderboardEvaluator(object):
             self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
             self._prepare_ego_vehicles(config.ego_vehicles, False)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
+            config.route = scenario.route
             self.statistics_manager.set_scenario(scenario.scenario)
 
             # Night mode
