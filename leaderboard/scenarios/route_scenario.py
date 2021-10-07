@@ -28,7 +28,7 @@ from srunner.scenariomanager.scenarioatomics.atomic_behaviors import Idle, Scena
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenarios.basic_scenario import BasicScenario
 from srunner.scenarios.control_loss import ControlLoss
-from srunner.scenarios.follow_leading_vehicle import FollowLeadingVehicle
+from srunner.scenarios.follow_leading_vehicle import FollowLeadingVehicleRoute
 from srunner.scenarios.object_crash_vehicle import DynamicObjectCrossing
 from srunner.scenarios.object_crash_intersection import VehicleTurningRoute
 from srunner.scenarios.other_leading_vehicle import OtherLeadingVehicle
@@ -57,7 +57,7 @@ INITIAL_SECONDS_DELAY = 5.0
 
 NUMBER_CLASS_TRANSLATION = {
     "Scenario1": ControlLoss,
-    "Scenario2": FollowLeadingVehicle,
+    "Scenario2": FollowLeadingVehicleRoute,
     "Scenario3": DynamicObjectCrossing,
     "Scenario4": VehicleTurningRoute,
     "Scenario5": OtherLeadingVehicle,
