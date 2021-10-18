@@ -292,24 +292,24 @@ class RouteScenario(BasicScenario):
             wp = w[0].location + carla.Location(z=vertical_shift)
 
             if w[1] == RoadOption.LEFT:  # Yellow
-                color = carla.Color(255, 255, 0)
+                color = carla.Color(128, 128, 0)
             elif w[1] == RoadOption.RIGHT:  # Cyan
-                color = carla.Color(0, 255, 255)
+                color = carla.Color(0, 128, 128)
             elif w[1] == RoadOption.CHANGELANELEFT:  # Orange
-                color = carla.Color(255, 64, 0)
+                color = carla.Color(128, 32, 0)
             elif w[1] == RoadOption.CHANGELANERIGHT:  # Dark Cyan
-                color = carla.Color(0, 64, 255)
+                color = carla.Color(0, 32, 128)
             elif w[1] == RoadOption.STRAIGHT:  # Gray
-                color = carla.Color(128, 128, 128)
+                color = carla.Color(64, 64, 64)
             else:  # LANEFOLLOW
-                color = carla.Color(0, 255, 0) # Green
+                color = carla.Color(0, 128, 0) # Green
 
             world.debug.draw_point(wp, size=0.1, color=color, life_time=persistency)
 
         world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=0.05,
-                               color=carla.Color(0, 0, 255), life_time=persistency)
+                               color=carla.Color(0, 0, 128), life_time=persistency)
         world.debug.draw_point(waypoints[-1][0].location + carla.Location(z=vertical_shift), size=0.05,
-                               color=carla.Color(255, 0, 0), life_time=persistency)
+                               color=carla.Color(128, 0, 0), life_time=persistency)
 
     def _scenario_sampling(self, potential_scenarios_definitions, random_seed=0):
         """
@@ -378,9 +378,9 @@ class RouteScenario(BasicScenario):
                 loc = carla.Location(scenario['trigger_position']['x'],
                                      scenario['trigger_position']['y'],
                                      scenario['trigger_position']['z']) + carla.Location(z=2.0)
-                world.debug.draw_point(loc, size=0.3, color=carla.Color(255, 0, 0), life_time=100000)
+                world.debug.draw_point(loc, size=0.3, color=carla.Color(128, 0, 0), life_time=100000)
                 world.debug.draw_string(loc, str(scenario['name']), draw_shadow=False,
-                                        color=carla.Color(0, 0, 255), life_time=100000, persistent_lines=True)
+                                        color=carla.Color(0, 0, 128), life_time=100000, persistent_lines=True)
 
         for scenario_number, definition in enumerate(scenario_definitions):
             # Get the class possibilities for this scenario number
