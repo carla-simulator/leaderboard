@@ -233,6 +233,7 @@ class BackgroundBehavior(AtomicBehavior):
         self.debug = debug
         self._map = CarlaDataProvider.get_map()
         self._world = CarlaDataProvider.get_world()
+        timestep = self._world.get_snapshot().timestamp.delta_seconds
         self._tm = CarlaDataProvider.get_client().get_trafficmanager(
             CarlaDataProvider.get_traffic_manager_port())
         self._tm.global_percentage_speed_difference(0.0)
@@ -259,6 +260,9 @@ class BackgroundBehavior(AtomicBehavior):
         self._road_vehicle_dist = 8  # Distance road vehicles leave betweeen each other[m]
         self._road_spawn_dist = 13  # Initial distance between spawned road vehicles [m]
         self._radius_increase_ratio = 2.0  # Meters the radius increases per m/s of the ego
+        self._extra_radius = 0.0  # Extra distance to avoid the road behavior from blocking
+        self._extra_radius_increase_ratio = 0.5 * timestep  # Distance the radius increases per tick (0.5 m/s)
+        self._max_extra_radius = 10  # Max extra distance
         self._get_road_radius()
 
         # Junction variables
@@ -1636,9 +1640,27 @@ class BackgroundBehavior(AtomicBehavior):
             self._initialise_junction_scenario(direction, False, False, False)
             py_trees.blackboard.Blackboard().set("BA_Scenario10", None, True)
 
-        speed = CarlaDataProvider.get_velocity(self._ego_actor)
-        self._min_radius = self._base_min_radius + self._radius_increase_ratio*speed
-        self._max_radius = self._base_max_radius + self._radius_increase_ratio*speed
+        self._compute_parameters()
+
+    def _compute_parameters(self):
+        """Computes the parameters that are dependent on the speed of the ego. """
+        ego_speed = CarlaDataProvider.get_velocity(self._ego_actor)
+
+        # As the vehicles don't move if the agent doesn't, some agents might get blocked forever.
+        # Partially avoid this by adding an extra distance to the radius when the vehicle is stopped
+        # in the middle of the road and unaffected by any object such as traffic lights or stops.
+        if ego_speed == 0 \
+                and not self._is_scenario_2_active \
+                and  not self._ego_actor.is_at_traffic_light() \
+                and not len(self._active_junctions) > 0:
+            self._extra_radius = min(self._extra_radius + self._extra_radius_increase_ratio, self._max_extra_radius)
+
+        # At all cases, reduce it if the agent is moving
+        if ego_speed > 0 and self._extra_radius > 0:
+            self._extra_radius = max(self._extra_radius - self._extra_radius_increase_ratio, 0)
+
+        self._min_radius = self._base_min_radius + self._radius_increase_ratio * ego_speed + self._extra_radius
+        self._max_radius = self._base_max_radius + self._radius_increase_ratio * ego_speed + self._extra_radius
         self._junction_detection_dist = self._max_radius
 
     def _manage_break_scenario(self):
