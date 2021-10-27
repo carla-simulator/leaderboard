@@ -37,23 +37,29 @@ def get_scenario_transform(scenario_dict):
         )
     )
 
-def get_color_validity(waypoint_transform, scenario_transform):
+def get_color_validity(waypoint_transform, scenario_transform, scenario_type, scenario_index, debug):
     """
     Uses the same condition as in route_scenario to see if they will
     be differentiated
     """
-    TRIGGER_THRESHOLD = 2.0
+    TRIGGER_THRESHOLD = 1.4  # Routes use 1.5 (+ an error margin)
     TRIGGER_ANGLE_THRESHOLD = 10
 
     dx = float(waypoint_transform.location.x) - scenario_transform.location.x
     dy = float(waypoint_transform.location.y) - scenario_transform.location.y
     dz = float(waypoint_transform.location.z) - scenario_transform.location.z
-    dpos = math.sqrt(dx * dx + dy * dy)
+    dpos = math.sqrt(dx * dx + dy * dy + dz * dz)
     dyaw = (float(waypoint_transform.rotation.yaw) - scenario_transform.rotation.yaw) % 360
 
-    if dz > TRIGGER_THRESHOLD or dpos > TRIGGER_THRESHOLD:
+    if dpos > TRIGGER_THRESHOLD:
+        if not debug:
+            print("WARNING: Found a scenario with the wrong position "
+                  "(Type: {}, Index: {})".format(scenario_type, scenario_index))
         return carla.Color(255, 0, 0)
     if dyaw > TRIGGER_ANGLE_THRESHOLD and dyaw < (360 - TRIGGER_ANGLE_THRESHOLD):
+        if not debug:
+            print("WARNING: Found a scenario with the wrong orientation "
+                  "(Type: {}, Index: {})".format(scenario_type, scenario_index))
         return carla.Color(0, 0, 255)
     return carla.Color(0, 255, 0)
 
@@ -135,7 +141,7 @@ def validate_scenarios(world, town_data, tmap, scenarios, debug):
 
             # Check if the scenario is close enough to the wp
             scenario_wp = tmap.get_waypoint(scenario_location)
-            color = get_color_validity(scenario_wp.transform, scenario_transform)
+            color = get_color_validity(scenario_wp.transform, scenario_transform, scenario_type, i, debug)
 
             world.debug.draw_point(
                 scenario_location + debug_loc_height, float(0.15), color)
@@ -213,7 +219,7 @@ def main():
                         help='TCP port to listen to (default: 2000)')
 
     # Path from which all scenarios will be taken
-    parser.add_argument('--file-path', default="../data/all_towns_traffic_scenarios_public.json",
+    parser.add_argument('-f', '--file-path', default="../data/all_towns_traffic_scenarios_public.json",
                         help='path to the .json file containing the scenarios')
 
     # Different tests. CHOOSE ONLY ONE.
@@ -230,9 +236,9 @@ def main():
 
     # Town loading arguments
     parser.add_argument('--load-town',
-                        help='Loads a specific town on which to check the scenarios (example "Town01")')
+                        help='Loads a specific town (example "Town01")')
     parser.add_argument('--reload-town', action='store_true',
-                        help='Loads a specific town on which to check the scenarios (example "Town01")')
+                        help='Reloads the town')
     args = parser.parse_args()
 
     if args.load_town and args.reload_town:

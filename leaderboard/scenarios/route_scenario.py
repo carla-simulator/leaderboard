@@ -200,7 +200,7 @@ class RouteScenario(BasicScenario):
                                                              self.sampled_scenarios_definitions,
                                                              scenarios_per_tick=10,
                                                              timeout=self.timeout,
-                                                             debug_mode=debug_mode>1)
+                                                             debug_mode=debug_mode>0)
 
         self.list_scenarios.append(BackgroundActivity(world,
                                                       ego_vehicle,
@@ -516,7 +516,7 @@ class RouteScenario(BasicScenario):
                                       route=route,
                                       offroad_max=30,
                                       terminate_on_failure=True)
-                                      
+
         completion_criterion = RouteCompletionTest(self.ego_vehicles[0], route=route)
 
         outsidelane_criterion = OutsideRouteLanesTest(self.ego_vehicles[0], route=route)
