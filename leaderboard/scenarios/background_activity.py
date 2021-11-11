@@ -1030,11 +1030,13 @@ class BackgroundBehavior(AtomicBehavior):
 
                 self._scenario_4_actors.append(actor)
 
-
         # Immediately freeze the actors
         for actor in self._scenario_4_actors:
-            actor.set_target_velocity(carla.Vector3D(0,0,0))
-            self._tm.vehicle_percentage_speed_difference(actor, 100)
+            try:
+                actor.set_target_velocity(carla.Vector3D(0,0,0))
+                self._tm.vehicle_percentage_speed_difference(actor, 100)
+            except RuntimeError:
+                pass  # Just in case the actor is not alive
 
     def _end_junction_behavior(self, ego_wp, junction):
         """
@@ -2098,7 +2100,10 @@ class BackgroundBehavior(AtomicBehavior):
     def _destroy_actor(self, actor):
         """Destroy the actor and all its references"""
         self._remove_actor_info(actor)
-        actor.destroy()
+        try:
+            actor.destroy()
+        except RuntimeError:
+            pass
 
     def _update_ego_route_location(self, location):
         """Returns the closest route location to the ego"""

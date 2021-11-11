@@ -190,6 +190,8 @@ class RouteScenario(BasicScenario):
         self.route = None
         self.sampled_scenarios_definitions = None
         self.background_amount = 0
+        self._vehicle_lights = carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam
+        self.night_mode = config.weather.sun_altitude_angle < 0.0
 
         self._update_route(world, config, debug_mode>0)
 
@@ -206,7 +208,7 @@ class RouteScenario(BasicScenario):
                                                       ego_vehicle,
                                                       self.config,
                                                       self.route,
-                                                      night_mode=config.weather.sun_altitude_angle < 0.0,
+                                                      night_mode=self.night_mode,
                                                       timeout=self.timeout))
 
         super(RouteScenario, self).__init__(name=config.name,
@@ -261,6 +263,9 @@ class RouteScenario(BasicScenario):
         ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz_2017',
                                                           elevate_transform,
                                                           rolename='hero')
+
+        if self.night_mode:
+            ego_vehicle.set_light_state(carla.VehicleLightState(self._vehicle_lights))
 
         spectator = CarlaDataProvider.get_world().get_spectator()
         ego_trans = ego_vehicle.get_transform()
