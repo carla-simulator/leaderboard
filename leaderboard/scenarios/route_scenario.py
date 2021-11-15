@@ -202,7 +202,7 @@ class RouteScenario(BasicScenario):
                                                              self.sampled_scenarios_definitions,
                                                              scenarios_per_tick=10,
                                                              timeout=self.timeout,
-                                                             debug_mode=debug_mode>0)
+                                                             debug_mode=debug_mode>1)
 
         self.list_scenarios.append(BackgroundActivity(world,
                                                       ego_vehicle,
