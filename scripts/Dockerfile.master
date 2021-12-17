@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	     libpng16-16 \
 	     libtiff5 \
          libpng-dev \
+	 libgeos-dev \
          python-dev \
          python3.5 \
          python3.5-dev \
@@ -28,8 +29,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
          python3-setuptools \
          python-pip \
          python3-pip && \
-         pip install --upgrade pip && \
-         pip3 install --upgrade pip && \
+         pip install --upgrade "pip<21.0" && \
+         pip3 install --upgrade "pip<21.0" && \
          rm -rf /var/lib/apt/lists/*
 
 # installing conda
