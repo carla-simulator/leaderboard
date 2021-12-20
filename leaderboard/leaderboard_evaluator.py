@@ -68,7 +68,6 @@ class LeaderboardEvaluator(object):
         self.statistics_manager = statistics_manager
         self.sensors = None
         self.sensor_icons = []
-        self._vehicle_lights = carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam
 
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
@@ -114,8 +113,6 @@ class LeaderboardEvaluator(object):
         """
         Cleanup and delete actors, ScenarioManager and CARLA world
         """
-
-        self._cleanup()
         if hasattr(self, 'manager') and self.manager:
             del self.manager
         if hasattr(self, 'world') and self.world:
@@ -127,7 +124,7 @@ class LeaderboardEvaluator(object):
         """
 
         # Simulation still running and in synchronous mode?
-        if self.manager and self.manager.get_running_status() \
+        if hasattr(self, 'manager') and self.manager.get_running_status() \
                 and hasattr(self, 'world') and self.world:
             # Reset to asynchronous mode
             settings = self.world.get_settings()
@@ -212,7 +209,6 @@ class LeaderboardEvaluator(object):
 
         self.traffic_manager.set_synchronous_mode(True)
         self.traffic_manager.set_random_device_seed(args.traffic_manager_seed)
-        self.traffic_manager.set_hybrid_physics_mode(True)
 
         # Wait for the world to be ready
         if CarlaDataProvider.is_sync_mode():
@@ -312,11 +308,6 @@ class LeaderboardEvaluator(object):
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             config.route = scenario.route
             self.statistics_manager.set_scenario(scenario.scenario)
-
-            # Night mode
-            if config.weather.sun_altitude_angle < 0.0:
-                for vehicle in scenario.ego_vehicles:
-                    vehicle.set_light_state(carla.VehicleLightState(self._vehicle_lights))
 
             # Load scenario and run it
             if args.record:

@@ -9,9 +9,6 @@ This module provides a human agent to control the ego vehicle via keyboard
 
 import time
 import json
-from threading import Thread
-import cv2
-import numpy as np
 
 try:
     import pygame
@@ -42,9 +39,9 @@ class HumanInterface(object):
     Class to control a vehicle manually for debugging purposes
     """
 
-    def __init__(self):
-        self._width = 800
-        self._height = 600
+    def __init__(self, width, height):
+        self._width = width
+        self._height = height
         self._surface = None
 
         pygame.init()
@@ -87,7 +84,10 @@ class HumanAgent(AutonomousAgent):
         self.track = Track.SENSORS
 
         self.agent_engaged = False
-        self._hic = HumanInterface()
+        self.camera_width = 800
+        self.camera_height = 500
+
+        self._hic = HumanInterface(self.camera_width, self.camera_height)
         self._controller = KeyboardControl(path_to_conf_file)
         self._prev_timestamp = 0
 
@@ -111,8 +111,8 @@ class HumanAgent(AutonomousAgent):
 
         sensors = [
             {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-             'width': 800, 'height': 600, 'fov': 100, 'id': 'Center'},
-            {'type': 'sensor.speedometer', 'reading_frequency': 20, 'id': 'speed'},
+             'width': self.camera_width, 'height': self.camera_height, 'fov': 100, 'id': 'Center'},
+            {'type': 'sensor.speedometer', 'id': 'speed'},
         ]
 
         return sensors

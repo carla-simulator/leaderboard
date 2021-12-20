@@ -67,7 +67,9 @@ class ScenarioManager(object):
         self.end_system_time = None
         self.end_game_time = None
 
-        # Register the scenario tick as callback for the CARLA world
+        self._watchdog = None
+        self._agent_watchdog = None
+
         # Use the callback_id inside the signal handler to allow external interrupts
         signal.signal(signal.SIGINT, self.signal_handler)
 

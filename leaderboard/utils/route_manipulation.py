@@ -12,7 +12,7 @@ It also contains functions to convert the CARLA world location do GPS coordinate
 
 import math
 import xml.etree.ElementTree as ET
-
+from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from agents.navigation.global_route_planner import GlobalRoutePlanner
 from agents.navigation.local_planner import RoadOption
 
@@ -128,21 +128,20 @@ def downsample_route(route, sample_factor):
     return ids_to_sample
 
 
-def interpolate_trajectory(world, waypoints_trajectory, hop_resolution=1.0):
+def interpolate_trajectory(waypoints_trajectory, hop_resolution=1.0):
     """
     Given some raw keypoints interpolate a full dense trajectory to be used by the user.
     returns the full interpolated route both in GPS coordinates and also in its original form.
     
     Args:
-        - world: an reference to the CARLA world so we can use the planner
         - waypoints_trajectory: the current coarse trajectory
-        - hop_resolution: is the resolution, how dense is the provided trajectory going to be made
+        - hop_resolution: distance between the trajectory's waypoints
     """
 
-    grp = GlobalRoutePlanner(world.get_map(), hop_resolution)
+    grp = GlobalRoutePlanner(CarlaDataProvider.get_map(), hop_resolution)
     # Obtain route plan
     route = []
-    for i in range(len(waypoints_trajectory) - 1):   # Goes until the one before the last.
+    for i in range(len(waypoints_trajectory) - 1):
 
         waypoint = waypoints_trajectory[i]
         waypoint_next = waypoints_trajectory[i + 1]
@@ -150,6 +149,6 @@ def interpolate_trajectory(world, waypoints_trajectory, hop_resolution=1.0):
         for wp_tuple in interpolated_trace:
             route.append((wp_tuple[0].transform, wp_tuple[1]))
 
-    lat_ref, lon_ref = _get_latlon_ref(world)
+    lat_ref, lon_ref = _get_latlon_ref(CarlaDataProvider.get_world())
 
     return location_route_to_gps(route, lat_ref, lon_ref), route
