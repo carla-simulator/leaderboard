@@ -15,7 +15,6 @@ from __future__ import print_function
 import traceback
 import argparse
 from argparse import RawTextHelpFormatter
-from datetime import datetime
 from distutils.version import LooseVersion
 import importlib
 import os
