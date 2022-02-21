@@ -20,7 +20,9 @@ from agents.navigation.local_planner import RoadOption
 from srunner.scenarioconfigs.scenario_configuration import ActorConfigurationData
 from srunner.scenariomanager.scenarioatomics.atomic_behaviors import Idle, ScenarioTriggerer
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+
 from srunner.scenarios.basic_scenario import BasicScenario
+from srunner.scenarios.background_activity import BackgroundActivity
 from srunner.scenarios.control_loss import ControlLoss
 from srunner.scenarios.follow_leading_vehicle import FollowLeadingVehicleRoute
 from srunner.scenarios.object_crash_vehicle import DynamicObjectCrossing
@@ -41,7 +43,6 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningStopTest,
                                                                      ActorSpeedAboveThresholdTest)
 
-from leaderboard.scenarios.background_activity import BackgroundActivity
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
@@ -63,7 +64,6 @@ NUMBER_CLASS_TRANSLATION = {
     "Scenario10": NoSignalJunctionCrossingRoute,
     "EnterActorFlow": EnterActorFlow
 }
-
 
 def oneshot_behavior(name, variable_name, behaviour):
     """
