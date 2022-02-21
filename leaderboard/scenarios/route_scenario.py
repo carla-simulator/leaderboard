@@ -12,6 +12,7 @@ This module provides Challenge routes as standalone scenarios
 from __future__ import print_function
 
 import py_trees
+import traceback
 
 import carla
 from agents.navigation.local_planner import RoadOption
@@ -30,6 +31,7 @@ from srunner.scenarios.junction_crossing_route import NoSignalJunctionCrossingRo
 from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLeftTurn
 from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
 from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
+from srunner.scenarios.actor_flow import EnterActorFlow
 
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
                                                                      InRouteTest,
@@ -58,7 +60,8 @@ NUMBER_CLASS_TRANSLATION = {
     "Scenario7": OppositeVehicleRunningRedLight,
     "Scenario8": SignalizedJunctionLeftTurn,
     "Scenario9": SignalizedJunctionRightTurn,
-    "Scenario10": NoSignalJunctionCrossingRoute
+    "Scenario10": NoSignalJunctionCrossingRoute,
+    "EnterActorFlow": EnterActorFlow
 }
 
 
@@ -135,7 +138,7 @@ class RouteScenario(BasicScenario):
                                                     sampled_scenario_definitions,
                                                     scenarios_per_tick=5,
                                                     timeout=self.timeout,
-                                                    debug_mode=debug_mode>1)
+                                                    debug_mode=debug_mode>0)
 
         self.background_amount = 0
         self.list_scenarios.append(BackgroundActivity(world,
@@ -308,7 +311,10 @@ class RouteScenario(BasicScenario):
                         world.wait_for_tick()
 
             except Exception as e:
-                print("Skipping scenario '{}' due to setup error: {}".format(scenario_config.type, e))
+                if not debug_mode:
+                    print("Skipping scenario '{}' due to setup error: {}".format(scenario_config.type, e))
+                else:
+                    traceback.print_exc()
                 continue
 
             scenario_instance_vec.append(scenario_instance)
