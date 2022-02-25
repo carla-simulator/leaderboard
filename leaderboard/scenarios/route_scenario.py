@@ -30,6 +30,9 @@ from srunner.scenarios.junction_crossing_route import NoSignalJunctionCrossingRo
 from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLeftTurn
 from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
 from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
+from srunner.scenarios.route_obstacles import Accident
+from srunner.scenarios.construction_crash_vehicle import ConstructionSetupCrossing
+
 
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
                                                                      InRouteTest,
@@ -39,7 +42,7 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningStopTest,
                                                                      ActorSpeedAboveThresholdTest)
 
-from leaderboard.scenarios.background_activity import BackgroundActivity
+from srunner.scenarios.background_activity import BackgroundActivity
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
@@ -58,7 +61,9 @@ NUMBER_CLASS_TRANSLATION = {
     "Scenario7": OppositeVehicleRunningRedLight,
     "Scenario8": SignalizedJunctionLeftTurn,
     "Scenario9": SignalizedJunctionRightTurn,
-    "Scenario10": NoSignalJunctionCrossingRoute
+    "Scenario10": NoSignalJunctionCrossingRoute,
+    "Accident": Accident,
+    "ConstructionSetupCrossing": ConstructionSetupCrossing
 }
 
 
@@ -135,7 +140,7 @@ class RouteScenario(BasicScenario):
                                                     sampled_scenario_definitions,
                                                     scenarios_per_tick=5,
                                                     timeout=self.timeout,
-                                                    debug_mode=debug_mode>1)
+                                                    debug_mode=debug_mode>0)
 
         self.background_amount = 0
         self.list_scenarios.append(BackgroundActivity(world,
