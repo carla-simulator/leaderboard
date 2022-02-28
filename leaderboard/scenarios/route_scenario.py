@@ -34,6 +34,9 @@ from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLe
 from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
 from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
 from srunner.scenarios.actor_flow import EnterActorFlow
+from srunner.scenarios.route_obstacles import Accident
+from srunner.scenarios.construction_crash_vehicle import ConstructionSetupCrossing
+
 
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
                                                                      InRouteTest,
@@ -43,6 +46,7 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningStopTest,
                                                                      ActorSpeedAboveThresholdTest)
 
+from srunner.scenarios.background_activity import BackgroundActivity
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
@@ -63,6 +67,8 @@ NUMBER_CLASS_TRANSLATION = {
     "Scenario9": SignalizedJunctionRightTurn,
     "Scenario10": NoSignalJunctionCrossingRoute,
     "EnterActorFlow": EnterActorFlow
+    "Accident": Accident,
+    "ConstructionSetupCrossing": ConstructionSetupCrossing
 }
 
 def oneshot_behavior(name, variable_name, behaviour):
