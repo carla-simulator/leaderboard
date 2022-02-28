@@ -204,12 +204,8 @@ class RouteParser(object):
                         subtype = 'S4left'
                     elif option == RoadOption.RIGHT:
                         subtype = 'S4right'
-                    else:
-                        subtype = None
                     break  # Avoid checking all of them
-                subtype = None
-
-        if scenario == 'Scenario7':
+        elif scenario == 'Scenario7':
             for _, option in route:
                 if is_junction_option(option):
                     if RoadOption.STRAIGHT == option:

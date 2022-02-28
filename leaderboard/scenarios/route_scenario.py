@@ -33,7 +33,7 @@ from srunner.scenarios.junction_crossing_route import NoSignalJunctionCrossingRo
 from srunner.scenarios.signalized_junction_left_turn import SignalizedJunctionLeftTurn
 from srunner.scenarios.signalized_junction_right_turn import SignalizedJunctionRightTurn
 from srunner.scenarios.opposite_vehicle_taking_priority import OppositeVehicleRunningRedLight
-from srunner.scenarios.actor_flow import EnterActorFlow
+from srunner.scenarios.actor_flow import EnterActorFlow, CrossActorFlow
 from srunner.scenarios.route_obstacles import Accident
 from srunner.scenarios.construction_crash_vehicle import ConstructionSetupCrossing
 
@@ -46,7 +46,6 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningStopTest,
                                                                      ActorSpeedAboveThresholdTest)
 
-from srunner.scenarios.background_activity import BackgroundActivity
 from leaderboard.utils.route_parser import RouteParser, TRIGGER_THRESHOLD, TRIGGER_ANGLE_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
@@ -66,9 +65,10 @@ NUMBER_CLASS_TRANSLATION = {
     "Scenario8": SignalizedJunctionLeftTurn,
     "Scenario9": SignalizedJunctionRightTurn,
     "Scenario10": NoSignalJunctionCrossingRoute,
-    "EnterActorFlow": EnterActorFlow
+    "EnterActorFlow": EnterActorFlow,
     "Accident": Accident,
-    "ConstructionSetupCrossing": ConstructionSetupCrossing
+    "ConstructionSetupCrossing": ConstructionSetupCrossing,
+    "CrossActorFlow": CrossActorFlow
 }
 
 def oneshot_behavior(name, variable_name, behaviour):
@@ -104,15 +104,11 @@ def oneshot_behavior(name, variable_name, behaviour):
     return subtree_root
 
 
-def convert_transform_to_location(transform_vec):
+def convert_route_to_locations(transform_vec):
     """
-    Convert a vector of transforms to a vector of locations
+    Converts the route vector from transforms to a locations
     """
-    location_vec = []
-    for transform_tuple in transform_vec:
-        location_vec.append((transform_tuple[0].location, transform_tuple[1]))
-
-    return location_vec
+    return [[x[0].location, x[1]] for x in transform_vec]
 
 
 class RouteScenario(BasicScenario):
@@ -175,7 +171,7 @@ class RouteScenario(BasicScenario):
 
         # prepare route's trajectory (interpolate and add the GPS route)
         gps_route, route = interpolate_trajectory(config.trajectory)
-        CarlaDataProvider.set_ego_vehicle_route(convert_transform_to_location(route))
+        CarlaDataProvider.set_ego_vehicle_route(convert_route_to_locations(route))
         config.agent.set_global_plan(gps_route, route)
 
         return route
@@ -385,7 +381,7 @@ class RouteScenario(BasicScenario):
         """
         """
         criteria = []
-        route = convert_transform_to_location(self.route)
+        route = convert_route_to_locations(self.route)
 
         collision_criterion = CollisionTest(self.ego_vehicles[0], terminate_on_failure=False)
 
