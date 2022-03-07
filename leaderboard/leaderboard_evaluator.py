@@ -131,6 +131,7 @@ class LeaderboardEvaluator(object):
             settings.fixed_delta_seconds = None
             self.world.apply_settings(settings)
             self.traffic_manager.set_synchronous_mode(False)
+            self.traffic_manager.set_hybrid_physics_mode(False)
 
         if self.manager:
             self.manager.cleanup()
@@ -207,6 +208,7 @@ class LeaderboardEvaluator(object):
         CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
 
         self.traffic_manager.set_synchronous_mode(True)
+        self.traffic_manager.set_hybrid_physics_mode(True)
         self.traffic_manager.set_random_device_seed(args.traffic_manager_seed)
 
         # Wait for the world to be ready
