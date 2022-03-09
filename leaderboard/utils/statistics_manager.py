@@ -146,9 +146,9 @@ class StatisticsManager(object):
                 failure = "Agent timed out"
 
             for node in self._master_scenario.get_criteria():
-                if node.list_traffic_events:
+                if node.events:
                     # analyze all traffic events
-                    for event in node.list_traffic_events:
+                    for event in node.events:
                         if event.get_type() == TrafficEventType.COLLISION_STATIC:
                             score_penalty *= PENALTY_COLLISION_STATIC
                             route_record.infractions['collisions_layout'].append(event.get_message())
