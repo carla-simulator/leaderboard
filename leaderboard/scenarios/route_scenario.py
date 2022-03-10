@@ -338,25 +338,40 @@ class RouteScenario(BasicScenario):
         )
 
         for scenario in self.list_scenarios:
-            if len(scenario.get_criteria()) == 0:
-                continue
 
-            scenario_sequence = py_trees.composites.Sequence(name=scenario.name)
+            scenario_criteria = scenario.get_criteria()
+            if len(scenario_criteria) == 0:
+                continue  # No need to create anything
 
-            var_name = scenario.config.route_var_name
-            check_name = "WaitForBlackboardVariable: {}".format(var_name)
-            scenario_sequence.add_child(WaitForBlackboardVariable(var_name, True, False, name=check_name))
-
-            scenario_criteria = py_trees.composites.Parallel(name=scenario.name,
-                                                    policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
-            for criterion in scenario.get_criteria():
-                scenario_criteria.add_child(criterion)
-            scenario_criteria.add_child(WaitForBlackboardVariable(var_name, False, None, name=check_name))
-
-            scenario_sequence.add_child(scenario_criteria)
-            criteria.add_child(scenario_sequence)
+            criteria_tree = self._create_criterion_tree(scenario,
+                scenario_criteria,
+            )
+            criteria.add_child(criteria_tree)
 
         return criteria
+
+    def _create_criterion_tree(self, scenario, criteria):
+        """
+        We can make use of the blackboard variables used by the behaviors themselves,
+        as we already have an atomic that handles their (de)activation.
+        The criteria will wait until that variable is active (the scenario has started),
+        and will automatically stop when it deactivates (as the scenario has finished)
+        """
+        scenario_name = scenario.name,
+        var_name = scenario.config.route_var_name
+        check_name = "WaitForBlackboardVariable: {}".format(var_name)
+
+        criteria_tree = py_trees.composites.Sequence(name=scenario_name)
+        criteria_tree.add_child(WaitForBlackboardVariable(var_name, True, False, name=check_name))
+
+        scenario_criteria = py_trees.composites.Parallel(name=scenario_name,
+                                                policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+        for criterion in criteria:
+            scenario_criteria.add_child(criterion)
+        scenario_criteria.add_child(WaitForBlackboardVariable(var_name, False, None, name=check_name))
+
+        criteria_tree.add_child(scenario_criteria)
+        return criteria_tree
 
     def __del__(self):
         """
