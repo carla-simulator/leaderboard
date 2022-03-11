@@ -308,7 +308,7 @@ class LeaderboardEvaluator(object):
             self._prepare_ego_vehicles(config.ego_vehicles, False)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             config.route = scenario.route
-            self.statistics_manager.set_scenario(scenario.scenario)
+            self.statistics_manager.set_scenario(scenario)
 
             # Load scenario and run it
             if args.record:

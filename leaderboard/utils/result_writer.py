@@ -13,7 +13,21 @@ It shall be used from the ScenarioManager only.
 from __future__ import print_function
 
 import time
+from collections import OrderedDict
 from tabulate import tabulate
+
+
+COLORED_STATUS = {
+    "FAILURE": '\033[91mFAILURE\033[0m',
+    "SUCCESS": '\033[92mSUCCESS\033[0m',
+    "ACCEPTABLE": '\033[93mACCEPTABLE\033[0m',
+}
+
+STATUS_PRIORITY = {
+    "FAILURE": 0,
+    "ACCEPTABLE": 1,
+    "SUCCESS": 2,
+}  # Lower number is higher priority
 
 
 class ResultOutputProvider(object):
@@ -66,42 +80,44 @@ class ResultOutputProvider(object):
         # Criteria part
         header = ['Criterion', 'Result', 'Value']
         list_statistics = [header]
+        criteria_data = OrderedDict()
 
         for criterion in self._data.scenario.get_criteria():
 
-            actual_value = criterion.actual_value
-            expected_value = criterion.expected_value_success
             name = criterion.name
+            # If two criterion have the same name, their results are shown as one
+            if name in criteria_data:
+                result = criterion.test_status
+                if STATUS_PRIORITY[result] < STATUS_PRIORITY[criteria_data[name]['result']]:
+                    criteria_data[name]['result'] = result
+                criteria_data[name]['actual_value'] += criterion.actual_value
+                # TODO: Check the units (and do something about the criterion if the fail to match)
+ 
+            else:
+                criteria_data[name] = {
+                    'result': criterion.test_status,
+                    'actual_value': criterion.actual_value,
+                    'units': criterion.units
+                }
 
-            result = criterion.test_status
+        for criterion_name in criteria_data:
+            criterion = criteria_data[criterion_name]
 
-            if result == "SUCCESS":
-                result = '\033[92m'+'SUCCESS'+'\033[0m'
-            elif result == "FAILURE":
-                result = '\033[91m'+'FAILURE'+'\033[0m'
+            result = criterion['result']
+            if result in COLORED_STATUS:
+                result = COLORED_STATUS[result]
 
-            if name == "RouteCompletionTest":
-                actual_value = str(actual_value) + " %"
-            elif name == "OutsideRouteLanesTest":
-                actual_value = str(actual_value) + " %"
-            elif name == "CollisionTest":
-                actual_value = str(actual_value) + " times"
-            elif name == "RunningRedLightTest":
-                actual_value = str(actual_value) + " times"
-            elif name == "RunningStopTest":
-                actual_value = str(actual_value) + " times"
-            elif name == "InRouteTest":
+            if criterion['units'] is None:
                 actual_value = ""
-            elif name == "AgentBlockedTest":
-                actual_value = ""
+            else:
+                actual_value = str(criterion['actual_value']) + " " + criterion['units']
 
-            list_statistics.extend([[name, result, actual_value]])
+            list_statistics.extend([[criterion_name, result, actual_value]])
 
         # Timeout
         name = "Timeout"
 
         actual_value = self._data.scenario_duration_game
-        expected_value = self._data.scenario.timeout
 
         if self._data.scenario_duration_game < self._data.scenario.timeout:
             result = '\033[92m'+'SUCCESS'+'\033[0m'

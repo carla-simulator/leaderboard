@@ -51,7 +51,6 @@ class ScenarioManager(object):
         """
         self.scenario = None
         self.scenario_tree = None
-        self.scenario_class = None
         self.ego_vehicles = None
         self.other_actors = None
 
@@ -105,9 +104,8 @@ class ScenarioManager(object):
 
         GameTime.restart()
         self._agent = AgentWrapper(agent)
-        self.scenario_class = scenario
-        self.scenario = scenario.scenario
-        self.scenario_tree = self.scenario.scenario_tree
+        self.scenario = scenario
+        self.scenario_tree = scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
         self.repetition_number = rep_number
