@@ -1,7 +1,6 @@
 #!/bin/bash
 
 python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
---scenarios=${SCENARIOS}  \
 --routes=${ROUTES} \
 --route-id=${ROUTE_ID} \
 --repetitions=${REPETITIONS} \
