@@ -154,42 +154,6 @@ class LeaderboardEvaluator(object):
         if hasattr(self, 'statistics_manager') and self.statistics_manager:
             self.statistics_manager.scenario = None
 
-    def _prepare_ego_vehicles(self, ego_vehicles, wait_for_ego_vehicles=False):
-        """
-        Spawn or update the ego vehicles
-        """
-
-        if not wait_for_ego_vehicles:
-            for vehicle in ego_vehicles:
-                self.ego_vehicles.append(CarlaDataProvider.request_new_actor(vehicle.model,
-                                                                             vehicle.transform,
-                                                                             vehicle.rolename,
-                                                                             color=vehicle.color,
-                                                                             vehicle_category=vehicle.category))
-
-        else:
-            ego_vehicle_missing = True
-            while ego_vehicle_missing:
-                self.ego_vehicles = []
-                ego_vehicle_missing = False
-                for ego_vehicle in ego_vehicles:
-                    ego_vehicle_found = False
-                    carla_vehicles = CarlaDataProvider.get_world().get_actors().filter('vehicle.*')
-                    for carla_vehicle in carla_vehicles:
-                        if carla_vehicle.attributes['role_name'] == ego_vehicle.rolename:
-                            ego_vehicle_found = True
-                            self.ego_vehicles.append(carla_vehicle)
-                            break
-                    if not ego_vehicle_found:
-                        ego_vehicle_missing = True
-                        break
-
-            for i, _ in enumerate(self.ego_vehicles):
-                self.ego_vehicles[i].set_transform(ego_vehicles[i].transform)
-
-        # sync state
-        CarlaDataProvider.get_world().tick()
-
     def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
         """
         Load a new CARLA world and provide data to CarlaDataProvider
@@ -305,7 +269,6 @@ class LeaderboardEvaluator(object):
         # Load the world and the scenario
         try:
             self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
-            self._prepare_ego_vehicles(config.ego_vehicles, False)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             config.route = scenario.route
             self.statistics_manager.set_scenario(scenario)

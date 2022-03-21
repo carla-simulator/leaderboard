@@ -157,8 +157,8 @@ class RouteParser(object):
             return dz < DIST_THRESHOLD and dpos < DIST_THRESHOLD \
                 and (dyaw < ANGLE_THRESHOLD or dyaw > (360 - ANGLE_THRESHOLD))
 
-        for position, [route_transform, _] in enumerate(route):
+        for route_transform, _ in route:
             if is_trigger_close(trigger_transform, route_transform):
-                return position
+                return True
 
-        return None
+        return False
