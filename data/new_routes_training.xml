@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes>
+   <route id="0" town="Town01">
+      <weathers>
+         <weather route_percentage="0" cloudiness="30" precipitation="0" sun_altitude_angle="70" fog_density="0"/>
+         <weather route_percentage="100" cloudiness="70" precipitation="0" sun_altitude_angle="20" fog_density="20"/>
+      </weathers>
+      <waypoints>
+         <position x="338.0" y="226.1" z="0.0" />
+         <position x="321.2" y="194.3" z="0.0" />
+         <position x="283.1" y="194.7" z="0.0" />
+         <position x="108.8" y="195.4" z="0.0" />
+         <position x="88.6" y="210.0" z="0.0" />
+         <position x="88.4" y="309.1" z="0.0" />
+         <position x="75.3" y="326.9" z="0.0" />
+         <position x="14.3" y="326.3" z="0.0" />
+         <position x="1.9" y="299.4" z="0.0" />
+         <position x="1.6" y="170.7" z="0.0" />
+         <position x="1.4" y="47.9" z="0.0" />
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="324.8" y="195.1" z="0.0" yaw="180"/>
+         </scenario>
+         <scenario name="ControlLoss_1" type="ControlLoss">
+            <trigger_point x="264.8" y="195.1" z="0.0" yaw="180"/>
+         </scenario>
+         <scenario name="HardBreak_1" type="FollowLeadingVehicleRoute">
+            <trigger_point x="212.6" y="195.1" z="0.0" yaw="180"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
+            <trigger_point x="88.3" y="255.1" z="0.0" yaw="90"/>
+         </scenario>
+         <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
+            <trigger_point x="88.3" y="302.1" z="0.0" yaw="90"/>
+         </scenario>
+         <scenario name="SignalizedJunctionRightTurn_1" type="SignalizedJunctionRightTurn">
+            <trigger_point x="88.3" y="270.1" z="0.0" yaw="90"/>
+         </scenario>
+         <scenario name="HardBreak_2" type="FollowLeadingVehicleRoute">
+            <trigger_point x="2.0" y="275.7" z="0.0" yaw="-90"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
+            <trigger_point x="2.0" y="209.8" z="0.0" yaw="-90"/>
+         </scenario>
+         <scenario name="ControlLoss_2" type="ControlLoss">
+            <trigger_point x="2.0" y="160.8" z="0.0" yaw="-90"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
+            <trigger_point x="2.0" y="120.8" z="0.0" yaw="-90"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="1" town="Town03">
+      <weathers>
+         <weather route_percentage="0" cloudiness="50" precipitation="40" precipitation_deposits="20" sun_altitude_angle="70"/>
+         <weather route_percentage="100" cloudiness="10" precipitation="80" precipitation_deposits="80" sun_altitude_angle="50"/>
+      </weathers>
+      <waypoints>
+         <position x="167.0" y="92.0" z="0.0" />
+         <position x="-74.3" y="67.1" z="0.0" />
+         <position x="-116.2" y="-3.4" z="0.0" />
+         <position x="-145.4" y="-77.5" z="0.0" />
+         <position x="-26.0" y="-194.5" z="0.0" />
+         <position x="-6.4" y="-45.0" z="0.0" />
+         <position x="85.3" y="7.5" z="0.0" />
+         <position x="228.9" y="115.1" z="0.0" />
+         <position x="54.1" y="193.4" z="0.0" />
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="154.3" y="119.5" z="0.0" yaw="145"/>
+         </scenario>
+         <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
+            <trigger_point x="52.7" y="130.3" z="0.0" yaw="180"/>
+         </scenario>
+         <scenario name="SignalizedJunctionRightTurn_1" type="SignalizedJunctionRightTurn">
+            <trigger_point x="-43.3" y="131.3" z="0.0" yaw="180"/>
+         </scenario>
+         <scenario name="SignalizedJunctionLeftTurn_1" type="SignalizedJunctionLeftTurn">
+            <trigger_point x="-77.7" y="46.2" z="0.5" yaw="-90"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="-124.8" y="-3.5" z="0.0" yaw="180"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
+            <trigger_point x="-145.4" y="-87.6" z="0.4" yaw="-90"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
+            <trigger_point x="-66.9" y="-189.0" z="0.0" yaw="-40"/>
+         </scenario>
+         <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
+            <trigger_point x="-3.1" y="-167.8" z="0.0" yaw="90"/>
+         </scenario>
+         <scenario name="ControlLoss_1" type="ControlLoss">
+            <trigger_point x="98.2" y="7.8" z="0.0" yaw="0"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+            <trigger_point x="196.8" y="9.4" z="0.0" yaw="0"/>
+         </scenario>
+         <scenario name="Accident_1" type="Accident">
+            <trigger_point x="228.5" y="134.3" z="1.0" yaw="90"/>
+         </scenario>
+         <scenario name="HardBreak" type="FollowLeadingVehicleRoute">
+            <trigger_point x="114.7" y="193.5" z="1.6" yaw="180"/>
+         </scenario>
+      </scenarios>
+   </route>
+</routes>
+
+
+
+
