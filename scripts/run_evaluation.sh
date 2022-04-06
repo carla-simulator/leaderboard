@@ -2,7 +2,7 @@
 
 python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --routes=${ROUTES} \
---route-id=${ROUTE_ID} \
+--routes-subset=${ROUTES_SUBSET} \
 --repetitions=${REPETITIONS} \
 --track=${CHALLENGE_TRACK_CODENAME} \
 --checkpoint=${CHECKPOINT_ENDPOINT} \
