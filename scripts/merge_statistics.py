@@ -39,10 +39,11 @@ def check_missing_data(route_ids):
 
 def main():
     """Used to help with the visualization of the scenario trigger points"""
-    argparser = argparse.ArgumentParser()
+    description = "Utility script to merge two or more statistics into one. "
+    description += "While some checks are done, it is best to ensure that merging all files makes sense"
+    argparser = argparse.ArgumentParser(description=description)
     argparser.add_argument('-f', '--file-paths', nargs="+", required=True,
                         help='path to the .json files containing the results')
-
     argparser.add_argument('-e', '--endpoint', required=True,
                         help='path to the .json files containing the joined results')
     args = argparser.parse_args()

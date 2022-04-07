@@ -387,9 +387,9 @@ def main():
 
     # simulation setup
     parser.add_argument('--routes', required=True,
-                        help='Name of the route to be executed. Point to the route_xml_file to be executed.')
+                        help='Name of the routes file to be executed.')
     parser.add_argument('--routes-subset', default='', type=str,
-                        help='Execute a specific route')
+                        help='Execute a specific set of routes')
     parser.add_argument('--repetitions', type=int, default=1,
                         help='Number of repetitions per route.')
 
