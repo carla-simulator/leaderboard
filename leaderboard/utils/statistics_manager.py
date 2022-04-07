@@ -38,7 +38,7 @@ PENALTY_NAME_DICT = {
     TrafficEventType.ROUTE_DEVIATION: 'Route deviations',
 }
 
-# Limits the entry status and eligible to some values
+# Limit the entry status to some values. Eligible should always be gotten from this table
 ENTRY_STATUS_VALUES = ['Started', 'Finished', 'Rejected', 'Crashed', 'Invalid']
 ELIGIBLE_VALUES = {'Started': False, 'Finished': True, 'Rejected': False, 'Crashed': False, 'Invalid': False}
 
@@ -70,9 +70,9 @@ class RouteRecord():
         }
 
         self.meta = {
-            'route_length': 0,
-            'duration_game': 0,
-            'duration_system': 0,
+            'Route length': 0,
+            'Game duration': 0,
+            'System duration': 0,
         }
 
     def to_json(self):
@@ -131,8 +131,8 @@ class Results():
 
     def __init__(self):
         self.checkpoint = Checkpoint()
-        self.entry_status = ""
-        self.eligible = ""
+        self.entry_status = "Started"
+        self.eligible = ELIGIBLE_VALUES[self.entry_status]
         self.sensors = []
         self.values = []
 
@@ -264,9 +264,9 @@ class StatisticsManager(object):
         score_route = 0.0
 
         # Update the route meta
-        route_record.meta['route_length'] = round(compute_route_length(config), ROUND_DIGITS)
-        route_record.meta['duration_game'] = round(duration_time_game, ROUND_DIGITS)
-        route_record.meta['duration_system'] = round(duration_time_system, ROUND_DIGITS)
+        route_record.meta['Route length'] = round(compute_route_length(config), ROUND_DIGITS)
+        route_record.meta['Game duration'] = round(duration_time_game, ROUND_DIGITS)
+        route_record.meta['System duration'] = round(duration_time_system, ROUND_DIGITS)
 
         # Update the route infractions
         if self._scenario:
@@ -343,7 +343,7 @@ class StatisticsManager(object):
 
             # Infractions
             for key in global_record.infractions_per_km:
-                route_length = route_record.meta['route_length'] / 1000
+                route_length = route_record.meta['Route length'] / 1000
                 route_completed = route_record.scores['Route completion'] / 100 * route_length
                 global_record.infractions_per_km[key] += len(route_record.infractions[key]) / max(route_completed, 0.001)
 
@@ -387,8 +387,9 @@ class StatisticsManager(object):
             self._results.values[key] = item
 
         # Change the entry status and eligible
-        self._results.entry_status = "Finished"
-        self._results.eligible = True
+        entry_status = "Finished"
+        self._results.entry_status = entry_status
+        self._results.eligible = ELIGIBLE_VALUES[entry_status]
 
         save_dict(self._endpoint, self._results.to_json())
 
@@ -396,22 +397,42 @@ class StatisticsManager(object):
         """
         Makes sure that all the relevant data is there.
         Changes the 'entry status' to 'Invalid' if this isn't the case"""
-        try:
-            assert(self._results.sensors)
-            assert(self._results.values)
-            assert(self._results.eligible)
-            assert(self._results.entry_status != "Started")
+        error_message = ""
+        if not self._results.sensors:
+            error_message = "Missing 'sensors' data"
 
+        elif not self._results.values:
+            error_message = "Missing 'values' data"
+
+        elif not self._results.eligible:
+            error_message = "Missing 'eligible' data"
+
+        elif self._results.entry_status == 'Started':
+            error_message = "'entry_status' has the 'Started' value "
+
+        else:
             global_records = self._results.checkpoint.global_record
             progress = self._results.checkpoint.progress
             route_records = self._results.checkpoint.records
 
-            assert(global_records)
-            assert(progress[0] == progress[1])
-            assert(progress[0] == len(route_records))
+            if not global_records:
+                error_message = "Missing 'global_records' data"
 
-        except AssertionError:
-            print("WARNING: Saved statistics are badly formed!")
+            elif not progress:
+                error_message = "Missing 'progress' data"
+
+            elif progress[0] != progress[1] or progress[0] != len(route_records):
+                error_message = "'progress' data doesn't match its expected value"
+
+            else:
+                for record in route_records:
+                    if record.result == 'Started':
+                        error_message = "Found a route record with missing data"
+                        break
+
+        if error_message:
+            print("\n\033[91mThe statistics are badly formed. Setting their status to 'Invalid':")
+            print("> {}\033[0m\n".format(error_message))
 
             entry_status = 'Invalid'
             self._results.entry_status = entry_status

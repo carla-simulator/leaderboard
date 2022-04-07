@@ -347,17 +347,19 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.add_file_records(args.checkpoint)
         else:
             self.statistics_manager.clear_records()
-            self.statistics_manager.save_progress(0, route_indexer.total)
+        self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
 
         while route_indexer.peek():
-            config = route_indexer.next()
 
+            # Run the scenario
+            config = route_indexer.next()
             self._load_and_run_scenario(args, config)
 
+            # Save the progress and remove the scenario
             self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
             self.statistics_manager.remove_scenario()
 
-        # save global statistics
+        # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
         self.statistics_manager.compute_global_statistics()
         self.statistics_manager.validate_statistics()
