@@ -10,7 +10,6 @@ This module contains a statistics manager for the CARLA AD leaderboard
 """
 
 from __future__ import print_function
-from multiprocessing.sharedctypes import Value
 
 from dictor import dictor
 import math

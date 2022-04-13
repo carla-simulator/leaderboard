@@ -21,7 +21,7 @@ def check_missing_data(route_ids):
     for id in route_ids:
         route_int = int(id.split('_')[1])
         rep_int = int(id.split('_rep')[-1])
-        
+
         # Get the amount of repetitions. Done when a reset of the repetition number is found
         if rep_int < prev_rep_int:
             rep_num = prev_rep_int + 1
