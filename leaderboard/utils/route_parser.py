@@ -44,20 +44,57 @@ class RouteParser(object):
     """
 
     @staticmethod
-    def parse_routes_file(route_filename, single_route_id=''):
+    def parse_routes_file(route_filename, routes_subset=''):
         """
         Returns a list of route configuration elements.
         :param route_filename: the path to a set of routes.
         :param single_route: If set, only this route shall be returned
         :return: List of dicts containing the waypoints, id and town of the routes
         """
+        def get_routes_subset():
+
+            subset_limits = routes_subset.split('-')
+            if len(subset_limits) == 1:  # Just one route, get that id
+                for route in tree.iter("route"):
+                    route_id = route.attrib['id']
+                    if route_id == subset_limits[0]:
+                        return [route_id]
+
+                raise ValueError(f"Couldn't find the id '{routes_subset}' inside the given routes file")
+
+            elif len(subset_limits) == 2: # The two interval limits (i.e '1-5'), get all routes between
+                start, end = subset_limits
+                found_start, found_end = (False, False)
+                subset_list = []
+
+                for route in tree.iter("route"):
+                    route_id = route.attrib['id']
+                    if not found_start and route_id == end:
+                        raise ValueError('Malformed route subset, found the end id before the starting one')
+                    elif not found_start and route_id == start:
+                        found_start = True
+                    if not found_end and found_start:
+                        subset_list.append(route_id)
+                        if route_id == end:
+                            found_end = True
+
+                if not found_start:
+                    raise ValueError(f"Couldn\'t find the start id '{start}' inside the given routes file")
+                if not found_end:
+                    raise ValueError(f"Couldn\'t find the end id '{end}' inside the given routes file")
+
+                return subset_list
+
+            raise ValueError("Malformed route subset, it should be either 'id' or 'start_id-end_id'.")
 
         route_configs = []
         tree = ET.parse(route_filename)
+        if routes_subset:
+            subset_list = get_routes_subset()
         for route in tree.iter("route"):
 
             route_id = route.attrib['id']
-            if single_route_id and route_id != single_route_id:
+            if routes_subset and route_id not in subset_list:
                 continue
 
             route_config = RouteScenarioConfiguration()

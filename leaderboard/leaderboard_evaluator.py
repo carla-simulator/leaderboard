@@ -186,21 +186,15 @@ class LeaderboardEvaluator(object):
             raise Exception("The CARLA server uses the wrong map!"
                             " This scenario requires the use of map {}".format(town))
 
-    def _register_statistics(self, config, checkpoint, entry_status, crash_message=""):
+    def _register_statistics(self, config, entry_status, crash_message=""):
         """
-        Computes and saved the simulation statistics
+        Computes and saves the route statistics
         """
-        # register statistics
-        current_stats_record = self.statistics_manager.compute_route_statistics(
-            config,
-            self.manager.scenario_duration_system,
-            self.manager.scenario_duration_game,
-            crash_message
-        )
-
         print("\033[1m> Registering the route statistics\033[0m")
-        self.statistics_manager.save_record(current_stats_record, config.index, checkpoint)
-        self.statistics_manager.save_entry_status(entry_status, False, checkpoint)
+        self.statistics_manager.compute_route_statistics(
+            config, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
+        )
+        self.statistics_manager.save_entry_status(entry_status)
 
     def _load_and_run_scenario(self, args, config):
         """
@@ -212,11 +206,12 @@ class LeaderboardEvaluator(object):
         crash_message = ""
         entry_status = "Started"
 
+        route_name = f"{config.name}_rep{config.repetition_index}"
         print("\n\033[1m========= Preparing {} (repetition {}) =========".format(config.name, config.repetition_index))
         print("> Setting up the agent\033[0m")
 
         # Prepare the statistics of the route
-        self.statistics_manager.set_route(config.name, config.index)
+        self.statistics_manager.create_route_data(route_name, config.index)
 
         # Set up the user's agent, and the timer to avoid freezing the simulation
         try:
@@ -234,7 +229,7 @@ class LeaderboardEvaluator(object):
                 AgentWrapper.validate_sensor_configuration(self.sensors, track, args.track)
 
                 self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
-                self.statistics_manager.save_sensors(self.sensor_icons, args.checkpoint)
+                self.statistics_manager.save_sensors(self.sensor_icons)
 
             self._agent_watchdog.stop()
             self._agent_watchdog = None
@@ -248,7 +243,7 @@ class LeaderboardEvaluator(object):
             crash_message = "Agent's sensors were invalid"
             entry_status = "Rejected"
 
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+            self._register_statistics(config, entry_status, crash_message)
             self._cleanup()
             sys.exit(-1)
 
@@ -260,7 +255,7 @@ class LeaderboardEvaluator(object):
 
             crash_message = "Agent couldn't be set up"
 
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+            self._register_statistics(config, entry_status, crash_message)
             self._cleanup()
             return
 
@@ -287,7 +282,7 @@ class LeaderboardEvaluator(object):
             crash_message = "Simulation crashed"
             entry_status = "Crashed"
 
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+            self._register_statistics(config, entry_status, crash_message)
 
             if args.record:
                 self.client.stop_recorder()
@@ -321,7 +316,7 @@ class LeaderboardEvaluator(object):
         try:
             print("\033[1m> Stopping the route\033[0m")
             self.manager.stop_scenario()
-            self._register_statistics(config, args.checkpoint, entry_status, crash_message)
+            self._register_statistics(config, entry_status, crash_message)
 
             if args.record:
                 self.client.stop_recorder()
@@ -345,28 +340,29 @@ class LeaderboardEvaluator(object):
         """
         Run the challenge mode
         """
-        route_indexer = RouteIndexer(args.routes, args.repetitions, args.route_id)
+        route_indexer = RouteIndexer(args.routes, args.repetitions, args.routes_subset)
 
         if args.resume:
             route_indexer.resume(args.checkpoint)
-            self.statistics_manager.resume(args.checkpoint)
+            self.statistics_manager.add_file_records(args.checkpoint)
         else:
-            self.statistics_manager.clear_record(args.checkpoint)
-            route_indexer.save_state(args.checkpoint)
+            self.statistics_manager.clear_records()
+        self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
 
         while route_indexer.peek():
-            # setup
-            config = route_indexer.next()
 
-            # run
+            # Run the scenario
+            config = route_indexer.next()
             self._load_and_run_scenario(args, config)
 
-            route_indexer.save_state(args.checkpoint)
+            # Save the progress and remove the scenario
+            self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
+            self.statistics_manager.remove_scenario()
 
-        # save global statistics
+        # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
-        global_stats_record = self.statistics_manager.compute_global_statistics(route_indexer.total)
-        StatisticsManager.save_global_record(global_stats_record, self.sensor_icons, route_indexer.total, args.checkpoint)
+        self.statistics_manager.compute_global_statistics()
+        self.statistics_manager.validate_statistics()
 
 
 def main():
@@ -391,9 +387,9 @@ def main():
 
     # simulation setup
     parser.add_argument('--routes', required=True,
-                        help='Name of the route to be executed. Point to the route_xml_file to be executed.')
-    parser.add_argument('--route-id', default='', type=str,
-                        help='Execute a specific route')
+                        help='Name of the routes file to be executed.')
+    parser.add_argument('--routes-subset', default='', type=str,
+                        help='Execute a specific set of routes')
     parser.add_argument('--repetitions', type=int, default=1,
                         help='Number of repetitions per route.')
 
@@ -412,7 +408,7 @@ def main():
 
     arguments = parser.parse_args()
 
-    statistics_manager = StatisticsManager()
+    statistics_manager = StatisticsManager(arguments.checkpoint)
 
     try:
         leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)

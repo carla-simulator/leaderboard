@@ -1,8 +1,6 @@
 import argparse
 from argparse import RawTextHelpFormatter
 import math
-import os
-import sys
 
 import carla
 
@@ -43,7 +41,6 @@ def get_color_validity(waypoint_transform, scenario_transform, scenario_type, sc
     Uses the same condition as in route_scenario to see if they will
     be differentiated
     """
-    DIST_THRESHOLD = 1.4  # Routes use 1.5 (+ an error margin)
     ANGLE_THRESHOLD = 10
 
     dx = float(waypoint_transform.location.x) - scenario_transform.location.x
