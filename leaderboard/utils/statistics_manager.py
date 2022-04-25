@@ -27,7 +27,9 @@ PENALTY_VALUE_DICT = {
     TrafficEventType.COLLISION_STATIC: 0.65,
     TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 0.7,
     TrafficEventType.STOP_INFRACTION: 0.8,
+}
 
+PENALTY_PERC_DICT = {
     # Traffic events that substract a varying amount of points. This is the per unit value.
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 1,
     TrafficEventType.MIN_SPEED_INFRACTION: 0.2
@@ -292,13 +294,14 @@ class StatisticsManager(object):
                         # Traffic events that substract a varying amount of points
                         elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
                             score_value = event.get_dict()['percentage']
-                            score_penalty *= PENALTY_VALUE_DICT[event.get_type()] * (1 - score_value / 100)
+                            score_penalty *= PENALTY_PERC_DICT[event.get_type()] * (1 - score_value / 100)
                             set_infraction_message(event)
 
                         elif event.get_type() == TrafficEventType.MIN_SPEED_INFRACTION:
                             score_value = min(event.get_dict()['percentage'], 100)
-                            score_penalty *= PENALTY_VALUE_DICT[event.get_type()] * (1 - score_value / 100)
+                            score_penalty *= PENALTY_PERC_DICT[event.get_type()] * (1 - score_value / 100)
                             if score_value < 100:
+                                print(score_value)
                                 set_infraction_message(event)
 
                         # Traffic events that stop the simulation
