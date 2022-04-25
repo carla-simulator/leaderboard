@@ -301,7 +301,6 @@ class StatisticsManager(object):
                             score_value = min(event.get_dict()['percentage'], 100)
                             score_penalty *= PENALTY_PERC_DICT[event.get_type()] * (1 - score_value / 100)
                             if score_value < 100:
-                                print(score_value)
                                 set_infraction_message(event)
 
                         # Traffic events that stop the simulation
