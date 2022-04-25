@@ -21,11 +21,16 @@ from srunner.scenariomanager.traffic_events import TrafficEventType
 from leaderboard.utils.checkpoint_tools import fetch_dict, save_dict
 
 PENALTY_VALUE_DICT = {
+    # Traffic events that substract a set amount of points.
     TrafficEventType.COLLISION_PEDESTRIAN: 0.5,
     TrafficEventType.COLLISION_VEHICLE: 0.6,
     TrafficEventType.COLLISION_STATIC: 0.65,
     TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 0.7,
     TrafficEventType.STOP_INFRACTION: 0.8,
+
+    # Traffic events that substract a varying amount of points. This is the per unit value.
+    TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 1,
+    TrafficEventType.MIN_SPEED_INFRACTION: 0.2
 }
 PENALTY_NAME_DICT = {
     TrafficEventType.COLLISION_STATIC: 'Collisions with layout',
@@ -34,8 +39,9 @@ PENALTY_NAME_DICT = {
     TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 'Red lights infractions',
     TrafficEventType.STOP_INFRACTION: 'Stop sign infractions',
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'Off-road infractions',
+    TrafficEventType.MIN_SPEED_INFRACTION: 'Min speed infractions',
     TrafficEventType.ROUTE_DEVIATION: 'Route deviations',
-}
+}  # These should match the RouteRecord.infractions
 
 # Limit the entry status to some values. Eligible should always be gotten from this table
 ENTRY_STATUS_VALUES = ['Started', 'Finished', 'Rejected', 'Crashed', 'Invalid']
@@ -57,6 +63,7 @@ class RouteRecord():
             'Red lights infractions': [],
             'Stop sign infractions': [],
             'Off-road infractions': [],
+            'Min speed infractions': [],
             'Route deviations': [],
             'Route timeouts': [],
             'Agent blocked': []
@@ -284,8 +291,15 @@ class StatisticsManager(object):
 
                         # Traffic events that substract a varying amount of points
                         elif event.get_type() == TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION:
-                            score_penalty *= (1 - event.get_dict()['percentage'] / 100)
+                            score_value = event.get_dict()['percentage']
+                            score_penalty *= PENALTY_VALUE_DICT[event.get_type()] * (1 - score_value / 100)
                             set_infraction_message(event)
+
+                        elif event.get_type() == TrafficEventType.MIN_SPEED_INFRACTION:
+                            score_value = min(event.get_dict()['percentage'], 100)
+                            score_penalty *= PENALTY_VALUE_DICT[event.get_type()] * (1 - score_value / 100)
+                            if score_value < 100:
+                                set_infraction_message(event)
 
                         # Traffic events that stop the simulation
                         elif event.get_type() == TrafficEventType.ROUTE_DEVIATION:
