@@ -147,7 +147,6 @@ class RouteScenario(BasicScenario):
             route_length += dist
             prev_point = current_point
 
-        print(f"Route length: {route_length}m")
         return int(SECONDS_GIVEN_PER_METERS * route_length + INITIAL_SECONDS_DELAY)
 
     # pylint: disable=no-self-use
