@@ -39,6 +39,7 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
 from srunner.scenarios.basic_scenario import BasicScenario
 from srunner.scenarios.background_activity import BackgroundActivity
 from srunner.scenariomanager.weather_sim import RouteWeatherBehavior
+from srunner.scenariomanager.lights_sim import RouteLightsBehavior
 
 from leaderboard.utils.route_parser import RouteParser, DIST_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
@@ -64,7 +65,6 @@ class RouteScenario(BasicScenario):
         self.route = self._get_route(config)
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
 
-        self.night_mode = config.weather[0][1].sun_altitude_angle < 0.0
         ego_vehicle = self._spawn_ego_vehicle()
         self.timeout = self._estimate_route_timeout()
 
@@ -123,10 +123,6 @@ class RouteScenario(BasicScenario):
                                                           elevate_transform,
                                                           rolename='hero')
 
-        if self.night_mode:
-            ego_vehicle.set_light_state(carla.VehicleLightState(
-                carla.VehicleLightState.Position | carla.VehicleLightState.LowBeam)
-            )
 
         spectator = CarlaDataProvider.get_world().get_spectator()
         ego_trans = ego_vehicle.get_transform()
@@ -303,7 +299,7 @@ class RouteScenario(BasicScenario):
 
         # Add the Background Activity
         background_activity = BackgroundActivity(
-            self.world, self.ego_vehicles[0], self.config, self.route, self.night_mode, timeout=self.timeout
+            self.world, self.ego_vehicles[0], self.config, self.route, timeout=self.timeout
         )
         behavior.add_child(background_activity.behavior_tree)
 
@@ -355,6 +351,12 @@ class RouteScenario(BasicScenario):
         if len(self.config.weather) == 1:
             return
         return RouteWeatherBehavior(self.ego_vehicles[0], self.route, self.config.weather)
+
+    def _create_lights_behavior(self):
+        """
+        Create the light behavior
+        """
+        return RouteLightsBehavior(self.ego_vehicles[0], 100)
 
     def _initialize_environment(self, world):
         """
