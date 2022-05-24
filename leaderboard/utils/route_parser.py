@@ -6,8 +6,6 @@
 """
 Module used to parse all the route and scenario configuration parameters.
 """
-from collections import OrderedDict
-import json
 import math
 import xml.etree.ElementTree as ET
 
