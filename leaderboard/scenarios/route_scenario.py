@@ -25,7 +25,7 @@ from agents.navigation.local_planner import RoadOption
 from srunner.scenarioconfigs.scenario_configuration import ActorConfigurationData
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
-from srunner.scenariomanager.scenarioatomics.atomic_behaviors import ScenarioTriggerer
+from srunner.scenariomanager.scenarioatomics.atomic_behaviors import ScenarioTriggerer, Idle
 from srunner.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitForBlackboardVariable
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
                                                                      InRouteTest,
@@ -143,6 +143,7 @@ class RouteScenario(BasicScenario):
             route_length += dist
             prev_point = current_point
 
+        print(f"ROUTE LENGTH: {route_length}")
         return int(SECONDS_GIVEN_PER_METERS * route_length + INITIAL_SECONDS_DELAY)
 
     # pylint: disable=no-self-use
@@ -386,6 +387,7 @@ class RouteScenario(BasicScenario):
         scenario_criteria.add_child(WaitForBlackboardVariable(var_name, False, None, name=check_name))
 
         criteria_tree.add_child(scenario_criteria)
+        criteria_tree.add_child(Idle())  # Avoid the indivual criteria stopping the simulation
         return criteria_tree
 
     def __del__(self):
