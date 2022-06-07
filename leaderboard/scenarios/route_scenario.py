@@ -34,10 +34,10 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      RunningRedLightTest,
                                                                      RunningStopTest,
                                                                      ActorBlockedTest,
-                                                                     CheckMinSpeed)
+                                                                     MinSpeedRouteTest)
 
 from srunner.scenarios.basic_scenario import BasicScenario
-from srunner.scenarios.background_activity import BackgroundActivity
+from srunner.scenarios.background_activity import BackgroundBehavior
 from srunner.scenariomanager.weather_sim import RouteWeatherBehavior
 from srunner.scenariomanager.lights_sim import RouteLightsBehavior
 
@@ -143,7 +143,6 @@ class RouteScenario(BasicScenario):
             route_length += dist
             prev_point = current_point
 
-        print(f"ROUTE LENGTH: {route_length}")
         return int(SECONDS_GIVEN_PER_METERS * route_length + INITIAL_SECONDS_DELAY)
 
     # pylint: disable=no-self-use
@@ -151,8 +150,11 @@ class RouteScenario(BasicScenario):
         """
         Draw a list of waypoints at a certain height given in vertical_shift.
         """
-        for w in waypoints:
+        for i, w in enumerate(waypoints):
             wp = w[0].location + carla.Location(z=vertical_shift)
+
+            if i % 5 != 0:
+                continue
 
             if w[1] == RoadOption.LEFT:  # Yellow
                 color = carla.Color(128, 128, 0)
@@ -167,7 +169,12 @@ class RouteScenario(BasicScenario):
             else:  # LANEFOLLOW
                 color = carla.Color(0, 128, 0)  # Green
 
-            world.debug.draw_point(wp, size=0.1, color=color, life_time=persistency)
+            world.debug.draw_point(wp, size=0.05, color=color, life_time=persistency)
+            # if i > 0:
+            #     prev_loc = waypoints[i-1][0].location
+            #     loc = w[0].location
+            #     world.debug.draw_arrow(prev_loc + carla.Location(z=(i-1)/10), loc + carla.Location(z=i/10), color=carla.Color(0,0,0))
+
 
         world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=2*size,
                                color=carla.Color(0, 0, 128), life_time=persistency)
@@ -253,9 +260,11 @@ class RouteScenario(BasicScenario):
 
             except Exception as e:
                 if not debug:
-                    print("Skipping scenario '{}' due to setup error: {}".format(scenario_config.type, e))
+                    print(f"Skipping scenario '{scenario_config.name}' due to setup error: {e}")
                 else:
+                    print(f"\033[93mFailed to initialize scenario {scenario_config.name}:")
                     traceback.print_exc()
+                    print("\033[0m")
                 continue
 
             self.list_scenarios.append(scenario_instance)
@@ -294,15 +303,11 @@ class RouteScenario(BasicScenario):
 
         # Add the behavior that manages the scenario trigger conditions
         scenario_triggerer = ScenarioTriggerer(
-            self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance, repeat_scenarios=False
-        )
+            self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
         behavior.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
 
         # Add the Background Activity
-        background_activity = BackgroundActivity(
-            self.world, self.ego_vehicles[0], self.config, self.route, timeout=self.timeout
-        )
-        behavior.add_child(background_activity.behavior_tree)
+        behavior.add_child(BackgroundBehavior(self.ego_vehicles[0], self.route, name="BackgroundActivity"))
 
         behavior.add_children(scenario_behaviors)
         return behavior
@@ -325,7 +330,7 @@ class RouteScenario(BasicScenario):
         criteria.add_child(CollisionTest(self.ego_vehicles[0], other_actor_type='walker', name="CollisionPedestrianTest"))
         criteria.add_child(RunningRedLightTest(self.ego_vehicles[0]))
         criteria.add_child(RunningStopTest(self.ego_vehicles[0]))
-        criteria.add_child(CheckMinSpeed(self.ego_vehicles[0], name="MinSpeedTest"))
+        criteria.add_child(MinSpeedRouteTest(self.ego_vehicles[0], name="MinSpeedTest"))
 
         # These stop the route early to save computational time
         criteria.add_child(InRouteTest(
