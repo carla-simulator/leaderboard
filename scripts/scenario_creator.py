@@ -13,92 +13,87 @@ import carla
 SCENARIO_TYPES ={
     # Old scenarios
     "ControlLoss": [
-        ["trigger_point", "transform"]
     ],
     "FollowLeadingVehicleRoute": [
-        ["trigger_point", "transform"]
     ],
     "DynamicObjectCrossing": [
-        ["trigger_point", "transform"],
         ["distance", "value"]
     ],
     "VehicleTurningRoute": [
-        ["trigger_point", "transform"]
     ],
     "SignalizedJunctionLeftTurn": [
-        ["trigger_point", "transform"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "SignalizedJunctionRightTurn": [
-        ["trigger_point", "transform"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "OppositeVehicleRunningRedLight": [
-        ["trigger_point", "transform"],
         ["direction", "choice"],
         ["adversary_speed", "value"],
     ],
     # Old junction scenarios, non signalized version
     "NonSignalizedJunctionLeftTurn": [
-        ["trigger_point", "transform"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "NonSignalizedJunctionRightTurn": [
-        ["trigger_point", "transform"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "OppositeVehicleTakingPriority": [
-        ["trigger_point", "transform"],
         ["direction", "choice"],
         ["adversary_speed", "value"],
     ],
     "ParkingCrossingPedestrian": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
         ["direction", "choice"],
     ],
     # Actor flows
     "EnterActorFlow": [
-        ["trigger_point", "transform"],
+        ["start_actor_flow", "location"],
+        ["end_actor_flow", "location"],
+        ["flow_speed", "value"],
+        ["source_dist_interval", "interval"],
+    ],
+    "EnterActorFlowV2": [
         ["start_actor_flow", "location"],
         ["end_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "InterurbanActorFlow": [
-        ["trigger_point", "transform"],
         ["start_actor_flow", "location"],
         ["end_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "InterurbanAdvancedActorFlow": [
-        ["trigger_point", "transform"],
         ["start_actor_flow", "location"],
         ["end_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "HighwayExit": [
-        ["trigger_point", "transform"],
         ["start_actor_flow", "location"],
         ["end_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "MergerIntoSlowTraffic": [
-        ["trigger_point", "transform"],
+        ["start_actor_flow", "location"],
+        ["end_actor_flow", "location"],
+        ["flow_speed", "value"],
+        ["source_dist_interval", "interval"],
+    ],
+    "MergerIntoSlowTrafficV2": [
         ["start_actor_flow", "location"],
         ["end_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "CrossingBycicleFlow": [
-        ["trigger_point", "transform"],
         ["start_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
@@ -106,60 +101,48 @@ SCENARIO_TYPES ={
     ],
     # Route obstacles
     "ConstructionObstacle": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
     ],
     "ConstructionObstacleTwoWays": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
         ["frequency", "value"],
     ],
     "Accident": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
         ["direction", "value"],
     ],
     "AccidentTwoWays": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
         ["frequency", "value"],
     ],
     "ParkedObstacle": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
     ],
     "ParkedObstacleTwoWays": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
         ["frequency", "value"],
     ],
     "VehicleOpensDoor": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
     ],
     "VehicleOpensDoorTwoWays": [
-        ["trigger_point", "transform"],
         ["distance", "value"],
         ["frequency", "value"],
     ],
     # Cut ins
     "HighwayCutIn": [
-        ["trigger_point", "transform"],
         ["other_actor_location", "location"],
     ],
     "ParkingCutIn": [
-        ["trigger_point", "transform"],
         ["direction", "choice"],
     ],
     # Special ones
     "ParkingExit": [
-        ["trigger_point", "transform"],
         ["direction", "choice"],
         ["front_vehicle_distance", "value"],
         ["behind_vehicle_distance", "value"],
     ],
     "BackgroundActivityParametrizer": [
-        ["trigger_point", "transform"],
         ["num_front_vehicles", "value"],
         ["num_back_vehicles", "value"],
         ["road_spawn_dist", "value"],
@@ -173,7 +156,6 @@ SCENARIO_TYPES ={
         ["junction_source_perc", "value"],
     ],
     "PriorityAtJunction": [
-        ["trigger_point", "transform"],
     ],
 
     # Yield to EV
@@ -201,22 +183,29 @@ def show_saved_scenarios(filename, route_id, world):
             world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
             world.debug.draw_string(trigger_location + carla.Location(z=0.5), name, True, color=carla.Color(0, 0 , 125), life_time=100000)
 
-def get_scenario_type():
+def get_scenario_type(tmap, world, spectator):
     while True:
         scen_type = input("\033[1m> Specify the scenario type \033[0m")
-        if scen_type == "Re":
-            restart = True
-            break
         if scen_type not in list(SCENARIO_TYPES):
             print(f"\033[1m\033[93mScenario type '{scen_type}' doesn't match any of the know scenarios\033[0m")
         else:
             break
-    return scen_type
 
-def get_attributes_data(scen_type, tmap, world, spectator):
+    wp = tmap.get_waypoint(spectator.get_location())
+    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
+    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=100000)
+    trigger_point = (
+        str(round(wp.transform.location.x, 1)),
+        str(round(wp.transform.location.y, 1)),
+        str(round(wp.transform.location.z, 1)),
+        str(round(wp.transform.rotation.yaw, 1))
+    )
+    return scen_type, trigger_point
+
+def get_attributes_data(scen_type, trigger_point, tmap, world, spectator):
     attribute_list = SCENARIO_TYPES[scen_type]
-    scenario_attributes = []
-    for i, attribute in enumerate(attribute_list):
+    scenario_attributes = [['trigger_point', 'transform', trigger_point]]
+    for attribute in attribute_list:
         a_name, a_type = attribute
         if a_type == 'transform':
             a_data = get_transform_data(a_name, scen_type, tmap, world, spectator)
@@ -234,7 +223,7 @@ def get_attributes_data(scen_type, tmap, world, spectator):
     return scenario_attributes
 
 def get_transform_data(a_name, scen_type, tmap, world, spectator):
-    input(f"\033[1m> Get the '{a_name}' transform \033[0m")
+    input(f"\033[1m> Enter the '{a_name}' transform \033[0m")
     wp = tmap.get_waypoint(spectator.get_location())
     world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
     world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=100000)
@@ -245,8 +234,8 @@ def get_transform_data(a_name, scen_type, tmap, world, spectator):
         str(round(wp.transform.rotation.yaw, 1))
     )
 
-def get_location_data(a_name, tmap, world, spectator):
-    input(f"\033[1m> Get the '{a_name}' location \033[0m")
+def get_location_data(a_name, scen_type, tmap, world, spectator):
+    input(f"\033[1m> Enter the '{a_name}' location \033[0m")
     wp = tmap.get_waypoint(spectator.get_location())
     world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
     world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=100000)
@@ -385,10 +374,10 @@ def main():
             print(" ------------------------------------------------------------ ")
 
             # Get the scenario type
-            scen_type = get_scenario_type()
+            scen_type, trigger_point = get_scenario_type(tmap, world, spectator)
 
             # Get the attributes
-            scen_attributes = get_attributes_data(scen_type, tmap, world, spectator)
+            scen_attributes = get_attributes_data(scen_type, trigger_point, tmap, world, spectator)
 
             # Give feedback to the user
             print_scenario_data(scen_type, scen_attributes)

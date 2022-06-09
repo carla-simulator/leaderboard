@@ -153,6 +153,11 @@ def main():
     grp = GlobalRoutePlanner(tmap, 2.0)
     points = []
 
+    print(" ------------------------------------------------------------ ")
+    print(" |               Use Ctrl+C to stop the script              | ")
+    print(" |          Any unsaved route points will be lost           | ")
+    print(" ------------------------------------------------------------ ")
+
     # Get the data already at the file
     points, distance = get_saved_data(args.file, args.route_id, world, grp)
     print(f"Total accumulated distance is {distance}")
@@ -160,18 +165,15 @@ def main():
     try:
         while True:
             # Get the scenario type
-            action = input(f"\033[1m> Specify the next action ('Add', 'Save', 'End') \033[0m")
+            action = input(f"\033[1m> Specify the next action ('Add' / 'Save') \033[0m")
             if action == "Add":
                 print("Adding a new point")
                 added_distance = add_data(points, tmap, world, spectator, grp)
                 distance += added_distance
-                print(f"Total accumulated distance is {distance}")
+                print(f"Total accumulated distance is {round(distance, 1)}")
             elif action == "Save":
                 print("Saving data to the xml file")
                 save_data(args.file, args.route_id, points)
-            elif action == "End":
-                print("Stopping the script")
-                break
             else:
                 print(f"\033[1m\033[93mUnknown action '{action}'. Try again\033[0m")
 
