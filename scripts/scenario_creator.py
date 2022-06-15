@@ -9,12 +9,15 @@
 import argparse
 from lxml import etree
 import carla
+import sys
+
+LIFE_TIME = 10000
 
 SCENARIO_TYPES ={
     # Old scenarios
     "ControlLoss": [
     ],
-    "FollowLeadingVehicleRoute": [
+    "HardBreakRoute": [
     ],
     "DynamicObjectCrossing": [
         ["distance", "value"]
@@ -93,7 +96,7 @@ SCENARIO_TYPES ={
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
-    "CrossingBycicleFlow": [
+    "CrossingBicycleFlow": [
         ["start_actor_flow", "location"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
@@ -181,7 +184,7 @@ def show_saved_scenarios(filename, route_id, world):
             name = scenario.attrib.get('name')
             trigger_location = convert_elem_to_location(scenario.find('trigger_point'))
             world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
-            world.debug.draw_string(trigger_location + carla.Location(z=0.5), name, True, color=carla.Color(0, 0 , 125), life_time=100000)
+            world.debug.draw_string(trigger_location + carla.Location(z=0.5), name, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
 
 def get_scenario_type(tmap, world, spectator):
     while True:
@@ -193,7 +196,7 @@ def get_scenario_type(tmap, world, spectator):
 
     wp = tmap.get_waypoint(spectator.get_location())
     world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
-    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=100000)
+    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
     trigger_point = (
         str(round(wp.transform.location.x, 1)),
         str(round(wp.transform.location.y, 1)),
@@ -226,7 +229,7 @@ def get_transform_data(a_name, scen_type, tmap, world, spectator):
     input(f"\033[1m> Enter the '{a_name}' transform \033[0m")
     wp = tmap.get_waypoint(spectator.get_location())
     world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
-    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=100000)
+    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
     return (
         str(round(wp.transform.location.x, 1)),
         str(round(wp.transform.location.y, 1)),
@@ -238,7 +241,7 @@ def get_location_data(a_name, scen_type, tmap, world, spectator):
     input(f"\033[1m> Enter the '{a_name}' location \033[0m")
     wp = tmap.get_waypoint(spectator.get_location())
     world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
-    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=100000)
+    world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
     return (
         str(round(wp.transform.location.x, 1)),
         str(round(wp.transform.location.y, 1)),
@@ -349,6 +352,7 @@ def main():
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
     argparser.add_argument('-f', '--file', required=True, help='File at which to place the scenarios')
     argparser.add_argument('-r', '--route-id', required=True, help='Route id of the scenarios')
+    argparser.add_argument('-s', '--show-only', action='store_true', help='Only shows the route')
     args = argparser.parse_args()
 
     # Get the client
@@ -362,6 +366,8 @@ def main():
 
     # Get the data already at the file
     show_saved_scenarios(args.file, args.route_id, world)
+    if args.show_only:
+        sys.exit(0)
 
     print(" ------------------------------------------------------------ ")
     print(" |               Use Ctrl+C to stop the script              | ")

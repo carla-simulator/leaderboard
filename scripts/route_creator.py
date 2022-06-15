@@ -8,10 +8,13 @@
 
 import argparse
 from lxml import etree
+import sys
 
 import carla
 from agents.navigation.global_route_planner import GlobalRoutePlanner
 from agents.navigation.local_planner import RoadOption
+
+LIFE_TIME = 10000
 
 def draw_point(world, wp, option):
     if option == RoadOption.LEFT:  # Yellow
@@ -27,12 +30,32 @@ def draw_point(world, wp, option):
     else:  # LANEFOLLOW
         color = carla.Color(0, 128, 0)  # Green
 
-    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), color=color)
+    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), color=color, life_time=LIFE_TIME)
 
 def draw_keypoint(world, location):
-    world.debug.draw_point(location + carla.Location(z=0.2), size=0.15, color=carla.Color(128, 0, 128))
+    world.debug.draw_point(location + carla.Location(z=0.2), size=0.15, color=carla.Color(128, 0, 128), life_time=LIFE_TIME)
     string = "(" + str(round(location.x, 1)) + ", " + str(round(location.y, 1)) + ", " + str(round(location.z, 1)) + ")"
-    world.debug.draw_string(location + carla.Location(z=0.5), string, True, color=carla.Color(0, 0 , 128), life_time=100000)
+    world.debug.draw_string(location + carla.Location(z=0.5), string, True, color=carla.Color(0, 0 , 128), life_time=LIFE_TIME)
+
+def show_all_routes(filename, world, grp):
+    def convert_elem_to_location(elem):
+        """Convert an ElementTree.Element to a CARLA Location"""
+        return carla.Location(float(elem.attrib.get('x')), float(elem.attrib.get('y')), float(elem.attrib.get('z')))
+
+    tree = etree.parse(filename)
+    root = tree.getroot()
+    for route in root.iter("route"):
+        prev_point = None
+
+        for position in route.find('waypoints').iter('position'):
+            point = convert_elem_to_location(position)
+            draw_keypoint(world, point)
+
+            if prev_point:
+                interpolated_trace = grp.trace_route(prev_point, point)
+                for wp, option in interpolated_trace:
+                    draw_point(world, wp, option)
+            prev_point = point
 
 def get_saved_data(filename, route_id, world, grp):
     def convert_elem_to_location(elem):
@@ -140,6 +163,8 @@ def main():
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
     argparser.add_argument('-f', '--file', required=True, help='File at which to place the scenarios')
     argparser.add_argument('-r', '--route-id', required=True, help='Route id of the scenarios')
+    argparser.add_argument('-s', '--show', action='store_true', help='Only shows the route')
+    argparser.add_argument('-sa', '--show-all', action='store_true', help='Shows all the routes')
     args = argparser.parse_args()
 
     # Get the client
@@ -153,13 +178,21 @@ def main():
     grp = GlobalRoutePlanner(tmap, 2.0)
     points = []
 
+    # Show all data
+    if args.show_all:
+        show_all_routes(args.file, world, grp)
+        sys.exit(0)
+
+    # Get the data already at the file
+    points, distance = get_saved_data(args.file, args.route_id, world, grp)
+    if args.show:
+        sys.exit(0)
+
     print(" ------------------------------------------------------------ ")
     print(" |               Use Ctrl+C to stop the script              | ")
     print(" |          Any unsaved route points will be lost           | ")
     print(" ------------------------------------------------------------ ")
 
-    # Get the data already at the file
-    points, distance = get_saved_data(args.file, args.route_id, world, grp)
     print(f"Total accumulated distance is {distance}")
 
     try:
