@@ -3015,13 +3015,764 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="22" town="TrainingMap">
-      <!-- Mixed route of low density and residential areas, clear dawn into cloudy midday -->
+   <route id="22" town="Town12">
+      <!-- Mixed route of rural and interurban, rainy day midday into clear one -->
       <weathers>
+         <weather route_percentage="0"
+            cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="20.0"
+            wind_intensity="60.0" sun_azimuth_angle="160" sun_altitude_angle="45.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="20.0"
+            wind_intensity="30.0" sun_azimuth_angle="160" sun_altitude_angle="45.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
+         <position x="2655.9" y="2468.5" z="360.2"/>
+         <position x="2594.3" y="2408.6" z="362.5"/>
+         <position x="2537.6" y="2457.8" z="364.5"/>
+         <position x="2459.7" y="2563.7" z="366.9"/>
+         <position x="2187.6" y="2590.3" z="365.0"/>
+         <position x="2388.6" y="2455.7" z="367.5"/>
+         <position x="2187.9" y="2348.4" z="363.1"/>
+         <position x="2073.6" y="2294.9" z="362.3"/>
+         <position x="1984.7" y="2230.9" z="363.4"/>
+         <position x="2186.9" y="2120.8" z="358.0"/>
+         <position x="2451.0" y="2063.5" z="358.8"/>
+         <position x="2724.2" y="2062.0" z="355.0"/>
+         <position x="2773.9" y="1890.0" z="349.0"/>
+         <position x="2772.9" y="1549.2" z="345.2"/>
+         <position x="2885.1" y="1555.4" z="341.4"/>
+         <position x="2577.8" y="1596.8" z="350.5"/>
+         <position x="2423.4" y="1279.0" z="354.1"/>
+         <position x="2376.6" y="-223.4" z="333.7"/>
+         <position x="2526.5" y="-476.0" z="337.9"/>
+         <position x="2936.9" y="-650.9" z="329.5"/>
+         <position x="3187.4" y="-1163.7" z="320.2"/>
+         <position x="2699.7" y="-1458.6" z="336.7"/>
       </waypoints>
       <scenarios>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="2655.8" y="2443.0" z="360.3" yaw="269.9"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="2511.2" y="2490.1" z="365.5" yaw="179.7"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="20" to="65"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="2443.6" y="2640.5" z="366.4" yaw="179.8"/>
+            <distance value="35"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
+            <trigger_point x="2351.9" y="2640.7" z="367.3" yaw="179.8"/>
+            <frequency value="90"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
+            <trigger_point x="2218.4" y="2527.0" z="366.0" yaw="-0.1"/>
+            <distance value="75"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="2388.7" y="2467.3" z="367.7" yaw="269.7"/>
+            <flow_speed value="15"/>
+            <source_dist_interval from="30" to="80"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
+            <trigger_point x="2299.9" y="2409.4" z="366.8" yaw="179.9"/>
+            <distance value="40"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+            <trigger_point x="2214.9" y="2409.6" z="365.0" yaw="179.9"/>
+         </scenario>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="2117.3" y="2294.8" z="361.5" yaw="180.0"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="2056.5" y="2180.1" z="360.4" yaw="-0.2"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2311.7" y="2064.0" z="359.2" yaw="-0.2"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
+            <trigger_point x="2571.7" y="2063.0" z="355.8" yaw="-0.3"/>
+            <distance value="40"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+            <trigger_point x="2734.6" y="2062.0" z="355.2" yaw="-0.3"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2773.9" y="1888.9" z="349.0" yaw="269.8"/>
+            <direction value="right"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="2772.9" y="1554.7" z="345.0" yaw="269.8"/>
+            <flow_speed value="15"/>
+            <source_dist_interval from="10" to="65"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+            <trigger_point x="2849.0" y="1507.7" z="344.4" yaw="359.9"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
+            <trigger_point x="2522.7" y="1408.9" z="355.4" yaw="247.6"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
+            <trigger_point x="2388.6" y="968.9" z="346.6" yaw="270.2"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_3" type="AccidentTwoWays">
+            <trigger_point x="2390.2" y="365.4" z="336.3" yaw="270.2"/>
+            <frequency value="110"/>
+         </scenario>
+         <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
+            <trigger_point x="2383.8" y="-15.2" z="334.8" yaw="266.8"/>
+         </scenario>
+         <!-- <scenario name="HazardMovingAtSideLane_1" type="HazardMovingAtSideLane">
+            <trigger_point x="3187.4" y="-1014.2" z="323.2" yaw="270.0"/>
+</scenario> -->
+      </scenarios>
+   </route>
+   <route id="23" town="Town12">
+      <!-- Mixed route of rural and interurban, rainy day midday into clear one -->
+      <weathers>
+         <weather route_percentage="0"
+            cloudiness="25.0" precipitation="0.0" precipitation_deposits="0.0" wetness="20.0"
+            wind_intensity="0.0" sun_azimuth_angle="128" sun_altitude_angle="0.0"
+            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.2"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="25.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
+            wind_intensity="0.0" sun_azimuth_angle="128" sun_altitude_angle="45.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.2"
+            mie_scattering_scale="0.03"/>
+      </weathers>
+      <waypoints>
+         <position x="3601.5" y="2010.6" z="349.1"/>
+         <position x="3598.5" y="1506.1" z="349.0"/>
+         <position x="3942.1" y="1834.5" z="355.7"/>
+         <position x="3798.3" y="3073.6" z="369.8"/>
+         <position x="3459.8" y="3093.8" z="368.3"/>
+         <position x="3023.8" y="3095.8" z="364.2"/>
+         <position x="2924.1" y="3092.7" z="363.0"/>
+         <position x="2740.9" y="3061.3" z="363.1"/>
+         <position x="2434.3" y="3102.9" z="366.0"/>
+         <position x="2495.8" y="3376.6" z="358.5"/>
+         <position x="2446.7" y="3667.4" z="355.0"/>
+         <position x="3077.2" y="3806.5" z="360.7"/>
+         <position x="4011.6" y="4164.9" z="368.8"/>
+         <position x="3643.7" y="4367.9" z="368.3"/>
+         <position x="3185.3" y="4293.7" z="363.4"/>
+         <position x="2673.8" y="4210.9" z="359.3"/>
+         <position x="2579.5" y="4236.6" z="359.4"/>
+         <position x="2549.6" y="4480.6" z="362.0"/>
+         <position x="2473.2" y="4651.7" z="364.6"/>
+         <position x="2295.2" y="4734.2" z="364.9"/>
+         <position x="2237.5" y="4550.7" z="362.0"/>
+      </waypoints>
+      <scenarios>
+         <!-- <scenario name="HazardMovingAtSideLane" type="HazardMovingAtSideLane">
+            <trigger_point x="3601.6" y="1969.5" z="348.1" yaw="-89.9"/>
+</scenario> -->
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="3414.7" y="1563.6" z="340.4" yaw="-124.9"/>
+            <flow_speed value="17"/>
+            <source_dist_interval from="20" to="80"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="3890.5" y="1505.5" z="346.7" yaw="359.9"/>
+            <flow_speed value="22"/>
+            <source_dist_interval from="30" to="100"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
+            <trigger_point x="3942.3" y="1961.9" z="358.2" yaw="89.9"/>
+            <distance value="130"/>
+            <frequency value="160"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
+            <trigger_point x="3942.9" y="2356.7" z="363.8" yaw="89.9"/>
+            <distance value="140"/>
+            <frequency value="150"/>
+         </scenario>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="3927.6" y="2901.7" z="369.6" yaw="106.0"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
+            <trigger_point x="3428.8" y="3094.0" z="368.1" yaw="179.7"/>
+            <distance value="115"/>
+         </scenario>
+         <scenario name="MergerIntoSlowTraffic_1" type="MergerIntoSlowTraffic">
+            <trigger_point x="3078.1" y="3095.5" z="364.9" yaw="179.7"/>
+            <start_actor_flow x="2982.1" y="3089.0" z="363.7"/>
+            <end_actor_flow x="2771.9" y="3065.6" z="362.0"/>
+            <flow_speed value="11"/>
+            <source_dist_interval from="15" to="40"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="2504.9" y="3323.8" z="362.3" yaw="99.8"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="2446.7" y="3667.3" z="355.0" yaw="99.6"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_2" type="ConstructionObstacleTwoWays">
+            <trigger_point x="2549.4" y="3720.3" z="355.5" yaw="9.3"/>
+            <frequency value="110"/>
+         </scenario>
+         <!-- <scenario name="HazardMovingAtSideLane" type="HazardMovingAtSideLane">
+            <trigger_point x="2823.0" y="3765.0" z="357.6" yaw="9.3"/>
+</scenario> -->
+         <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
+            <trigger_point x="3099.9" y="3810.2" z="361.0" yaw="9.3"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="PedestrianCrossing_1" type="PedestrianCrossing">
+            <trigger_point x="3527.5" y="3880.0" z="366.7" yaw="9.3"/>
+            <start_walker_flow x="3579.6" y="3901.8" z="367.4"/>
+            <end_walker_flow_1 x="3564.9" y="3879.9" z="367.1" p="0.5"/>
+            <end_walker_flow_2 x="3563.9" y="3889.2" z="367.1" p="0.5"/>
+            <source_dist_interval from="2" to="14"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="3636.7" y="3897.9" z="367.8" yaw="9.3"/>
+            <distance value="55"/>
+         </scenario>
+         <scenario name="ConstructionObstacle_1" type="ConstructionObstacle">
+            <trigger_point x="4018.6" y="4121.0" z="368.7" yaw="99.0"/>
+         </scenario>
+         <scenario name="PedestrianCrossing_2" type="PedestrianCrossing">
+            <trigger_point x="3746.7" y="4339.0" z="368.5" yaw="99.0"/>
+            <start_walker_flow x="3719.5" y="4375.8" z="368.4" p="0.5"/>
+            <end_walker_flow_1 x="3769.7" y="4383.9" z="368.4" p="0.5"/>
+            <end_walker_flow_2 x="3740.4" y="4358.8" z="368.5" p="0.5"/>
+            <source_dist_interval from="5" to="10"/>
+         </scenario>
+         <scenario name="PriorityAtJunction_1" type="PriorityAtJunction">
+            <trigger_point x="3608.6" y="4362.2" z="368.2" yaw="189.2"/>
+         </scenario>
+         <scenario name="PriorityAtJunction_2" type="PriorityAtJunction">
+            <trigger_point x="3364.6" y="4322.7" z="365.8" yaw="189.2"/>
+         </scenario>
+         <scenario name="ConstructionObstacle_2" type="ConstructionObstacle">
+            <trigger_point x="3482.7" y="4341.8" z="367.6" yaw="189.2"/>
+         </scenario>
+         <scenario name="Accident_1" type="Accident">
+            <trigger_point x="3021.2" y="4267.1" z="361.5" yaw="189.2"/>
+            <distance value="90"/>
+         </scenario>
+         <scenario name="SignalizedJunctionLeftTurn_1" type="SignalizedJunctionLeftTurn">
+            <trigger_point x="2661.2" y="4212.2" z="359.3" yaw="189.2"/>
+            <flow_speed value="20"/>
+            <source_dist_interval from="45" to="90"/>
+         </scenario>
+         <scenario name="PriorityAtJunction_3" type="PriorityAtJunction">
+            <trigger_point x="2567.9" y="4369.1" z="360.6" yaw="99.4"/>
+         </scenario>
+         <scenario name="PriorityAtJunction_4" type="PriorityAtJunction">
+            <trigger_point x="2548.6" y="4486.3" z="362.1" yaw="99.4"/>
+         </scenario>
+         <scenario name="PriorityAtJunction_5" type="PriorityAtJunction">
+            <trigger_point x="2529.1" y="4604.4" z="363.6" yaw="99.4"/>
+         </scenario>
+         <scenario name="ParkingCutIn_1" type="ParkingCutIn">
+            <trigger_point x="2407.9" y="4663.8" z="364.6" yaw="98.9"/>
+            <direction value="right"/>
+         </scenario>
+         <scenario name="VehicleOpensDoor_1" type="VehicleOpensDoor">
+            <trigger_point x="2213.3" y="4694.2" z="363.5" yaw="279.6"/>
+            <distance value="40"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="24" town="Town12">
+      <!-- Mixed route of rural and interurban, rainy day midday into clear one -->
+      <weathers>
+         <weather route_percentage="0"
+            cloudiness="60.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
+            wind_intensity="10.0" sun_azimuth_angle="45" sun_altitude_angle="45.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="0.8"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="20.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
+            wind_intensity="10.0" sun_azimuth_angle="45" sun_altitude_angle="45.0"
+            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="0.8"
+            mie_scattering_scale="0.03"/>
+      </weathers>
+      <waypoints>
+         <position x="1379.6" y="2234.9" z="363.5"/>
+         <position x="977.8" y="2295.7" z="358.5"/>
+         <position x="779.3" y="2685.0" z="351.0"/>
+         <position x="441.7" y="3079.0" z="360.7"/>
+         <position x="-121.4" y="3079.7" z="362.9"/>
+         <position x="-449.8" y="3080.0" z="359.8"/>
+         <position x="-687.3" y="3048.6" z="362.1"/>
+         <position x="-828.4" y="3369.1" z="359.4"/>
+         <position x="-770.4" y="3492.8" z="362.0"/>
+         <position x="-605.0" y="3587.2" z="363.0"/>
+         <position x="-655.0" y="3812.0" z="368.9"/>
+         <position x="-710.9" y="3740.5" z="367.2"/>
+         <position x="-549.0" y="3706.1" z="365.2"/>
+         <position x="-500.0" y="3867.4" z="367.8"/>
+         <position x="-973.1" y="3920.0" z="361.0"/>
+         <position x="-1561.2" y="3915.7" z="364.5"/>
+         <position x="-1678.8" y="3994.1" z="365.6"/>
+         <position x="-1576.5" y="4070.9" z="367.0"/>
+         <position x="-1367.7" y="4074.7" z="360.8"/>
+         <position x="-830.3" y="4159.5" z="364.9"/>
+         <position x="-1142.5" y="4834.0" z="369.5"/>
+         <position x="-2493.7" y="4637.4" z="370.1"/>
+      </waypoints>
+      <scenarios>
+         <!-- <scenario name="HazardMovingAtSideLane" type="HazardMovingAtSideLane">
+            <trigger_point x="1268.1" y="2295.5" z="363.5" yaw="180.0"/>
+</scenario> -->
+         <scenario name="InterurbanAdvancedActorFlow_1" type="InterurbanAdvancedActorFlow">
+            <trigger_point x="863.5" y="2295.8" z="355.7" yaw="180.0"/>
+            <start_actor_flow x="783.1" y="2401.9" z="350.2"/>
+            <end_actor_flow x="783.2" y="2192.1" z="355.0"/>
+            <flow_speed value="18"/>
+            <source_dist_interval from="20" to="75"/>
+         </scenario>
+         <scenario name="EnterActorFlow_1" type="EnterActorFlow">
+            <trigger_point x="752.7" y="3037.0" z="359.9" yaw="134.5"/>
+            <start_actor_flow x="740.9" y="3078.7" z="361.6"/>
+            <end_actor_flow x="578.5" y="3078.9" z="364.4"/>
+            <flow_speed value="16"/>
+            <source_dist_interval from="30" to="80"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
+            <trigger_point x="251.3" y="3079.2" z="354.7" yaw="179.9"/>
+            <distance value="100"/>
+         </scenario>
+         <scenario name="MergerIntoSlowTraffic_1" type="MergerIntoSlowTraffic">
+            <trigger_point x="-269.9" y="3079.8" z="362.3" yaw="179.9"/>
+            <start_actor_flow x="-395.1" y="3076.5" z="360.6"/>
+            <end_actor_flow x="-592.4" y="3062.3" z="357.4"/>
+            <flow_speed value="12"/>
+            <source_dist_interval from="15" to="40"/>
+         </scenario>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="-932.3" y="3102.4" z="363.0" yaw="84.9"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-829.0" y="3274.8" z="362.4" yaw="89.5"/>
+            <frequency value="110"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="-784.4" y="3492.9" z="361.9" yaw="-0.1"/>
+            <distance value="40"/>
+         </scenario>
+         <scenario name="ParkingCrossingPedestrian_1" type="ParkingCrossingPedestrian">
+            <trigger_point x="-605.0" y="3522.7" z="361.4" yaw="90.0"/>
+            <distance value="40"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="ParkingCutIn_1" type="ParkingCutIn">
+            <trigger_point x="-605.0" y="3597.8" z="363.3" yaw="90.0"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="ParkingCrossingPedestrian_2" type="ParkingCrossingPedestrian">
+            <trigger_point x="-604.9" y="3729.7" z="366.6" yaw="90.0"/>
+            <distance value="35"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="-710.9" y="3726.7" z="366.9" yaw="-90.0"/>
+         </scenario>
+         <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
+            <trigger_point x="-532.2" y="3706.1" z="365.1" yaw="-0.0"/>
+            <direction value="right"/>
+         </scenario>
+         <scenario name="ParkingCrossingPedestrian_3" type="ParkingCrossingPedestrian">
+            <trigger_point x="-392.1" y="3736.5" z="368.2" yaw="89.6"/>
+            <distance value="35"/>
+            <direction value="right"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="-391.8" y="3777.9" z="368.6" yaw="89.6"/>
+            <flow_speed value="13"/>
+            <source_dist_interval from="35" to="80"/>
+         </scenario>
+         <scenario name="PriorityAtJunction_1" type="PriorityAtJunction">
+            <trigger_point x="-738.6" y="3920.2" z="369.5" yaw="179.7"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_2" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-903.0" y="3920.6" z="363.9" yaw="180.4"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+            <trigger_point x="-1413.6" y="3916.8" z="362.4" yaw="180.4"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="PedestrianCrossing_1" type="PedestrianCrossing">
+            <trigger_point x="-1643.6" y="3915.1" z="364.5" yaw="180.4"/>
+            <start_walker_flow x="-1671.0" y="3904.9" z="364.2"/>
+            <end_walker_flow_1 x="-1659.0" y="3922.7" z="364.4" p="0.5"/>
+            <end_walker_flow_2 x="-1659.3" y="3910.0" z="364.4" p="0.5"/>
+            <source_dist_interval from="4" to="13"/>
+         </scenario>
+         <scenario name="SignalizedJunctionLeftTurn_1" type="SignalizedJunctionLeftTurn">
+            <trigger_point x="-1678.7" y="4026.8" z="366.1" yaw="90.0"/>
+            <flow_speed value="17"/>
+            <source_dist_interval from="15" to="65"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="-1554.7" y="4074.2" z="366.8" yaw="0.2"/>
+         </scenario>
+         <scenario name="Accident_1" type="Accident">
+            <trigger_point x="-1359.5" y="4074.8" z="360.5" yaw="0.2"/>
+         </scenario>
+         <scenario name="ParkedObstacle_1" type="ParkedObstacle">
+            <trigger_point x="-1082.0" y="4075.5" z="356.8" yaw="0.2"/>
+         </scenario>
+         <scenario name="ConstructionObstacle_1" type="ConstructionObstacle">
+            <trigger_point x="-830.3" y="4121.3" z="365.2" yaw="89.9"/>
+         </scenario>
+         <scenario name="SignalizedJunctionRightTurn_1" type="SignalizedJunctionRightTurn">
+            <trigger_point x="-829.8" y="4439.2" z="369.6" yaw="89.9"/>
+            <flow_speed value="17"/>
+            <source_dist_interval from="30" to="80"/>
+         </scenario>
+         <scenario name="Accident_2" type="Accident">
+            <trigger_point x="-948.1" y="4638.2" z="365.1" yaw="134.8"/>
+            <distance value="120"/>
+         </scenario>
+         <scenario name="ConstructionObstacle_2" type="ConstructionObstacle">
+            <trigger_point x="-1151.7" y="4843.2" z="369.8" yaw="134.8"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="-1486.7" y="4881.1" z="376.5" yaw="180.3"/>
+         </scenario>
+         <scenario name="MergerIntoSlowTraffic_2" type="MergerIntoSlowTraffic">
+            <trigger_point x="-2425.9" y="4859.9" z="376.2" yaw="217.4"/>
+            <start_actor_flow x="-2474.6" y="4841.3" z="374.9"/>
+            <end_actor_flow x="-2484.5" y="4719.1" z="371.8"/>
+            <flow_speed value="15"/>
+            <source_dist_interval from="25" to="50"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="25" town="Town12">
+      <!-- Mixed route of rural and interurban, rainy day midday into clear one -->
+      <weathers>
+         <weather route_percentage="0"
+            cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="20.0"
+            wind_intensity="60.0" sun_azimuth_angle="210" sun_altitude_angle="15.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="80.0"
+            wind_intensity="100.0" sun_azimuth_angle="210" sun_altitude_angle="45.0"
+            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+      </weathers>
+      <waypoints>
+         <position x="-829.4" y="906.6" z="342.3"/>
+         <position x="-835.1" y="152.2" z="349.0"/>
+         <position x="-474.3" y="-83.0" z="344.4"/>
+         <position x="506.3" y="-82.6" z="327.0"/>
+         <position x="1104.2" y="-82.5" z="341.5"/>
+         <position x="2138.9" y="-86.0" z="342.4"/>
+         <position x="2376.4" y="-194.9" z="334.4"/>
+         <position x="2375.9" y="-785.9" z="339.5"/>
+         <position x="2925.6" y="-908.6" z="331.0"/>
+         <position x="3189.0" y="-563.1" z="320.8"/>
+         <position x="3483.4" y="-185.1" z="323.5"/>
+         <position x="3042.1" y="-94.2" z="333.9"/>
+         <position x="2783.2" y="-364.9" z="326.4"/>
+         <position x="2586.4" y="-651.3" z="340.2"/>
+         <position x="2373.1" y="-557.5" z="343.0"/>
+         <position x="2385.8" y="702.1" z="340.8"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="-831.9" y="576.8" z="342.4" yaw="269.6"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
+            <trigger_point x="-645.8" y="-83.0" z="347.3" yaw="0.0"/>
+            <distance value="150"/>
+            <frequency value="160"/>
+         </scenario>
+         <!-- <scenario name="HazardMovingAtSideLane" type="HazardMovingAtSideLane">
+            <trigger_point x="-197.2" y="-82.8" z="337.9" yaw="0.0"/>
+</scenario> -->
+         <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
+            <trigger_point x="350.8" y="-82.6" z="327.7" yaw="0.0"/>
+            <distance value="140"/>
+            <frequency value="180"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
+            <trigger_point x="1030.3" y="-82.4" z="341.0" yaw="360.0"/>
+            <distance value="170"/>
+            <frequency value="170"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="1500.0" y="-82.7" z="338.6" yaw="360.0"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_2" type="ConstructionObstacleTwoWays">
+            <trigger_point x="1895.5" y="-82.9" z="347.2" yaw="360.0"/>
+            <distance value="120"/>
+            <frequency value="190"/>
+         </scenario>
+         <scenario name="SignalizedJunctionLeftTurn_1" type="SignalizedJunctionLeftTurn">
+            <trigger_point x="2304.8" y="-93.4" z="338.8" yaw="0.2"/>
+            <flow_speed value="18"/>
+            <source_dist_interval from="10" to="80"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="2375.8" y="-844.0" z="338.9" yaw="269.8"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="2495.4" y="-906.9" z="335.0" yaw="-0.2"/>
+            <distance value="50"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
+            <trigger_point x="2871.4" y="-908.4" z="330.8" yaw="-0.2"/>
+            <distance value="50"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="3185.8" y="-841.1" z="328.6" yaw="89.3"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
+            <trigger_point x="3273.0" y="-487.5" z="322.9" yaw="-0.6"/>
+            <frequency value="150"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="3483.6" y="-154.5" z="323.4" yaw="89.5"/>
+            <flow_speed value="15"/>
+            <source_dist_interval from="30" to="70"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2783.2" y="-205.4" z="327.1" yaw="270.0"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+            <trigger_point x="2783.3" y="-606.5" z="332.8" yaw="270.0"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
+            <trigger_point x="2692.0" y="-652.0" z="337.4" yaw="179.6"/>
+            <frequency value="180"/>
+         </scenario>
+         <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
+            <trigger_point x="2373.0" y="-172.1" z="335.0" yaw="88.4"/>
+         </scenario>
+         <!-- <scenario name="HazardMovingAtSideLane" type="HazardMovingAtSideLane">
+            <trigger_point x="2383.6" y="49.4" z="333.2" yaw="87.5"/>
+</scenario> -->
+      </scenarios>
+   </route>
+   <route id="26" town="Town12">
+      <!-- Mixed route of rural and interurban, rainy day midday into clear one -->
+      <weathers>
+         <weather route_percentage="0"
+            cloudiness="10.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
+            wind_intensity="5.0" sun_azimuth_angle="220.0" sun_altitude_angle="45.0"
+            fog_density="2.0" fog_distance="0.75" fog_falloff="0.25" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="50.0" precipitation="30.0" precipitation_deposits="50.0" wetness="10.0"
+            wind_intensity="30.0" sun_azimuth_angle="220.0" sun_altitude_angle="45.0"
+            fog_density="15.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+      </weathers>
+      <waypoints>
+         <!-- <position x="3895.4" y="3138.9" z="370.0"/> -->
+         <position x="1156.5" y="3679.0" z="367.3"/>
+         <position x="1028.4" y="3593.4" z="369.7"/>
+         <position x="960.3" y="3443.3" z="370.5"/>
+         <position x="982.5" y="3228.4" z="367.2"/>
+         <position x="1197.7" y="3102.7" z="365.7"/>
+         <position x="1378.4" y="3099.0" z="363.5"/>
+         <position x="2199.5" y="3103.7" z="356.0"/>
+         <position x="2221.3" y="3101.3" z="356.3"/>
+         <position x="2556.9" y="3110.2" z="357.7"/>
+         <position x="2605.6" y="3117.1" z="357.8"/>
+         <position x="3078.3" y="3116.5" z="364.9"/>
+         <position x="3895.4" y="3138.9" z="370.0"/>
+         <position x="4162.5" y="3612.7" z="370.8"/>
+         <position x="4101.1" y="3985.3" z="369.3"/>
+         <position x="3999.3" y="4640.9" z="369.2"/>
+         <position x="3890.0" y="5312.0" z="367.4"/>
+         <position x="3869.3" y="5428.1" z="367.3"/>
+         <position x="3745.4" y="6084.0" z="367.4"/>
+         <position x="3335.1" y="6301.5" z="369.1"/>
+         <position x="3034.4" y="6252.6" z="370.3"/>
+         <position x="2752.3" y="6206.2" z="372.1"/>
+         <position x="2660.1" y="6191.0" z="371.2"/>
+         <position x="2204.7" y="6114.2" z="370.2"/>
+         <position x="1760.5" y="6061.9" z="367.1"/>
+         <position x="787.4" y="6066.9" z="362.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ParkingExit_1" type="ParkingExit">
+            <trigger_point x="1156.4" y="3680.0" z="367.3" yaw="279.5"/>
+            <direction value="right"/>
+            <flow_interval value="25"/>
+            <front_vehicle_distance value="9"/>
+            <behind_vehicle_distance value="9"/>
+         </scenario>
+         <scenario name="PedestrianCrossing_1" type="PedestrianCrossing">
+            <trigger_point x="972.0" y="3584.2" z="370.5" yaw="189.3"/>
+            <start_walker_flow x="945.0" y="3565.0" z="370.9"/>
+            <end_walker_flow_1 x="953.6" y="3587.4" z="370.7" p="0.5"/>
+            <end_walker_flow_2 x="955.0" y="3578.3" z="370.7" p="0.5"/>
+            <source_dist_interval from="6" to="10"/>
+         </scenario>
+         <scenario name="EnterActorFlow_1" type="EnterActorFlow">
+            <trigger_point x="1009.2" y="3139.2" z="363.9" yaw="317.5"/>
+            <start_actor_flow x="1020.0" y="3102.9" z="363.0"/>
+            <end_actor_flow x="1165.0" y="3102.7" z="365.4"/>
+            <flow_speed value="15"/>
+            <source_dist_interval from="20" to="70"/>
+         </scenario>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="1427.9" y="3098.9" z="364.3" yaw="-0.1"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
+            <trigger_point x="1902.2" y="3098.4" z="358.0" yaw="-0.1"/>
+            <distance value="80"/>
+         </scenario>
+         <scenario name="Accident_1" type="Accident">
+            <trigger_point x="2305.0" y="3105.5" z="357.6" yaw="2.5"/>
+            <distance value="160"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="HighwayCutIn_1" type="HighwayCutIn">
+            <trigger_point x="2696.4" y="3116.9" z="359.1" yaw="-0.0"/>
+            <other_actor_location x="2744.9" y="3150.0" z="363.2"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
+            <trigger_point x="3537.1" y="3114.5" z="369.1" yaw="-0.3"/>
+            <distance value="100"/>
+         </scenario>
+         <scenario name="HighwayCutIn_2" type="HighwayCutIn">
+            <trigger_point x="4099.2" y="3997.4" z="369.3" yaw="98.8"/>
+            <other_actor_location x="4054.8" y="4074.6" z="368.8"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
+            <trigger_point x="4009.0" y="4578.1" z="369.2" yaw="98.8"/>
+            <distance value="110"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_4" type="YieldToEmergencyVehicle">
+            <trigger_point x="3300.6" y="6296.4" z="369.1" yaw="-170.7"/>
+            <distance value="120"/>
+         </scenario>
+         <scenario name="HighwayCutIn_3" type="HighwayCutIn">
+            <trigger_point x="2800.8" y="6214.2" z="372.5" yaw="-170.7"/>
+            <other_actor_location x="2744.2" y="6186.1" z="371.8"/>
+         </scenario>
+         <scenario name="HighwayCutIn_4" type="HighwayCutIn">
+            <trigger_point x="1299.9" y="6064.0" z="366.3" yaw="179.7"/>
+            <other_actor_location x="1177.7" y="6049.6" z="365.8"/>
+         </scenario>
+         <scenario name="Accident_2" type="Accident">
+            <trigger_point x="2036.3" y="6084.8" z="369.6" yaw="-171.7"/>
+            <distance value="150"/>
+         </scenario>
+         <scenario name="ConstructionObstacle_1" type="ConstructionObstacle">
+            <trigger_point x="3824.0" y="5686.5" z="367.3" yaw="99.7"/>
+            <distance value="200"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="27" town="Town12">
+      <!-- Mixed route of rural and interurban, rainy day midday into clear one -->
+      <weathers>
+         <weather route_percentage="0"
+            cloudiness="60.0" precipitation="60.0" precipitation_deposits="10.0" wetness="60.0"
+            wind_intensity="60.0" sun_azimuth_angle="38" sun_altitude_angle="5.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="10.0" precipitation="10.0" precipitation_deposits="60.0" wetness="10.0"
+            wind_intensity="60.0" sun_azimuth_angle="38" sun_altitude_angle="5.0"
+            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
+            mie_scattering_scale="0.03"/>
+      </weathers>
+      <waypoints>
+         <position x="-628.4" y="6281.9" z="359.5"/>
+         <position x="-823.0" y="6388.3" z="361.8"/>
+         <position x="-1299.4" y="6463.3" z="373.0"/>
+         <position x="-1354.3" y="6461.7" z="373.6"/>
+         <position x="-2200.7" y="6408.4" z="377.9"/>
+         <position x="-2280.7" y="6302.7" z="378.4"/>
+         <position x="-2529.6" y="5894.5" z="379.4"/>
+         <position x="-2497.6" y="5101.6" z="377.8"/>
+         <position x="-2493.8" y="4636.2" z="370.0"/>
+         <position x="-2503.1" y="4585.4" z="369.1"/>
+         <position x="-2515.2" y="4494.2" z="367.9"/>
+         <position x="-2461.5" y="4060.7" z="362.8"/>
+         <position x="-2303.9" y="3737.3" z="355.9"/>
+         <position x="-1711.5" y="3191.4" z="353.9"/>
+         <position x="-1261.3" y="3100.6" z="348.0"/>
+         <position x="-1236.2" y="3103.5" z="349.2"/>
+         <position x="-1195.7" y="3106.1" z="351.3"/>
+         <position x="-982.7" y="3139.6" z="360.9"/>
+         <position x="-1010.0" y="3048.0" z="359.4"/>
+         <position x="-1372.9" y="3085.3" z="345.5"/>
+         <position x="-1602.9" y="3137.6" z="349.5"/>
+         <position x="-1983.4" y="3332.8" z="357.4"/>
+         <position x="-2171.8" y="3502.6" z="349.7"/>
+         <position x="-2456.6" y="3984.6" z="361.8"/>
+         <position x="-2592.5" y="4124.6" z="362.1"/>
+         <position x="-2894.9" y="3910.9" z="360.0"/>
+         <position x="-3043.0" y="3414.8" z="354.2"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="MergerIntoSlowTraffic_1" type="MergerIntoSlowTraffic">
+            <trigger_point x="-829.9" y="6431.7" z="361.3" yaw="115.8"/>
+            <start_actor_flow x="-831.3" y="6486.8" z="360.9"/>
+            <end_actor_flow x="-1249.1" y="6468.6" z="372.0"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="30"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
+            <trigger_point x="-1817.8" y="6515.3" z="372.7" yaw="166.5"/>
+            <distance value="100"/>
+         </scenario>
+         <scenario name="HighwayCutIn_1" type="HighwayCutIn">
+            <trigger_point x="-2287.5" y="6293.4" z="378.5" yaw="233.5"/>
+            <other_actor_location x="-2306.1" y="6204.2" z="378.6"/>
+         </scenario>
+         <scenario name="Accident_1" type="Accident">
+            <trigger_point x="-2531.2" y="5886.3" z="379.4" yaw="-100.8"/>
+            <distance value="160"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
+            <trigger_point x="-2506.8" y="5494.3" z="379.0" yaw="-82.8"/>
+            <distance value="90"/>
+         </scenario>
+         <scenario name="Accident_2" type="Accident">
+            <trigger_point x="-2509.1" y="4562.7" z="368.8" yaw="-96.4"/>
+            <distance value="150"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="-2505.9" y="4252.9" z="365.2" yaw="-82.1"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
+            <trigger_point x="-1892.2" y="3286.0" z="358.1" yaw="-32.6"/>
+            <distance value="100"/>
+         </scenario>
+         <scenario name="HighwayExit_1" type="HighwayExit">
+            <trigger_point x="-1418.8" y="3111.8" z="346.2" yaw="-7.8"/>
+            <start_actor_flow x="-1332.2" y="3106.6" z="345.7"/>
+            <end_actor_flow x="-1084.0" y="3100.1" z="355.6"/>
+            <flow_speed value="15"/>
+            <source_dist_interval from="30" to="75"/>
+         </scenario>
+         <scenario name="MergerIntoSlowTraffic_2" type="MergerIntoSlowTraffic">
+            <trigger_point x="-1018.0" y="3049.6" z="358.9" yaw="168.2"/>
+            <start_actor_flow x="-1040.3" y="3074.6" z="356.5"/>
+            <end_actor_flow x="-1332.4" y="3082.1" z="345.7"/>
+            <flow_speed value="17"/>
+            <source_dist_interval from="20" to="50"/>
+         </scenario>
+         <scenario name="YieldToEmergencyVehicle_4" type="YieldToEmergencyVehicle">
+            <trigger_point x="-1532.0" y="3118.6" z="347.5" yaw="166.7"/>
+            <distance value="100"/>
+         </scenario>
       </scenarios>
    </route>
 </routes>

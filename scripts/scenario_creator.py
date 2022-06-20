@@ -49,55 +49,62 @@ SCENARIO_TYPES ={
         ["direction", "choice"],
         ["adversary_speed", "value"],
     ],
+    # Crossing actors
     "ParkingCrossingPedestrian": [
         ["distance", "value"],
         ["direction", "choice"],
     ],
+    "PedestrianCrossing": [
+        ["start_walker_flow", "location sidewalk"],
+        ["end_walker_flow_1", "location sidewalk probability"],
+        ["end_walker_flow_2", "location sidewalk probability"],
+        ["source_dist_interval", "interval"],
+    ],
     # Actor flows
     "EnterActorFlow": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "EnterActorFlowV2": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "InterurbanActorFlow": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "InterurbanAdvancedActorFlow": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "HighwayExit": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "MergerIntoSlowTraffic": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "MergerIntoSlowTrafficV2": [
-        ["start_actor_flow", "location"],
-        ["end_actor_flow", "location"],
+        ["start_actor_flow", "location driving"],
+        ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
     ],
     "CrossingBicycleFlow": [
-        ["start_actor_flow", "location"],
+        ["start_actor_flow", "location bicycle"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
         ["green_light_delay", "value"],
@@ -134,14 +141,29 @@ SCENARIO_TYPES ={
     ],
     # Cut ins
     "HighwayCutIn": [
-        ["other_actor_location", "location"],
+        ["other_actor_location", "location driving"],
     ],
     "ParkingCutIn": [
         ["direction", "choice"],
     ],
+
+    # Highway
+    "YieldToEmergencyVehicle": [
+        ["distance", "value"],
+    ],
+
+    # Others
+    "BlockedIntersection": [
+        ["blocker_point", "location driving"],
+        ["obstacle_model", "value"],
+        ["obstacle_gap", "value"],
+        ["extra_obstacle", "value"],
+    ],
+
     # Special ones
     "ParkingExit": [
         ["direction", "choice"],
+        ["flow_interval", "value"],
         ["front_vehicle_distance", "value"],
         ["behind_vehicle_distance", "value"],
     ],
@@ -161,7 +183,6 @@ SCENARIO_TYPES ={
     "PriorityAtJunction": [
     ],
 
-    # Yield to EV
     # Pedestrian Crossing
     # HighwayStaticCutIn
     # BlockedIntersection
@@ -176,15 +197,23 @@ def show_saved_scenarios(filename, route_id, world):
     tree = etree.parse(filename)
     root = tree.getroot()
 
+    found_id = False
+
     for route in root.iter("route"):
         if route.attrib['id'] != route_id:
             continue
+
+        found_id = True
 
         for scenario in route.find('scenarios').iter('scenario'):
             name = scenario.attrib.get('name')
             trigger_location = convert_elem_to_location(scenario.find('trigger_point'))
             world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
             world.debug.draw_string(trigger_location + carla.Location(z=0.5), name, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
+
+    if not found_id:
+        print(f"\n\033[91mCouldn't find the id '{route_id} in the given routes file\033[0m")
+        return
 
 def get_scenario_type(tmap, world, spectator):
     while True:
@@ -212,8 +241,8 @@ def get_attributes_data(scen_type, trigger_point, tmap, world, spectator):
         a_name, a_type = attribute
         if a_type == 'transform':
             a_data = get_transform_data(a_name, scen_type, tmap, world, spectator)
-        elif a_type == 'location':
-            a_data = get_location_data(a_name, scen_type, tmap, world, spectator)
+        elif 'location' in a_type:
+            a_data = get_location_data(a_name, scen_type, tmap, world, spectator, a_type)
         elif a_type in ('value', 'choice', 'bool'):
             a_data = get_value_data(a_name)
         elif a_type == 'interval':
@@ -237,16 +266,32 @@ def get_transform_data(a_name, scen_type, tmap, world, spectator):
         str(round(wp.transform.rotation.yaw, 1))
     )
 
-def get_location_data(a_name, scen_type, tmap, world, spectator):
+def get_location_data(a_name, scen_type, tmap, world, spectator, a_type):
     input(f"\033[1m> Enter the '{a_name}' location \033[0m")
-    wp = tmap.get_waypoint(spectator.get_location())
+    if "sidewalk" in a_type:
+        lane_type = carla.LaneType.Sidewalk
+    elif "bicycle" in a_type:
+        lane_type = carla.LaneType.Biking
+    elif "driving" in a_type:
+        lane_type = carla.LaneType.Driving
+    else:
+        lane_type = carla.LaneType.Driving
+
+    wp = tmap.get_waypoint(spectator.get_location(), lane_type=lane_type)
     world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
     world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
-    return (
-        str(round(wp.transform.location.x, 1)),
-        str(round(wp.transform.location.y, 1)),
-        str(round(wp.transform.location.z, 1))
-    )
+
+    loc =  (
+            str(round(wp.transform.location.x, 1)),
+            str(round(wp.transform.location.y, 1)),
+            str(round(wp.transform.location.z, 1))
+        )
+
+    if "probability" in a_type:
+        p = input(f"\033[1m> Enter the '{a_name}' probability \033[0m")
+        loc += (p,)
+    return loc
+
 
 def get_value_data(a_name):
     value = input(f"\033[1m> Specify the '{a_name}' value \033[0m")
@@ -295,9 +340,13 @@ def save_scenario(filename, route_id, scenario_type, scenario_attributes):
     for scen_type in list(SCENARIO_TYPES):
         scenario_names[scen_type] = 1
 
+    found_id = False
+
     for route in root.iter("route"):
         if route.attrib['id'] != route_id:
             continue
+
+        found_id = True
 
         scenarios = route.find('scenarios')
         for scenario in scenarios.iter('scenario'):
@@ -317,16 +366,22 @@ def save_scenario(filename, route_id, scenario_type, scenario_attributes):
                 data.set("y", a_value[1])
                 data.set("z", a_value[2])
                 data.set("yaw", a_value[3])
-            elif a_type == 'location':
+            elif 'location' in a_type:
                 data.set("x", a_value[0])
                 data.set("y", a_value[1])
                 data.set("z", a_value[2])
+                if 'probability' in a_type:
+                    data.set("p", a_value[3])
             elif a_type in ('value', 'choice', 'bool'):
                 data.set("value", a_value)
             elif a_type == 'interval':
                 data.set("from", a_value[0])
                 data.set("to", a_value[1])
         break
+
+    if not found_id:
+        print(f"\n\033[91mCouldn't find the id '{route_id} in the given routes file\033[0m")
+        return
 
     # Prettify the xml. A bit of automatic indentation, a bit of manual one
     spaces = 3

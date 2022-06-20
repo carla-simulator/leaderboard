@@ -67,10 +67,14 @@ def get_saved_data(filename, route_id, world, grp):
     tree = etree.parse(filename)
     root = tree.getroot()
 
+    found_id = False
+
     points = []
     for route in root.iter("route"):
         if route.attrib['id'] != route_id:
             continue
+
+        found_id = True
 
         for position in route.find('waypoints').iter('position'):
             points.append(convert_elem_to_location(position))
@@ -88,6 +92,10 @@ def get_saved_data(filename, route_id, world, grp):
 
                 draw_keypoint(world, waypoint)
             draw_keypoint(world, points[-1])
+
+    if not found_id:
+        print(f"\033[91mCouldn't find the id '{route_id}' in the given routes file\033[0m")
+
 
     return points, distance
 
@@ -124,9 +132,13 @@ def save_data(filename, route_id, points):
     tree = etree.parse(filename)
     root = tree.getroot()
 
+    found_id = False
+
     for route in root.iter("route"):
         if route.attrib['id'] != route_id:
             continue
+        
+        found_id = True
 
         waypoints = route.find('waypoints')
         for position in waypoints.iter('position'):
@@ -138,6 +150,10 @@ def save_data(filename, route_id, points):
             new_point.set("y", str(round(point.y, 1)))
             new_point.set("z", str(round(point.z, 1)))
         break
+
+    if not found_id:
+        print(f"\n\033[91mCouldn't find the id '{route_id} in the given routes file\033[0m")
+        return
 
     # Prettify the xml. A bit of automatic indentation, a bit of manual one
     spaces = 3
@@ -161,8 +177,7 @@ def main():
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('--host', metavar='H', default='localhost', help='IP of the host CARLA Simulator (default: localhost)')
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
-    argparser.add_argument('-f', '--file', required=True, help='File at which to place the scenarios')
-    argparser.add_argument('-r', '--route-id', required=True, help='Route id of the scenarios')
+    argparser.add_argument('-f', '--file', required=True, nargs="+", help='File at which to place the scenarios')
     argparser.add_argument('-s', '--show', action='store_true', help='Only shows the route')
     argparser.add_argument('-sa', '--show-all', action='store_true', help='Shows all the routes')
     args = argparser.parse_args()
@@ -178,13 +193,16 @@ def main():
     grp = GlobalRoutePlanner(tmap, 2.0)
     points = []
 
+    file_path = args.file[0]
+    route_id = args.file[1] if len(args.file) > 1 else 0
+
     # Show all data
     if args.show_all:
-        show_all_routes(args.file, world, grp)
+        show_all_routes(file_path, world, grp)
         sys.exit(0)
 
     # Get the data already at the file
-    points, distance = get_saved_data(args.file, args.route_id, world, grp)
+    points, distance = get_saved_data(file_path, route_id, world, grp)
     if args.show:
         sys.exit(0)
 
@@ -193,7 +211,7 @@ def main():
     print(" |          Any unsaved route points will be lost           | ")
     print(" ------------------------------------------------------------ ")
 
-    print(f"Total accumulated distance is {distance}")
+    print(f"Total accumulated distance is {round(distance, 1)}")
 
     try:
         while True:
@@ -206,7 +224,7 @@ def main():
                 print(f"Total accumulated distance is {round(distance, 1)}")
             elif action == "Save":
                 print("Saving data to the xml file")
-                save_data(args.file, args.route_id, points)
+                save_data(file_path, route_id, points)
             else:
                 print(f"\033[1m\033[93mUnknown action '{action}'. Try again\033[0m")
 
