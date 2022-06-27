@@ -163,7 +163,7 @@ SCENARIO_TYPES ={
     # Special ones
     "ParkingExit": [
         ["direction", "choice"],
-        ["flow_interval", "value"],
+        ["flow_distance", "value"],
         ["front_vehicle_distance", "value"],
         ["behind_vehicle_distance", "value"],
     ],

@@ -1,5 +1,5 @@
 <routes>
-   <route id="0" town="TrainingMap">
+   <route id="0" town="Town12">
       <!-- Urbanization route focused on junction crossing vehicles, afternoon into night-->
       <weathers>
          <weather route_percentage="0"
@@ -53,24 +53,27 @@
          <position x="-86.8" y="5604.5" z="367"/>
       </waypoints>
       <scenarios>
+         <scenario name="ControlLoss_1" type="ControlLoss">
+            <trigger_point x="983.5" y="5382.2" z="371" yaw="90"/>
+         </scenario>
          <scenario name="ParkingExit_1" type="ParkingExit">
             <trigger_point x="983.5" y="5382.2" z="371" yaw="90"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
          </scenario>
-         <scenario name="JunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+         <scenario name="SignalizedJunctionRightTurn_1" type="SignalizedJunctionRightTurn">
             <trigger_point x="983.5" y="5497.6" z="371" yaw="90"/>
             <flow_speed value="16.6"/>
             <source_dist_interval from="35" to="60"/>
          </scenario>
-         <scenario name="JunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="SignalizedJunctionLeftTurn_1" type="SignalizedJunctionLeftTurn">
             <trigger_point x="620.7" y="5579.4" z="370" yaw="180"/>
             <flow_speed value="16.6"/>
             <source_dist_interval from="30" to="65"/>
          </scenario>
          <!-- Add a hazardmoving sidelane here -->
-         <scenario name="JunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="546.9" y="5982.8" z="362" yaw="77"/>
             <flow_speed value="8.3"/>
             <source_dist_interval from="15" to="30"/>
@@ -78,10 +81,10 @@
          <scenario name="Accident_1" type="Accident">
             <trigger_point x="427.2" y="6086.8" z="359" yaw="144"/>
          </scenario>
-         <scenario name="JunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="294.0" y="6153.2" z="358" yaw="249"/>
             <flow_speed value="8.3"/>
-            <source_dist_interval from="15" to="30"/>
+            <source_dist_interval from="15" to="50"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="119.7" y="6100.9" z="358" yaw="179"/>
@@ -93,7 +96,7 @@
             <trigger_point x="-265.0" y="6004.0" z="360" yaw="270"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="JunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-347.2" y="5816.8" z="367" yaw="178"/>
             <flow_speed value="8.3"/>
             <source_dist_interval from="25" to="40"/>
@@ -101,7 +104,7 @@
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-416.3" y="6101" z="359" yaw="178"/>
          </scenario>
-         <scenario name="JunctionLeftTurn_4" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-547.9" y="6086.2" z="362" yaw="300"/>
             <flow_speed value="10"/>
             <source_dist_interval from="30" to="50"/>
@@ -117,7 +120,7 @@
             <trigger_point x="-497.4" y="4860.1" z="375" yaw="90"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="JunctionRightTurn_3" type="NonSignalizedJunctionRightTurn">
+         <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-280.5" y="5043" z="374" yaw="310"/>
             <flow_speed value="8.3"/>
             <source_dist_interval from="25" to="40"/>
@@ -144,7 +147,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="1" town="TrainingMap">
+   <route id="1" town="Town12">
       <!-- Urbanization route focused on junction crossing vehicles, fog and rain-->
       <weathers>
          <weather route_percentage="0"
@@ -270,24 +273,24 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="2" town="TrainingMap">
+   <route id="2" town="Town12">
       <!-- Urban route focused on high density areas with bostacle, sunny day-->
       <weathers>
          <weather route_percentage="0"
-            cloudiness="30" precipitation="0" precipitation_deposits="0" wetness="0"
+            cloudiness="300" precipitation="0" precipitation_deposits="0" wetness="0"
             wind_intensity="10" sun_azimuth_angle="135" sun_altitude_angle="70"
             fog_density="0" fog_distance="0" fog_falloff="0" scattering_intensity="1.0"
             mie_scattering_scale="0.03"/>
          <!-- Start with a sunny midday -->
          <weather route_percentage="100"
-            cloudiness="30" precipitation="0" precipitation_deposits="0" wetness="0"
+            cloudiness="300" precipitation="0" precipitation_deposits="0" wetness="0"
             wind_intensity="10" sun_azimuth_angle="135" sun_altitude_angle="20"
             fog_density="0" fog_distance="0" fog_falloff="0" scattering_intensity="1.0"
             mie_scattering_scale="0.03"/>
          <!-- End with a sunny afternoon -->
       </weathers>
       <waypoints>
-         <position x="-174.5" y="4485.8" z="373.1"/>
+         <position x="-174.5" y="4467.8" z="373.1"/>
          <position x="-174.3" y="4230.6" z="372.9"/>
          <position x="-212.0" y="4191.7" z="372.8"/>
          <position x="-284.0" y="4141.0" z="372.8"/>
@@ -327,7 +330,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="-174.5" y="4485.8" z="373.1" yaw="269.9"/>
+            <trigger_point x="-174.5" y="4467.8" z="373.1" yaw="269.9"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -452,7 +455,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="3" town="TrainingMap">
+   <route id="3" town="Town12">
       <!-- Urban route focused on high density areas with bostacle, cloudy into rain-->
       <weathers>
          <weather route_percentage="0"
@@ -475,7 +478,7 @@
          <!-- End with a sunny afternoon -->
       </weathers>
       <waypoints>
-         <position x="1076.9" y="4163.6" z="366.6"/>
+         <position x="1080.4" y="4141.4" z="366.6"/>
          <position x="1114.8" y="3926.8" z="367.3"/>
          <position x="1043.0" y="3715.1" z="369.2"/>
          <position x="838.3" y="3680.7" z="371.2"/>
@@ -509,11 +512,8 @@
          <position x="517.2" y="3920.8" z="371.1"/>
       </waypoints>
       <scenarios>
-         <scenario name="PriorityAtJunction_1" type="PriorityAtJunction">
-            <trigger_point x="1076.9" y="4163.6" z="366.6" yaw="279.0"/>
-         </scenario>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="1076.9" y="4163.6" z="366.6" yaw="279.0"/>
+            <trigger_point x="1080.4" y="4141.4" z="366.6" yaw="279.0"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -521,9 +521,6 @@
          <scenario name="ParkingCutIn_1" type="ParkingCutIn">
             <trigger_point x="1097.9" y="4031.6" z="367.1" yaw="279.0"/>
             <direction value="right"/>
-         </scenario>
-         <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
-            <trigger_point x="1118.8" y="3727.7" z="367.9" yaw="189.4"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_1" type="ParkingCrossingPedestrian">
             <trigger_point x="676.2" y="3720.8" z="371.8" yaw="89.6"/>
@@ -647,21 +644,29 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="4" town="TrainingMap">
+   <route id="4" town="Town12">
       <!-- Rural route focused on crossing actors, foggy day-->
       <weathers>
          <weather route_percentage="0"
+            cloudiness="30" precipitation="80" precipitation_deposits="0" wetness="10"
+            wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="60"
+            fog_density="0" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
+            mie_scattering_scale="0.03"/>
+         <weather route_percentage="100"
+            cloudiness="30" precipitation="80" precipitation_deposits="80" wetness="70"
+            wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="40"
+            fog_density="0" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
+            mie_scattering_scale="0.03"/>
+         <!-- <weather route_percentage="0"
             cloudiness="70" precipitation="80" precipitation_deposits="0" wetness="10"
             wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="60"
             fog_density="40" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
             mie_scattering_scale="0.03"/>
-         <!-- Start with a rainy midday -->
          <weather route_percentage="100"
             cloudiness="70" precipitation="80" precipitation_deposits="80" wetness="70"
             wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="40"
             fog_density="10" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
-            mie_scattering_scale="0.03"/>
-         <!-- Stop raining  -->
+            mie_scattering_scale="0.03"/> -->
       </weathers>
       <waypoints>
          <position x="1382.1" y="2246.0" z="363.7"/>
@@ -706,6 +711,7 @@
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="1481.7" y="2181.8" z="361.8" yaw="-0.2"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.container"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="1639.5" y="2181.3" z="362.0" yaw="-0.2"/>
@@ -713,6 +719,7 @@
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="1835.2" y="2180.7" z="364.2" yaw="-0.2"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.advertisement"/>
          </scenario>
          <scenario name="VehicleTurning_2" type="VehicleTurningRoute">
             <trigger_point x="1984.9" y="2100.4" z="360.9" yaw="270.1"/>
@@ -730,10 +737,12 @@
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1577.4" y="1764.1" z="357.4" yaw="89.6"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.busstop"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1781.4" y="2205.5" z="364.6" yaw="89.8"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.foodcart"/>
          </scenario>
          <scenario name="JunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="1582.8" y="2135.5" z="360.7" yaw="269.5"/>
@@ -743,6 +752,7 @@
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="1381.9" y="2043.7" z="358.9" yaw="-90.1"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.haybale"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
             <trigger_point x="1381.8" y="1868.4" z="354.7" yaw="-90.1"/>
@@ -754,10 +764,12 @@
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="2184.8" y="2200.6" z="359.9" yaw="89.7"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.haybale"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
             <trigger_point x="2540.8" y="2254.9" z="360.7" yaw="269.9"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.haybale"/>
          </scenario>
          <scenario name="VehicleTurning_6" type="VehicleTurningRoute">
             <trigger_point x="2633.6" y="2179.2" z="357.9" yaw="-0.2"/>
@@ -785,7 +797,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="5" town="TrainingMap">
+   <route id="5" town="Town12">
       <!-- Rural route focused on crossing actors, sunset into night time-->
       <weathers>
          <weather route_percentage="0"
@@ -930,7 +942,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="6" town="TrainingMap">
+   <route id="6" town="Town12">
       <!-- Interurban route focused on route obstacles and interurban intersections, sunny day-->
       <weathers>
          <weather route_percentage="0"
@@ -1034,7 +1046,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="7" town="TrainingMap">
+   <route id="7" town="Town12">
       <!-- Interurban route focused on route obstacles and interurban intersections, rainy day-->
       <weathers>
          <weather route_percentage="0"
@@ -1151,7 +1163,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="8" town="TrainingMap">
+   <route id="8" town="Town12">
       <!-- Interurban route focused on route obstacles and interurban intersections, foggy day-->
       <weathers>
          <weather route_percentage="0"
@@ -1252,7 +1264,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="9" town="TrainingMap">
+   <route id="9" town="Town12">
       <!-- Urban route focused on low density areas with signalized junctions, cloudy into heavy rain-->
       <weathers>
          <weather route_percentage="0"
@@ -1267,7 +1279,7 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="1637.8" y="4474.6" z="365.0"/>
+         <position x="1639.5" y="4464.2" z="365.0"/>
          <position x="1661.3" y="4329.5" z="362.9"/>
          <position x="1567.8" y="4266.4" z="363.1"/>
          <position x="1369.5" y="4234.3" z="363.9"/>
@@ -1309,7 +1321,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="1637.9" y="4473.8" z="365.0" yaw="279.2"/>
+            <trigger_point x="1639.5" y="4464.2" z="365.0" yaw="279.2"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -1437,7 +1449,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="10" town="TrainingMap">
+   <route id="10" town="Town12">
       <!-- Urban route focused on low density areas with signalized junctions, afternoon into night-->
       <weathers>
          <weather route_percentage="0"
@@ -1452,7 +1464,7 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="3161.6" y="5069.5" z="367.7"/>
+         <position x="3163.0" y="5061.5" z="367.7"/>
          <position x="3183.9" y="4942.4" z="367.5"/>
          <position x="3203.2" y="4827.4" z="367.2"/>
          <position x="3154.6" y="4761.9" z="367.2"/>
@@ -1490,7 +1502,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="3161.6" y="5069.6" z="367.7" yaw="279.9"/>
+            <trigger_point x="3163.0" y="5061.5" z="367.7" yaw="279.9"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -1641,22 +1653,22 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="11" town="TrainingMap">
+   <route id="11" town="Town12">
       <!-- Urban route focused on main city roads with obstacles, night into night with rain-->
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
             fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
             mie_scattering_scale="0.03"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
             fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="-284.4" y="4054.0" z="372.1"/>
+         <position x="-284.4" y="4039.0" z="372.1"/>
          <position x="-345.8" y="3978.9" z="371.3"/>
          <position x="-497.9" y="3959.2" z="369.9"/>
          <position x="-339.6" y="3924.8" z="370.7"/>
@@ -1667,6 +1679,7 @@
          <position x="827.9" y="4204.6" z="369.2"/>
          <position x="629.0" y="4287.4" z="370.1"/>
          <position x="157.1" y="4290.2" z="371.6"/>
+         <position x="-102.3" y="4291.7" z="372.8"/>
          <position x="-600.2" y="4294.7" z="373.6"/>
          <position x="-829.8" y="4425.2" z="369.4"/>
          <position x="-944.6" y="4634.6" z="365.1"/>
@@ -1684,7 +1697,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="-284.4" y="4053.2" z="372.1" yaw="-90.3"/>
+            <trigger_point x="-284.4" y="4039.2" z="372.1" yaw="-90.3"/>
             <direction value="left"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -1743,7 +1756,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="12" town="TrainingMap">
+   <route id="12" town="Town12">
       <!-- Urban route focused on main city roads with obstacles, sunny day into afternoon-->
       <weathers>
          <weather route_percentage="0"
@@ -1758,7 +1771,7 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="249.4" y="4647.5" z="371.1"/>
+         <position x="249.4" y="4666.3" z="371.1"/>
          <position x="388.3" y="4733.4" z="370.4"/>
          <position x="612.7" y="4733.4" z="369.8"/>
          <position x="783.4" y="4909.4" z="370.8"/>
@@ -1786,8 +1799,9 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="249.4" y="4647.5" z="371.1" yaw="90.0"/>
+            <trigger_point x="249.4" y="4666.3" z="371.1" yaw="90.0"/>
             <direction value="right"/>
+            <flow_distance value="25"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
          </scenario>
@@ -1832,9 +1846,6 @@
          <scenario name="ConstructionObstacle_3" type="ConstructionObstacle">
             <trigger_point x="2059.6" y="5584.7" z="369.1" yaw="-0.0"/>
          </scenario>
-         <scenario name="PriorityAtJunction_1" type="PriorityAtJunction">
-            <trigger_point x="2323.6" y="5584.6" z="370.1" yaw="-0.0"/>
-         </scenario>
          <scenario name="PriorityAtJunction_2" type="PriorityAtJunction">
             <trigger_point x="2400.6" y="5633.9" z="370.1" yaw="89.7"/>
          </scenario>
@@ -1858,7 +1869,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="13" town="TrainingMap">
+   <route id="13" town="Town12">
       <!-- Highway route focused on accident and hard breaks-->
       <weathers>
          <!-- TODO: Finish weather and scenarios -->
@@ -1874,7 +1885,7 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="3450.0" y="4769.6" z="368.0"/>
+         <position x="3451.8" y="4758.9" z="368.0"/>
          <position x="3771.3" y="4748.9" z="367.8"/>
          <position x="3931.2" y="4908.9" z="366.4"/>
          <position x="3901.4" y="5227.8" z="367.4"/>
@@ -1906,7 +1917,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="3450.0" y="4769.7" z="368.0" yaw="279.6"/>
+            <trigger_point x="3451.8" y="4758.9" z="368.0" yaw="279.6"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -1958,7 +1969,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="14" town="TrainingMap">
+   <route id="14" town="Town12">
       <!-- Highway route focused on entries and exits-->
       <weathers>
          <!-- Use night mode-->
@@ -2071,7 +2082,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="15" town="TrainingMap">
+   <route id="15" town="Town12">
       <!-- Urban route focused on crossing actors-->
       <weathers>
          <weather route_percentage="0"
@@ -2086,7 +2097,7 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="3218.4" y="4733.0" z="367.1"/>
+         <position x="3220.4" y="4720.0" z="367.1"/>
          <position x="3261.2" y="4468.7" z="365.7"/>
          <position x="3412.2" y="4340.3" z="366.5"/>
          <position x="3494.5" y="4457.2" z="368.0"/>
@@ -2120,7 +2131,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="3218.3" y="4733.4" z="367.1" yaw="279.1"/>
+            <trigger_point x="3220.4" y="4720.0" z="367.1" yaw="279.1"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -2225,7 +2236,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="16" town="TrainingMap">
+   <route id="16" town="Town12">
       <!-- Urban route focused on crossing actors-->
       <weathers>
          <weather route_percentage="0"
@@ -2416,7 +2427,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="17" town="TrainingMap">
+   <route id="17" town="Town12">
       <!-- Highway route focused on entries and exits-->
       <weathers>
          <weather route_percentage="0"
@@ -2532,7 +2543,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="18" town="TrainingMap">
+   <route id="18" town="Town12">
       <!-- Highway route focused on entries and exits-->
       <weathers>
          <weather route_percentage="0"
@@ -2661,7 +2672,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="19" town="TrainingMap">
+   <route id="19" town="Town12">
       <!-- Highway route focused on entries and exits-->
       <weathers>
          <weather route_percentage="0"
@@ -2752,7 +2763,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="20" town="TrainingMap">
+   <route id="20" town="Town12">
       <!-- Mixed route of low density and residential areas, hard cloudy afternoon into clearer night-->
       <weathers>
          <weather route_percentage="0"
@@ -2767,7 +2778,7 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="252.2" y="4681.8" z="371.1"/>
+         <position x="252.2" y="4674.3" z="371.1"/>
          <position x="128.2" y="4511.9" z="371.7"/>
          <position x="-49.2" y="4512.3" z="372.6"/>
          <position x="-177.1" y="4567.3" z="373.2"/>
@@ -2795,7 +2806,7 @@
       </waypoints>
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="252.2" y="4680.4" z="371.1" yaw="270.0"/>
+            <trigger_point x="252.2" y="4674.3" z="371.1" yaw="270.0"/>
             <direction value="right"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
@@ -2896,7 +2907,7 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="21" town="TrainingMap">
+   <route id="21" town="Town12">
       <!-- Mixed route of low density and residential areas, clear dawn into cloudy midday -->
       <weathers>
          <weather route_percentage="0"
@@ -3608,7 +3619,6 @@
          <scenario name="ParkingExit_1" type="ParkingExit">
             <trigger_point x="1156.4" y="3680.0" z="367.3" yaw="279.5"/>
             <direction value="right"/>
-            <flow_interval value="25"/>
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
          </scenario>
