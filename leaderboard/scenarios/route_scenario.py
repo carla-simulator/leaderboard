@@ -150,11 +150,8 @@ class RouteScenario(BasicScenario):
         """
         Draw a list of waypoints at a certain height given in vertical_shift.
         """
-        for i, w in enumerate(waypoints):
+        for w in waypoints:
             wp = w[0].location + carla.Location(z=vertical_shift)
-
-            if i % 5 != 0:
-                continue
 
             if w[1] == RoadOption.LEFT:  # Yellow
                 color = carla.Color(128, 128, 0)
@@ -170,11 +167,6 @@ class RouteScenario(BasicScenario):
                 color = carla.Color(0, 128, 0)  # Green
 
             world.debug.draw_point(wp, size=0.05, color=color, life_time=persistency)
-            # if i > 0:
-            #     prev_loc = waypoints[i-1][0].location
-            #     loc = w[0].location
-            #     world.debug.draw_arrow(prev_loc + carla.Location(z=(i-1)/10), loc + carla.Location(z=i/10), color=carla.Color(0,0,0))
-
 
         world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=2*size,
                                color=carla.Color(0, 0, 128), life_time=persistency)
