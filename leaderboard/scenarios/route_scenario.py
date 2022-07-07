@@ -234,7 +234,7 @@ class RouteScenario(BasicScenario):
             for scenario_config in scenario_definitions:
                 scenario_loc = scenario_config.trigger_points[0].location
                 debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
+                world.debug.draw_point(debug_loc, size=0.1, color=carla.Color(128, 0, 0), life_time=timeout)
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
                                         color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
 

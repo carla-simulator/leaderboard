@@ -648,16 +648,6 @@
       <!-- Rural route focused on crossing actors, foggy day-->
       <weathers>
          <weather route_percentage="0"
-            cloudiness="30" precipitation="80" precipitation_deposits="0" wetness="10"
-            wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="60"
-            fog_density="0" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
-            mie_scattering_scale="0.03"/>
-         <weather route_percentage="100"
-            cloudiness="30" precipitation="80" precipitation_deposits="80" wetness="70"
-            wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="40"
-            fog_density="0" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
-            mie_scattering_scale="0.03"/>
-         <!-- <weather route_percentage="0"
             cloudiness="70" precipitation="80" precipitation_deposits="0" wetness="10"
             wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="60"
             fog_density="40" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
@@ -666,7 +656,7 @@
             cloudiness="70" precipitation="80" precipitation_deposits="80" wetness="70"
             wind_intensity="10" sun_azimuth_angle="314" sun_altitude_angle="40"
             fog_density="10" fog_distance="10" fog_falloff="0" scattering_intensity="3.0"
-            mie_scattering_scale="0.03"/> -->
+            mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
          <position x="1382.1" y="2246.0" z="363.7"/>
@@ -712,6 +702,7 @@
             <trigger_point x="1481.7" y="2181.8" z="361.8" yaw="-0.2"/>
             <distance value="50"/>
             <blocker_model value="static.prop.container"/>
+            <crossing_angle value="15"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="1639.5" y="2181.3" z="362.0" yaw="-0.2"/>
@@ -2850,7 +2841,7 @@
             <distance value="45"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleOpensDoor_1" type="VehicleOpensDoor">
+         <scenario name="VehicleOpensDoorTwoWays_1" type="VehicleOpensDoorTwoWays">
             <trigger_point x="38.7" y="4601.8" z="372.2" yaw="269.9"/>
             <distance value="55"/>
          </scenario>
@@ -3291,7 +3282,7 @@
             <trigger_point x="2407.9" y="4663.8" z="364.6" yaw="98.9"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleOpensDoor_1" type="VehicleOpensDoor">
+         <scenario name="VehicleOpensDoorTwoWays_1" type="VehicleOpensDoorTwoWays">
             <trigger_point x="2213.3" y="4694.2" z="363.5" yaw="279.6"/>
             <distance value="40"/>
          </scenario>
