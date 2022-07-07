@@ -20,7 +20,9 @@ SCENARIO_TYPES ={
     "HardBreakRoute": [
     ],
     "DynamicObjectCrossing": [
-        ["distance", "value"]
+        ["distance", "value"],
+        ["blocker_model", "value"],
+        ["crossing_angle", "value"]
     ],
     "VehicleTurningRoute": [
     ],
@@ -405,8 +407,7 @@ def main():
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('--host', metavar='H', default='localhost', help='IP of the host CARLA Simulator (default: localhost)')
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
-    argparser.add_argument('-f', '--file', required=True, help='File at which to place the scenarios')
-    argparser.add_argument('-r', '--route-id', required=True, help='Route id of the scenarios')
+    argparser.add_argument('-f', '--file', required=True, nargs="+", help='File at which to place the scenarios')
     argparser.add_argument('-s', '--show-only', action='store_true', help='Only shows the route')
     args = argparser.parse_args()
 
@@ -419,8 +420,11 @@ def main():
     spectator = world.get_spectator()
     tmap = world.get_map()
 
+    file_path = args.file[0]
+    route_id = args.file[1] if len(args.file) > 1 else 0
+
     # Get the data already at the file
-    show_saved_scenarios(args.file, args.route_id, world)
+    show_saved_scenarios(file_path, route_id, world)
     if args.show_only:
         sys.exit(0)
 
@@ -444,7 +448,7 @@ def main():
             print_scenario_data(scen_type, scen_attributes)
 
             # Save the data
-            save_scenario(args.file, args.route_id, scen_type, scen_attributes)
+            save_scenario(file_path, route_id, scen_type, scen_attributes)
 
     except KeyboardInterrupt as e:
         print("\n Detected a keyboard interruption, stopping the script ")

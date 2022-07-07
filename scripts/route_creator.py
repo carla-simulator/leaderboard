@@ -37,26 +37,6 @@ def draw_keypoint(world, location):
     string = "(" + str(round(location.x, 1)) + ", " + str(round(location.y, 1)) + ", " + str(round(location.z, 1)) + ")"
     world.debug.draw_string(location + carla.Location(z=0.5), string, True, color=carla.Color(0, 0 , 128), life_time=LIFE_TIME)
 
-def show_all_routes(filename, world, grp):
-    def convert_elem_to_location(elem):
-        """Convert an ElementTree.Element to a CARLA Location"""
-        return carla.Location(float(elem.attrib.get('x')), float(elem.attrib.get('y')), float(elem.attrib.get('z')))
-
-    tree = etree.parse(filename)
-    root = tree.getroot()
-    for route in root.iter("route"):
-        prev_point = None
-
-        for position in route.find('waypoints').iter('position'):
-            point = convert_elem_to_location(position)
-            draw_keypoint(world, point)
-
-            if prev_point:
-                interpolated_trace = grp.trace_route(prev_point, point)
-                for wp, option in interpolated_trace:
-                    draw_point(world, wp, option)
-            prev_point = point
-
 def get_saved_data(filename, route_id, world, grp):
     def convert_elem_to_location(elem):
         """Convert an ElementTree.Element to a CARLA Location"""
@@ -178,8 +158,6 @@ def main():
     argparser.add_argument('--host', metavar='H', default='localhost', help='IP of the host CARLA Simulator (default: localhost)')
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
     argparser.add_argument('-f', '--file', required=True, nargs="+", help='File at which to place the scenarios')
-    argparser.add_argument('-s', '--show', action='store_true', help='Only shows the route')
-    argparser.add_argument('-sa', '--show-all', action='store_true', help='Shows all the routes')
     args = argparser.parse_args()
 
     # Get the client
@@ -196,15 +174,8 @@ def main():
     file_path = args.file[0]
     route_id = args.file[1] if len(args.file) > 1 else 0
 
-    # Show all data
-    if args.show_all:
-        show_all_routes(file_path, world, grp)
-        sys.exit(0)
-
     # Get the data already at the file
     points, distance = get_saved_data(file_path, route_id, world, grp)
-    if args.show:
-        sys.exit(0)
 
     print(" ------------------------------------------------------------ ")
     print(" |               Use Ctrl+C to stop the script              | ")
