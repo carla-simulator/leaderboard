@@ -77,7 +77,7 @@ class RouteScenario(BasicScenario):
         )
 
         super(RouteScenario, self).__init__(
-            config.name, [ego_vehicle], config, world, debug_mode > 1, False, criteria_enable
+            config.name, [ego_vehicle], config, world, debug_mode > 3, False, criteria_enable
         )
 
     def _get_route(self, config):

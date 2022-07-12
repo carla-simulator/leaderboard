@@ -45,10 +45,11 @@ class ScenarioManager(object):
     """
 
 
-    def __init__(self, timeout, debug_mode=False):
+    def __init__(self, timeout, statistics_manager, debug_mode=0):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
+        self.config = None
         self.scenario = None
         self.scenario_tree = None
         self.ego_vehicles = None
@@ -68,6 +69,8 @@ class ScenarioManager(object):
 
         self._watchdog = None
         self._agent_watchdog = None
+
+        self._statistics_manager = statistics_manager
 
         # Use the callback_id inside the signal handler to allow external interrupts
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -97,13 +100,14 @@ class ScenarioManager(object):
         self._watchdog = None
         self._agent_watchdog = None
 
-    def load_scenario(self, scenario, agent, rep_number):
+    def load_scenario(self, config, scenario, agent, rep_number):
         """
         Load a new scenario
         """
 
         GameTime.restart()
         self._agent = AgentWrapper(agent)
+        self.config = config
         self.scenario = scenario
         self.scenario_tree = scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
@@ -177,7 +181,19 @@ class ScenarioManager(object):
             # Tick scenario
             self.scenario_tree.tick_once()
 
-            if self._debug_mode:
+            if self._debug_mode > 1:
+                self.compute_duration_time()
+
+                # Update live statistics
+                self._statistics_manager.compute_route_statistics(
+                    self.config,
+                    self.scenario_duration_system,
+                    self.scenario_duration_game,
+                    failure_message=""
+                )
+                self._statistics_manager.write_live_results(self.config.index)
+
+            if self._debug_mode > 2:
                 print("\n")
                 py_trees.display.print_ascii_tree(
                     self.scenario_tree, show_status=True)
@@ -212,11 +228,7 @@ class ScenarioManager(object):
         if self._agent_watchdog:
             self._agent_watchdog.stop()
 
-        self.end_system_time = time.time()
-        self.end_game_time = GameTime.get_time()
-
-        self.scenario_duration_system = self.end_system_time - self.start_system_time
-        self.scenario_duration_game = self.end_game_time - self.start_game_time
+        self.compute_duration_time()
 
         if self.get_running_status():
             if self.scenario is not None:
@@ -227,6 +239,16 @@ class ScenarioManager(object):
                 self._agent = None
 
             self.analyze_scenario()
+
+    def compute_duration_time(self):
+        """
+        Computes system and game duration times
+        """
+        self.end_system_time = time.time()
+        self.end_game_time = GameTime.get_time()
+
+        self.scenario_duration_system = self.end_system_time - self.start_system_time
+        self.scenario_duration_game = self.end_game_time - self.start_game_time
 
     def analyze_scenario(self):
         """

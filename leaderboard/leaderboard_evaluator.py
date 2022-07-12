@@ -89,7 +89,7 @@ class LeaderboardEvaluator(object):
         self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(args.timeout, args.debug > 1)
+        self.manager = ScenarioManager(args.timeout, self.statistics_manager, args.debug)
 
         # Time control for summary purposes
         self._start_time = GameTime.get_time()
@@ -266,12 +266,12 @@ class LeaderboardEvaluator(object):
             self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             config.route = scenario.route
-            self.statistics_manager.set_scenario(scenario)
+            self.statistics_manager.set_scenario(config, scenario)
 
             # Load scenario and run it
             if args.record:
                 self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(scenario, self.agent_instance, config.repetition_index)
+            self.manager.load_scenario(config, scenario, self.agent_instance, config.repetition_index)
 
         except Exception as e:
             # The scenario is wrong -> set the ejecution to crashed and stop
@@ -362,7 +362,7 @@ class LeaderboardEvaluator(object):
         # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
         self.statistics_manager.compute_global_statistics()
-        self.statistics_manager.validate_statistics()
+        self.statistics_manager.validate_and_write_statistics()
 
 
 def main():
@@ -405,10 +405,12 @@ def main():
                         help='Resume execution from last checkpoint?')
     parser.add_argument("--checkpoint", type=str, default='./simulation_results.json',
                         help="Path to checkpoint used for saving statistics and resuming")
+    parser.add_argument("--debug-checkpoint", type=str, default='./live_results.txt',
+                        help="Path to checkpoint used for saving live results")
 
     arguments = parser.parse_args()
 
-    statistics_manager = StatisticsManager(arguments.checkpoint)
+    statistics_manager = StatisticsManager(arguments.checkpoint, arguments.debug_checkpoint)
 
     try:
         leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
