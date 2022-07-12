@@ -266,7 +266,7 @@ class LeaderboardEvaluator(object):
             self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             config.route = scenario.route
-            self.statistics_manager.set_scenario(scenario)
+            self.statistics_manager.set_scenario(config, scenario)
 
             # Load scenario and run it
             if args.record:
@@ -406,10 +406,12 @@ def main():
                         help='Resume execution from last checkpoint?')
     parser.add_argument("--checkpoint", type=str, default='./simulation_results.json',
                         help="Path to checkpoint used for saving statistics and resuming")
+    parser.add_argument("--debug-checkpoint", type=str, default='./live_results.txt',
+                        help="Path to checkpoint used for saving live results")
 
     arguments = parser.parse_args()
 
-    statistics_manager = StatisticsManager(arguments.checkpoint)
+    statistics_manager = StatisticsManager(arguments.checkpoint, arguments.debug_checkpoint)
 
     try:
         leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)

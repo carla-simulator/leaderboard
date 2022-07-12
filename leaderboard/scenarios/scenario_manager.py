@@ -181,9 +181,9 @@ class ScenarioManager(object):
             # Tick scenario
             self.scenario_tree.tick_once()
 
-            self.compute_duration_time()
-
             if self._debug_mode > 1:
+                self.compute_duration_time()
+
                 # Update live statistics
                 self._statistics_manager.compute_route_statistics(
                     self.config,
