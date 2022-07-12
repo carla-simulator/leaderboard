@@ -362,8 +362,7 @@ class LeaderboardEvaluator(object):
         # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
         self.statistics_manager.compute_global_statistics()
-        self.statistics_manager.validate_statistics()
-        self.statistics_manager.write()
+        self.statistics_manager.validate_and_write_statistics()
 
 
 def main():

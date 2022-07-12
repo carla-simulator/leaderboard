@@ -205,10 +205,6 @@ class StatisticsManager(object):
             int(x.route_id.split('_rep')[-1])
         ))
 
-    def write(self):
-        """Writes results to json"""
-        save_dict(self._endpoint, self._results.to_json())
-
     def write_live_results(self, index):
         """Writes live results"""
         route_record = self._results.checkpoint.records[index]
@@ -444,7 +440,7 @@ Last infractions:\n""".format(
         self._results.entry_status = entry_status
         self._results.eligible = ELIGIBLE_VALUES[entry_status]
 
-    def validate_statistics(self):
+    def validate_and_write_statistics(self):
         """
         Makes sure that all the relevant data is there.
         Changes the 'entry status' to 'Invalid' if this isn't the case"""
@@ -488,3 +484,5 @@ Last infractions:\n""".format(
             entry_status = 'Invalid'
             self._results.entry_status = entry_status
             self._results.eligible = ELIGIBLE_VALUES[entry_status]
+
+        save_dict(self._endpoint, self._results.to_json())
