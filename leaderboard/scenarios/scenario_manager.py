@@ -183,7 +183,7 @@ class ScenarioManager(object):
 
             self.compute_duration_time()
 
-            if self._debug_mode > 0:
+            if self._debug_mode > 1:
                 # Update live statistics
                 self._statistics_manager.compute_route_statistics(
                     self.config,
@@ -193,7 +193,7 @@ class ScenarioManager(object):
                 )
                 self._statistics_manager.write_live_results(self.config.index)
 
-            if self._debug_mode > 1:
+            if self._debug_mode > 2:
                 print("\n")
                 py_trees.display.print_ascii_tree(
                     self.scenario_tree, show_status=True)
