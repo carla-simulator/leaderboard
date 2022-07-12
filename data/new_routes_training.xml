@@ -728,7 +728,7 @@
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1577.4" y="1764.1" z="357.4" yaw="89.6"/>
             <distance value="50"/>
-            <blocker_model value="static.prop.busstop"/>
+            <blocker_model value="static.prop.busstoplb"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1781.4" y="2205.5" z="364.6" yaw="89.8"/>
@@ -743,7 +743,7 @@
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="1381.9" y="2043.7" z="358.9" yaw="-90.1"/>
             <distance value="50"/>
-            <blocker_model value="static.prop.haybale"/>
+            <blocker_model value="static.prop.haybalelb"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
             <trigger_point x="1381.8" y="1868.4" z="354.7" yaw="-90.1"/>
@@ -755,12 +755,12 @@
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="2184.8" y="2200.6" z="359.9" yaw="89.7"/>
             <distance value="50"/>
-            <blocker_model value="static.prop.haybale"/>
+            <blocker_model value="static.prop.haybalelb"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
             <trigger_point x="2540.8" y="2254.9" z="360.7" yaw="269.9"/>
             <distance value="50"/>
-            <blocker_model value="static.prop.haybale"/>
+            <blocker_model value="static.prop.haybalelb"/>
          </scenario>
          <scenario name="VehicleTurning_6" type="VehicleTurningRoute">
             <trigger_point x="2633.6" y="2179.2" z="357.9" yaw="-0.2"/>
