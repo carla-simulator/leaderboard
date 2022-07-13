@@ -308,9 +308,9 @@ Last infractions:\n""".format(
             event_value = event.get_dict()['percentage']
             penalty_value, penalty_type = PENALTY_PERC_DICT[event.get_type()]
             if penalty_type == "decreases":
-                score_penalty *= penalty_value * (event_value / 100)
+                score_penalty *= (1 - penalty_value * (1 - event_value / 100))
             elif penalty_type == "increases":
-                score_penalty *= penalty_value * (1 - event_value / 100)
+                score_penalty *= (1 - penalty_value * event_value / 100)
             else:
                 raise ValueError("Found a criteria with an unknown penalty type")
             return score_penalty

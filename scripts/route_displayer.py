@@ -130,7 +130,6 @@ def show_route(filename, route_id, show_keypoints, show_scenarios, world, grp):
 
         points = []
         for position in route.find('waypoints').iter('position'):
-            print(f"Location: {convert_elem_to_location(position)}")
             points.append(convert_elem_to_location(position))
 
         if points:
@@ -138,7 +137,6 @@ def show_route(filename, route_id, show_keypoints, show_scenarios, world, grp):
                 waypoint = points[i]
                 waypoint_next = points[i + 1]
                 interpolated_trace = grp.trace_route(waypoint, waypoint_next)
-                print(f"Route: {interpolated_trace}")
                 for j in range(len(interpolated_trace) - 1):
                     wp, option = interpolated_trace[j]
                     draw_point(world, wp, get_color(option))

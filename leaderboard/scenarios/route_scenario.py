@@ -325,13 +325,6 @@ class RouteScenario(BasicScenario):
         criteria.add_child(RunningStopTest(self.ego_vehicles[0]))
         criteria.add_child(MinSpeedRouteTest(self.ego_vehicles[0], name="MinSpeedTest"))
 
-        # These stop the route early to save computational time
-        criteria.add_child(InRouteTest(
-            self.ego_vehicles[0], route=self.route, offroad_max=30, terminate_on_failure=True))
-        criteria.add_child(ActorBlockedTest(
-            self.ego_vehicles[0], min_speed=0.1, max_time=180.0, terminate_on_failure=True, name="AgentBlockedTest")
-        )
-
         for scenario in self.list_scenarios:
             scenario_criteria = scenario.get_criteria()
             if len(scenario_criteria) == 0:
@@ -340,6 +333,13 @@ class RouteScenario(BasicScenario):
             criteria.add_child(
                 self._create_criterion_tree(scenario, scenario_criteria)
             )
+
+        # These stop the route early to save computational time
+        criteria.add_child(InRouteTest(
+            self.ego_vehicles[0], route=self.route, offroad_max=30, terminate_on_failure=True))
+        criteria.add_child(ActorBlockedTest(
+            self.ego_vehicles[0], min_speed=0.1, max_time=180.0, terminate_on_failure=True, name="AgentBlockedTest")
+        )
 
         return criteria
 

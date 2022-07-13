@@ -163,6 +163,8 @@ class LeaderboardEvaluator(object):
         settings = self.world.get_settings()
         settings.fixed_delta_seconds = 1.0 / self.frame_rate
         settings.synchronous_mode = True
+        settings.tile_stream_distance = 1000
+        settings.actor_active_distance = 1000
         self.world.apply_settings(settings)
 
         self.world.reset_all_traffic_lights()
