@@ -205,7 +205,7 @@ class StatisticsManager(object):
             int(x.route_id.split('_rep')[-1])
         ))
 
-    def write_live_results(self, index):
+    def write_live_results(self, index, ego_speed, ego_control):
         """Writes live results"""
         route_record = self._results.checkpoint.records[index]
 
@@ -217,36 +217,38 @@ class StatisticsManager(object):
         all_events.sort(key=lambda e: e.get_frame(), reverse=True)
 
         with open(self._debug_endpoint, 'w') as f:
-            f.write(
-                """
-Route id: {}
+            f.write("""Route id: {}
 
 Scores:
-    Driving score: {}
-    Route completion: {}
-    Infraction penalty: {}
+    Driving score:      {:.2f}          Route length:    {:.2f}
+    Route completion:   {:.2f}          Game duration:   {:.2f}
+    Infraction penalty: {:.2f}          System duration: {:.2f}
 
-Meta:
-    Route length: {}
-    Game duration: {}
-    System duration: {}
+Ego:
+    Throttle:           {:.2f}          Speed:           {:.2f} km/h
+    Brake:              {:.2f}
+    Steer:              {:.2f}
 
 Total infractions: {}
 Last infractions:\n""".format(
                     route_record.route_id,
                     route_record.scores["Driving score"],
-                    route_record.scores["Route completion"],
-                    route_record.scores["Infraction penalty"],
                     route_record.meta["Route length"],
+                    route_record.scores["Route completion"],
                     route_record.meta["Game duration"],
+                    route_record.scores["Infraction penalty"],
                     route_record.meta["System duration"],
+                    ego_control.throttle,
+                    ego_speed * 3.6,
+                    ego_control.brake,
+                    ego_control.steer,
                     route_record.num_infractions
                 )
             )
             for e in all_events[:5]:
                 # Prevent showing the ROUTE_COMPLETION event.
                 if e.get_type() != TrafficEventType.ROUTE_COMPLETION:
-                    f.write("\t" + e.get_message() + "\n")
+                    f.write("\t" + str(e.get_type()) + "\n")
 
     def save_sensors(self, sensors):
         self._results.sensors = sensors

@@ -191,7 +191,11 @@ class ScenarioManager(object):
                     self.scenario_duration_game,
                     failure_message=""
                 )
-                self._statistics_manager.write_live_results(self.config.index)
+                self._statistics_manager.write_live_results(
+                    self.config.index,
+                    self.ego_vehicles[0].get_velocity().length(),
+                    ego_action
+                )
 
             if self._debug_mode > 2:
                 print("\n")
