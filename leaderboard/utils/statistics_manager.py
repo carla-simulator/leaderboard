@@ -220,28 +220,34 @@ class StatisticsManager(object):
             f.write("""Route id: {}
 
 Scores:
-    Driving score:      {:.2f}          Route length:    {:.2f}
-    Route completion:   {:.2f}          Game duration:   {:.2f}
-    Infraction penalty: {:.2f}          System duration: {:.2f}
+    Driving score:      {:.3f}
+    Route completion:   {:.3f}
+    Infraction penalty: {:.3f}
+
+    Route length:    {:.3f}
+    Game duration:   {:.3f}
+    System duration: {:.3f}
 
 Ego:
-    Throttle:           {:.2f}          Speed:           {:.2f} km/h
-    Brake:              {:.2f}
-    Steer:              {:.2f}
+    Throttle:           {:.3f}
+    Brake:              {:.3f}
+    Steer:              {:.3f}
+
+    Speed:           {:.3f} km/h
 
 Total infractions: {}
 Last infractions:\n""".format(
                     route_record.route_id,
                     route_record.scores["Driving score"],
-                    route_record.meta["Route length"],
                     route_record.scores["Route completion"],
-                    route_record.meta["Game duration"],
                     route_record.scores["Infraction penalty"],
+                    route_record.meta["Route length"],
+                    route_record.meta["Game duration"],
                     route_record.meta["System duration"],
                     ego_control.throttle,
-                    ego_speed * 3.6,
                     ego_control.brake,
                     ego_control.steer,
+                    ego_speed * 3.6,
                     route_record.num_infractions
                 )
             )
