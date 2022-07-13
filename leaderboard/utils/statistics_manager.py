@@ -205,7 +205,7 @@ class StatisticsManager(object):
             int(x.route_id.split('_rep')[-1])
         ))
 
-    def write_live_results(self, index):
+    def write_live_results(self, index, ego_speed, ego_control):
         """Writes live results"""
         route_record = self._results.checkpoint.records[index]
 
@@ -217,19 +217,23 @@ class StatisticsManager(object):
         all_events.sort(key=lambda e: e.get_frame(), reverse=True)
 
         with open(self._debug_endpoint, 'w') as f:
-            f.write(
-                """
-Route id: {}
+            f.write("""Route id: {}
 
 Scores:
-    Driving score: {}
-    Route completion: {}
-    Infraction penalty: {}
+    Driving score:      {:.3f}
+    Route completion:   {:.3f}
+    Infraction penalty: {:.3f}
 
-Meta:
-    Route length: {}
-    Game duration: {}
-    System duration: {}
+    Route length:    {:.3f}
+    Game duration:   {:.3f}
+    System duration: {:.3f}
+
+Ego:
+    Throttle:           {:.3f}
+    Brake:              {:.3f}
+    Steer:              {:.3f}
+
+    Speed:           {:.3f} km/h
 
 Total infractions: {}
 Last infractions:\n""".format(
@@ -240,13 +244,17 @@ Last infractions:\n""".format(
                     route_record.meta["Route length"],
                     route_record.meta["Game duration"],
                     route_record.meta["System duration"],
+                    ego_control.throttle,
+                    ego_control.brake,
+                    ego_control.steer,
+                    ego_speed * 3.6,
                     route_record.num_infractions
                 )
             )
             for e in all_events[:5]:
                 # Prevent showing the ROUTE_COMPLETION event.
                 if e.get_type() != TrafficEventType.ROUTE_COMPLETION:
-                    f.write("\t" + e.get_message() + "\n")
+                    f.write("\t" + str(e.get_type()) + "\n")
 
     def save_sensors(self, sensors):
         self._results.sensors = sensors
