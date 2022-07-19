@@ -1383,9 +1383,6 @@
          <position x="2030.6" y="2524.9" z="366.8"/>
       </waypoints>
       <scenarios>
-         <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
-            <trigger_point x="-284.5" y="4020.7" z="371.9" yaw="-90.3"/>
-         </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="1481.7" y="2181.8" z="361.8" yaw="-0.2"/>
             <distance value="50"/>
@@ -1405,10 +1402,6 @@
          </scenario>
          <scenario name="VehicleTurning_3" type="VehicleTurningRoute">
             <trigger_point x="1783.3" y="1999.6" z="360.8" yaw="269.8"/>
-         </scenario>
-         <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
-            <trigger_point x="1985.3" y="1896.8" z="358.3" yaw="270.1"/>
-            <distance value="60"/>
          </scenario>
          <scenario name="VehicleTurning_4" type="VehicleTurningRoute">
             <trigger_point x="1661.4" y="1718.3" z="357.2" yaw="180.0"/>
@@ -1433,9 +1426,10 @@
             <distance value="50"/>
             <blocker_model value="static.prop.haybalelb"/>
          </scenario>
-         <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
+         <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="1381.8" y="1868.4" z="354.7" yaw="-90.1"/>
-            <distance value="50"/>
+            <distance value="110"/>
+            <offset value="0.55"/>
          </scenario>
          <scenario name="VehicleTurning_5" type="VehicleTurningRoute">
             <trigger_point x="2104.0" y="1950.2" z="356.5" yaw="-0.2"/>
@@ -1473,6 +1467,188 @@
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="1847.5" y="2413.0" z="369.2" yaw="-0.1"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="1662.8" y="2181.2" z="362.3" yaw="-0.2"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+            <trigger_point x="1731.7" y="2181.0" z="363.4" yaw="-0.2"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_7" type="VehicleTurningRoute">
+            <trigger_point x="1946.1" y="2180.4" z="363.0" yaw="-0.2"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
+            <trigger_point x="1984.8" y="2145.9" z="361.7" yaw="270.1"/>
+            <distance value="30"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="1984.9" y="2109.0" z="361.1" yaw="270.1"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="45"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
+            <trigger_point x="1944.2" y="2062.8" z="361.0" yaw="179.8"/>
+            <distance value="80"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_9" type="DynamicObjectCrossing">
+            <trigger_point x="1783.4" y="2039.3" z="361.4" yaw="269.8"/>
+            <distance value="30"/>
+            <blocker_model value="vehicle.tesla.model3"/>
+            <crossing_angle value="10"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+            <trigger_point x="1817.3" y="2063.3" z="362.0" yaw="179.8"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_3" type="AccidentTwoWays">
+            <trigger_point x="1818.7" y="1951.3" z="360.0" yaw="-0.2"/>
+            <distance value="90"/>
+            <frequency value="140"/>
+         </scenario>
+         <scenario name="InvadingTurn_1" type="InvadingTurn">
+            <trigger_point x="1985.4" y="1853.4" z="357.7" yaw="270.1"/>
+            <distance value="100"/>
+            <offset value="0.6"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
+            <trigger_point x="1985.3" y="1913.8" z="358.5" yaw="270.1"/>
+            <distance value="30"/>
+            <blocker_model value="static.prop.busstoplb"/>
+            <crossing_angle value="5"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="1887.7" y="1718.3" z="356.4" yaw="180.0"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="1578.4" y="1890.9" z="357.3" yaw="89.6"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="10" to="35"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_11" type="DynamicObjectCrossing">
+            <trigger_point x="1628.9" y="1952.0" z="358.5" yaw="-0.2"/>
+            <distance value="30"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="10"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="1734.6" y="1951.6" z="359.9" yaw="-0.2"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="15" to="50"/>
+         </scenario>
+         <scenario name="HardBreakRoute_4" type="HardBreakRoute">
+            <trigger_point x="1780.8" y="2003.1" z="360.8" yaw="89.8"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
+            <trigger_point x="1781.2" y="2120.7" z="362.9" yaw="89.8"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+            <trigger_point x="1615.6" y="2295.2" z="364.0" yaw="180.0"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_3" type="OppositeVehicleTakingPriority">
+            <trigger_point x="1583.6" y="2234.6" z="362.6" yaw="269.5"/>
+         </scenario>
+         <scenario name="ControlLoss_7" type="ControlLoss">
+            <trigger_point x="1583.8" y="2258.5" z="363.0" yaw="269.5"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="1557.1" y="2064.2" z="359.2" yaw="179.8"/>
+            <distance value="40"/>
+            <frequency value="110"/>
+            <bicycle_drive_distance value="80"/>
+            <bicycle_speed value="10"/>
+         </scenario>
+         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
+            <trigger_point x="1676.2" y="1720.8" z="357.1" yaw="-0.0"/>
+         </scenario>
+         <scenario name="InvadingTurn_3" type="InvadingTurn">
+            <trigger_point x="1841.1" y="1720.8" z="356.4" yaw="-0.0"/>
+            <distance value="110"/>
+            <offset value="0.6"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+            <trigger_point x="1947.3" y="1948.3" z="359.4" yaw="179.8"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_12" type="DynamicObjectCrossing">
+            <trigger_point x="2047.6" y="1950.4" z="357.9" yaw="-0.2"/>
+            <distance value="40"/>
+            <blocker_model value="static.prop.advertisement"/>
+            <crossing_angle value="10"/>
+         </scenario>
+         <scenario name="HardBreakRoute_6" type="HardBreakRoute">
+            <trigger_point x="2183.7" y="2003.5" z="356.1" yaw="89.8"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_4" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2184.4" y="2129.6" z="358.2" yaw="89.7"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_4" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="2185.1" y="2252.1" z="361.1" yaw="89.7"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="20" to="50"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
+            <trigger_point x="2229.7" y="2298.2" z="363.1" yaw="360.0"/>
+            <distance value="70"/>
+            <frequency value="110"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_10" type="VehicleTurningRoute">
+            <trigger_point x="2501.1" y="2300.2" z="362.4" yaw="359.9"/>
+         </scenario>
+         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+            <trigger_point x="2655.4" y="2115.8" z="355.8" yaw="269.9"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_13" type="DynamicObjectCrossing">
+            <trigger_point x="2613.2" y="2060.2" z="354.5" yaw="179.7"/>
+            <distance value="40"/>
+            <blocker_model value="vehicle.mercedes.sprinter"/>
+            <crossing_angle value="0"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_11" type="VehicleTurningRoute">
+            <trigger_point x="2537.2" y="2134.5" z="357.6" yaw="89.9"/>
+         </scenario>
+         <scenario name="HardBreakRoute_8" type="HardBreakRoute">
+            <trigger_point x="2465.9" y="2176.3" z="360.2" yaw="179.8"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2385.5" y="2244.1" z="362.8" yaw="90.1"/>
+            <direction value="right"/>
+         </scenario>
+         <scenario name="ControlLoss_8" type="ControlLoss">
+            <trigger_point x="2386.7" y="2575.2" z="368.1" yaw="89.7"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
+            <trigger_point x="2349.1" y="2640.8" z="367.4" yaw="179.8"/>
+            <distance value="70"/>
+            <frequency value="115"/>
+         </scenario>
+         <scenario name="InvadingTurn_4" type="InvadingTurn">
+            <trigger_point x="1923.4" y="2642.1" z="367.3" yaw="179.8"/>
+            <distance value="100"/>
+            <offset value="0.5"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_14" type="DynamicObjectCrossing">
+            <trigger_point x="2032.0" y="2412.5" z="365.9" yaw="-0.1"/>
+            <distance value="40"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="20"/>
+         </scenario>
+         <scenario name="HardBreakRoute_9" type="HardBreakRoute">
+            <trigger_point x="2185.3" y="2464.3" z="364.8" yaw="90.1"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_12" type="VehicleTurningRoute">
+            <trigger_point x="2185.2" y="2494.0" z="365.0" yaw="90.1"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="2158.1" y="2524.6" z="364.7" yaw="179.9"/>
+            <distance value="40"/>
+            <frequency value="100"/>
+            <bicycle_drive_distance value="200"/>
+            <bicycle_speed value="10"/>
          </scenario>
       </scenarios>
    </route>
@@ -1487,7 +1663,7 @@
          <!-- Start with a rainy midday -->
          <weather route_percentage="100"
             cloudiness="70" precipitation="80" precipitation_deposits="80" wetness="0"
-            wind_intensity="0" sun_azimuth_angle="67" sun_altitude_angle="-40"
+            wind_intensity="0" sun_azimuth_angle="67" sun_altitude_angle="-10"
             fog_density="0" fog_distance="0" fog_falloff="0" scattering_intensity="1.0"
             mie_scattering_scale="0.03"/>
          <!-- Stop raining  -->
@@ -1549,28 +1725,20 @@
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="3578.9" y="2405.9" z="361.4" yaw="179.8"/>
             <distance value="35"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="10"/>
          </scenario>
          <scenario name="VehicleTurning_3" type="VehicleTurningRoute">
             <trigger_point x="3479.4" y="2462.8" z="360.8" yaw="89.7"/>
          </scenario>
-         <!-- Side lane hazard 
-            <trigger_point x="3412.7" y="2523.1" z="357.9" yaw="179.8"/>-->
-         <!-- Side lane hazard 
-            <trigger_point x="3186.1" y="2644.8" z="357.0" yaw="-0.3"/>-->
-         <!-- Side lane hazard 
-            <trigger_point x="3422.3" y="2406.4" z="358.8" yaw="179.8"/>-->
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="3347.3" y="2406.6" z="356.5" yaw="179.8"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="3084.3" y="2407.3" z="350.6" yaw="179.8"/>
             <distance value="50"/>
-         </scenario>
-         <scenario name="VehicleTurning_3" type="VehicleTurningRoute">
-            <trigger_point x="2721.3" y="2408.3" z="357.6" yaw="179.8"/>
-         </scenario>
-         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
-            <trigger_point x="2655.7" y="2360.7" z="360.3" yaw="269.9"/>
+            <blocker_model value="static.prop.foodcart"/>
+            <crossing_angle value="20"/>
          </scenario>
          <scenario name="JunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="2655.5" y="2244.7" z="359.5" yaw="269.9"/>
@@ -1585,6 +1753,8 @@
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="2772.3" y="2221.9" z="357.2" yaw="89.8"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.container"/>
+            <crossing_angle value="15"/>
          </scenario>
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="2541.0" y="2386.6" z="363.6" yaw="269.9"/>
@@ -1599,6 +1769,8 @@
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="2771.9" y="2074.6" z="356.4" yaw="89.8"/>
             <distance value="50"/>
+            <blocker_model value="static.prop.advertisement"/>
+            <crossing_angle value="20"/>
          </scenario>
          <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="2890.6" y="2042.4" z="354.2" yaw="269.6"/>
@@ -1612,12 +1784,175 @@
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="2804.7" y="1712.2" z="344.2" yaw="-21.8"/>
             <distance value="30"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="5"/>
          </scenario>
          <scenario name="VehicleTurning_7" type="VehicleTurningRoute">
             <trigger_point x="2421.9" y="1714.1" z="354.4" yaw="180.1"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="2342.9" y="2061.4" z="359.5" yaw="179.8"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
+            <trigger_point x="3710.7" y="2177.9" z="356.3" yaw="90.0"/>
+            <distance value="50"/>
+            <blocker_model value="vehicle.mercedes.sprinter"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
+            <trigger_point x="3684.2" y="2522.4" z="364.4" yaw="179.8"/>
+            <distance value="30"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_3" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="3645.0" y="2522.5" z="364.3" yaw="179.8"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="50"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
+            <trigger_point x="3479.3" y="2442.6" z="360.6" yaw="89.7"/>
+            <distance value="30"/>
+            <blocker_model value="static.prop.busstoplb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="3421.4" y="2523.1" z="358.3" yaw="179.8"/>
+            <distance value="60"/>
+            <frequency value="100"/>
+            <bicycle_drive_distance value="100"/>
+            <bicycle_speed value="10"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_9" type="DynamicObjectCrossing">
+            <trigger_point x="3244.1" y="2523.6" z="353.2" yaw="179.8"/>
+            <distance value="40"/>
+            <blocker_model value="vehicle.mini.cooper_s_2021"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="3123.7" y="2582.5" z="354.7" yaw="90.0"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="3178.9" y="2644.8" z="357.0" yaw="-0.3"/>
+            <distance value="70"/>
+            <frequency value="110"/>
+            <bicycle_drive_distance value="100"/>
+            <bicycle_speed value="10"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="3417.4" y="2643.8" z="357.6" yaw="-0.3"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="55"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
+            <trigger_point x="3482.4" y="2575.9" z="359.5" yaw="269.7"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+            <trigger_point x="3481.9" y="2452.5" z="360.7" yaw="269.7"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
+            <trigger_point x="3449.6" y="2406.3" z="359.5" yaw="179.8"/>
+            <distance value="80"/>
+            <frequency value="110"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
+            <trigger_point x="3302.7" y="2406.7" z="354.7" yaw="179.8"/>
+            <distance value="80"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_3" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2975.9" y="2407.6" z="347.6" yaw="179.8"/>
+            <direction value="right"/>
+         </scenario>
+         <scenario name="HardBreakRoute_4" type="HardBreakRoute">
+            <trigger_point x="2838.9" y="2407.9" z="352.0" yaw="179.8"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_10" type="VehicleTurningRoute">
+            <trigger_point x="2680.7" y="2408.4" z="359.3" yaw="179.8"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
+            <trigger_point x="2655.7" y="2358.4" z="360.3" yaw="269.9"/>
+            <distance value="70"/>
+            <frequency value="115"/>
+         </scenario>
+         <scenario name="HardBreakRoute_4" type="HardBreakRoute">
+            <trigger_point x="2772.6" y="2335.4" z="355.6" yaw="89.8"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_11" type="VehicleTurningRoute">
+            <trigger_point x="2773.1" y="2493.3" z="354.5" yaw="89.8"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
+            <trigger_point x="2629.1" y="2525.4" z="361.1" yaw="179.8"/>
+            <distance value="40"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_12" type="VehicleTurningRoute">
+            <trigger_point x="2540.5" y="1981.3" z="356.2" yaw="269.9"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="2772.0" y="2117.0" z="357.1" yaw="89.8"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="10" to="35"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_13" type="VehicleTurningRoute">
+            <trigger_point x="2772.1" y="2146.0" z="357.4" yaw="89.8"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_11" type="DynamicObjectCrossing">
+            <trigger_point x="2891.2" y="2140.9" z="353.5" yaw="269.6"/>
+            <distance value="40"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
+            <trigger_point x="2889.7" y="1900.9" z="352.1" yaw="269.6"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
+            <trigger_point x="2889.1" y="1800.3" z="348.1" yaw="269.6"/>
+            <distance value="65"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_12" type="DynamicObjectCrossing">
+            <trigger_point x="2845.3" y="1672.3" z="342.5" yaw="146.0"/>
+            <distance value="50"/>
+            <blocker_model value="vehicle.tesla.model3"/>
+            <crossing_angle value="10"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_14" type="VehicleTurningRoute">
+            <trigger_point x="2771.1" y="1797.4" z="346.7" yaw="89.8"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_15" type="VehicleTurningRoute">
+            <trigger_point x="2654.8" y="1748.9" z="349.0" yaw="269.9"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_4" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2728.0" y="1716.4" z="346.4" yaw="-0.1"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="2888.1" y="1645.3" z="341.5" yaw="269.6"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="20" to="50"/>
+         </scenario>
+         <scenario name="HardBreakRoute_6" type="HardBreakRoute">
+            <trigger_point x="2720.7" y="1596.6" z="345.2" yaw="179.9"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_16" type="VehicleTurningRoute">
+            <trigger_point x="2539.9" y="1542.7" z="353.7" yaw="269.9"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
+            <trigger_point x="2652.0" y="1547.6" z="349.5" yaw="89.9"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_17" type="VehicleTurningRoute">
+            <trigger_point x="2652.2" y="1683.2" z="346.9" yaw="89.9"/>
+         </scenario>
+         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+            <trigger_point x="2386.2" y="1761.6" z="355.3" yaw="90.1"/>
+         </scenario>
+         <scenario name="ControlLoss_4" type="ControlLoss">
+            <trigger_point x="2386.1" y="1862.3" z="355.9" yaw="90.1"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_18" type="VehicleTurningRoute">
+            <trigger_point x="2385.8" y="2025.4" z="358.7" yaw="90.1"/>
          </scenario>
       </scenarios>
    </route>
@@ -1657,24 +1992,26 @@
          <position x="2371.8" y="-1035.6" z="340.9"/>
       </waypoints>
       <scenarios>
-         <!-- Waiting for sidelane hazard and pedestrian crossing-->
          <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
             <trigger_point x="3713.2" y="2241.4" z="357.0" yaw="-90.0"/>
-            <frequency value="160"/>
+            <distance value="120"/>
+            <frequency value="90"/>
          </scenario>
          <scenario name="InterurbanAdvancedActorFlow_1" type="InterurbanAdvancedActorFlow">
             <trigger_point x="3796.1" y="1505.7" z="352.0" yaw="359.9"/>
             <start_actor_flow x="3940.5" y="1386.8" z="341.5"/>
             <end_actor_flow x="3941.7" y="1630.3" z="348.0"/>
             <flow_speed value="17"/>
-            <source_dist_interval from="60" to="90"/>
+            <source_dist_interval from="40" to="80"/>
          </scenario>
          <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
             <trigger_point x="3942.7" y="1194.3" z="338.6" yaw="-90.4"/>
+            <distance value="130"/>
             <frequency value="150"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="3878.3" y="571.9" z="337.1" yaw="-127.0"/>
+            <distance value="100"/>
             <frequency value="200"/>
          </scenario>
          <scenario name="InterurbanActorFlow_1" type="InterurbanActorFlow">
@@ -1682,31 +2019,29 @@
             <start_actor_flow x="3734.5" y="-192.5" z="326.4"/>
             <end_actor_flow x="3737.5" y="38.3" z="330.0"/>
             <flow_speed value="20"/>
-            <source_dist_interval from="90" to="120"/>
+            <source_dist_interval from="65" to="90"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
             <trigger_point x="3436.8" y="-294.6" z="327.0" yaw="180.1"/>
+            <distance value="120"/>
             <frequency value="300"/>
          </scenario>
-         <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
-            <trigger_point x="2734.6" y="-295.3" z="327.1" yaw="180.1"/>
-            <frequency value="150"/>
-         </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
-            <trigger_point x="2373.4" y="-261.9" z="333.4" yaw="90.4"/>
+            <trigger_point x="2373.4" y="-180.9" z="333.4" yaw="90.4"/>
             <flow_speed value="15"/>
             <source_dist_interval from="25" to="70"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_2" type="ConstructionObstacleTwoWays">
             <trigger_point x="2840.9" y="-90.7" z="326.8" yaw="360.0"/>
+            <distance value="140"/>
             <frequency value="170"/>
          </scenario>
          <scenario name="InterurbanAdvancedActorFlow_2" type="InterurbanAdvancedActorFlow">
-            <trigger_point x="3524.9" y="-90.8" z="322.6" yaw="360.0"/>
+            <trigger_point x="3610.9" y="-90.8" z="322.6" yaw="360.0"/>
             <start_actor_flow x="3734.7" y="-203.4" z="326.2"/>
             <end_actor_flow x="3736.1" y="17.3" z="329.7"/>
             <flow_speed value="15"/>
-            <source_dist_interval from="40" to="100"/>
+            <source_dist_interval from="30" to="85"/>
          </scenario>
          <scenario name="AccidentTwoWays_3" type="AccidentTwoWays">
             <trigger_point x="3729.6" y="-1306.5" z="316.6" yaw="-90.7"/>
@@ -1717,11 +2052,163 @@
             <start_actor_flow x="2275.1" y="-1677.6" z="338.3"/>
             <end_actor_flow x="2459.9" y="-1678.6" z="333.4"/>
             <flow_speed value="15"/>
-            <source_dist_interval from="50" to="140"/>
+            <source_dist_interval from="25" to="80"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
             <trigger_point x="2370.8" y="-1400.7" z="341.2" yaw="89.4"/>
-            <frequency value="300"/>
+            <distance value="140"/>
+            <frequency value="160"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_4" type="ParkedObstacleTwoWays">
+            <trigger_point x="3713.2" y="1971.0" z="349.6" yaw="-90.0"/>
+            <distance value="110"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_4" type="AccidentTwoWays">
+            <trigger_point x="3713.1" y="1785.1" z="351.7" yaw="-90.0"/>
+            <distance value="80"/>
+            <frequency value="110"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="3713.0" y="1570.0" z="353.8" yaw="-90.0"/>
+            <flow_speed value="12"/>
+            <source_dist_interval from="25" to="55"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="3769.6" y="1505.8" z="353.0" yaw="359.9"/>
+            <distance value="40"/>
+            <blocker_model value="static.prop.busstoplb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
+            <trigger_point x="3940.4" y="873.2" z="342.3" yaw="-90.4"/>
+            <distance value="80"/>
+            <frequency value="140"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_5" type="AccidentTwoWays">
+            <trigger_point x="3809.8" y="368.8" z="334.2" yaw="-98.4"/>
+            <distance value="90"/>
+            <frequency value="150"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="3734.1" y="-61.9" z="328.1" yaw="-91.1"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="3667.2" y="-94.3" z="324.1" yaw="180.0"/>
+            <distance value="70"/>
+            <frequency value="100"/>
+            <bicycle_drive_distance value="100"/>
+            <bicycle_speed value="12"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+            <trigger_point x="3521.2" y="-94.3" z="322.6" yaw="180.0"/>
+         </scenario>
+         <scenario name="HardBreakRoute_1" type="HardBreakRoute">
+            <trigger_point x="3485.8" y="-196.7" z="323.5" yaw="269.5"/>
+         </scenario>
+         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+            <trigger_point x="3256.2" y="-294.8" z="330.8" yaw="180.1"/>
+            <direction value="left"/>
+         </scenario>
+         <scenario name="ControlLoss_1" type="ControlLoss">
+            <trigger_point x="3144.4" y="-294.9" z="329.7" yaw="180.1"/>
+         </scenario>
+         <scenario name="ControlLoss_2" type="ControlLoss">
+            <trigger_point x="3106.7" y="-295.0" z="329.3" yaw="180.1"/>
+         </scenario>
+         <scenario name="ControlLoss_3" type="ControlLoss">
+            <trigger_point x="3057.0" y="-295.0" z="328.6" yaw="180.1"/>
+         </scenario>
+         <scenario name="ControlLoss_4" type="ControlLoss">
+            <trigger_point x="2931.1" y="-295.1" z="325.4" yaw="180.1"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_4" type="ConstructionObstacleTwoWays">
+            <trigger_point x="3116.5" y="-294.9" z="329.4" yaw="180.1"/>
+            <distance value="115"/>
+            <frequency value="125"/>
+         </scenario>
+         <scenario name="InvadingTurn_1" type="InvadingTurn">
+            <trigger_point x="2710.1" y="-295.4" z="327.7" yaw="180.1"/>
+            <distance value="120"/>
+            <offset value="0.65"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
+            <trigger_point x="2577.2" y="-318.1" z="330.6" yaw="184.8"/>
+            <distance value="110"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+            <trigger_point x="2374.6" y="-125.7" z="335.9" yaw="88.0"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
+            <trigger_point x="2455.8" y="-92.7" z="333.7" yaw="0.4"/>
+            <distance value="95"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
+            <trigger_point x="2624.8" y="-91.6" z="330.2" yaw="0.4"/>
+            <distance value="50"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="3099.0" y="-90.7" z="335.1" yaw="360.0"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_5" type="ConstructionObstacleTwoWays">
+            <trigger_point x="3265.1" y="-90.7" z="331.9" yaw="360.0"/>
+            <distance value="85"/>
+            <frequency value="110"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
+            <trigger_point x="3740.0" y="-356.3" z="323.4" yaw="-89.2"/>
+            <distance value="130"/>
+            <frequency value="135"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="3743.4" y="-652.5" z="319.7" yaw="-90.4"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_6" type="ConstructionObstacleTwoWays">
+            <trigger_point x="3739.9" y="-789.4" z="319.7" yaw="-92.5"/>
+            <distance value="120"/>
+            <frequency value="135"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_7" type="AccidentTwoWays">
+            <trigger_point x="3732.4" y="-1054.9" z="320.1" yaw="-90.7"/>
+            <distance value="110"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="3640.7" y="-1578.9" z="312.6" yaw="-128.3"/>
+            <distance value="135"/>
+            <frequency value="140"/>
+            <bicycle_speed value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_4" type="HardBreakRoute">
+            <trigger_point x="3376.3" y="-1731.2" z="317.7" yaw="-171.8"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_7" type="ParkedObstacleTwoWays">
+            <trigger_point x="3152.3" y="-1732.3" z="321.5" yaw="178.9"/>
+            <distance value="120"/>
+            <frequency value="150"/>
+         </scenario>
+         <scenario name="InvadingTurn_2" type="InvadingTurn">
+            <trigger_point x="2954.2" y="-1728.3" z="324.7" yaw="178.5"/>
+            <distance value="130"/>
+            <offset value="0.6"/>
+         </scenario>
+         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
+            <trigger_point x="2679.6" y="-1695.3" z="328.2" yaw="171.7"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+            <trigger_point x="2395.9" y="-1678.3" z="335.1" yaw="179.7"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_8" type="ParkedObstacleTwoWays">
+            <trigger_point x="2368.8" y="-1603.4" z="336.9" yaw="89.4"/>
+            <distance value="100"/>
+            <frequency value="90"/>
+         </scenario>
+         <scenario name="HardBreakRoute_6" type="HardBreakRoute">
+            <trigger_point x="2371.6" y="-1096.5" z="340.8" yaw="89.8"/>
          </scenario>
       </scenarios>
    </route>
@@ -1757,7 +2244,7 @@
             <source_dist_interval from="50" to="65"/>
          </scenario>
          <scenario name="InterurbanAdvancedActorFlow_1" type="InterurbanAdvancedActorFlow">
-            <trigger_point x="2372.9" y="-1544.9" z="337.2" yaw="269.4"/>
+            <trigger_point x="2372.9" y="-1525.9" z="337.2" yaw="269.4"/>
             <start_actor_flow x="2263.8" y="-1677.6" z="338.5"/>
             <end_actor_flow x="2488.2" y="-1678.7" z="332.7"/>
             <flow_speed value="15"/>
@@ -1780,20 +2267,11 @@
             <start_actor_flow x="-946.6" y="-1291.4" z="345.9"/>
             <end_actor_flow x="-739.8" y="-1362.2" z="341.2"/>
             <flow_speed value="20"/>
-            <source_dist_interval from="70" to="120"/>
+            <source_dist_interval from="50" to="100"/>
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-780.3" y="-917.1" z="339.8" yaw="94.3"/>
          </scenario>
-         <!-- <scenario name="ControlLoss_1" type="ControlLoss">
-            <trigger_point x="1319.1" y="-1713.0" z="335.9" yaw="180.0"/>
-</scenario>
-         <scenario name="ControlLoss_2" type="ControlLoss">
-            <trigger_point x="73.0" y="-1687.8" z="321.9" yaw="169.3"/>
-</scenario>
-         <scenario name="ControlLoss_3" type="ControlLoss">
-            <trigger_point x="-780.1" y="-919.8" z="339.8" yaw="94.2"/>
-</scenario> -->
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
             <trigger_point x="-836.7" y="-503.7" z="340.3" yaw="93.5"/>
             <frequency value="180"/>
@@ -1803,16 +2281,13 @@
             <start_actor_flow x="-836.1" y="4.9" z="345.3"/>
             <end_actor_flow x="-836.9" y="-175.2" z="341.1"/>
             <flow_speed value="16.6"/>
-            <source_dist_interval from="50" to="100"/>
+            <source_dist_interval from="35" to="85"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="-584.3" y="-83.0" z="347.2" yaw="0.0"/>
             <distance value="300"/>
             <frequency value="170"/>
          </scenario>
-         <!-- <scenario name="ControlLoss_4" type="ControlLoss">
-            <trigger_point x="-151.6" y="-82.8" z="336.6" yaw="0.0"/>
-</scenario> -->
          <scenario name="AccidentTwoWays_3" type="AccidentTwoWays">
             <trigger_point x="251.0" y="-82.7" z="328.0" yaw="0.0"/>
             <frequency value="200"/>
@@ -1830,7 +2305,7 @@
             <start_actor_flow x="783.1" y="2389.7" z="350.6"/>
             <end_actor_flow x="783.7" y="2214.8" z="354.8"/>
             <flow_speed value="18"/>
-            <source_dist_interval from="80" to="100"/>
+            <source_dist_interval from="35" to="75"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="961.6" y="2299.2" z="358.1" yaw="360.0"/>
@@ -1839,6 +2314,97 @@
          </scenario>
          <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
             <trigger_point x="1754.7" y="2298.6" z="366.1" yaw="360.0"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_4" type="ParkedObstacleTwoWays">
+            <trigger_point x="2630.1" y="-1458.6" z="336.9" yaw="180.0"/>
+            <distance value="80"/>
+            <frequency value="100"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+            <trigger_point x="2400.3" y="-1458.4" z="339.8" yaw="180.0"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
+            <trigger_point x="2211.7" y="-1681.5" z="339.3" yaw="180.8"/>
+            <distance value="100"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_3" type="ConstructionObstacleTwoWays">
+            <trigger_point x="1761.6" y="-1707.6" z="334.6" yaw="-177.0"/>
+            <distance value="100"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="1408.5" y="-1713.1" z="336.7" yaw="180.0"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_5" type="AccidentTwoWays">
+            <trigger_point x="660.3" y="-1712.5" z="321.7" yaw="180.0"/>
+            <distance value="100"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="300.1" y="-1711.8" z="316.1" yaw="178.6"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
+            <trigger_point x="-431.0" y="-1497.4" z="335.5" yaw="153.8"/>
+            <distance value="100"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="-819.1" y="-1240.7" z="342.5" yaw="72.1"/>
+            <distance value="110"/>
+            <frequency value="130"/>
+            <bicycle_drive_distance value="150"/>
+            <bicycle_speed value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_4" type="HardBreakRoute">
+            <trigger_point x="-731.7" y="-83.1" z="345.1" yaw="0.0"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_4" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-179.8" y="-82.8" z="337.4" yaw="0.0"/>
+            <distance value="100"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+            <trigger_point x="747.3" y="-79.0" z="337.4" yaw="0.0"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
+            <trigger_point x="781.7" y="120.7" z="337.3" yaw="90.1"/>
+            <distance value="100"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="780.7" y="1144.7" z="343.7" yaw="90.1"/>
+            <distance value="100"/>
+            <frequency value="115"/>
+            <bicycle_drive_distance value="200"/>
+            <bicycle_speed value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
+            <trigger_point x="779.9" y="1996.2" z="355.3" yaw="90.1"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
+            <trigger_point x="1222.1" y="2299.0" z="362.8" yaw="360.0"/>
+            <distance value="50"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="ControlLoss_1" type="ControlLoss">
+            <trigger_point x="1441.1" y="2298.9" z="364.8" yaw="360.0"/>
+         </scenario>
+         <scenario name="ControlLoss_2" type="ControlLoss">
+            <trigger_point x="780.1" y="1860.1" z="353.8" yaw="90.1"/>
+         </scenario>
+         <scenario name="ControlLoss_3" type="ControlLoss">
+            <trigger_point x="780.5" y="1420.9" z="345.2" yaw="90.1"/>
+         </scenario>
+         <scenario name="ControlLoss_4" type="ControlLoss">
+            <trigger_point x="781.2" y="615.7" z="341.6" yaw="90.1"/>
+         </scenario>
+         <scenario name="ControlLoss_5" type="ControlLoss">
+            <trigger_point x="304.5" y="-82.6" z="328.0" yaw="0.0"/>
+         </scenario>
+         <scenario name="ControlLoss_6" type="ControlLoss">
+            <trigger_point x="-824.1" y="-638.2" z="338.2" yaw="97.1"/>
          </scenario>
       </scenarios>
    </route>
@@ -1883,7 +2449,7 @@
             <trigger_point x="-3585.8" y="161.2" z="324.1" yaw="286.7"/>
          </scenario>
          <scenario name="InterurbanAdvancedActorFlow_1" type="InterurbanAdvancedActorFlow">
-            <trigger_point x="-3514.2" y="-258.4" z="304.5" yaw="257.7"/>
+            <trigger_point x="-3526.1" y="-303.2" z="302.8" yaw="252.4"/>
             <start_actor_flow x="-3651.8" y="-375.8" z="305.4"/>
             <end_actor_flow x="-3461.8" y="-443.5" z="298.9"/>
             <flow_speed value="20"/>
@@ -1919,7 +2485,7 @@
             <start_actor_flow x="-3827.9" y="2182.1" z="345.0"/>
             <end_actor_flow x="-3984.2" y="2039.7" z="337.4"/>
             <flow_speed value="23"/>
-            <source_dist_interval from="100" to="160"/>
+            <source_dist_interval from="40" to="90"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="-2477.4" y="1603.0" z="335.3" yaw="0.5"/>
@@ -1940,6 +2506,142 @@
          <scenario name="AccidentTwoWays_3" type="AccidentTwoWays">
             <trigger_point x="-830.9" y="1171.2" z="337.2" yaw="270.3"/>
             <frequency value="150"/>
+         </scenario>
+         <scenario name="InvadingTurn_1" type="InvadingTurn">
+            <trigger_point x="-3236.1" y="643.1" z="327.5" yaw="154.7"/>
+            <distance value="100"/>
+            <offset value="0.6"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
+            <trigger_point x="-3377.0" y="666.3" z="330.9" yaw="163.0"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="50"/>
+         </scenario>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="-3462.8" y="660.1" z="330.4" yaw="231.9"/>
+            <distance value="60"/>
+            <blocker_model value="vehicle.mercedes.sprinter"/>
+            <crossing_angle value="15"/>
+         </scenario>
+         <scenario name="HardBreakRoute_2" type="HardBreakRoute">
+            <trigger_point x="-3606.8" y="307.6" z="330.2" yaw="269.6"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="-3522.6" y="-11.4" z="316.0" yaw="286.2"/>
+            <distance value="70"/>
+            <frequency value="100"/>
+            <bicycle_drive_distance value="100"/>
+            <bicycle_speed value="10"/>
+         </scenario>
+         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
+            <trigger_point x="-3505.6" y="-205.8" z="306.7" yaw="263.8"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_2" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-3725.4" y="-353.2" z="309.0" yaw="160.3"/>
+            <distance value="100"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
+            <trigger_point x="-4304.4" y="-139.0" z="333.1" yaw="156.5"/>
+            <distance value="100"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="HardBreakRoute_4" type="HardBreakRoute">
+            <trigger_point x="-4525.7" y="-31.5" z="326.8" yaw="151.7"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="-5086.1" y="360.7" z="301.0" yaw="134.5"/>
+            <distance value="120"/>
+            <frequency value="150"/>
+            <bicycle_drive_distance value="200"/>
+            <bicycle_speed value="18"/>
+         </scenario>
+         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
+            <trigger_point x="-5220.5" y="628.5" z="307.2" yaw="98.8"/>
+         </scenario>
+         <scenario name="ControlLoss_3" type="ControlLoss">
+            <trigger_point x="-5221.4" y="771.1" z="312.7" yaw="82.0"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_3" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-5160.7" y="947.3" z="313.0" yaw="60.0"/>
+            <distance value="100"/>
+            <frequency value="135"/>
+         </scenario>
+         <scenario name="ControlLoss_4" type="ControlLoss">
+            <trigger_point x="-4782.7" y="1321.2" z="310.7" yaw="42.2"/>
+         </scenario>
+         <scenario name="ControlLoss_5" type="ControlLoss">
+            <trigger_point x="-4745.6" y="1354.7" z="311.0" yaw="42.2"/>
+         </scenario>
+         <scenario name="ControlLoss_6" type="ControlLoss">
+            <trigger_point x="-4699.3" y="1396.7" z="312.4" yaw="42.2"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="-4236.6" y="1815.8" z="328.0" yaw="42.2"/>
+            <distance value="100"/>
+            <frequency value="120"/>
+            <bicycle_drive_distance value="150"/>
+            <bicycle_speed value="15"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="-3932.4" y="2086.7" z="339.0" yaw="42.2"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
+            <trigger_point x="-3735.6" y="1951.2" z="336.5" yaw="329.3"/>
+            <distance value="70"/>
+            <frequency value="95"/>
+         </scenario>
+         <scenario name="ControlLoss_7" type="ControlLoss">
+            <trigger_point x="-3408.2" y="1791.3" z="349.6" yaw="313.8"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+            <trigger_point x="-3338.8" y="1638.9" z="350.3" yaw="275.2"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
+            <trigger_point x="-3280.1" y="1609.8" z="348.1" yaw="0.1"/>
+            <distance value="110"/>
+            <frequency value="95"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_7" type="AccidentTwoWays">
+            <trigger_point x="-2957.2" y="1610.5" z="327.5" yaw="0.1"/>
+            <distance value="120"/>
+            <frequency value="150"/>
+         </scenario>
+         <scenario name="HardBreakRoute_6" type="HardBreakRoute">
+            <trigger_point x="-2650.5" y="1611.0" z="326.7" yaw="358.5"/>
+         </scenario>
+         <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="-2232.8" y="1605.0" z="335.5" yaw="0.5"/>
+            <distance value="90"/>
+            <frequency value="120"/>
+            <bicycle_drive_distance value="100"/>
+            <bicycle_speed value="13"/>
+         </scenario>
+         <scenario name="AccidentTwoWays_8" type="AccidentTwoWays">
+            <trigger_point x="-2031.0" y="1606.7" z="337.0" yaw="0.5"/>
+            <distance value="90"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+            <trigger_point x="-1609.6" y="1610.2" z="324.6" yaw="0.5"/>
+         </scenario>
+         <scenario name="ControlLoss_8" type="ControlLoss">
+            <trigger_point x="-1649.0" y="1609.9" z="325.4" yaw="0.5"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_4" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-1120.3" y="1614.4" z="330.7" yaw="0.5"/>
+            <distance value="100"/>
+            <frequency value="120"/>
+         </scenario>
+         <scenario name="ParkedObstacleTwoWays_7" type="ParkedObstacleTwoWays">
+            <trigger_point x="-832.5" y="1455.8" z="330.5" yaw="270.3"/>
+            <distance value="90"/>
+            <frequency value="130"/>
+         </scenario>
+         <scenario name="ConstructionObstacleTwoWays_5" type="ConstructionObstacleTwoWays">
+            <trigger_point x="-829.4" y="908.6" z="342.4" yaw="269.6"/>
+            <distance value="110"/>
+            <frequency value="130"/>
          </scenario>
       </scenarios>
    </route>
