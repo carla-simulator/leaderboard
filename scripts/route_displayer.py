@@ -149,8 +149,8 @@ def show_route(filename, route_id, show_keypoints, show_scenarios, world, grp):
         if show_scenarios:
             show_saved_scenarios(route, world)
 
-        spec_transform = carla.Transform(points[0] + carla.Location(z=100), carla.Rotation(pitch=-90))
-        world.get_spectator().set_transform(spec_transform)
+        # spec_transform = carla.Transform(points[0] + carla.Location(z=100), carla.Rotation(pitch=-90))
+        # world.get_spectator().set_transform(spec_transform)
 
 def show_saved_scenarios(route, world):
     def convert_elem_to_location(elem):

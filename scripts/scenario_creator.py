@@ -43,7 +43,6 @@ SCENARIO_TYPES ={
     ],
     "OppositeVehicleRunningRedLight": [
         ["direction", "choice"],
-        ["adversary_speed", "value"],
     ],
     # Old junction scenarios, non signalized version
     "NonSignalizedJunctionLeftTurn": [
@@ -58,7 +57,6 @@ SCENARIO_TYPES ={
     ],
     "OppositeVehicleTakingPriority": [
         ["direction", "choice"],
-        ["adversary_speed", "value"],
     ],
     # Crossing actors
     "ParkingCrossingPedestrian": [
@@ -66,10 +64,10 @@ SCENARIO_TYPES ={
         ["direction", "choice"],
     ],
     "PedestrianCrossing": [
-        ["start_walker_flow", "location sidewalk"],
-        ["end_walker_flow_1", "location sidewalk probability"],
-        ["end_walker_flow_2", "location sidewalk probability"],
-        ["source_dist_interval", "interval"],
+        # ["start_walker_flow", "location sidewalk"],
+        # ["end_walker_flow_1", "location sidewalk probability"],
+        # ["end_walker_flow_2", "location sidewalk probability"],
+        # ["source_dist_interval", "interval"],
     ],
     # Actor flows
     "EnterActorFlow": [
@@ -171,6 +169,21 @@ SCENARIO_TYPES ={
         ["frequency", "value"],
         ["timeout", "value"]
     ],
+    "HazardAtSideLane": [
+        ["distance", "value"],
+        ["speed", "value"],
+        ["bicycle_drive_distance", "value"],
+        ["bicycle_speed", "value"],
+        ["timeout", "value"]
+    ],
+    "HazardAtSideLaneTwoWays": [
+        ["distance", "value"],
+        ["frequency", "value"],
+        ["bicycle_drive_distance", "value"],
+        ["bicycle_speed", "value"],
+        ["timeout", "value"]
+    ],
+
     # Cut ins
     "HighwayCutIn": [
         ["other_actor_location", "location driving"],
@@ -221,10 +234,7 @@ SCENARIO_TYPES ={
     "PriorityAtJunction": [
     ],
 
-    # Pedestrian Crossing
     # HighwayStaticCutIn
-    # BlockedIntersection
-    # HazardMovingAtSideLane
 }
 
 

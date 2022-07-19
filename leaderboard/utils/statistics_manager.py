@@ -251,14 +251,12 @@ class StatisticsManager(object):
                 event_type = e.get_type()
                 if event_type == TrafficEventType.ROUTE_COMPLETION:
                     continue
-                string = "\t" + str(e.get_type())
+                string = "    " + str(e.get_type()).replace("TrafficEventType.", "")
                 if event_type in PENALTY_VALUE_DICT:
-                    string += " (penalty: " + str(PENALTY_VALUE_DICT[event_type]) + ")"
+                    string += " (penalty: " + str(PENALTY_VALUE_DICT[event_type]) + ")\n"
                 elif event_type in PENALTY_PERC_DICT:
-                    string += " (penalty: " + str(PENALTY_PERC_DICT[event_type][0])
-                    string += " - value: " + str(round(e.get_dict()['percentage'], 3)) + "%)"
+                    string += " (value: " + str(round(e.get_dict()['percentage'], 3)) + "%)\n"
 
-                string += "\n"
                 f.write(string)
 
     def save_sensors(self, sensors):
