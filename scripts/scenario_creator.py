@@ -34,12 +34,10 @@ SCENARIO_TYPES ={
     "SignalizedJunctionLeftTurn": [
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "SignalizedJunctionRightTurn": [
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "OppositeVehicleRunningRedLight": [
         ["direction", "choice"],
@@ -48,12 +46,10 @@ SCENARIO_TYPES ={
     "NonSignalizedJunctionLeftTurn": [
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "NonSignalizedJunctionRightTurn": [
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "OppositeVehicleTakingPriority": [
         ["direction", "choice"],
@@ -62,6 +58,7 @@ SCENARIO_TYPES ={
     "ParkingCrossingPedestrian": [
         ["distance", "value"],
         ["direction", "choice"],
+        ["crossing_angle", "value"],
     ],
     "PedestrianCrossing": [
         # ["start_walker_flow", "location sidewalk"],
@@ -75,113 +72,95 @@ SCENARIO_TYPES ={
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "EnterActorFlowV2": [
         ["start_actor_flow", "location driving"],
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "InterurbanActorFlow": [
         ["start_actor_flow", "location driving"],
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "InterurbanAdvancedActorFlow": [
         ["start_actor_flow", "location driving"],
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "HighwayExit": [
         ["start_actor_flow", "location driving"],
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "MergerIntoSlowTraffic": [
         ["start_actor_flow", "location driving"],
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "MergerIntoSlowTrafficV2": [
         ["start_actor_flow", "location driving"],
         ["end_actor_flow", "location driving"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["timeout", "value"]
     ],
     "CrossingBicycleFlow": [
         ["start_actor_flow", "location bicycle"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["green_light_delay", "value"],
-        ["timeout", "value"]
     ],
     # Route obstacles
     "ConstructionObstacle": [
         ["distance", "value"],
+        ["direction", "value"],
         ["speed", "value"],
-        ["timeout", "value"]
     ],
     "ConstructionObstacleTwoWays": [
         ["distance", "value"],
         ["frequency", "value"],
-        ["timeout", "value"]
     ],
     "Accident": [
         ["distance", "value"],
         ["direction", "value"],
         ["speed", "value"],
-        ["timeout", "value"]
     ],
     "AccidentTwoWays": [
         ["distance", "value"],
         ["frequency", "value"],
-        ["timeout", "value"]
     ],
     "ParkedObstacle": [
         ["distance", "value"],
         ["direction", "value"],
         ["speed", "value"],
-        ["timeout", "value"]
     ],
     "ParkedObstacleTwoWays": [
         ["distance", "value"],
         ["frequency", "value"],
-        ["timeout", "value"]
     ],
     "VehicleOpensDoor": [
         ["distance", "value"],
         ["speed", "value"],
-        ["timeout", "value"]
     ],
     "VehicleOpensDoorTwoWays": [
         ["distance", "value"],
         ["frequency", "value"],
-        ["timeout", "value"]
     ],
     "HazardAtSideLane": [
         ["distance", "value"],
         ["speed", "value"],
         ["bicycle_drive_distance", "value"],
         ["bicycle_speed", "value"],
-        ["timeout", "value"]
     ],
     "HazardAtSideLaneTwoWays": [
         ["distance", "value"],
         ["frequency", "value"],
         ["bicycle_drive_distance", "value"],
         ["bicycle_speed", "value"],
-        ["timeout", "value"]
     ],
 
     # Cut ins
@@ -189,6 +168,11 @@ SCENARIO_TYPES ={
         ["other_actor_location", "location driving"],
     ],
     "ParkingCutIn": [
+        ["direction", "choice"],
+    ],
+    "StaticCutIn": [
+        ["distance", "value"],
+        ["speed", "value"],
         ["direction", "choice"],
     ],
 
@@ -207,7 +191,6 @@ SCENARIO_TYPES ={
     "InvadingTurn": [
         ["distance", "value"],
         ["offset", "value"],
-        ["timeout", "value"],
     ],
 
     # Special ones
@@ -216,7 +199,6 @@ SCENARIO_TYPES ={
         ["flow_distance", "value"],
         ["front_vehicle_distance", "value"],
         ["behind_vehicle_distance", "value"],
-        ["timeout", "value"]
     ],
     "BackgroundActivityParametrizer": [
         ["num_front_vehicles", "value"],
@@ -234,7 +216,6 @@ SCENARIO_TYPES ={
     "PriorityAtJunction": [
     ],
 
-    # HighwayStaticCutIn
 }
 
 

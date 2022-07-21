@@ -61,19 +61,22 @@ def main():
 
     statistics = [['Route id', 'Distance (m)', 'Scenarios (type)', 'Scenarios (nº)', 'Avg dist between scenarios']]
 
+    prev_town = None
+
     for route in root.iter("route"):
 
         route_id = route.attrib['id']
         route_town = route.attrib['town']
 
         if route_town not in MAPS_LOCATIONS:
-            print(f"Ignoring route '{route_id}' as it uses an unknown map")
-
-        full_name = os.environ["CARLA_ROOT"] + "/" + MAPS_LOCATIONS[route_town]
-        with open(full_name, 'r') as f:
-            map_contents = f.read()
-        tmap = carla.Map(route_town, map_contents)
-        grp = GlobalRoutePlanner(tmap, 2.0)
+            print(f"Ignoring route '{route_id}' as it uses an unknown map '{route_town}")
+            continue
+        elif route_town != prev_town:
+            full_name = os.environ["CARLA_ROOT"] + "/" + MAPS_LOCATIONS[route_town]
+            with open(full_name, 'r') as f:
+                map_contents = f.read()
+            tmap = carla.Map(route_town, map_contents)
+            grp = GlobalRoutePlanner(tmap, 2.0)
 
         print(f"Parsing route '{route_id}'")
 
@@ -127,6 +130,8 @@ def main():
             if s_type not in total_scenarios:
                 total_scenarios[s_type] = 0
             total_scenarios[s_type] += s_num
+
+        prev_town = route_town
 
     print_total_scenarios = ""
     total_scenario_items = sorted(list(total_scenarios.items()), key=lambda x: x[0])
