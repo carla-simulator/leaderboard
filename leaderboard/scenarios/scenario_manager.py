@@ -45,13 +45,13 @@ class ScenarioManager(object):
     """
 
 
-    def __init__(self, timeout, debug_mode=False):
+    def __init__(self, timeout, statistics_manager, debug_mode=0):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
+        self.config = None
         self.scenario = None
         self.scenario_tree = None
-        self.scenario_class = None
         self.ego_vehicles = None
         self.other_actors = None
 
@@ -61,16 +61,17 @@ class ScenarioManager(object):
         self._timestamp_last_run = 0.0
         self._timeout = float(timeout)
 
-        self._watchdog = Watchdog(self._timeout)  # Detects if the simulation is down
-        self._agent_watchdog = Watchdog(self._timeout)  # Stop the agent from freezing the simulation
-
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = 0.0
         self.end_system_time = 0.0
         self.end_game_time = 0.0
 
-        # Register the scenario tick as callback for the CARLA world
+        self._watchdog = None
+        self._agent_watchdog = None
+
+        self._statistics_manager = statistics_manager
+
         # Use the callback_id inside the signal handler to allow external interrupts
         signal.signal(signal.SIGINT, self.signal_handler)
 
@@ -96,17 +97,19 @@ class ScenarioManager(object):
         self.end_game_time = 0.0
 
         self._spectator = None
+        self._watchdog = None
+        self._agent_watchdog = None
 
-    def load_scenario(self, scenario, agent, rep_number):
+    def load_scenario(self, config, scenario, agent, rep_number):
         """
         Load a new scenario
         """
 
         GameTime.restart()
         self._agent = AgentWrapperFactory.get_wrapper(agent)
-        self.scenario_class = scenario
-        self.scenario = scenario.scenario
-        self.scenario_tree = self.scenario.scenario_tree
+        self.config = config
+        self.scenario = scenario
+        self.scenario_tree = scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
         self.other_actors = scenario.other_actors
         self.repetition_number = rep_number
@@ -125,8 +128,14 @@ class ScenarioManager(object):
         self.start_system_time = time.time()
         self.start_game_time = GameTime.get_time()
 
+        # Detects if the simulation is down
+        self._watchdog = Watchdog(self._timeout)
         self._watchdog.start()
+
+        # Stop the agent from freezing the simulation
+        self._agent_watchdog = Watchdog(self._timeout)
         self._agent_watchdog.start()
+
         self._running = True
 
         while self._running:
@@ -169,7 +178,23 @@ class ScenarioManager(object):
             # Tick scenario
             self.scenario_tree.tick_once()
 
-            if self._debug_mode:
+            if self._debug_mode > 1:
+                self.compute_duration_time()
+
+                # Update live statistics
+                self._statistics_manager.compute_route_statistics(
+                    self.config,
+                    self.scenario_duration_system,
+                    self.scenario_duration_game,
+                    failure_message=""
+                )
+                self._statistics_manager.write_live_results(
+                    self.config.index,
+                    self.ego_vehicles[0].get_velocity().length(),
+                    ego_action
+                )
+
+            if self._debug_mode > 2:
                 print("\n")
                 py_trees.display.print_ascii_tree(
                     self.scenario_tree, show_status=True)
@@ -179,7 +204,7 @@ class ScenarioManager(object):
                 self._running = False
 
             ego_trans = self.ego_vehicles[0].get_transform()
-            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=80),
                                                           carla.Rotation(pitch=-90)))
 
     def get_running_status(self):
@@ -187,20 +212,21 @@ class ScenarioManager(object):
         returns:
            bool: False if watchdog exception occured, True otherwise
         """
-        return self._watchdog.get_status()
+        if self._watchdog:
+            return self._watchdog.get_status()
+        return False
 
     def stop_scenario(self):
         """
         This function triggers a proper termination of a scenario
         """
-        self._watchdog.stop()
-        self._agent_watchdog.stop()
+        if self._watchdog:
+            self._watchdog.stop()
 
-        self.end_system_time = time.time()
-        self.end_game_time = GameTime.get_time()
+        if self._agent_watchdog:
+            self._agent_watchdog.stop()
 
-        self.scenario_duration_system = self.end_system_time - self.start_system_time
-        self.scenario_duration_game = self.end_game_time - self.start_game_time
+        self.compute_duration_time()
 
         if self.get_running_status():
             if self.scenario is not None:
@@ -211,6 +237,16 @@ class ScenarioManager(object):
                 self._agent = None
 
             self.analyze_scenario()
+
+    def compute_duration_time(self):
+        """
+        Computes system and game duration times
+        """
+        self.end_system_time = time.time()
+        self.end_game_time = GameTime.get_time()
+
+        self.scenario_duration_system = self.end_system_time - self.start_system_time
+        self.scenario_duration_game = self.end_game_time - self.start_game_time
 
     def analyze_scenario(self):
         """
