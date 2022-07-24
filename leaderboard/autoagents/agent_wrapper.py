@@ -16,6 +16,7 @@ import time
 
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from srunner.scenariomanager.timer import GameTime
 
 from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
@@ -80,14 +81,15 @@ class AgentWrapper(object):
         :param vehicle: ego vehicle
         :return:
         """
-        bp_library = CarlaDataProvider.get_world().get_blueprint_library()
+        world = CarlaDataProvider.get_world()
+        bp_library = world.get_blueprint_library()
         for sensor_spec in self._agent.sensors():
             # These are the pseudosensors (not spawned)
             if sensor_spec['type'].startswith('sensor.opendrive_map'):
                 # The HDMap pseudo sensor is created directly here
                 sensor = OpenDriveMapReader(vehicle, sensor_spec['reading_frequency'])
             elif sensor_spec['type'].startswith('sensor.speedometer'):
-                delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+                delta_time = world.get_settings().fixed_delta_seconds
                 frame_rate = 1 / delta_time
                 sensor = SpeedometerReader(vehicle, frame_rate)
             # These are the sensors spawned on the carla world
@@ -170,9 +172,11 @@ class AgentWrapper(object):
             sensor.listen(CallBack(sensor_spec['id'], sensor_spec['type'], sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        # Tick once to spawn the sensors
-        CarlaDataProvider.get_world().tick()
-
+        # Some sensors miss sending data during the first ticks, so tick several times and remove the data
+        for _ in range(10):
+            world.tick()
+        frame = world.get_snapshot().timestamp.frame
+        self._agent.sensor_interface.reset_data(frame)
 
     @staticmethod
     def validate_sensor_configuration(sensors, agent_track, selected_track):

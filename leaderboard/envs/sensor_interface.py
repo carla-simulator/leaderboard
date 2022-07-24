@@ -205,7 +205,6 @@ class SensorInterface(object):
         # Only sensor that doesn't get the data on tick, needs special treatment
         self._opendrive_tag = None
 
-
     def register_sensor(self, tag, sensor_type, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
@@ -215,11 +214,24 @@ class SensorInterface(object):
         if sensor_type == 'sensor.opendrive_map': 
             self._opendrive_tag = tag
 
-    def update_sensor(self, tag, data, timestamp):
+    def update_sensor(self, tag, data, frame):
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
 
-        self._new_data_buffers.put((tag, timestamp, data))
+        self._new_data_buffers.put((tag, frame, data))
+
+    def reset_data(self, frame):
+        """Remove all data not corresponding to a specific. Used to empty the sensor data added on initialization"""
+        data_dict = {}
+        while self._new_data_buffers.qsize() > 0:
+            sensor_data = self._new_data_buffers.get(True, 0.05)
+            print(f"Found frame: {sensor_data[1]}. Checking frame: {frame}")
+            if sensor_data[1] == frame:
+                data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
+
+        # Readd the desired data
+        for tag, (frame, data) in list(data_dict.items()):
+            self.update_sensor(tag, data, frame)
 
     def get_data(self):
         try: 

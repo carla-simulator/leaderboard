@@ -959,7 +959,7 @@
       </scenarios>
    </route>
    <route id="3" town="Town12">
-      <!-- Urban route focused on high density areas with bostacle, cloudy into rain-->
+      <!-- Urban route focused on high density areas with ostacle, cloudy into rain-->
       <weathers>
          <weather route_percentage="0"
             cloudiness="70" precipitation="20" precipitation_deposits="0" wetness="10"
@@ -4254,9 +4254,6 @@
          <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
             <trigger_point x="3066.2" y="5454.7" z="369.0" yaw="9.0"/>
          </scenario>
-         <scenario name="PedestrianCrossing_4" type="PedestrianCrossing">
-            <trigger_point x="3109.2" y="5390.0" z="368.6" yaw="279.2"/>
-         </scenario>
          <scenario name="SignalizedJunctionRightTurn_2" type="SignalizedJunctionRightTurn">
             <trigger_point x="3108.0" y="5397.4" z="368.6" yaw="279.2"/>
             <flow_speed value="14"/>
@@ -4332,13 +4329,6 @@
          </scenario>
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="2857.6" y="4480.9" z="362.9" yaw="9.2"/>
-         </scenario>
-         <scenario name="DynamicObjectCrossing_16" type="DynamicObjectCrossing">
-            <trigger_point x="2918.7" y="4490.8" z="363.4" yaw="9.2"/>
-            <distance value="50"/>
-            <direction value="right"/>
-            <blocker_model value="static.prop.busstoplb"/>
-            <crossing_angle value="10"/>
          </scenario>
          <scenario name="ParkingCutIn_2" type="ParkingCutIn">
             <trigger_point x="3011.3" y="4539.8" z="364.5" yaw="98.9"/>
