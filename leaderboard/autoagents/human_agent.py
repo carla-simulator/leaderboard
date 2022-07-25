@@ -7,7 +7,7 @@
 This module provides a human agent to control the ego vehicle via keyboard
 """
 
-import time
+import numpy as np
 import json
 
 try:
@@ -76,6 +76,14 @@ class HumanInterface(object):
             self._surface.blit(right_surface, ((1 - self._scale) * self._width, (1 - self._scale) * self._height))
 
         # Display image
+        if self._surface is not None:
+            self._display.blit(self._surface, (0, 0))
+        pygame.display.flip()
+
+    def set_black_screen(self):
+        """Set the surface to black"""
+        black_array = np.zeros([self._width, self._height])
+        self._surface = pygame.surfarray.make_surface(black_array)
         if self._surface is not None:
             self._display.blit(self._surface, (0, 0))
         pygame.display.flip()
@@ -169,6 +177,7 @@ class HumanAgent(AutonomousAgent):
         """
         Cleanup
         """
+        self._hic.set_black_screen()
         self._hic._quit = True
 
 
@@ -255,7 +264,7 @@ class KeyboardControl(object):
                     self._control.reverse = self._control.gear < 0
 
         if keys[K_UP] or keys[K_w]:
-            self._control.throttle = 0.6
+            self._control.throttle = 0.8
         else:
             self._control.throttle = 0.0
 
@@ -267,7 +276,6 @@ class KeyboardControl(object):
         else:
             self._steer_cache = 0.0
 
-        steer_cache = min(0.95, max(-0.95, self._steer_cache))
         self._control.steer = round(self._steer_cache, 1)
         self._control.brake = 1.0 if keys[K_DOWN] or keys[K_s] else 0.0
         self._control.hand_brake = keys[K_SPACE]

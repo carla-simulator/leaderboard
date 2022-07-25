@@ -225,7 +225,6 @@ class SensorInterface(object):
         data_dict = {}
         while self._new_data_buffers.qsize() > 0:
             sensor_data = self._new_data_buffers.get(True, 0.05)
-            print(f"Found frame: {sensor_data[1]}. Checking frame: {frame}")
             if sensor_data[1] == frame:
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
