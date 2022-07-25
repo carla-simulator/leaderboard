@@ -121,9 +121,6 @@ class LeaderboardEvaluator(object):
         """
         Remove and destroy all actors
         """
-        if self.manager:
-            self.manager.cleanup()
-
         CarlaDataProvider.cleanup()
 
         for i, _ in enumerate(self.ego_vehicles):
@@ -152,6 +149,9 @@ class LeaderboardEvaluator(object):
             self.world.apply_settings(settings)
             self.traffic_manager.set_synchronous_mode(False)
             self.traffic_manager.set_hybrid_physics_mode(False)
+
+        if self.manager:
+            self.manager.cleanup()
 
     def _load_and_wait_for_world(self, args, town):
         """

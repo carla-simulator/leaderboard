@@ -76,6 +76,7 @@ class ROS1Agent(ROSBaseAgent):
             wait=True
         )
 
+        #client.connect()
         client.run(30)
 
         self._spawn_object_service = roslibpy.Service(client, "/carla/spawn_object", "carla_msgs/SpawnObject", reconnect_on_close=False)
@@ -87,7 +88,8 @@ class ROS1Agent(ROSBaseAgent):
         self._control_subscriber = roslibpy.Topic(client, "/carla/hero/vehicle_control_cmd", "carla_msgs/CarlaEgoVehicleControl", queue_length=1, reconnect_on_close=False)
         self._control_subscriber.subscribe(self._vehicle_control_cmd_callback)
 
-        self._path_publisher = roslibpy.Topic(client, "/carla/hero/global_plan", "nav_msgs/Path", latch=True, reconnect_on_close=False)
+        self._path_publisher = roslibpy.Topic(client, "/carla/hero/global_plan", "carla_msgs/CarlaRoute", latch=True, reconnect_on_close=False)
+        self._path_gnss_publisher = roslibpy.Topic(client, "/carla/hero/global_plan_gnss", "carla_msgs/CarlaGnssRoute", latch=True, reconnect_on_close=False)
 
         wait_for_message(client, "/carla/hero/status", "std_msgs/Bool")
 
@@ -124,8 +126,6 @@ class ROS1Agent(ROSBaseAgent):
         assert self._server_process.is_alive()
         return super(ROS1Agent, self).run_step(input_data, timestamp)
 
-    # TODO: Create custom message for the global plan (not only coordinates but RoadOption)
-    # TODO: Two publishers. One for world coordinates and another one for gps coordinates
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
         super(ROS1Agent, self).set_global_plan(global_plan_gps, global_plan_world_coord)
 
@@ -142,7 +142,17 @@ class ROS1Agent(ROSBaseAgent):
                 "header": {
                     "frame_id": "/map"
                 },
-                "poses": [{ "pose": pose } for pose in poses]
+                "road_options": [ int(wp[1]) for wp in self._global_plan_world_coord ],
+                "poses": [ pose for pose in poses ]
+            }))
+
+        self._path_gnss_publisher.publish(roslibpy.Message(
+            {
+                "header": {
+                    "frame_id": "/map"
+                },
+                "road_options": [ int(wp[1]) for wp in self._global_plan ],
+                "coordinates": [ {"latitude": wp[0]["lat"], "longitude": wp[0]["lon"], "altitude": wp[0]["z"]} for wp in self._global_plan ]
             }))
 
     def destroy(self):
@@ -154,6 +164,8 @@ class ROS1Agent(ROSBaseAgent):
         self._path_publisher.unadvertise()
         self._spawn_object_service.unadvertise()
         self._destroy_object_service.unadvertise()
+
+        #client.close()
 
         self._server_process.terminate()
 

@@ -56,7 +56,7 @@ class ScenarioManager(object):
         self.other_actors = None
 
         self._debug_mode = debug_mode
-        self._agent = None
+        self._agent_wrapper = None
         self._running = False
         self._timestamp_last_run = 0.0
         self._timeout = float(timeout)
@@ -106,7 +106,7 @@ class ScenarioManager(object):
         """
 
         GameTime.restart()
-        self._agent = AgentWrapperFactory.get_wrapper(agent)
+        self._agent_wrapper = AgentWrapperFactory.get_wrapper(agent)
         self.config = config
         self.scenario = scenario
         self.scenario_tree = scenario.scenario_tree
@@ -119,7 +119,7 @@ class ScenarioManager(object):
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
-        self._agent.setup_sensors(self.ego_vehicles[0])
+        self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
 
     def run_scenario(self):
         """
@@ -162,7 +162,7 @@ class ScenarioManager(object):
             try:
                 self._agent_watchdog.resume()
                 self._agent_watchdog.update()
-                ego_action = self._agent()
+                ego_action = self._agent_wrapper()
                 self._agent_watchdog.pause()
 
             # Special exception inside the agent that isn't caused by the agent
@@ -232,9 +232,9 @@ class ScenarioManager(object):
             if self.scenario is not None:
                 self.scenario.terminate()
 
-            if self._agent is not None:
-                self._agent.cleanup()
-                self._agent = None
+            if self._agent_wrapper is not None:
+                self._agent_wrapper.cleanup()
+                self._agent_wrapper = None
 
             self.analyze_scenario()
 

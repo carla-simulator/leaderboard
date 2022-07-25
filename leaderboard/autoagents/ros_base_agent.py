@@ -144,6 +144,7 @@ class ROSBaseAgent(AutonomousAgent):
             parameters={
                 "host": carla_host,
                 "port": carla_port,
+                "timeout": 60,
                 "synchronous_mode": True,
                 "passive": True,
                 "register_all_sensors": False,
@@ -227,7 +228,11 @@ class ROSBaseAgent(AutonomousAgent):
         assert self._bridge_process.is_alive()
         assert self._agent_process.is_alive()
 
-        control_timestamp, control = self._control_queue.get(True)
+        #control_timestamp, control = self._control_queue.get(True)
+        try:
+            control_timestamp, control = self._control_queue.get(True, 1.0)
+        except queue.Empty:
+            control_timestamp, control = 0, carla.VehicleControl()
 
         carla_timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
         if abs(control_timestamp - carla_timestamp) > EPSILON:
@@ -238,8 +243,8 @@ class ROSBaseAgent(AutonomousAgent):
         return control
 
     def destroy(self):
-        self._bridge_process.terminate()
         self._agent_process.terminate()
+        self._bridge_process.terminate()
 
-        assert not self._bridge_process.is_alive()
         assert not self._agent_process.is_alive()
+        assert not self._bridge_process.is_alive()

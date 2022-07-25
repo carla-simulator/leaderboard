@@ -20,11 +20,11 @@ from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile
 from rclpy.task import Future
 
-from carla_msgs.msg import CarlaEgoVehicleControl
+from carla_msgs.msg import CarlaEgoVehicleControl, CarlaRoute, CarlaGnssRoute
 from carla_msgs.srv import SpawnObject, DestroyObject
 from diagnostic_msgs.msg import KeyValue
-from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
-from nav_msgs.msg import Path
+from geometry_msgs.msg import Point, Pose, Quaternion
+from sensor_msgs.msg import NavSatFix
 from std_msgs.msg import Bool
 
 
@@ -67,13 +67,15 @@ class ROS2Agent(ROSBaseAgent):
         self._spawn_object_service.wait_for_service()
         self._destroy_object_service.wait_for_service()
 
-        self._path_publisher = self.ros_node.create_publisher(Path, "/carla/hero/global_plan", qos_profile=QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+        self._path_publisher = self.ros_node.create_publisher(CarlaRoute, "/carla/hero/global_plan", qos_profile=QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+        self._path_gnss_publisher = self.ros_node.create_publisher(CarlaGnssRoute, "/carla/hero/global_plan_gnss", qos_profile=QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+        
         self.ctrl_subscriber = self.ros_node.create_subscription(CarlaEgoVehicleControl, "/carla/hero/vehicle_control_cmd", self._vehicle_control_cmd_callback, qos_profile=QoSProfile(depth=1))
 
         wait_for_message(self.ros_node, "/carla/hero/status", Bool)
 
-        spin_thread = threading.Thread(target=rclpy.spin, args=(self.ros_node,))
-        spin_thread.start()
+        self.spin_thread = threading.Thread(target=rclpy.spin, args=(self.ros_node,))
+        self.spin_thread.start()
 
     def spawn_object(self, type_, id_, transform, attributes, attach_to=0):
         spawn_point = BridgeHelper.carla2ros_pose(
@@ -94,33 +96,41 @@ class ROS2Agent(ROSBaseAgent):
 
         # Call the service synchronously.
         response = self._spawn_object_service.call(request)
-        if response["id"] == -1:
+        if response.id == -1:
             raise RuntimeError("{} could not be spawned. {}".format(type_, response["error_string"]))
         return response.id
 
     def destroy_object(self, uid):
         request = DestroyObject.Request()
+        request.id = uid
 
         # Call the servive syncrhonoulsy
         response = self._destroy_object_service.call(request)
-        if not response["success"]:
+        if not response.success:
             raise RuntimeError("{} could not be destroyed".format(uid))
         return response.success
 
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
         super(ROS2Agent, self).set_global_plan(global_plan_gps, global_plan_world_coord)
 
-        path = Path()
+        path = CarlaRoute()
         for wp in self._global_plan_world_coord:
+            path.road_options.append(int(wp[1]))
             pose = BridgeHelper.carla2ros_pose(
                 wp[0].location.x, wp[0].location.y, wp[0].location.z,
                 wp[0].rotation.roll, wp[0].rotation.pitch, wp[0].rotation.yaw,
                 to_quat=True
             )
             path.poses.append(
-                PoseStamped(pose=Pose(position=Point(**pose["position"]), orientation=Quaternion(**pose["orientation"]))))
-
+                Pose(position=Point(**pose["position"]), orientation=Quaternion(**pose["orientation"])))
         self._path_publisher.publish(path)
+
+        path_gnss = CarlaGnssRoute()
+        for wp in self._global_plan:
+            path_gnss.road_options.append(wp[1])
+            path.poses.append(
+                NavSatFix(latitude=wp[0]["lat"], longitude=wp[0]["lon"], altitude=wp[0]["z"]))
+        self._path_gnss_publisher.publish(path_gnss)
 
     def destroy(self):
         """
@@ -129,5 +139,6 @@ class ROS2Agent(ROSBaseAgent):
         """
         self.ros_node.destroy_node()
         rclpy.shutdown()
+        self.spin_thread.join()
 
         super(ROS2Agent, self).destroy()
