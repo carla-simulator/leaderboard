@@ -126,8 +126,8 @@ class AgentWrapper(object):
                                                      roll=sensor_spec['roll'],
                                                      yaw=sensor_spec['yaw'])
                 elif sensor_spec['type'].startswith('sensor.other.radar'):
-                    bp.set_attribute('horizontal_fov', str(sensor_spec['fov']))  # degrees
-                    bp.set_attribute('vertical_fov', str(sensor_spec['fov']))  # degrees
+                    bp.set_attribute('horizontal_fov', str(sensor_spec['horizontal_fov']))  # degrees
+                    bp.set_attribute('vertical_fov', str(sensor_spec['vertical_fov']))  # degrees
                     bp.set_attribute('points_per_second', '1500')
                     bp.set_attribute('range', '100')  # meters
 
