@@ -30,7 +30,7 @@ from srunner.scenariomanager.watchdog import Watchdog
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
 from leaderboard.envs.sensor_interface import SensorConfigurationInvalid
-from leaderboard.autoagents.agent_wrapper import  AgentWrapper, AgentError
+from leaderboard.autoagents.agent_wrapper import AgentError, validate_sensor_configuration
 from leaderboard.utils.statistics_manager import StatisticsManager
 from leaderboard.utils.route_indexer import RouteIndexer
 
@@ -121,21 +121,6 @@ class LeaderboardEvaluator(object):
         """
         Remove and destroy all actors
         """
-
-        # Simulation still running and in synchronous mode?
-        if hasattr(self, 'manager') and self.manager.get_running_status() \
-                and hasattr(self, 'world') and self.world:
-            # Reset to asynchronous mode
-            settings = self.world.get_settings()
-            settings.synchronous_mode = False
-            settings.fixed_delta_seconds = None
-            self.world.apply_settings(settings)
-            self.traffic_manager.set_synchronous_mode(False)
-            self.traffic_manager.set_hybrid_physics_mode(False)
-
-        if self.manager:
-            self.manager.cleanup()
-
         CarlaDataProvider.cleanup()
 
         for i, _ in enumerate(self.ego_vehicles):
@@ -154,7 +139,21 @@ class LeaderboardEvaluator(object):
         if hasattr(self, 'statistics_manager') and self.statistics_manager:
             self.statistics_manager.scenario = None
 
-    def _load_and_wait_for_world(self, args, town, ego_vehicles=None):
+        # Simulation still running and in synchronous mode?
+        if self.manager and self.manager.get_running_status() \
+                and hasattr(self, 'world') and self.world:
+            # Reset to asynchronous mode
+            settings = self.world.get_settings()
+            settings.synchronous_mode = False
+            settings.fixed_delta_seconds = None
+            self.world.apply_settings(settings)
+            self.traffic_manager.set_synchronous_mode(False)
+            self.traffic_manager.set_hybrid_physics_mode(False)
+
+        if self.manager:
+            self.manager.cleanup()
+
+    def _load_and_wait_for_world(self, args, town):
         """
         Load a new CARLA world and provide data to CarlaDataProvider
         """
@@ -208,27 +207,52 @@ class LeaderboardEvaluator(object):
         crash_message = ""
         entry_status = "Started"
 
-        route_name = f"{config.name}_rep{config.repetition_index}"
-        print("\n\033[1m========= Preparing {} (repetition {}) =========".format(config.name, config.repetition_index))
-        print("> Setting up the agent\033[0m")
+        print("\n\033[1m========= Preparing {} (repetition {}) =========\033[0m".format(config.name, config.repetition_index))
 
         # Prepare the statistics of the route
+        route_name = f"{config.name}_rep{config.repetition_index}"
         self.statistics_manager.create_route_data(route_name, config.index)
+
+        print("\033[1m> Loading the world\033[0m")
+
+        # Load the world and the scenario
+        try:
+            self._load_and_wait_for_world(args, config.town)
+            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
+            config.route = scenario.route
+            self.statistics_manager.set_scenario(config, scenario)
+
+        except Exception as e:
+            # The scenario is wrong -> set the ejecution to crashed and stop
+            print("\n\033[91mThe scenario could not be loaded:")
+            print("> {}\033[0m\n".format(e))
+            traceback.print_exc()
+
+            crash_message = "Simulation crashed"
+            entry_status = "Crashed"
+
+            self._register_statistics(config, entry_status, crash_message)
+
+            self._cleanup()
+            sys.exit(-1)
+
+        print("\033[1m> Setting up the agent\033[0m")
 
         # Set up the user's agent, and the timer to avoid freezing the simulation
         try:
             self._agent_watchdog = Watchdog(args.timeout)
             self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
-            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
-            config.agent = self.agent_instance
+            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.host, args.port, args.debug)
+            self.agent_instance.set_global_plan(scenario.gps_route, scenario.route)
+            self.agent_instance.setup(args.agent_config)
 
             # Check and store the sensors
             if not self.sensors:
                 self.sensors = self.agent_instance.sensors()
                 track = self.agent_instance.track
 
-                AgentWrapper.validate_sensor_configuration(self.sensors, track, args.track)
+                validate_sensor_configuration(self.sensors, track, args.track)
 
                 self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
                 self.statistics_manager.save_sensors(self.sensor_icons)
@@ -261,41 +285,14 @@ class LeaderboardEvaluator(object):
             self._cleanup()
             return
 
-        print("\033[1m> Loading the world\033[0m")
-
-        # Load the world and the scenario
-        try:
-            self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
-            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
-            config.route = scenario.route
-            self.statistics_manager.set_scenario(config, scenario)
-
-            # Load scenario and run it
-            if args.record:
-                self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(config, scenario, self.agent_instance, config.repetition_index)
-
-        except Exception as e:
-            # The scenario is wrong -> set the ejecution to crashed and stop
-            print("\n\033[91mThe scenario could not be loaded:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
-
-            crash_message = "Simulation crashed"
-            entry_status = "Crashed"
-
-            self._register_statistics(config, entry_status, crash_message)
-
-            if args.record:
-                self.client.stop_recorder()
-
-            self._cleanup()
-            sys.exit(-1)
-
         print("\033[1m> Running the route\033[0m")
 
         # Run the scenario
         try:
+            # Load scenario and run it
+            if args.record:
+                self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
+            self.manager.load_scenario(config, scenario, self.agent_instance, config.repetition_index)
             self.manager.run_scenario()
 
         except AgentError as e:

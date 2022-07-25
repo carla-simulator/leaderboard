@@ -198,8 +198,7 @@ class CallBack(object):
 class SensorInterface(object):
     def __init__(self):
         self._sensors_objects = {}
-        self._data_buffers = {}
-        self._new_data_buffers = Queue()
+        self._data_buffers = Queue()
         self._queue_timeout = 10
 
         # Only sensor that doesn't get the data on tick, needs special treatment
@@ -218,13 +217,13 @@ class SensorInterface(object):
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
 
-        self._new_data_buffers.put((tag, frame, data))
+        self._data_buffers.put((tag, frame, data))
 
     def reset_data(self, frame):
         """Remove all data not corresponding to a specific. Used to empty the sensor data added on initialization"""
         data_dict = {}
-        while self._new_data_buffers.qsize() > 0:
-            sensor_data = self._new_data_buffers.get(True, 0.05)
+        while self._data_buffers.qsize() > 0:
+            sensor_data = self._data_buffers.get(True, 0.05)
             if sensor_data[1] == frame:
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
@@ -233,16 +232,16 @@ class SensorInterface(object):
             self.update_sensor(tag, data, frame)
 
     def get_data(self):
-        try: 
+        """Read the queue to get the sensors data"""
+        try:
             data_dict = {}
             while len(data_dict.keys()) < len(self._sensors_objects.keys()):
-
                 # Don't wait for the opendrive sensor
                 if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
                         and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
                     break
 
-                sensor_data = self._new_data_buffers.get(True, self._queue_timeout)
+                sensor_data = self._data_buffers.get(True, self._queue_timeout)
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
         except Empty:
