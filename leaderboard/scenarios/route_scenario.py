@@ -92,9 +92,8 @@ class RouteScenario(BasicScenario):
         """
 
         # prepare route's trajectory (interpolate and add the GPS route)
-        gps_route, route = interpolate_trajectory(config.keypoints)
-        config.agent.set_global_plan(gps_route, route)
-        return route
+        self.gps_route, self.route = interpolate_trajectory(config.keypoints)
+        return self.route
 
     def _filter_scenarios(self, scenario_configs):
         """

@@ -97,12 +97,17 @@ def downsample_route(route, sample_factor):
     for i, point in enumerate(route):
         curr_option = point[1]
 
-        # Lane changing
-        if curr_option in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
+        # At the beginning
+        if prev_option is None:
             ids_to_sample.append(i)
             dist = 0
 
-        # When road option changes
+        # Lane changing
+        elif curr_option in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
+            ids_to_sample.append(i)
+            dist = 0
+
+        # When entering or exitting intersections
         elif prev_option != curr_option and prev_option not in (RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT):
             ids_to_sample.append(i)
             dist = 0
