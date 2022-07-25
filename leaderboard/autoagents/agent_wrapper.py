@@ -248,8 +248,6 @@ class AgentWrapper(object):
         # Some sensors miss sending data during the first ticks, so tick several times and remove the data
         for _ in range(10):
             world.tick()
-        frame = world.get_snapshot().timestamp.frame
-        self._agent.sensor_interface.reset_data(frame)
 
     def cleanup(self):
         """

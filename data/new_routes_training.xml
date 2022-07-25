@@ -408,14 +408,6 @@
             <front_vehicle_distance value="9"/>
             <behind_vehicle_distance value="9"/>
          </scenario>
-         <scenario name="BackgroundActivityParametrizer_1" type="BackgroundActivityParametrizer">
-            <trigger_point x="-710.9" y="3577.8" z="365" yaw="-90"/>
-            <junction_spawn_dist value="30"/>
-         </scenario>
-         <scenario name="BackgroundActivityParametrizer_2" type="BackgroundActivityParametrizer">
-            <trigger_point x="-726.9" y="3490" z="362" yaw="180"/>
-            <junction_spawn_dist value="15"/>
-         </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-891.0" y="3768.4" z="364" yaw="178"/>
             <flow_speed value="13"/>

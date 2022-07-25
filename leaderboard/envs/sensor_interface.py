@@ -219,19 +219,7 @@ class SensorInterface(object):
 
         self._data_buffers.put((tag, frame, data))
 
-    def reset_data(self, frame):
-        """Remove all data not corresponding to a specific. Used to empty the sensor data added on initialization"""
-        data_dict = {}
-        while self._data_buffers.qsize() > 0:
-            sensor_data = self._data_buffers.get(True, 0.05)
-            if sensor_data[1] == frame:
-                data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
-
-        # Readd the desired data
-        for tag, (frame, data) in list(data_dict.items()):
-            self.update_sensor(tag, data, frame)
-
-    def get_data(self):
+    def get_data(self, frame):
         """Read the queue to get the sensors data"""
         try:
             data_dict = {}
@@ -242,6 +230,8 @@ class SensorInterface(object):
                     break
 
                 sensor_data = self._data_buffers.get(True, self._queue_timeout)
+                if sensor_data[1] != frame:
+                    continue
                 data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
 
         except Empty:
