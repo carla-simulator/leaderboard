@@ -130,7 +130,6 @@ def show_route(filename, route_id, show_keypoints, show_scenarios, world, grp):
 
         points = []
         for position in route.find('waypoints').iter('position'):
-            print(f"Location: {convert_elem_to_location(position)}")
             points.append(convert_elem_to_location(position))
 
         if points:
@@ -138,7 +137,6 @@ def show_route(filename, route_id, show_keypoints, show_scenarios, world, grp):
                 waypoint = points[i]
                 waypoint_next = points[i + 1]
                 interpolated_trace = grp.trace_route(waypoint, waypoint_next)
-                print(f"Route: {interpolated_trace}")
                 for j in range(len(interpolated_trace) - 1):
                     wp, option = interpolated_trace[j]
                     draw_point(world, wp, get_color(option))
@@ -151,8 +149,8 @@ def show_route(filename, route_id, show_keypoints, show_scenarios, world, grp):
         if show_scenarios:
             show_saved_scenarios(route, world)
 
-        spec_transform = carla.Transform(points[0] + carla.Location(z=100), carla.Rotation(pitch=-90))
-        world.get_spectator().set_transform(spec_transform)
+        # spec_transform = carla.Transform(points[0] + carla.Location(z=100), carla.Rotation(pitch=-90))
+        # world.get_spectator().set_transform(spec_transform)
 
 def show_saved_scenarios(route, world):
     def convert_elem_to_location(elem):

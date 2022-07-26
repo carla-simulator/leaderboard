@@ -220,6 +220,7 @@ class SensorInterface(object):
         self._data_buffers.put((tag, frame, data))
 
     def get_data(self, frame):
+        """Read the queue to get the sensors data"""
         try:
             data_dict = {}
             while len(data_dict.keys()) < len(self._sensors_objects.keys()):

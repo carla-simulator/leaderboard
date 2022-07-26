@@ -7,6 +7,7 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 import argparse
+import os
 import sys
 from lxml import etree
 from tabulate import tabulate
@@ -14,6 +15,27 @@ from tabulate import tabulate
 import carla
 from agents.navigation.global_route_planner import GlobalRoutePlanner
 
+MAPS_LOCATIONS = {
+    "Town01": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01.xodr",
+    "Town01_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01_Opt.xodr",
+    "Town02": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town02.xodr",
+    "Town02_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town02_Opt.xodr",
+    "Town03": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town03.xodr",
+    "Town03_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town04_Opt.xodr",
+    "Town04": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town04.xodr",
+    "Town04_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town04_Opt.xodr",
+    "Town05": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town05.xodr",
+    "Town05_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town05_Opt.xodr",
+    "Town06": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town06.xodr",
+    "Town06_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town06_Opt.xodr",
+    "Town07": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town07.xodr",
+    "Town07_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town07_Opt.xodr",
+    "Town10HD": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town10HD.xodr",
+    "Town10HD_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town10HD_Opt.xodr",
+    "Town11": "Unreal/CarlaUE4/Content/Carla/Maps/Town11/OpenDrive/Town11.xodr",
+    "Town12": "Unreal/CarlaUE4/Content/Carla/Maps/Town12/OpenDrive/Town12.xodr",
+    "Town13": "Unreal/CarlaUE4/Content/Carla/Maps/Town13/OpenDrive/Town13.xodr",
+}
 
 def convert_elem_to_location(elem):
     """Convert an ElementTree.Element to a CARLA Location"""
@@ -25,22 +47,12 @@ def main():
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
     argparser.add_argument('-f', '--file', required=True, help="Route's file path")
     argparser.add_argument('--endpoint', default="", help='Output file')
-    argparser.add_argument('--show', action="store-true", help='Print the results on stdout')
+    argparser.add_argument('--show', action="store_true", help='Print the results on stdout')
     args = argparser.parse_args()
 
     if not args.endpoint and not args.show:
         print("No output method was selected. Use either '--endpoint', or '--show' to get the route results")
         sys.exit(0)
-
-    # Get the client
-    client = carla.Client(args.host, args.port)
-    client.set_timeout(10.0)
-
-    # Get the rest
-    world = client.get_world()
-    tmap = world.get_map()
-    map_name = tmap.name.split("/")[-1]
-    grp = GlobalRoutePlanner(tmap, 2.0)
 
     root =  etree.parse(args.file).getroot()
     total_distance = 0
@@ -49,17 +61,24 @@ def main():
 
     statistics = [['Route id', 'Distance (m)', 'Scenarios (type)', 'Scenarios (nº)', 'Avg dist between scenarios']]
 
+    prev_town = None
+
     for route in root.iter("route"):
 
         route_id = route.attrib['id']
         route_town = route.attrib['town']
 
-        print(f"Parsing route '{route_id}'")
-
-        if map_name != route_town:
-            print(f"Ignoring route '{route_id}' as it uses map {route_town}, not the currently loaded {map_name}.")
-            # print("Use the '--reload' argument to automatically reload the maps")
+        if route_town not in MAPS_LOCATIONS:
+            print(f"Ignoring route '{route_id}' as it uses an unknown map '{route_town}")
             continue
+        elif route_town != prev_town:
+            full_name = os.environ["CARLA_ROOT"] + "/" + MAPS_LOCATIONS[route_town]
+            with open(full_name, 'r') as f:
+                map_contents = f.read()
+            tmap = carla.Map(route_town, map_contents)
+            grp = GlobalRoutePlanner(tmap, 2.0)
+
+        print(f"Parsing route '{route_id}'")
 
         # Get the route distance
         route_distance = 0
@@ -112,6 +131,8 @@ def main():
                 total_scenarios[s_type] = 0
             total_scenarios[s_type] += s_num
 
+        prev_town = route_town
+
     print_total_scenarios = ""
     total_scenario_items = sorted(list(total_scenarios.items()), key=lambda x: x[0])
     for s_type, s_num in total_scenario_items:
@@ -130,7 +151,7 @@ def main():
         print(output)
 
     if args.endpoint:
-        with open(args.output_file, 'w', encoding='utf-8') as fd:
+        with open(args.endpoint, 'w', encoding='utf-8') as fd:
             fd.write(output)
 
 if __name__ == '__main__':

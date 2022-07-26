@@ -8,8 +8,12 @@
 
 import argparse
 from lxml import etree
-import carla
 import sys
+import math
+
+import carla
+
+from agents.navigation.global_route_planner import GlobalRoutePlanner
 
 LIFE_TIME = 10000
 
@@ -21,6 +25,7 @@ SCENARIO_TYPES ={
     ],
     "DynamicObjectCrossing": [
         ["distance", "value"],
+        ["direction", "value"],
         ["blocker_model", "value"],
         ["crossing_angle", "value"]
     ],
@@ -36,7 +41,6 @@ SCENARIO_TYPES ={
     ],
     "OppositeVehicleRunningRedLight": [
         ["direction", "choice"],
-        ["adversary_speed", "value"],
     ],
     # Old junction scenarios, non signalized version
     "NonSignalizedJunctionLeftTurn": [
@@ -49,18 +53,18 @@ SCENARIO_TYPES ={
     ],
     "OppositeVehicleTakingPriority": [
         ["direction", "choice"],
-        ["adversary_speed", "value"],
     ],
     # Crossing actors
     "ParkingCrossingPedestrian": [
         ["distance", "value"],
         ["direction", "choice"],
+        ["crossing_angle", "value"],
     ],
     "PedestrianCrossing": [
-        ["start_walker_flow", "location sidewalk"],
-        ["end_walker_flow_1", "location sidewalk probability"],
-        ["end_walker_flow_2", "location sidewalk probability"],
-        ["source_dist_interval", "interval"],
+        # ["start_walker_flow", "location sidewalk"],
+        # ["end_walker_flow_1", "location sidewalk probability"],
+        # ["end_walker_flow_2", "location sidewalk probability"],
+        # ["source_dist_interval", "interval"],
     ],
     # Actor flows
     "EnterActorFlow": [
@@ -109,11 +113,12 @@ SCENARIO_TYPES ={
         ["start_actor_flow", "location bicycle"],
         ["flow_speed", "value"],
         ["source_dist_interval", "interval"],
-        ["green_light_delay", "value"],
     ],
     # Route obstacles
     "ConstructionObstacle": [
         ["distance", "value"],
+        ["direction", "value"],
+        ["speed", "value"],
     ],
     "ConstructionObstacleTwoWays": [
         ["distance", "value"],
@@ -122,6 +127,7 @@ SCENARIO_TYPES ={
     "Accident": [
         ["distance", "value"],
         ["direction", "value"],
+        ["speed", "value"],
     ],
     "AccidentTwoWays": [
         ["distance", "value"],
@@ -129,6 +135,8 @@ SCENARIO_TYPES ={
     ],
     "ParkedObstacle": [
         ["distance", "value"],
+        ["direction", "value"],
+        ["speed", "value"],
     ],
     "ParkedObstacleTwoWays": [
         ["distance", "value"],
@@ -136,16 +144,35 @@ SCENARIO_TYPES ={
     ],
     "VehicleOpensDoor": [
         ["distance", "value"],
+        ["speed", "value"],
     ],
     "VehicleOpensDoorTwoWays": [
         ["distance", "value"],
         ["frequency", "value"],
     ],
+    "HazardAtSideLane": [
+        ["distance", "value"],
+        ["speed", "value"],
+        ["bicycle_drive_distance", "value"],
+        ["bicycle_speed", "value"],
+    ],
+    "HazardAtSideLaneTwoWays": [
+        ["distance", "value"],
+        ["frequency", "value"],
+        ["bicycle_drive_distance", "value"],
+        ["bicycle_speed", "value"],
+    ],
+
     # Cut ins
     "HighwayCutIn": [
         ["other_actor_location", "location driving"],
     ],
     "ParkingCutIn": [
+        ["direction", "choice"],
+    ],
+    "StaticCutIn": [
+        ["distance", "value"],
+        ["speed", "value"],
         ["direction", "choice"],
     ],
 
@@ -160,6 +187,10 @@ SCENARIO_TYPES ={
         ["obstacle_model", "value"],
         ["obstacle_gap", "value"],
         ["extra_obstacle", "value"],
+    ],
+    "InvadingTurn": [
+        ["distance", "value"],
+        ["offset", "value"],
     ],
 
     # Special ones
@@ -185,11 +216,81 @@ SCENARIO_TYPES ={
     "PriorityAtJunction": [
     ],
 
-    # Pedestrian Crossing
-    # HighwayStaticCutIn
-    # BlockedIntersection
-    # HazardMovingAtSideLane
 }
+
+
+def order_saved_scenarios(filename, route_id, world, tmap):
+    def convert_elem_to_location(elem):
+        """Convert an ElementTree.Element to a CARLA Location"""
+        return carla.Location(float(elem.attrib.get('x')), float(elem.attrib.get('y')), float(elem.attrib.get('z')))
+
+    def get_scenario_route_position(trigger_location):
+        position = 0
+        distance = float('inf')
+        for i, (wp, _) in enumerate(route_wps):
+            route_distance = wp.transform.location.distance(trigger_location)
+            if route_distance < distance:
+                distance = route_distance
+                position = i
+        return position
+
+    grp = GlobalRoutePlanner(tmap, 1)
+
+    tree = etree.parse(filename)
+    root = tree.getroot()
+
+    scenarios = None
+    route_wps = []
+    prev_route_keypoint = None
+    scenarios = []
+
+    for route in root.iter("route"):
+        if route.attrib['id'] != route_id:
+            continue
+        
+        # Scenarios data
+        for scenario in route.find('scenarios').iter('scenario'):
+            scenarios.append(scenario)
+
+        # Route data
+        for position in route.find('waypoints').iter('position'):
+            route_keypoint = convert_elem_to_location(position)
+            if prev_route_keypoint:
+                route_wps.extend(grp.trace_route(prev_route_keypoint, route_keypoint))
+            prev_route_keypoint = route_keypoint
+
+    if scenarios is None:
+        print(f"\n\033[91mCouldn't find the id '{route_id} in the given routes file\033[0m")
+        return
+
+    for wp, _ in route_wps:
+        world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.1, color=carla.Color(255, 155, 0))
+
+    # Order the scenarios according to route position
+    scenario_and_pos = []
+    for scenario in scenarios:
+        trigger_location = convert_elem_to_location(scenario.find('trigger_point'))
+        route_position = get_scenario_route_position(trigger_location)
+        scenario_and_pos.append([scenario, route_position])
+    scenario_and_pos = sorted(scenario_and_pos, key=lambda x: x[1])
+
+    # Update the scenarios. TODO: reorder them
+    scenario_names = {}
+    for scen_type in list(SCENARIO_TYPES):
+        scenario_names[scen_type] = 1
+
+    for scenario, _ in scenario_and_pos:
+        scen_type = scenario.attrib['type']
+        scen_name = f"{scen_type}_{scenario_names[scen_type]}"
+        scenario.set("name", scen_name)
+        scenario_names[scen_type] += 1
+
+    prettify_and_save_tree(filename, tree)
+
+
+def get_i(elem):
+    return float(elem.get('i'))
+
 
 def show_saved_scenarios(filename, route_id, world):
     def convert_elem_to_location(elem):
@@ -311,20 +412,6 @@ def print_scenario_data(scen_type, scen_attributes):
     print(print_dict)
 
 def save_scenario(filename, route_id, scenario_type, scenario_attributes):
-    def indent(elem, spaces=3, level=0):
-        i = "\n" + level * spaces * " "
-        j = "\n" + (level + 1) * spaces * " "
-        if len(elem):
-            if not elem.text or not elem.text.strip():
-                elem.text = j
-            if not elem.tail or not elem.tail.strip():
-                elem.tail = i
-            for subelem in elem:
-                indent(subelem, spaces, level+1)
-        else:
-            if level and (not elem.tail or not elem.tail.strip()):
-                elem.tail = i
-        return elem
 
     while True:
         save = input("\033[1m> Save the scenario? ('Yes' / 'No'): \033[0m")
@@ -385,9 +472,27 @@ def save_scenario(filename, route_id, scenario_type, scenario_attributes):
         print(f"\n\033[91mCouldn't find the id '{route_id} in the given routes file\033[0m")
         return
 
+    prettify_and_save_tree(filename, tree)
+
+def prettify_and_save_tree(filename, tree):
+    def indent(elem, spaces=3, level=0):
+        i = "\n" + level * spaces * " "
+        j = "\n" + (level + 1) * spaces * " "
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = j
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+            for subelem in elem:
+                indent(subelem, spaces, level+1)
+        else:
+            if level and (not elem.tail or not elem.tail.strip()):
+                elem.tail = i
+        return elem
+
     # Prettify the xml. A bit of automatic indentation, a bit of manual one
     spaces = 3
-    indent(root, spaces)
+    indent(tree.getroot(), spaces)
     tree.write(filename)
 
     with open(filename, 'r') as f:
@@ -409,6 +514,7 @@ def main():
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
     argparser.add_argument('-f', '--file', required=True, nargs="+", help='File at which to place the scenarios')
     argparser.add_argument('-s', '--show-only', action='store_true', help='Only shows the route')
+    argparser.add_argument('-o', '--order', action='store_true', help='Only orders the scenarios')
     args = argparser.parse_args()
 
     # Get the client
@@ -422,6 +528,10 @@ def main():
 
     file_path = args.file[0]
     route_id = args.file[1] if len(args.file) > 1 else 0
+
+    if args.order:
+        order_saved_scenarios(file_path, route_id, world, tmap)
+        sys.exit(0)
 
     # Get the data already at the file
     show_saved_scenarios(file_path, route_id, world)

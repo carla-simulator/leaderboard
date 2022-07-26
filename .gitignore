@@ -3,4 +3,5 @@
 *.log
 .project
 .pydevproject
+*.sh
 *.xml

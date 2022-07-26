@@ -70,7 +70,7 @@ class RouteScenario(BasicScenario):
         self.timeout = self._estimate_route_timeout()
 
         if debug_mode>0:
-            self._draw_waypoints(world, self.route, vertical_shift=0.1, size=0.1, persistency=self.timeout)
+            self._draw_waypoints(world, self.route, vertical_shift=0.1, size=0.05, persistency=self.timeout)
 
         self._build_scenarios(
             world, ego_vehicle, sampled_scenario_definitions, timeout=self.timeout, debug=debug_mode > 0
@@ -166,7 +166,8 @@ class RouteScenario(BasicScenario):
             else:  # LANEFOLLOW
                 color = carla.Color(0, 128, 0)  # Green
 
-            world.debug.draw_point(wp, size=0.05, color=color, life_time=persistency)
+            world.debug.draw_point(wp, size=size, color=color, life_time=persistency)
+
 
         world.debug.draw_point(waypoints[0][0].location + carla.Location(z=vertical_shift), size=2*size,
                                color=carla.Color(0, 0, 128), life_time=persistency)
@@ -317,9 +318,7 @@ class RouteScenario(BasicScenario):
 
         # 'Normal' criteria
         criteria.add_child(OutsideRouteLanesTest(self.ego_vehicles[0], route=self.route))
-        criteria.add_child(CollisionTest(self.ego_vehicles[0], other_actor_type='vehicle', name="CollisionVehicleTest"))
-        criteria.add_child(CollisionTest(self.ego_vehicles[0], other_actor_type='miscellaneous', name="CollisionLayoutTest"))
-        criteria.add_child(CollisionTest(self.ego_vehicles[0], other_actor_type='walker', name="CollisionPedestrianTest"))
+        criteria.add_child(CollisionTest(self.ego_vehicles[0], name="CollisionTest"))
         criteria.add_child(RunningRedLightTest(self.ego_vehicles[0]))
         criteria.add_child(RunningStopTest(self.ego_vehicles[0]))
         criteria.add_child(MinSpeedRouteTest(self.ego_vehicles[0], name="MinSpeedTest"))

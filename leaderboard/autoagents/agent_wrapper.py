@@ -16,6 +16,7 @@ import time
 
 import carla
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from srunner.scenariomanager.timer import GameTime
 
 from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
@@ -173,8 +174,8 @@ class AgentWrapper(object):
                                              yaw=sensor_spec['yaw'])
 
         elif type_ == 'sensor.other.radar':
-            attributes['horizontal_fov'] = str(sensor_spec['fov'])  # degrees
-            attributes['vertical_fov'] = str(sensor_spec['fov'])  # degrees
+            attributes['horizontal_fov'] = str(sensor_spec['horizontal_fov'])  # degrees
+            attributes['vertical_fov'] = str(sensor_spec['vertical_fov'])  # degrees
             attributes['points_per_second'] = '1500'
             attributes['range'] = '100'  # meters
 
@@ -222,7 +223,8 @@ class AgentWrapper(object):
         :param vehicle: ego vehicle
         :return:
         """
-        bp_library = CarlaDataProvider.get_world().get_blueprint_library()
+        world = CarlaDataProvider.get_world()
+        bp_library = world.get_blueprint_library()
         for sensor_spec in self._agent.sensors():
             type_, id_, sensor_transform, attributes = self._preprocess_sensor_spec(sensor_spec)
 
@@ -243,8 +245,9 @@ class AgentWrapper(object):
             sensor.listen(CallBack(id_, type_, sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
-        # Tick once to spawn the sensors
-        CarlaDataProvider.get_world().tick()
+        # Some sensors miss sending data during the first ticks, so tick several times and remove the data
+        for _ in range(10):
+            world.tick()
 
     def cleanup(self):
         """
