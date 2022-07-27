@@ -68,6 +68,9 @@ class LeaderboardEvaluator(object):
         self.sensors = None
         self.sensor_icons = []
 
+        # This is the ROS1 bridge server instance. This is not encapsulated inside the ROS1 agent because the same
+        # instance is used on all the routes (i.e., the server is not restarted between routes). This is done
+        # to avoid reconnection issues between the server and the roslibpy client.
         self._ros1_server = None
 
         # First of all, we need to create the client that will send the requests
@@ -245,14 +248,15 @@ class LeaderboardEvaluator(object):
             self._agent_watchdog = Watchdog(args.timeout)
             self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
-
             agent_class_obj = getattr(self.module_agent, agent_class_name)
+
+            # Start the ROS1 bridge server only for ROS1 based agents.
             if getattr(agent_class_obj, 'get_ros_version')() == 1 and self._ros1_server is None:
                 from leaderboard.autoagents.ros1_agent import ROS1Server
                 self._ros1_server = ROS1Server()
                 self._ros1_server.start()
 
-            self.agent_instance = getattr(self.module_agent, agent_class_name)(args.host, args.port, args.debug)
+            self.agent_instance = agent_class_obj(args.host, args.port, args.debug)
             self.agent_instance.set_global_plan(scenario.gps_route, scenario.route)
             self.agent_instance.setup(args.agent_config)
 
@@ -367,10 +371,11 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
             self.statistics_manager.remove_scenario()
 
-        # Save global statistics
+        # Shutdown ROS1 bridge server if necessary
         if self._ros1_server is not None:
             self._ros1_server.shutdown()
 
+        # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
         self.statistics_manager.compute_global_statistics()
         self.statistics_manager.validate_and_write_statistics()
