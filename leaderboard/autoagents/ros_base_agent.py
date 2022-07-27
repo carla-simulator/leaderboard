@@ -14,7 +14,6 @@ import logging.handlers
 import os
 import queue
 import threading
-import time
 
 import carla
 import pexpect
@@ -150,7 +149,7 @@ class ROSBaseAgent(AutonomousAgent):
                 "register_all_sensors": False,
                 "ego_vehicle_role_name": "\"''\""
             },
-            wait=False
+            wait=True
         )
 
         self._agent_process = ROSLauncher("agent", ros_version=ros_version, debug=debug)

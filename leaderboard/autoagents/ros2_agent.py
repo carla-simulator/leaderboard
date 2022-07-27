@@ -77,6 +77,10 @@ class ROS2Agent(ROSBaseAgent):
         self.spin_thread = threading.Thread(target=rclpy.spin, args=(self.ros_node,))
         self.spin_thread.start()
 
+    @staticmethod
+    def get_ros_version():
+        return ROS2Agent.ROS_VERSION
+
     def spawn_object(self, type_, id_, transform, attributes, attach_to=0):
         spawn_point = BridgeHelper.carla2ros_pose(
             transform.location.x, transform.location.y, transform.location.z,

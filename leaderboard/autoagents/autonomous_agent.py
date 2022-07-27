@@ -115,6 +115,10 @@ class AutonomousAgent(object):
 
         return control
 
+    @staticmethod
+    def get_ros_version():
+        return -1
+
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
         """
         Set the plan (route) for the agent

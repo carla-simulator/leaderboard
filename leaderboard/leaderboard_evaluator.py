@@ -68,6 +68,8 @@ class LeaderboardEvaluator(object):
         self.sensors = None
         self.sensor_icons = []
 
+        self._ros1_server = None
+
         # First of all, we need to create the client that will send the requests
         # to the simulator. Here we'll assume the simulator is accepting
         # requests in the localhost at port 2000.
@@ -243,6 +245,13 @@ class LeaderboardEvaluator(object):
             self._agent_watchdog = Watchdog(args.timeout)
             self._agent_watchdog.start()
             agent_class_name = getattr(self.module_agent, 'get_entry_point')()
+
+            agent_class_obj = getattr(self.module_agent, agent_class_name)
+            if getattr(agent_class_obj, 'get_ros_version')() == 1 and self._ros1_server is None:
+                from leaderboard.autoagents.ros1_agent import ROS1Server
+                self._ros1_server = ROS1Server()
+                self._ros1_server.start()
+
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.host, args.port, args.debug)
             self.agent_instance.set_global_plan(scenario.gps_route, scenario.route)
             self.agent_instance.setup(args.agent_config)
@@ -359,6 +368,9 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.remove_scenario()
 
         # Save global statistics
+        if self._ros1_server is not None:
+            self._ros1_server.shutdown()
+
         print("\033[1m> Registering the global statistics\033[0m")
         self.statistics_manager.compute_global_statistics()
         self.statistics_manager.validate_and_write_statistics()
