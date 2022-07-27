@@ -13,12 +13,27 @@ import time
 
 from leaderboard.autoagents.ros_base_agent import BridgeHelper, ROSBaseAgent, ROSLauncher
 
-import carla
 import roslibpy
-import transforms3d
 
-client = roslibpy.Ros(host='localhost', port=9090)
-client.connect()
+
+class ROS1Server(object):
+    client = roslibpy.Ros(host='localhost', port=9090)
+
+    def __init__(self, debug=True):
+        self._server_process = ROSLauncher("server", ros_version=1, debug=debug)
+
+    def start(self):
+        self._server_process.run(
+            package="rosbridge_server",
+            launch_file="rosbridge_websocket.launch",
+            wait=False
+        )
+        ROS1Server.client.run(30)
+
+    def shutdown(self):
+        self._server_process.terminate()
+        assert not self._server_process.is_alive()
+        ROS1Server.client.close()
 
 
 def wait_for_message(client, topic, topic_type, timeout=None):
@@ -69,15 +84,7 @@ class ROS1Agent(ROSBaseAgent):
     def __init__(self, carla_host, carla_port, debug=False):
         super(ROS1Agent, self).__init__(self.ROS_VERSION, carla_host, carla_port, debug)
 
-        self._server_process = ROSLauncher("server", ros_version=self.ROS_VERSION, debug=debug)
-        self._server_process.run(
-            package="rosbridge_server",
-            launch_file="rosbridge_websocket.launch",
-            wait=True
-        )
-
-        #client.connect()
-        client.run(30)
+        client = ROS1Server.client
 
         self._spawn_object_service = roslibpy.Service(client, "/carla/spawn_object", "carla_msgs/SpawnObject", reconnect_on_close=False)
         self._destroy_object_service = roslibpy.Service(client, "/carla/destroy_object", "carla_msgs/DestroyObject", reconnect_on_close=False)
@@ -92,6 +99,10 @@ class ROS1Agent(ROSBaseAgent):
         self._path_gnss_publisher = roslibpy.Topic(client, "/carla/hero/global_plan_gnss", "carla_msgs/CarlaGnssRoute", latch=True, reconnect_on_close=False)
 
         wait_for_message(client, "/carla/hero/status", "std_msgs/Bool")
+
+    @staticmethod
+    def get_ros_version():
+        return ROS1Agent.ROS_VERSION
 
     def spawn_object(self, type_, id_, transform, attributes, attach_to=0):
         spawn_point = BridgeHelper.carla2ros_pose(
@@ -123,7 +134,6 @@ class ROS1Agent(ROSBaseAgent):
         return response["success"]
 
     def run_step(self, input_data, timestamp):
-        assert self._server_process.is_alive()
         return super(ROS1Agent, self).run_step(input_data, timestamp)
 
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
@@ -164,11 +174,5 @@ class ROS1Agent(ROSBaseAgent):
         self._path_publisher.unadvertise()
         self._spawn_object_service.unadvertise()
         self._destroy_object_service.unadvertise()
-
-        #client.close()
-
-        self._server_process.terminate()
-
-        assert not self._server_process.is_alive()
 
         super(ROS1Agent, self).destroy()
