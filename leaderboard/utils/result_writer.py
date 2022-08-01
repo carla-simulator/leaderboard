@@ -82,23 +82,38 @@ class ResultOutputProvider(object):
         list_statistics = [header]
         criteria_data = OrderedDict()
 
+        scenario_times = {}
         for criterion in self._data.scenario.get_criteria():
 
+            # Ignore the value of the YieldToEV test is not initialized.
             name = criterion.name
-            # If two criterion have the same name, their results are shown as one
+            if name == "YieldToEmergencyVehicleTest" and not criterion.initialized:
+                continue
+
+            # If two criterion have the same name, their results are shown as one.
+            # Criteria with a "%" based value get their mean shown, while the rest show the sum.
             if name in criteria_data:
                 result = criterion.test_status
                 if STATUS_PRIORITY[result] < STATUS_PRIORITY[criteria_data[name]['result']]:
                     criteria_data[name]['result'] = result
+                if criterion.units == "%":
+                    if name in scenario_times:
+                        scenario_times[name] += 1
+                    else:
+                        scenario_times[name] = 1
                 criteria_data[name]['actual_value'] += criterion.actual_value
-                # TODO: Check the units (and do something about the criterion if the fail to match)
- 
+
             else:
                 criteria_data[name] = {
                     'result': criterion.test_status,
                     'actual_value': criterion.actual_value,
                     'units': criterion.units
                 }
+
+        # Get the mean value
+        for name, times in list(scenario_times.items()):
+            criteria_data[name]['actual_value'] /= times
+            criteria_data[name]['actual_value'] = round(criteria_data[name]['actual_value'], 2)
 
         for criterion_name in criteria_data:
             criterion = criteria_data[criterion_name]
