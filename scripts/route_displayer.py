@@ -55,11 +55,11 @@ COLORS = [
 
 
 def draw_point(world, wp, color):
-    world.debug.draw_point( wp.transform.location + carla.Location(z=0.2), color=color, life_time=LIFE_TIME)
+    world.debug.draw_point( wp.transform.location + carla.Location(z=0.2), size=0.05, color=color, life_time=LIFE_TIME)
 
 
 def draw_keypoint(world, location):
-    world.debug.draw_point(location + carla.Location(z=0.2), size=0.15, color=carla.Color(128, 0, 128), life_time=LIFE_TIME)
+    world.debug.draw_point(location + carla.Location(z=0.2), size=0.1, color=carla.Color(128, 0, 128), life_time=LIFE_TIME)
     string = "(" + str(round(location.x, 1)) + ", " + str(round(location.y, 1)) + ", " + str(round(location.z, 1)) + ")"
     world.debug.draw_string(location + carla.Location(z=0.5), string, True, color=carla.Color(0, 0 , 128), life_time=LIFE_TIME)
 
@@ -160,7 +160,7 @@ def show_saved_scenarios(route, world):
     for scenario in route.find('scenarios').iter('scenario'):
         name = scenario.attrib.get('name')
         trigger_location = convert_elem_to_location(scenario.find('trigger_point'))
-        world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.2, color=carla.Color(125, 0, 0))
+        world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.1, color=carla.Color(125, 0, 0))
         world.debug.draw_string(trigger_location + carla.Location(z=0.5), name, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
 
 
