@@ -52,8 +52,6 @@ class LeaderboardEvaluator(object):
     TODO: document me!
     """
 
-    ego_vehicles = []
-
     # Tunable parameters
     client_timeout = 10.0  # in seconds
     wait_for_world = 20.0  # in seconds
@@ -128,12 +126,6 @@ class LeaderboardEvaluator(object):
         """
         CarlaDataProvider.cleanup()
 
-        for i, _ in enumerate(self.ego_vehicles):
-            if self.ego_vehicles[i]:
-                self.ego_vehicles[i].destroy()
-                self.ego_vehicles[i] = None
-        self.ego_vehicles = []
-
         if self._agent_watchdog:
             self._agent_watchdog.stop()
 
@@ -148,6 +140,7 @@ class LeaderboardEvaluator(object):
         if self.manager and self.manager.get_running_status() \
                 and hasattr(self, 'world') and self.world:
             # Reset to asynchronous mode
+            self.world.tick()  # TODO: Understand why without this, an actor destruction runtime error occurs
             settings = self.world.get_settings()
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
