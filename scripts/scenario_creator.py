@@ -122,7 +122,7 @@ SCENARIO_TYPES ={
     ],
     "ConstructionObstacleTwoWays": [
         ["distance", "value"],
-        ["frequency", "value"],
+        ["frequency", "interval"],
     ],
     "Accident": [
         ["distance", "value"],
@@ -131,7 +131,7 @@ SCENARIO_TYPES ={
     ],
     "AccidentTwoWays": [
         ["distance", "value"],
-        ["frequency", "value"],
+        ["frequency", "interval"],
     ],
     "ParkedObstacle": [
         ["distance", "value"],
@@ -140,7 +140,7 @@ SCENARIO_TYPES ={
     ],
     "ParkedObstacleTwoWays": [
         ["distance", "value"],
-        ["frequency", "value"],
+        ["frequency", "interval"],
     ],
     "VehicleOpensDoor": [
         ["distance", "value"],
@@ -148,7 +148,7 @@ SCENARIO_TYPES ={
     ],
     "VehicleOpensDoorTwoWays": [
         ["distance", "value"],
-        ["frequency", "value"],
+        ["frequency", "interval"],
     ],
     "HazardAtSideLane": [
         ["distance", "value"],
