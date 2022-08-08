@@ -674,9 +674,6 @@
             <trigger_point x="-283.9" y="4162.2" z="372.9" yaw="-90.3"/>
             <direction value="left"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
-            <trigger_point x="-284.5" y="4020.7" z="371.9" yaw="-90.3"/>
-         </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-284.5" y="4040.9" z="372.0" yaw="-90.3"/>
             <flow_speed value="13"/>
@@ -688,10 +685,6 @@
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-412.8" y="4192.2" z="373.3" yaw="179.9"/>
-         </scenario>
-         <scenario name="ParkingCutIn_3" type="ParkingCutIn">
-            <trigger_point x="-497.2" y="4165.9" z="373.2" yaw="-90.3"/>
-            <direction value="right"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_2" type="ParkingCrossingPedestrian">
             <trigger_point x="-390.2" y="3999.1" z="371.2" yaw="90.0"/>
@@ -806,9 +799,6 @@
          </scenario>
          <scenario name="PedestrianCrossing_1" type="PedestrianCrossing">
             <trigger_point x="-177.2" y="4041.6" z="371.8" yaw="89.7"/>
-         </scenario>
-         <scenario name="PedestrianCrossing_2" type="PedestrianCrossing">
-            <trigger_point x="-342.6" y="4084.9" z="372.4" yaw="179.8"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_8" type="ParkingCrossingPedestrian">
             <trigger_point x="-390.3" y="4113.6" z="372.6" yaw="90.0"/>
