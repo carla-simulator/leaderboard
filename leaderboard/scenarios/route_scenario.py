@@ -66,7 +66,7 @@ class RouteScenario(BasicScenario):
         self.route = self._get_route(config)
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
 
-        ego_vehicle = self._spawn_ego_vehicle()
+        ego_vehicle = self._spawn_ego_vehicle(world)
         self.timeout = self._estimate_route_timeout()
 
         if debug_mode>0:
@@ -114,7 +114,7 @@ class RouteScenario(BasicScenario):
 
         return new_scenarios_config
 
-    def _spawn_ego_vehicle(self):
+    def _spawn_ego_vehicle(self, world):
         """Spawn the ego vehicle at the first waypoint of the route"""
         elevate_transform = self.route[0][0]
         elevate_transform.location.z += 0.5
@@ -123,11 +123,12 @@ class RouteScenario(BasicScenario):
                                                           elevate_transform,
                                                           rolename='hero')
 
-
         spectator = CarlaDataProvider.get_world().get_spectator()
         ego_trans = ego_vehicle.get_transform()
         spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
                                                     carla.Rotation(pitch=-90)))
+        
+        world.tick()
 
         return ego_vehicle
 

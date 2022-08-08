@@ -49,7 +49,7 @@ def main():
     args = argparser.parse_args()
 
     # Initialize the statistics manager
-    statistics_manager = StatisticsManager(args.endpoint)
+    statistics_manager = StatisticsManager(args.endpoint, 0)
 
     # Make sure that the data is correctly formed
     sensors = []
@@ -82,7 +82,7 @@ def main():
     statistics_manager.save_sensors(sensors)
     statistics_manager.save_progress(total_routes, total_routes)
     statistics_manager.compute_global_statistics()
-    statistics_manager.validate_statistics()
+    statistics_manager.validate_and_write_statistics()
 
 
 if __name__ == '__main__':

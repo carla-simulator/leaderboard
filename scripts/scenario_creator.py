@@ -183,10 +183,6 @@ SCENARIO_TYPES ={
 
     # Others
     "BlockedIntersection": [
-        ["blocker_point", "location driving"],
-        ["obstacle_model", "value"],
-        ["obstacle_gap", "value"],
-        ["extra_obstacle", "value"],
     ],
     "InvadingTurn": [
         ["distance", "value"],
