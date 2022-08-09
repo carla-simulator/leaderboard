@@ -401,12 +401,6 @@ class StatisticsManager(object):
             global_record.scores_mean['Infraction penalty'] += route_record.scores['Infraction penalty'] / self._total_routes
             global_record.scores_mean['Driving score'] += route_record.scores['Driving score'] / self._total_routes
 
-            # Infractions
-            for key in global_record.infractions_per_km:
-                route_length = route_record.meta['Route length'] / 1000
-                route_completed = route_record.scores['Route completion'] / 100 * route_length
-                global_record.infractions_per_km[key] += len(route_record.infractions[key]) / max(route_completed, 0.001)
-
             # Downgrade the global result if need be ('Perfect' -> 'Completed' -> 'Failed'), and record the failed routes
             route_result = 'Failed' if 'Failed' in route_record.result else route_record.result 
             if route_result == 'Failed':
@@ -418,8 +412,15 @@ class StatisticsManager(object):
         # Save the global result
         global_record.result = global_result
 
-        # Round the infractions number
+        # Calculate the number of infractions per km, and round the infractions number
+        km_driven = 0
+        for route_record in route_records:
+            km_driven += route_record.meta['Route length'] / 1000 * route_record.scores['Route completion'] / 100
+            for key in global_record.infractions_per_km:
+                global_record.infractions_per_km[key] += len(route_record.infractions[key])
+
         for key in global_record.infractions_per_km:
+            global_record.infractions_per_km[key] /= km_driven
             global_record.infractions_per_km[key] = round(global_record.infractions_per_km[key], ROUND_DIGITS)
 
         # Scores standard deviation (Need the score mean to be calculated)
