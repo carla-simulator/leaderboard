@@ -154,7 +154,7 @@
             <bicycle_drive_distance value="80"/>
             <bicycle_speed value="8"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="544.3" y="5579.4" z="369.1" yaw="179.9"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
@@ -176,7 +176,7 @@
             <distance value="70"/>
             <frequency from="45" to="120"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="321.2" y="6161.7" z="358.1" yaw="144.8"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
@@ -194,7 +194,7 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="15"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="-237.1" y="6101.0" z="358.1" yaw="180.0"/>
          </scenario>
          <scenario name="InvadingTurn_1" type="InvadingTurn">
@@ -210,7 +210,7 @@
             <distance value="70"/>
             <frequency from="45" to="110"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="-369.8" y="6078.6" z="359.2" yaw="90.2"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
@@ -223,7 +223,7 @@
             <flow_speed value="15"/>
             <source_dist_interval from="15" to="45"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-561.2" y="5977.1" z="366.3" yaw="224.4"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
@@ -232,7 +232,7 @@
             <blocker_model value="static.prop.busstoplb"/>
             <crossing_angle value="20"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-711.8" y="6163.6" z="363.8" yaw="113.0"/>
          </scenario>
          <scenario name="ConstructionObstacle_2" type="ConstructionObstacle">
@@ -271,7 +271,7 @@
          <scenario name="ControlLoss_8" type="ControlLoss">
             <trigger_point x="-683.7" y="4730.7" z="373.1" yaw="-0.0"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="-495.9" y="5033.4" z="375.2" yaw="89.7"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -334,7 +334,7 @@
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
             <trigger_point x="-374.1" y="5188.6" z="374.1" yaw="-47.7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_4" type="BlockedIntersection">
             <trigger_point x="-311.5" y="5113.7" z="373.9" yaw="-49.2"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_4" type="ConstructionObstacleTwoWays">
@@ -463,7 +463,7 @@
             <trigger_point x="-710.9" y="3587.4" z="364.0" yaw="-90.0"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-711.0" y="3512.3" z="362.4" yaw="-90.0"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
@@ -474,7 +474,7 @@
             <distance value="90"/>
             <speed value="45"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-831.0" y="3738.7" z="365.4" yaw="89.9"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
@@ -483,7 +483,7 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-1158.2" y="3796.6" z="353.2" yaw="180.3"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
@@ -510,7 +510,7 @@
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="-1215.9" y="3591.3" z="350.8" yaw="91.5"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="-1156.6" y="3673.1" z="353.4" yaw="16.6"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_4" type="OppositeVehicleTakingPriority">
@@ -523,7 +523,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="15"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="-1441.4" y="4064.8" z="363.8" yaw="-179.8"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
@@ -535,7 +535,7 @@
             <flow_speed value="10"/>
             <source_dist_interval from="10" to="40"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-1643.1" y="3788.1" z="362.4" yaw="180.3"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
@@ -554,7 +554,7 @@
             <distance value="100"/>
             <offset value="0.5"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-1309.3" y="3689.4" z="354.9" yaw="-12.7"/>
          </scenario>
          <scenario name="PedestrianCrossing_3" type="PedestrianCrossing">
@@ -601,7 +601,7 @@
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="-1667.7" y="5154.7" z="377.0" yaw="89.8"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="-1667.1" y="5294.5" z="377.0" yaw="89.8"/>
          </scenario>
       </scenarios>
@@ -778,7 +778,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-264.8" y="4191.8" z="373.0" yaw="179.9"/>
          </scenario>
          <scenario name="ParkingCutIn_7" type="ParkingCutIn">
@@ -790,7 +790,7 @@
             <flow_speed value="13"/>
             <source_dist_interval from="20" to="50"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="-177.1" y="4060.1" z="372.0" yaw="89.7"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
@@ -1109,7 +1109,7 @@
             <distance value="40"/>
             <frequency from="25" to="90"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="1142.9" y="3760.2" z="367.4" yaw="279.5"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
@@ -1135,7 +1135,7 @@
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="624.3" y="3808.8" z="371.6" yaw="179.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="592.0" y="3808.9" z="371.6" yaw="179.9"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
@@ -1149,7 +1149,7 @@
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="619.7" y="3491.5" z="370.4" yaw="-0.1"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="653.2" y="3491.5" z="370.9" yaw="-0.1"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_9" type="ParkingCrossingPedestrian">
@@ -1186,7 +1186,7 @@
          <scenario name="ParkingCutIn_12" type="ParkingCutIn">
             <trigger_point x="34.6" y="3626.4" z="362.7" yaw="89.6"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="35.6" y="3780.3" z="367.1" yaw="89.6"/>
          </scenario>
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
@@ -1254,7 +1254,7 @@
          <scenario name="HardBreakRoute_9" type="HardBreakRoute">
             <trigger_point x="687.0" y="4620.3" z="368.9" yaw="-0.1"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="751.7" y="4620.2" z="368.5" yaw="-0.1"/>
          </scenario>
          <scenario name="HardBreakRoute_10" type="HardBreakRoute">
@@ -1271,7 +1271,7 @@
             <flow_speed value="17"/>
             <source_dist_interval from="25" to="70"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_4" type="VehicleTurningRoutePedestrian">
             <trigger_point x="808.2" y="4026.3" z="370.4" yaw="189.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -1285,7 +1285,7 @@
             <distance value="30"/>
             <direction value="left"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="570.1" y="4167.2" z="370.7" yaw="89.9"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_12" type="ParkingCrossingPedestrian">
@@ -1363,13 +1363,13 @@
             <distance value="50"/>
             <blocker_model value="static.prop.advertisement"/>
          </scenario>
-         <scenario name="VehicleTurning_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="1984.9" y="2100.4" z="360.9" yaw="270.1"/>
          </scenario>
-         <scenario name="VehicleTurning_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="1783.3" y="1999.6" z="360.8" yaw="269.8"/>
          </scenario>
-         <scenario name="VehicleTurning_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="1661.4" y="1718.3" z="357.2" yaw="180.0"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
@@ -1397,7 +1397,7 @@
             <distance value="110"/>
             <offset value="0.55"/>
          </scenario>
-         <scenario name="VehicleTurning_5" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="2104.0" y="1950.2" z="356.5" yaw="-0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
@@ -1450,7 +1450,7 @@
             <blocker_model value="static.prop.busstoplb"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="1817.3" y="2063.3" z="362.0" yaw="179.8"/>
          </scenario>
          <scenario name="AccidentTwoWays_3" type="AccidentTwoWays">
@@ -1556,7 +1556,7 @@
          <scenario name="HardBreakRoute_9" type="HardBreakRoute">
             <trigger_point x="2185.3" y="2464.3" z="364.8" yaw="90.1"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_12" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_5" type="BlockedIntersection">
             <trigger_point x="2185.2" y="2494.0" z="365.0" yaw="90.1"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
@@ -1573,7 +1573,7 @@
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_10" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="2020.3" y="2294.9" z="363.9" yaw="180.0"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
@@ -1629,7 +1629,7 @@
             <bicycle_drive_distance value="60"/>
             <bicycle_speed value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_11" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_4" type="BlockedIntersection">
             <trigger_point x="2653.2" y="2370.5" z="360.3" yaw="89.9"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
@@ -1709,10 +1709,10 @@
             <distance value="80"/>
             <frequency from="40" to="115"/>
          </scenario>
-         <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="3710.8" y="2467.8" z="362.8" yaw="90.0"/>
          </scenario>
-         <scenario name="VehicleTurning_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3601.0" y="2443.9" z="362.4" yaw="-89.9"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
@@ -1753,7 +1753,7 @@
             <trigger_point x="2584.8" y="1948.2" z="354.8" yaw="-0.5"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurning_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="2712.7" y="1947.2" z="350.8" yaw="-0.5"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -1765,10 +1765,10 @@
          <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="2890.6" y="2042.4" z="354.2" yaw="269.6"/>
          </scenario>
-         <scenario name="VehicleTurning_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="2888.6" y="1725.6" z="344.5" yaw="269.6"/>
          </scenario>
-         <scenario name="VehicleTurning_6" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="2709.7" y="1829.7" z="349.3" yaw="179.7"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
@@ -1777,7 +1777,7 @@
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="5"/>
          </scenario>
-         <scenario name="VehicleTurning_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2421.9" y="1714.1" z="354.4" yaw="180.1"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
@@ -1837,7 +1837,7 @@
          <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
             <trigger_point x="3482.4" y="2575.9" z="359.5" yaw="269.7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="3481.9" y="2452.5" z="360.7" yaw="269.7"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
@@ -1857,7 +1857,7 @@
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="2838.9" y="2407.9" z="352.0" yaw="179.8"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_10" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="2680.7" y="2408.4" z="359.3" yaw="179.8"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
@@ -1881,7 +1881,7 @@
             <flow_speed value="8"/>
             <source_dist_interval from="10" to="35"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_13" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2772.1" y="2146.0" z="357.4" yaw="89.8"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_11" type="DynamicObjectCrossing">
@@ -1898,7 +1898,7 @@
             <distance value="65"/>
             <frequency from="15" to="85"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_14" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
             <trigger_point x="2771.1" y="1797.4" z="346.7" yaw="89.8"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_4" type="OppositeVehicleTakingPriority">
@@ -1916,7 +1916,7 @@
          <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
             <trigger_point x="2652.0" y="1547.6" z="349.5" yaw="89.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_17" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_4" type="BlockedIntersection">
             <trigger_point x="2652.2" y="1683.2" z="346.9" yaw="89.9"/>
          </scenario>
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
@@ -1925,7 +1925,7 @@
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="2386.1" y="1862.3" z="355.9" yaw="90.1"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_18" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
             <trigger_point x="2385.8" y="2025.4" z="358.7" yaw="90.1"/>
          </scenario>
       </scenarios>
@@ -2070,7 +2070,7 @@
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="12"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="3521.2" y="-94.3" z="322.6" yaw="180.0"/>
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
@@ -2097,7 +2097,7 @@
             <distance value="115"/>
             <frequency from="65" to="140"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2374.6" y="-125.7" z="335.9" yaw="88.0"/>
          </scenario>
          <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
@@ -2159,7 +2159,7 @@
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="2679.6" y="-1695.3" z="328.2" yaw="171.7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2395.9" y="-1678.3" z="335.1" yaw="179.7"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_8" type="ParkedObstacleTwoWays">
@@ -2197,7 +2197,7 @@
          <scenario name="ControlLoss_5" type="ControlLoss">
             <trigger_point x="2495.3" y="-909.6" z="335.0" yaw="179.8"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2411.8" y="-909.2" z="338.2" yaw="179.8"/>
          </scenario>
          <scenario name="AccidentTwoWays_7" type="AccidentTwoWays">
@@ -2313,7 +2313,7 @@
             <distance value="300"/>
             <frequency from="75" to="220"/>
          </scenario>
-         <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="1754.7" y="2298.6" z="366.1" yaw="360.0"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_4" type="ParkedObstacleTwoWays">
@@ -2321,7 +2321,7 @@
             <distance value="80"/>
             <frequency from="50" to="115"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="2400.3" y="-1458.4" z="339.8" yaw="180.0"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
@@ -2365,7 +2365,7 @@
             <distance value="100"/>
             <frequency from="55" to="130"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="747.3" y="-79.0" z="337.4" yaw="0.0"/>
          </scenario>
          <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
@@ -2584,7 +2584,7 @@
             <bicycle_drive_distance value="150"/>
             <bicycle_speed value="15"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-3932.4" y="2086.7" z="339.0" yaw="42.2"/>
          </scenario>
          <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
@@ -2595,7 +2595,7 @@
          <scenario name="ControlLoss_7" type="ControlLoss">
             <trigger_point x="-3408.2" y="1791.3" z="349.6" yaw="313.8"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-3338.8" y="1638.9" z="350.3" yaw="275.2"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
@@ -2863,7 +2863,7 @@
             <distance value="35"/>
             <frequency from="25" to="95"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="1719.5" y="3974.2" z="358.1" yaw="279.3"/>
          </scenario>
          <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
@@ -2940,7 +2940,7 @@
             <trigger_point x="1618.2" y="4577.2" z="366.3" yaw="99.2"/>
             <direction value="left"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="1578.0" y="4734.5" z="368.5" yaw="180.3"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
@@ -3215,7 +3215,7 @@
             <distance value="40"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3207.7" y="4799.5" z="367.2" yaw="279.1"/>
          </scenario>
          <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
@@ -3246,7 +3246,7 @@
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="3186.3" y="4293.8" z="363.4" yaw="189.2"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="3021.4" y="4475.4" z="363.8" yaw="98.9"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
@@ -3297,7 +3297,7 @@
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="3715.5" y="4538.1" z="368.1" yaw="98.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="3708.0" y="4586.1" z="368.1" yaw="98.9"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
@@ -3330,7 +3330,7 @@
             <trigger_point x="3122.4" y="5289.8" z="368.4" yaw="99.2"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="3100.4" y="5425.7" z="368.7" yaw="99.2"/>
          </scenario>
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
@@ -3490,7 +3490,7 @@
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-313.1" y="3978.8" z="371.5" yaw="179.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-467.3" y="3979.1" z="370.3" yaw="179.9"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
@@ -3644,10 +3644,10 @@
             <direction value="right"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-390.3" y="4062.1" z="372.1" yaw="90.0"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-317.3" y="4087.6" z="372.4" yaw="-0.2"/>
          </scenario>
       </scenarios>
@@ -3777,7 +3777,7 @@
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="782.5" y="4773.4" z="369.8" yaw="89.6"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="787.1" y="4965.4" z="371.0" yaw="89.6"/>
          </scenario>
          <scenario name="VehicleOpensDoorTwoWays_6" type="VehicleOpensDoorTwoWays">
@@ -3974,7 +3974,7 @@
             <flow_speed value="10"/>
             <source_dist_interval from="10" to="35"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-820.1" y="6217.6" z="364.9" yaw="269.9"/>
          </scenario>
       </scenarios>
@@ -4039,10 +4039,10 @@
             <blocker_model value="static.prop.busstoplb"/>
             <crossing_angle value="13"/>
          </scenario>
-         <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="3469.9" y="4349.6" z="367.4" yaw="9.2"/>
          </scenario>
-         <scenario name="VehicleTurning_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3482.9" y="4536.9" z="367.9" yaw="98.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
@@ -4051,7 +4051,7 @@
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="12"/>
          </scenario>
-         <scenario name="VehicleTurning_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="3636.0" y="5024.4" z="367.9" yaw="99.4"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
@@ -4060,7 +4060,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurning_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="2876.9" y="5369.0" z="369.2" yaw="99.1"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -4081,7 +4081,7 @@
          <scenario name="PriorityAtJunction_4" type="PriorityAtJunction">
             <trigger_point x="2821.7" y="5055.6" z="368.5" yaw="189.2"/>
          </scenario>
-         <scenario name="VehicleTurning_6" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="2729.5" y="5040.7" z="368.7" yaw="189.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
@@ -4115,7 +4115,7 @@
          <scenario name="PriorityAtJunction_7" type="PriorityAtJunction">
             <trigger_point x="2556.2" y="4480.5" z="362.0" yaw="279.4"/>
          </scenario>
-         <scenario name="VehicleTurning_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="2978.8" y="4500.5" z="363.8" yaw="9.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
@@ -4249,7 +4249,7 @@
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="3259.5" y="5367.3" z="368.2" yaw="9.0"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3296.6" y="5373.2" z="368.3" yaw="9.0"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_13" type="DynamicObjectCrossing">
@@ -4291,7 +4291,7 @@
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="16"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_10" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2749.0" y="4723.2" z="365.5" yaw="279.4"/>
          </scenario>
          <scenario name="PriorityAtJunction_9" type="PriorityAtJunction">
@@ -4323,7 +4323,7 @@
             <flow_speed value="13"/>
             <source_dist_interval from="20" to="40"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_12" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_4" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3004.2" y="4585.5" z="364.9" yaw="98.9"/>
          </scenario>
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
@@ -4336,7 +4336,7 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="17"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_13" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
             <trigger_point x="3403.9" y="4805.3" z="367.9" yaw="9.2"/>
          </scenario>
          <scenario name="PriorityAtJunction_10" type="PriorityAtJunction">
@@ -4405,7 +4405,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="12"/>
          </scenario>
-         <scenario name="VehicleTurning_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2417.4" y="4291.4" z="359.4" yaw="9.7"/>
          </scenario>
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
@@ -4414,10 +4414,10 @@
             <flow_speed value="15"/>
             <source_dist_interval from="15" to="50"/>
          </scenario>
-         <scenario name="VehicleTurning_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2312.6" y="4074.2" z="357.2" yaw="277.8"/>
          </scenario>
-         <scenario name="VehicleTurning_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="2072.2" y="3998.2" z="357.8" yaw="189.2"/>
          </scenario>
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
@@ -4432,7 +4432,7 @@
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="12"/>
          </scenario>
-         <scenario name="VehicleTurning_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="1140.5" y="4080.3" z="366.1" yaw="189.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -4465,10 +4465,10 @@
             <flow_speed value="13"/>
             <source_dist_interval from="15" to="40"/>
          </scenario>
-         <scenario name="VehicleTurning_5" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="782.4" y="4049.2" z="370.4" yaw="90.1"/>
          </scenario>
-         <scenario name="VehicleTurning_6" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="617.6" y="4082.9" z="370.9" yaw="179.9"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
@@ -4550,7 +4550,7 @@
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="1892.8" y="4084.5" z="359.1" yaw="189.2"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="1729.8" y="4061.3" z="359.1" yaw="189.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_11" type="DynamicObjectCrossing">
@@ -4560,7 +4560,7 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="1688.3" y="4146.4" z="360.4" yaw="99.3"/>
          </scenario>
          <scenario name="PriorityAtJunction_9" type="PriorityAtJunction">
@@ -4593,7 +4593,7 @@
          <scenario name="PedestrianCrossing_2" type="PedestrianCrossing">
             <trigger_point x="1098.9" y="4025.1" z="367.1" yaw="279.0"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_9" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="1265.5" y="3989.4" z="364.4" yaw="9.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_14" type="DynamicObjectCrossing">
@@ -4643,7 +4643,7 @@
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="349.5" y="4292.3" z="370.8" yaw="179.7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_11" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_4" type="VehicleTurningRoutePedestrian">
             <trigger_point x="273.7" y="4292.7" z="371.1" yaw="179.7"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_1" type="ParkingCrossingPedestrian">
@@ -4664,7 +4664,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="13"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_12" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_4" type="BlockedIntersection">
             <trigger_point x="420.1" y="4406.6" z="370.6" yaw="-0.1"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
@@ -4726,7 +4726,7 @@
             <bicycle_drive_distance value="80"/>
             <bicycle_speed value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_13" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
             <trigger_point x="282.8" y="5403.1" z="366.9" yaw="159.7"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_18" type="DynamicObjectCrossing">
@@ -4760,7 +4760,7 @@
             <distance value="80"/>
             <frequency from="45" to="115"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_14" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
             <trigger_point x="94.0" y="5204.8" z="370.2" yaw="-23.3"/>
          </scenario>
       </scenarios>
@@ -5252,7 +5252,7 @@
             <blocker_model value="static.prop.busstoplb"/>
             <crossing_angle value="20"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="2475.6" y="3705.2" z="355.1" yaw="189.3"/>
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
@@ -5316,7 +5316,7 @@
          <scenario name="ParkedObstacle_5" type="ParkedObstacle">
             <trigger_point x="-368.1" y="6336.9" z="357.5" yaw="179.7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-602.9" y="6338.2" z="359.1" yaw="179.7"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -5330,7 +5330,7 @@
             <flow_speed value="10"/>
             <source_dist_interval from="20" to="55"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-624.9" y="6276.6" z="359.5" yaw="277.7"/>
          </scenario>
       </scenarios>
@@ -5569,7 +5569,7 @@
             <blocker_model value="static.prop.busstoplb"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="811.3" y="3676.1" z="371.4" yaw="189.6"/>
          </scenario>
          <scenario name="StaticCutIn_8" type="StaticCutIn">
@@ -5859,7 +5859,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="-495.1" y="4552.0" z="374.6" yaw="269.9"/>
          </scenario>
          <scenario name="SignalizedJunctionRightTurn_1" type="SignalizedJunctionRightTurn">
@@ -5932,7 +5932,7 @@
             <trigger_point x="-824.6" y="5486.3" z="376.0" yaw="89.9"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-823.9" y="5887.2" z="371.9" yaw="89.9"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
@@ -5965,7 +5965,7 @@
             <trigger_point x="-177.1" y="4540.5" z="373.2" yaw="89.9"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-177.1" y="4593.9" z="373.2" yaw="89.9"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
@@ -6012,7 +6012,7 @@
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="218.3" y="4407.0" z="371.3" yaw="-0.1"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
@@ -6069,7 +6069,7 @@
          <scenario name="ControlLoss_6" type="ControlLoss">
             <trigger_point x="-828.3" y="5240.7" z="376.4" yaw="89.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-828.2" y="5288.5" z="376.3" yaw="89.9"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
@@ -6120,7 +6120,7 @@
             <flow_speed value="17"/>
             <source_dist_interval from="20" to="55"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="-803.7" y="5923.4" z="371.2" yaw="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
@@ -6199,10 +6199,10 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="4"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="205.9" y="5915.5" z="361.1" yaw="-179.5"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="235.0" y="6103.6" z="358.1" yaw="-0.0"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
@@ -6315,7 +6315,7 @@
             <distance value="80"/>
             <frequency from="45" to="90"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="40.1" y="6067.8" z="358.5" yaw="90.6"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
@@ -6346,7 +6346,7 @@
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="298.6" y="5576.7" z="366.4" yaw="179.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="VehicleTurningRoute">
             <trigger_point x="243.6" y="5576.8" z="365.6" yaw="179.9"/>
          </scenario>
          <scenario name="InvadingTurn_3" type="InvadingTurn">
@@ -6399,7 +6399,7 @@
          <scenario name="HardBreakRoute_8" type="HardBreakRoute">
             <trigger_point x="1449.7" y="4736.9" z="370.3" yaw="0.3"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="1529.8" y="4737.2" z="369.4" yaw="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
@@ -6438,7 +6438,7 @@
             <distance value="90"/>
             <frequency from="35" to="100"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="1935.0" y="5823.6" z="368.4" yaw="-0.0"/>
          </scenario>
          <scenario name="SignalizedJunctionRightTurn_2" type="SignalizedJunctionRightTurn">
@@ -6534,7 +6534,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2214.9" y="2409.6" z="365.0" yaw="179.9"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
@@ -6547,7 +6547,7 @@
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2734.6" y="2062.0" z="355.2" yaw="-0.3"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
@@ -6559,7 +6559,7 @@
             <flow_speed value="15"/>
             <source_dist_interval from="10" to="65"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="2849.0" y="1507.7" z="344.4" yaw="359.9"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
@@ -6580,7 +6580,7 @@
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="2459.7" y="2561.0" z="366.9" yaw="89.5"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="2187.9" y="2333.6" z="362.8" yaw="270.1"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
@@ -6600,7 +6600,7 @@
             <distance value="80"/>
             <frequency from="40" to="95"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2150.6" y="2179.8" z="358.8" yaw="-0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
@@ -6664,7 +6664,7 @@
             <bicycle_drive_distance value="50"/>
             <bicycle_speed value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_7" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="2376.9" y="-439.3" z="338.7" yaw="269.8"/>
          </scenario>
          <scenario name="AccidentTwoWays_4" type="AccidentTwoWays">
@@ -6677,7 +6677,7 @@
             <distance value="80"/>
             <frequency from="50" to="115"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_8" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2738.3" y="-477.3" z="331.2" yaw="-0.3"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
@@ -6805,7 +6805,7 @@
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="2504.9" y="3323.8" z="362.3" yaw="99.8"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2446.7" y="3667.3" z="355.0" yaw="99.6"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_2" type="ConstructionObstacleTwoWays">
@@ -6946,7 +6946,7 @@
             <flow_speed value="16"/>
             <source_dist_interval from="20" to="55"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="3993.7" y="4277.9" z="368.8" yaw="99.0"/>
          </scenario>
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
@@ -7019,7 +7019,7 @@
          <scenario name="HardBreakRoute_11" type="HardBreakRoute">
             <trigger_point x="2528.6" y="4607.5" z="363.7" yaw="99.4"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="2522.9" y="4642.5" z="364.2" yaw="99.4"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_4" type="SignalizedJunctionLeftTurn">
@@ -7118,7 +7118,7 @@
             <distance value="35"/>
             <direction value="left"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-710.9" y="3726.7" z="366.9" yaw="-90.0"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
@@ -7235,7 +7235,7 @@
             <flow_speed value="16"/>
             <source_dist_interval from="20" to="60"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-828.3" y="3464.3" z="361.6" yaw="89.9"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
@@ -7278,7 +7278,7 @@
             <flow_speed value="15"/>
             <source_dist_interval from="15" to="50"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-466.2" y="3811.5" z="367.2" yaw="179.9"/>
          </scenario>
          <scenario name="PedestrianCrossing_2" type="PedestrianCrossing">
@@ -7310,7 +7310,7 @@
          <scenario name="ControlLoss_5" type="ControlLoss">
             <trigger_point x="-1602.9" y="3915.4" z="364.5" yaw="180.4"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-1652.5" y="3915.0" z="364.4" yaw="180.4"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
@@ -7456,7 +7456,7 @@
          <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
             <trigger_point x="2783.2" y="-205.4" z="327.1" yaw="270.0"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2783.3" y="-606.5" z="332.8" yaw="270.0"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
@@ -7466,7 +7466,7 @@
          <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
             <trigger_point x="2373.0" y="-172.1" z="335.0" yaw="88.4"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-833.0" y="-41.3" z="344.0" yaw="269.6"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
@@ -7568,7 +7568,7 @@
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="2913.1" y="-94.2" z="328.7" yaw="180.0"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="2818.2" y="-94.2" z="326.8" yaw="180.0"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
@@ -7584,7 +7584,7 @@
             <distance value="80"/>
             <frequency from="40" to="105"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="2415.4" y="-650.1" z="342.9" yaw="179.6"/>
          </scenario>
       </scenarios>
@@ -8007,7 +8007,7 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-3109.7" y="3486.4" z="357.0" yaw="248.2"/>
          </scenario>
       </scenarios>
@@ -8041,7 +8041,7 @@
          <position x="-3146.9" y="3393.4" z="357.7"/>
       </waypoints>
       <scenarios>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-3251.5" y="3141.7" z="359.5" yaw="68.2"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
@@ -8121,7 +8121,7 @@
             <trigger_point x="-3223.5" y="4141.9" z="365.0" yaw="330.5"/>
             <frequency from="40" to="100"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-2951.4" y="3898.8" z="360.4" yaw="322.2"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
@@ -8132,7 +8132,7 @@
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-3069.1" y="4012.5" z="361.5" yaw="305.5"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="-3102.7" y="3503.8" z="356.8" yaw="248.2"/>
          </scenario>
          <scenario name="InvadingTurn_5" type="InvadingTurn">
@@ -8142,7 +8142,7 @@
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="-2969.2" y="3381.6" z="350.4" yaw="-24.2"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-2918.6" y="3136.8" z="350.8" yaw="-76.8"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
@@ -8171,7 +8171,7 @@
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="-3311.2" y="2076.8" z="352.8" yaw="259.9"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="-3359.8" y="1956.8" z="350.6" yaw="242.8"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_6" type="HazardAtSideLaneTwoWays">
@@ -8245,7 +8245,7 @@
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
             <trigger_point x="-2913.3" y="3333.9" z="348.0" yaw="121.3"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="-3089.6" y="3432.5" z="356.2" yaw="155.8"/>
          </scenario>
       </scenarios>
@@ -8378,7 +8378,7 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-3079.9" y="589.6" z="320.3" yaw="91.4"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
@@ -8405,7 +8405,7 @@
          <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="-3389.7" y="1098.2" z="344.4" yaw="116.7"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="-3416.5" y="1166.4" z="345.2" yaw="106.2"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
@@ -8471,7 +8471,7 @@
             <distance value="85"/>
             <frequency from="35" to="105"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_5" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="-3342.6" y="1641.5" z="350.3" yaw="95.9"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
@@ -8541,7 +8541,7 @@
             <distance value="85"/>
             <frequency from="50" to="105"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_6" type="VehicleTurningRoute">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="-3460.7" y="1833.2" z="346.8" yaw="329.0"/>
          </scenario>
       </scenarios>
