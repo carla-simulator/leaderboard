@@ -6750,9 +6750,9 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <!-- <position x="3601.5" y="2010.6" z="349.1"/>
+         <position x="3601.5" y="2010.6" z="349.1"/>
          <position x="3598.5" y="1506.1" z="349.0"/>
-         <position x="3942.1" y="1834.5" z="355.7"/> -->
+         <position x="3942.1" y="1834.5" z="355.7"/>
          <position x="3798.3" y="3073.6" z="369.8"/>
          <position x="3459.8" y="3093.8" z="368.3"/>
          <position x="3023.8" y="3095.8" z="364.2"/>
