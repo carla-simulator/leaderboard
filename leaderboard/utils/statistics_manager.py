@@ -395,7 +395,9 @@ class StatisticsManager(object):
         """Computes and saves the global statistics of the routes"""
         def get_infractions_value(route_record, key):
             # Special case for the % based criteria. Extract the meters from the message. Very ugly, but it works
-            if key != PENALTY_NAME_DICT[TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION]:
+            if key == PENALTY_NAME_DICT[TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION]:
+                if not route_record.infractions[key]:
+                    return 0
                 return float(route_record.infractions[key][0].split(" ")[8])/1000
 
             return len(route_record.infractions[key])
