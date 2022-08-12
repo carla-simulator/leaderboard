@@ -175,7 +175,8 @@ class ScenarioManager(object):
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
 
-            # Tick scenario
+            # Tick scenario. Add the ego control to the blackboard in case some behaviors want to change it
+            py_trees.blackboard.Blackboard().set("AV_control", ego_action, overwrite=True)
             self.scenario_tree.tick_once()
 
             if self._debug_mode > 1:
@@ -191,7 +192,8 @@ class ScenarioManager(object):
                 self._statistics_manager.write_live_results(
                     self.config.index,
                     self.ego_vehicles[0].get_velocity().length(),
-                    ego_action
+                    ego_action,
+                    self.ego_vehicles[0].get_location()
                 )
 
             if self._debug_mode > 2:
@@ -204,7 +206,7 @@ class ScenarioManager(object):
                 self._running = False
 
             ego_trans = self.ego_vehicles[0].get_transform()
-            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=80),
+            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=70),
                                                           carla.Rotation(pitch=-90)))
 
     def get_running_status(self):

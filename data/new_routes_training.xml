@@ -4876,14 +4876,14 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="3827.2" y="5688.6" z="367.3" yaw="99.7"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="3783.8" y="5961.9" z="367.2" yaw="99.7"/>
          </scenario>
          <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
             <trigger_point x="3641.9" y="6215.3" z="368.8" yaw="140.0"/>
-            <distance value="80"/>
+            <distance value="135"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="3453.8" y="6300.5" z="368.3" yaw="169.4"/>
@@ -4892,7 +4892,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
             <trigger_point x="3245.7" y="6290.9" z="370.7" yaw="-170.7"/>
-            <distance value="80"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="3048.5" y="6258.4" z="370.3" yaw="-170.7"/>
@@ -4906,7 +4906,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_4" type="YieldToEmergencyVehicle">
             <trigger_point x="1888.3" y="6068.2" z="367.9" yaw="-175.5"/>
-            <distance value="80"/>
+            <distance value="140"/>
          </scenario>
          <scenario name="StaticCutIn_5" type="StaticCutIn">
             <trigger_point x="1637.6" y="6065.4" z="367.8" yaw="179.6"/>
@@ -4936,7 +4936,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_5" type="YieldToEmergencyVehicle">
             <trigger_point x="234.3" y="6277.8" z="358.5" yaw="146.7"/>
-            <distance value="80"/>
+            <distance value="125"/>
          </scenario>
          <scenario name="StaticCutIn_7" type="StaticCutIn">
             <trigger_point x="62.9" y="6390.2" z="357.9" yaw="146.7"/>
@@ -4958,7 +4958,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_6" type="YieldToEmergencyVehicle">
             <trigger_point x="-1598.8" y="6464.8" z="372.8" yaw="-187.3"/>
-            <distance value="80"/>
+            <distance value="135"/>
          </scenario>
          <scenario name="StaticCutIn_8" type="StaticCutIn">
             <trigger_point x="-2027.2" y="6506.6" z="376.8" yaw="196.3"/>
@@ -4977,7 +4977,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_7" type="YieldToEmergencyVehicle">
             <trigger_point x="-2530.5" y="5623.7" z="379.1" yaw="-80.9"/>
-            <distance value="80"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="StaticCutIn_9" type="StaticCutIn">
             <trigger_point x="-2502.5" y="5289.4" z="378.8" yaw="-90.0"/>
@@ -5086,7 +5086,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="-2219.9" y="3605.2" z="350.4" yaw="-55.0"/>
-            <distance value="80"/>
+            <distance value="110"/>
          </scenario>
          <scenario name="HardBreakRoute_9" type="HardBreakRoute">
             <trigger_point x="-1950.2" y="3329.8" z="357.9" yaw="-36.1"/>
@@ -5266,6 +5266,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="3446.1" y="3111.4" z="368.2" yaw="-0.3"/>
+            <distance value="140"/>
          </scenario>
          <scenario name="ConstructionObstacle_1" type="ConstructionObstacle">
             <trigger_point x="4100.4" y="3628.7" z="371.0" yaw="99.0"/>
@@ -5301,6 +5302,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
             <trigger_point x="1732.2" y="6065.0" z="367.1" yaw="-179.6"/>
+            <distance value="135"/>
          </scenario>
          <scenario name="ParkedObstacle_4" type="ParkedObstacle">
             <trigger_point x="2283.1" y="6128.6" z="369.4" yaw="-169.6"/>
@@ -5467,7 +5469,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="-2544.3" y="5726.8" z="379.3" yaw="-86.2"/>
-            <distance value="100"/>
+            <distance value="125"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="-2502.4" y="5345.4" z="378.9" yaw="-90.0"/>
@@ -5519,11 +5521,11 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
             <trigger_point x="-1944.5" y="3325.7" z="357.9" yaw="-35.8"/>
-            <distance value="100"/>
+            <distance value="135"/>
          </scenario>
          <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
             <trigger_point x="-1670.2" y="3178.8" z="352.4" yaw="-20.5"/>
-            <distance value="100"/>
+            <distance value="110"/>
          </scenario>
          <scenario name="MergerIntoSlowTraffic_4" type="MergerIntoSlowTraffic">
             <trigger_point x="-1010.9" y="3133.4" z="359.3" yaw="10.8"/>
@@ -5540,11 +5542,11 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_4" type="YieldToEmergencyVehicle">
             <trigger_point x="101.1" y="3100.4" z="355.6" yaw="-0.1"/>
-            <distance value="100"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="YieldToEmergencyVehicle_5" type="YieldToEmergencyVehicle">
             <trigger_point x="275.3" y="3100.2" z="355.5" yaw="-0.1"/>
-            <distance value="100"/>
+            <distance value="145"/>
          </scenario>
          <scenario name="HazardAtSideLane_1" type="HazardAtSideLane">
             <trigger_point x="971.6" y="3311.1" z="369.0" yaw="97.9"/>
@@ -5670,7 +5672,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="1921.9" y="3084.4" z="357.7" yaw="179.9"/>
-            <distance value="100"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="Accident_1" type="Accident">
             <trigger_point x="1649.0" y="3084.7" z="362.5" yaw="179.9"/>
@@ -5706,7 +5708,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
             <trigger_point x="96.4" y="3082.9" z="355.8" yaw="179.9"/>
-            <distance value="100"/>
+            <distance value="125"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="-88.1" y="3083.1" z="362.3" yaw="179.9"/>
@@ -5734,7 +5736,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
             <trigger_point x="166.1" y="3096.8" z="353.5" yaw="-0.1"/>
-            <distance value="100"/>
+            <distance value="115"/>
          </scenario>
          <scenario name="Accident_2" type="Accident">
             <trigger_point x="433.3" y="3096.5" z="360.5" yaw="-0.1"/>
@@ -6748,9 +6750,9 @@
             mie_scattering_scale="0.03"/>
       </weathers>
       <waypoints>
-         <position x="3601.5" y="2010.6" z="349.1"/>
+         <!-- <position x="3601.5" y="2010.6" z="349.1"/>
          <position x="3598.5" y="1506.1" z="349.0"/>
-         <position x="3942.1" y="1834.5" z="355.7"/>
+         <position x="3942.1" y="1834.5" z="355.7"/> -->
          <position x="3798.3" y="3073.6" z="369.8"/>
          <position x="3459.8" y="3093.8" z="368.3"/>
          <position x="3023.8" y="3095.8" z="364.2"/>
@@ -6793,7 +6795,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="3428.8" y="3094.0" z="368.1" yaw="179.7"/>
-            <distance value="115"/>
+            <distance value="140"/>
          </scenario>
          <scenario name="MergerIntoSlowTraffic_1" type="MergerIntoSlowTraffic">
             <trigger_point x="3078.1" y="3095.5" z="364.9" yaw="179.7"/>
@@ -6886,11 +6888,11 @@
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="3943.4" y="2658.9" z="369.2" yaw="89.9"/>
          </scenario>
-         <scenario name="StaticCutIn_1" type="StaticCutIn">
+         <!-- <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="3766.8" y="3085.4" z="369.7" yaw="164.4"/>
             <distance value="100"/>
             <direction value="left"/>
-         </scenario>
+         </scenario> -->
          <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="3559.8" y="3093.4" z="369.2" yaw="179.7"/>
          </scenario>
@@ -7097,7 +7099,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="251.3" y="3079.2" z="354.7" yaw="179.9"/>
-            <distance value="100"/>
+            <distance value="125"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-784.4" y="3492.9" z="361.9" yaw="-0.1"/>
@@ -7649,7 +7651,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="1902.2" y="3098.4" z="358.0" yaw="-0.1"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="Accident_1" type="Accident">
             <trigger_point x="2305.0" y="3105.5" z="357.6" yaw="2.5"/>
@@ -7662,7 +7664,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
             <trigger_point x="3537.1" y="3114.5" z="369.1" yaw="-0.3"/>
-            <distance value="80"/>
+            <distance value="140"/>
          </scenario>
          <scenario name="HighwayCutIn_2" type="HighwayCutIn">
             <trigger_point x="4099.2" y="3997.4" z="369.3" yaw="98.8"/>
@@ -7670,11 +7672,11 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
             <trigger_point x="4009.0" y="4578.1" z="369.2" yaw="98.8"/>
-            <distance value="80"/>
+            <distance value="135"/>
          </scenario>
          <scenario name="YieldToEmergencyVehicle_4" type="YieldToEmergencyVehicle">
             <trigger_point x="3300.6" y="6296.4" z="369.1" yaw="-170.7"/>
-            <distance value="80"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="HighwayCutIn_3" type="HighwayCutIn">
             <trigger_point x="2800.8" y="6214.2" z="372.5" yaw="-170.7"/>
@@ -7714,7 +7716,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_5" type="YieldToEmergencyVehicle">
             <trigger_point x="1225.7" y="3099.1" z="365.7" yaw="-0.1"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="1599.4" y="3098.7" z="363.3" yaw="-0.1"/>
@@ -7744,7 +7746,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_6" type="YieldToEmergencyVehicle">
             <trigger_point x="4163.8" y="3477.4" z="371.0" yaw="81.9"/>
-            <distance value="80"/>
+            <distance value="125"/>
          </scenario>
          <scenario name="Accident_3" type="Accident">
             <trigger_point x="4137.4" y="3751.6" z="370.4" yaw="98.8"/>
@@ -7796,7 +7798,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_7" type="YieldToEmergencyVehicle">
             <trigger_point x="1762.8" y="6061.9" z="367.1" yaw="-178.8"/>
-            <distance value="80"/>
+            <distance value="130"/>
          </scenario>
       </scenarios>
    </route>
@@ -7853,7 +7855,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
             <trigger_point x="-1817.8" y="6515.3" z="372.7" yaw="166.5"/>
-            <distance value="80"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="HighwayCutIn_1" type="HighwayCutIn">
             <trigger_point x="-2287.5" y="6293.4" z="378.5" yaw="233.5"/>
@@ -7865,11 +7867,11 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_2" type="YieldToEmergencyVehicle">
             <trigger_point x="-2506.8" y="5494.3" z="379.0" yaw="-82.8"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="YieldToEmergencyVehicle_3" type="YieldToEmergencyVehicle">
             <trigger_point x="-1892.2" y="3286.0" z="358.1" yaw="-32.6"/>
-            <distance value="80"/>
+            <distance value="140"/>
          </scenario>
          <scenario name="HighwayExit_1" type="HighwayExit">
             <trigger_point x="-1418.8" y="3111.8" z="346.2" yaw="-7.8"/>
@@ -7887,7 +7889,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_4" type="YieldToEmergencyVehicle">
             <trigger_point x="-1532.0" y="3118.6" z="347.5" yaw="166.7"/>
-            <distance value="80"/>
+            <distance value="135"/>
          </scenario>
          <scenario name="ConstructionObstacle_1" type="ConstructionObstacle">
             <trigger_point x="-669.2" y="6342.0" z="360.0" yaw="179.7"/>
@@ -7939,7 +7941,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_5" type="YieldToEmergencyVehicle">
             <trigger_point x="-2188.9" y="3557.1" z="349.2" yaw="-52.3"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="-2036.9" y="3395.0" z="355.2" yaw="-41.4"/>
@@ -7976,7 +7978,7 @@
          </scenario>
          <scenario name="YieldToEmergencyVehicle_6" type="YieldToEmergencyVehicle">
             <trigger_point x="-2072.7" y="3399.1" z="354.1" yaw="137.2"/>
-            <distance value="80"/>
+            <distance value="130"/>
          </scenario>
          <scenario name="ParkedObstacle_2" type="ParkedObstacle">
             <trigger_point x="-2248.1" y="3602.8" z="350.8" yaw="124.3"/>
