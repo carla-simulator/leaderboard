@@ -67,6 +67,8 @@ class RouteScenario(BasicScenario):
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
 
         ego_vehicle = self._spawn_ego_vehicle(world)
+        if ego_vehicle is None:
+            raise ValueError("Shutting down, couldn't spawn the ego vehicle")
         self.timeout = self._estimate_route_timeout()
 
         if debug_mode>0:
@@ -119,15 +121,16 @@ class RouteScenario(BasicScenario):
         elevate_transform = self.route[0][0]
         elevate_transform.location.z += 0.5
 
-        ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz_2017',
+        ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz_2020',
                                                           elevate_transform,
                                                           rolename='hero')
+        if not ego_vehicle:
+            return
 
         spectator = CarlaDataProvider.get_world().get_spectator()
-        ego_trans = ego_vehicle.get_transform()
-        spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=50),
+        spectator.set_transform(carla.Transform(elevate_transform.location + carla.Location(z=50),
                                                     carla.Rotation(pitch=-90)))
-        
+
         world.tick()
 
         return ego_vehicle
