@@ -256,12 +256,10 @@ class RouteScenario(BasicScenario):
                     world.tick()
 
             except Exception as e:
-                if not debug:
-                    print(f"Skipping scenario '{scenario_config.name}' due to setup error: {e}")
-                else:
-                    print(f"\033[93mFailed to initialize scenario {scenario_config.name}:")
-                    traceback.print_exc()
-                    print("\033[0m")
+                print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
+                if debug:
+                    print(f"\n{traceback.format_exc()}")
+                print("\033[0m", end="")
                 continue
 
             self.list_scenarios.append(scenario_instance)

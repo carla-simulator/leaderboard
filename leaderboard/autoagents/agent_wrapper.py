@@ -100,8 +100,8 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
             raise SensorConfigurationInvalid(
                 "Too many {} used! "
                 "Maximum number allowed is {}, but {} were requested.".format(sensor_type,
-                                                                                max_instances_allowed,
-                                                                                sensor_count[sensor_type]))
+                                                                              max_instances_allowed,
+                                                                              sensor_count[sensor_type]))
 
 
 class AgentWrapper(object):

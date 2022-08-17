@@ -64,6 +64,7 @@ class LeaderboardEvaluator(object):
         """
         self.statistics_manager = statistics_manager
         self.sensors = None
+        self.sensors_initialized = False
         self.sensor_icons = []
 
         # This is the ROS1 bridge server instance. This is not encapsulated inside the ROS1 agent because the same
@@ -104,7 +105,8 @@ class LeaderboardEvaluator(object):
 
     def _signal_handler(self, signum, frame):
         """
-        Terminate scenario ticking when receiving a signal interrupt
+        Terminate scenario ticking when receiving a signal interrupt.
+        Either the agent initialization watchdog is triggered, or the runtime one at scenario manager
         """
         if self._agent_watchdog and not self._agent_watchdog.get_status():
             raise RuntimeError("Timeout: Agent took longer than {}s to setup".format(self.client_timeout))
@@ -119,6 +121,15 @@ class LeaderboardEvaluator(object):
             del self.manager
         if hasattr(self, 'world') and self.world:
             del self.world
+
+    def _get_running_status(self):
+        """
+        returns:
+           bool: False if watchdog exception occured, True otherwise
+        """
+        if self._agent_watchdog:
+            return self._agent_watchdog.get_status()
+        return False
 
     def _cleanup(self):
         """
@@ -137,10 +148,11 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.scenario = None
 
         # Simulation still running and in synchronous mode?
-        if self.manager and self.manager.get_running_status() \
-                and hasattr(self, 'world') and self.world:
+        a_watchdog_running = self._get_running_status()
+        sm_watchdog_running = hasattr(self, 'manager') and self.manager.get_running_status()
+        if not a_watchdog_running or (not sm_watchdog_running and hasattr(self, 'world') and self.world):
             # Reset to asynchronous mode
-            self.world.tick()  # TODO: Understand why without this, an actor destruction runtime error occurs
+            self.world.tick()  # TODO: Make sure all scenario actors have been destroyed
             settings = self.world.get_settings()
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
@@ -220,19 +232,17 @@ class LeaderboardEvaluator(object):
             config.route = scenario.route
             self.statistics_manager.set_scenario(config, scenario)
 
-        except Exception as e:
+        except Exception:
             # The scenario is wrong -> set the ejecution to crashed and stop
             print("\n\033[91mThe scenario could not be loaded:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
+            print(f"\n{traceback.format_exc()}\033[0m")
 
             crash_message = "Simulation crashed"
             entry_status = "Crashed"
 
             self._register_statistics(config, entry_status, crash_message)
-
             self._cleanup()
-            sys.exit(-1)
+            return True
 
         print("\033[1m> Setting up the agent\033[0m")
 
@@ -263,33 +273,33 @@ class LeaderboardEvaluator(object):
                 self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
                 self.statistics_manager.save_sensors(self.sensor_icons)
 
+                self.sensors_initialized = True
+
             self._agent_watchdog.stop()
             self._agent_watchdog = None
 
-        except SensorConfigurationInvalid as e:
+        except SensorConfigurationInvalid:
             # The sensors are invalid -> set the ejecution to rejected and stop
             print("\n\033[91mThe sensor's configuration used is invalid:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
+            print(f"\n{traceback.format_exc()}\033[0m")
 
             crash_message = "Agent's sensors were invalid"
             entry_status = "Rejected"
 
             self._register_statistics(config, entry_status, crash_message)
             self._cleanup()
-            sys.exit(-1)
+            return True
 
-        except Exception as e:
+        except Exception:
             # The agent setup has failed -> start the next route
             print("\n\033[91mCould not set up the required agent:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
+            print(f"\n{traceback.format_exc()}\033[0m")
 
             crash_message = "Agent couldn't be set up"
 
             self._register_statistics(config, entry_status, crash_message)
             self._cleanup()
-            return
+            return False
 
         print("\033[1m> Running the route\033[0m")
 
@@ -301,18 +311,16 @@ class LeaderboardEvaluator(object):
             self.manager.load_scenario(config, scenario, self.agent_instance, config.repetition_index)
             self.manager.run_scenario()
 
-        except AgentError as e:
+        except AgentError:
             # The agent has failed -> stop the route
             print("\n\033[91mStopping the route, the agent has crashed:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
+            print(f"\n{traceback.format_exc()}\033[0m")
 
             crash_message = "Agent crashed"
 
-        except Exception as e:
+        except Exception:
             print("\n\033[91mError during the simulation:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
+            print(f"\n{traceback.format_exc()}\033[0m")
 
             crash_message = "Simulation crashed"
             entry_status = "Crashed"
@@ -326,20 +334,18 @@ class LeaderboardEvaluator(object):
             if args.record:
                 self.client.stop_recorder()
 
-            # Remove all actors
             scenario.remove_all_actors()
 
             self._cleanup()
 
-        except Exception as e:
+        except Exception:
             print("\n\033[91mFailed to stop the scenario, the statistics might be empty:")
-            print("> {}\033[0m\n".format(e))
-            traceback.print_exc()
+            print(f"\n{traceback.format_exc()}\033[0m")
 
             crash_message = "Simulation crashed"
 
-        if crash_message == "Simulation crashed":
-            sys.exit(-1)
+        # If the simulation crashed, stop the leaderboard, for the rest, move to the next route
+        return crash_message == "Simulation crashed"
 
     def run(self, args):
         """
@@ -358,11 +364,14 @@ class LeaderboardEvaluator(object):
 
             # Run the scenario
             config = route_indexer.next()
-            self._load_and_run_scenario(args, config)
+            crashed = self._load_and_run_scenario(args, config)
 
             # Save the progress and remove the scenario
             self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
             self.statistics_manager.remove_scenario()
+
+            if crashed:
+                break
 
         # Shutdown ROS1 bridge server if necessary
         if self._ros1_server is not None:
@@ -371,7 +380,7 @@ class LeaderboardEvaluator(object):
         # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
         self.statistics_manager.compute_global_statistics()
-        self.statistics_manager.validate_and_write_statistics()
+        self.statistics_manager.validate_and_write_statistics(self.sensors_initialized, crashed)
 
 
 def main():
@@ -420,15 +429,10 @@ def main():
     arguments = parser.parse_args()
 
     statistics_manager = StatisticsManager(arguments.checkpoint, arguments.debug_checkpoint)
+    leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
+    leaderboard_evaluator.run(arguments)
 
-    try:
-        leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
-        leaderboard_evaluator.run(arguments)
-
-    except Exception as e:
-        traceback.print_exc()
-    finally:
-        del leaderboard_evaluator
+    del leaderboard_evaluator
 
 
 if __name__ == '__main__':
