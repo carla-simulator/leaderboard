@@ -110,11 +110,6 @@
             <trigger_point x="-497.4" y="4884.0" z="375" yaw="90"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
-            <trigger_point x="-280.5" y="5043" z="374" yaw="310"/>
-            <flow_speed value="8.3"/>
-            <source_dist_interval from="25" to="40"/>
-         </scenario>
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="-284.4" y="4834.9" z="374" yaw="180"/>
          </scenario>
@@ -138,12 +133,6 @@
             <trigger_point x="983.5" y="5442.8" z="371.2" yaw="90.1"/>
             <distance value="50"/>
             <frequency from="40" to="90"/>
-         </scenario>
-         <scenario name="HazardAtSideLane_1" type="HazardAtSideLane">
-            <trigger_point x="964.9" y="5575.4" z="370.7" yaw="180.0"/>
-            <distance value="40"/>
-            <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="10"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
             <trigger_point x="830.4" y="5575.5" z="370.8" yaw="180.0"/>

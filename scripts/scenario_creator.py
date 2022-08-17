@@ -9,7 +9,6 @@
 import argparse
 from lxml import etree
 import sys
-import math
 
 import carla
 
@@ -30,6 +29,10 @@ SCENARIO_TYPES ={
         ["crossing_angle", "value"]
     ],
     "VehicleTurningRoute": [
+    ],
+    "VehicleTurningRoutePedestrian": [
+    ],
+    "BlockedIntersection": [
     ],
     "SignalizedJunctionLeftTurn": [
         ["flow_speed", "value"],
@@ -61,10 +64,6 @@ SCENARIO_TYPES ={
         ["crossing_angle", "value"],
     ],
     "PedestrianCrossing": [
-        # ["start_walker_flow", "location sidewalk"],
-        # ["end_walker_flow_1", "location sidewalk probability"],
-        # ["end_walker_flow_2", "location sidewalk probability"],
-        # ["source_dist_interval", "interval"],
     ],
     # Actor flows
     "EnterActorFlow": [
