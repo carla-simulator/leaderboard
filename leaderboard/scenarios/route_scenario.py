@@ -45,9 +45,6 @@ from srunner.scenariomanager.timer import RouteTimeoutBehavior
 from leaderboard.utils.route_parser import RouteParser, DIST_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
-SECONDS_GIVEN_PER_METERS = 0.8
-INITIAL_SECONDS_DELAY = 5.0
-
 
 class RouteScenario(BasicScenario):
 
@@ -69,13 +66,12 @@ class RouteScenario(BasicScenario):
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
             raise ValueError("Shutting down, couldn't spawn the ego vehicle")
-        self.timeout = self._estimate_route_timeout()
 
         if debug_mode>0:
-            self._draw_waypoints(world, self.route, vertical_shift=0.1, size=0.05, persistency=self.timeout)
+            self._draw_waypoints(world, self.route, vertical_shift=0.1, size=0.05, persistency=10000)
 
         self._build_scenarios(
-            world, ego_vehicle, sampled_scenario_definitions, timeout=self.timeout, debug=debug_mode > 0
+            world, ego_vehicle, sampled_scenario_definitions, timeout=10000, debug=debug_mode > 0
         )
 
         super(RouteScenario, self).__init__(
@@ -134,20 +130,6 @@ class RouteScenario(BasicScenario):
         world.tick()
 
         return ego_vehicle
-
-    def _estimate_route_timeout(self):
-        """
-        Estimate the duration of the route, as a proportinal value of its length
-        """
-        route_length = 0.0  # in meters
-
-        prev_point = self.route[0][0]
-        for current_point, _ in self.route[1:]:
-            dist = current_point.location.distance(prev_point.location)
-            route_length += dist
-            prev_point = current_point
-
-        return int(SECONDS_GIVEN_PER_METERS * route_length + INITIAL_SECONDS_DELAY)
 
     # pylint: disable=no-self-use
     def _draw_waypoints(self, world, waypoints, vertical_shift, size, persistency=-1):

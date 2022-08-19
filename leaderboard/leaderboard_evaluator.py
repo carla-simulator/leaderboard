@@ -354,24 +354,26 @@ class LeaderboardEvaluator(object):
         route_indexer = RouteIndexer(args.routes, args.repetitions, args.routes_subset)
 
         if args.resume:
-            route_indexer.resume(args.checkpoint)
+            resume = route_indexer.validate_and_resume(args.checkpoint)
+        else:
+            resume = False
+
+        if resume:
             self.statistics_manager.add_file_records(args.checkpoint)
         else:
             self.statistics_manager.clear_records()
         self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
 
-        while route_indexer.peek():
+        crashed = False
+        while route_indexer.peek() and not crashed:
 
             # Run the scenario
-            config = route_indexer.next()
+            config = route_indexer.get_next_config()
             crashed = self._load_and_run_scenario(args, config)
 
             # Save the progress and remove the scenario
             self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
             self.statistics_manager.remove_scenario()
-
-            if crashed:
-                break
 
         # Shutdown ROS1 bridge server if necessary
         if self._ros1_server is not None:

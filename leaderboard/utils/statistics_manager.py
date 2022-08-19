@@ -63,9 +63,10 @@ class RouteRecord():
         self.route_id = None
         self.result = 'Started'
         self.num_infractions = 0
-        self.infractions = {'Route timeouts': []}
+        self.infractions = {}
         for event_name in PENALTY_NAME_DICT.values():
             self.infractions[event_name] = []
+        self.infractions['Route timeouts'] = []
 
         self.scores = {
             'Driving score': 0,
@@ -87,9 +88,10 @@ class RouteRecord():
 class GlobalRecord():
     def __init__(self):
         self.result = 'Perfect'
-        self.infractions_per_km = {'Route timeouts': 0}
+        self.infractions_per_km = {}
         for event_name in PENALTY_NAME_DICT.values():
             self.infractions_per_km[event_name] = 0
+        self.infractions_per_km['Route timeouts'] = 0
 
         self.scores_mean = {
             'Driving score': 0,
@@ -422,6 +424,8 @@ class StatisticsManager(object):
             elif global_result == 'Perfect' and route_result != 'Perfect':
                 global_result = route_result
 
+        for item in global_record.scores_mean:
+            global_record.scores_mean[item] = round(global_record.scores_mean[item], ROUND_DIGITS_SCORE)
         global_record.result = global_result
 
         # Calculate the score's standard deviation
