@@ -179,7 +179,7 @@
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="20.5" y="6100.9" z="358.1" yaw="180.0"/>
-            <distance value="50"/>
+            <distance value="45"/>
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="15"/>
          </scenario>
@@ -596,7 +596,7 @@
       </scenarios>
    </route>
    <route id="2" town="Town12">
-      <!-- Urban route focused on high density areas with bostacle, sunny day-->
+      <!-- Urban route focused on high density areas with obstacle, sunny day-->
       <weathers>
          <weather route_percentage="0"
             cloudiness="300" precipitation="0" precipitation_deposits="0" wetness="0"
