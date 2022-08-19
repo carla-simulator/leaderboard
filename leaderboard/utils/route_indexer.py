@@ -26,10 +26,10 @@ class RouteIndexer():
 
 
     def peek(self):
-        return not (self.index >= len(self._configs_list))
+        return self.index < self.total
 
-    def next(self):
-        if self.index >= len(self._configs_list):
+    def get_next_config(self):
+        if self.index >= self.total:
             return None
 
         config = self._configs_list[self.index]
@@ -37,18 +37,49 @@ class RouteIndexer():
 
         return config
 
-    def resume(self, endpoint):
+    def validate_and_resume(self, endpoint):
+        """
+        Validates the endpoint by comparing several of its values with the current running routes.
+        If all checks pass, the simulation starts from the last route.
+        Otherwise, the resume is canceled, and the leaderboard goes back to normal behavior
+        """
         data = fetch_dict(endpoint)
+        if not data:
+            print('Problem reading checkpoint. Found no data')
+            return False
 
-        if data:
-            checkpoint_dict = dictor(data, '_checkpoint')
-            if checkpoint_dict and 'progress' in checkpoint_dict:
-                progress = checkpoint_dict['progress']
-                current_route = progress[0] if progress else 0
-                if current_route <= self.total:
+        entry_status = dictor(data, 'entry_status')
+        if not entry_status:
+            print("Problem reading checkpoint. Given checkpoint is malformed")
+            return False
+        if entry_status == "Invalid":
+            print("Problem reading checkpoint. The 'entry_status' is 'Invalid'")
+            return False
 
-                    self.index = current_route
-                    return
- 
-        print('Problem reading checkpoint. Starting from the first route')
+        checkpoint_dict = dictor(data, '_checkpoint')
+        if not checkpoint_dict or 'progress' not in checkpoint_dict:
+            print("Problem reading checkpoint. Given endpoint is malformed")
+            return False
+
+        progress = checkpoint_dict['progress']
+        if progress[1] != self.total:
+            print("Problem reading checkpoint. Endpoint's amount of routes does not match the given one")
+            return False
+
+        route_data = dictor(checkpoint_dict, 'records')
+
+        check_index = 0
+        while check_index < progress[0]:
+            route_id = self._configs_list[check_index].name
+            route_id += "_rep" + str(self._configs_list[check_index].repetition_index)
+            checkpoint_route_id = route_data[check_index]['route_id']
+
+            if route_id != checkpoint_route_id:
+                print("Problem reading checkpoint. Checkpoint routes don't match the current ones")
+                return False
+
+            check_index += 1
+
+        self.index = max(0, progress[0] - 1)  # Resume means something went wrong, repeat the last route
+        return True
 
