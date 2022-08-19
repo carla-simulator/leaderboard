@@ -32,8 +32,8 @@ PENALTY_PERC_DICT = {
     # Traffic events that substract a varying amount of points. This is the per unit value.
     # 'increases' means that the higher the value, the higher the penalty.
     # 'decreases' means that the ideal value is 100 and the lower the value, the higher the penalty.
-    TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: [1, 'increases'],
-    TrafficEventType.MIN_SPEED_INFRACTION: [0.2, 'decreases'],
+    TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: [0, 'increases'],  # All route traversed through outside lanes is ignored
+    TrafficEventType.MIN_SPEED_INFRACTION: [0.7, 'decreases'],
 }
 
 PENALTY_NAME_DICT = {
@@ -315,9 +315,9 @@ class StatisticsManager(object):
             event_value = event.get_dict()['percentage']
             penalty_value, penalty_type = PENALTY_PERC_DICT[event.get_type()]
             if penalty_type == "decreases":
-                score_penalty *= (1 - penalty_value * (1 - event_value / 100))
+                score_penalty *= (1 - (1 - penalty_value) * (1 - event_value / 100))
             elif penalty_type == "increases":
-                score_penalty *= (1 - penalty_value * event_value / 100)
+                score_penalty *= (1 - (1 - penalty_value) * event_value / 100)
             else:
                 raise ValueError("Found a criteria with an unknown penalty type")
             return score_penalty
