@@ -1353,7 +1353,7 @@
             <blocker_model value="static.prop.advertisement"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="1984.9" y="2100.4" z="360.9" yaw="270.1"/>
+            <trigger_point x="1940" y="2180.7" z="364.2" yaw="-0.2"/>
          </scenario>
          <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="1783.3" y="1999.6" z="360.8" yaw="269.8"/>
@@ -6525,7 +6525,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="2214.9" y="2409.6" z="365.0" yaw="179.9"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
@@ -6538,9 +6538,9 @@
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="7"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
+         <!-- <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2734.6" y="2062.0" z="355.2" yaw="-0.3"/>
-         </scenario>
+         </scenario> -->
          <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
             <trigger_point x="2773.9" y="1888.9" z="349.0" yaw="269.8"/>
             <direction value="right"/>
@@ -6591,7 +6591,7 @@
             <distance value="80"/>
             <frequency from="40" to="95"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
+         <scenario name="VehicleTurningRoutePedestrian_4" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2150.6" y="2179.8" z="358.8" yaw="-0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
