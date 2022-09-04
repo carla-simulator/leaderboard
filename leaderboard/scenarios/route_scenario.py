@@ -280,7 +280,6 @@ class RouteScenario(BasicScenario):
                                         color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
 
         for scenario_number, scenario_config in enumerate(scenario_definitions):
-            print("Building: {}".format(scenario_config.name))
             scenario_config.ego_vehicles = [ego_data]
             scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             scenario_config.route = self.route
