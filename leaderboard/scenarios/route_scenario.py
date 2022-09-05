@@ -45,6 +45,8 @@ from srunner.scenariomanager.timer import RouteTimeoutBehavior
 from leaderboard.utils.route_parser import RouteParser, DIST_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
+import leaderboard.scenarios.parked_vehicles as parked_vehicles
+
 
 class RouteScenario(BasicScenario):
 
@@ -61,6 +63,7 @@ class RouteScenario(BasicScenario):
         """
         self.config = config
         self.route = self._get_route(config)
+        self.list_scenarios = []
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
 
         ego_vehicle = self._spawn_ego_vehicle(world)
@@ -73,6 +76,8 @@ class RouteScenario(BasicScenario):
         self._build_scenarios(
             world, ego_vehicle, sampled_scenario_definitions, timeout=10000, debug=debug_mode > 0
         )
+
+        self._spawn_parked_vehicles()
 
         super(RouteScenario, self).__init__(
             config.name, [ego_vehicle], config, world, debug_mode > 3, False, criteria_enable
@@ -130,6 +135,56 @@ class RouteScenario(BasicScenario):
         world.tick()
 
         return ego_vehicle
+
+    def _spawn_parked_vehicles(self):
+        """Spawn parked vehicles."""
+        SpawnActor = carla.command.SpawnActor
+
+        min_x, min_y = float('inf'), float('inf')
+        max_x, max_y = float('-inf'), float('-inf')
+        for route_transform, _ in self.route:
+            min_x = min(min_x, route_transform.location.x - 100)
+            min_y = min(min_y, route_transform.location.y - 100)
+
+            max_x = max(max_x, route_transform.location.x + 100)
+            max_y = max(max_y, route_transform.location.y + 100)
+
+        # Occupied parking locations
+        all_occupied_parking_locations = []
+        for scenario in self.list_scenarios:
+            all_occupied_parking_locations.extend(scenario.get_parking_slots())
+
+        all_available_parking_slots = []
+        map_name = CarlaDataProvider.get_map().name.split('/')[-1]
+        if map_name == "Town12":
+            all_available_parking_slots = parked_vehicles.Town12
+
+        batch = []
+        for slot in all_available_parking_slots:
+            slot_transform = carla.Transform(
+                location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
+                rotation=carla.Rotation(slot["rotation"][0], slot["rotation"][1], slot["rotation"][2])
+            )
+            mesh_path = slot["mesh"]
+
+            if not (min_x < slot_transform.location.x < max_x) or not (min_y < slot_transform.location.y < max_y):
+                continue
+
+            is_free = True
+            for occupied_slot in all_occupied_parking_locations:
+                distance = slot_transform.location.distance(occupied_slot)
+                if distance < 10:
+                    is_free = False
+                    break;
+            if is_free:
+                mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
+                mesh_bp.set_attribute("mesh_path", mesh_path)
+                mesh_bp.set_attribute("scale", "0.9")
+                batch.append(SpawnActor(mesh_bp, slot_transform))
+            else:
+                pass
+
+        CarlaDataProvider.get_client().apply_batch_sync(batch)
 
     # pylint: disable=no-self-use
     def _draw_waypoints(self, world, waypoints, vertical_shift, size, persistency=-1):
