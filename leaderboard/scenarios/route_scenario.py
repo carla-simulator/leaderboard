@@ -45,7 +45,7 @@ from srunner.scenariomanager.timer import RouteTimeoutBehavior
 from leaderboard.utils.route_parser import RouteParser, DIST_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
-import leaderboard.scenarios.parked_vehicles as parked_vehicles
+import leaderboard.utils.parked_vehicles as parked_vehicles
 
 
 class RouteScenario(BasicScenario):
@@ -156,8 +156,7 @@ class RouteScenario(BasicScenario):
 
         all_available_parking_slots = []
         map_name = CarlaDataProvider.get_map().name.split('/')[-1]
-        if map_name == "Town12":
-            all_available_parking_slots = parked_vehicles.Town12
+        all_available_parking_slots = getattr(parked_vehicles, map_name, [])
 
         batch = []
         for slot in all_available_parking_slots:
@@ -175,7 +174,7 @@ class RouteScenario(BasicScenario):
                 distance = slot_transform.location.distance(occupied_slot)
                 if distance < 10:
                     is_free = False
-                    break;
+                    break
             if is_free:
                 mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
                 mesh_bp.set_attribute("mesh_path", mesh_path)
