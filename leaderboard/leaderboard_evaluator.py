@@ -399,7 +399,7 @@ def main():
                         help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
-    parser.add_argument('--timeout', default=120.0, type=float,
+    parser.add_argument('--timeout', default=300.0, type=float,
                         help='Set the CARLA client timeout value in seconds')
 
     # simulation setup

@@ -37,17 +37,17 @@ PENALTY_PERC_DICT = {
 }
 
 PENALTY_NAME_DICT = {
-    TrafficEventType.COLLISION_STATIC: 'Collisions with layout',
-    TrafficEventType.COLLISION_PEDESTRIAN: 'Collisions with pedestrians',
-    TrafficEventType.COLLISION_VEHICLE: 'Collisions with vehicles',
-    TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 'Red lights infractions',
-    TrafficEventType.STOP_INFRACTION: 'Stop sign infractions',
-    TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'Off-road infractions',
-    TrafficEventType.MIN_SPEED_INFRACTION: 'Min speed infractions',
-    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'Yield to emergency vehicle infractions',
-    TrafficEventType.SCENARIO_TIMEOUT: 'Scenario timeouts',
-    TrafficEventType.ROUTE_DEVIATION: 'Route deviations',
-    TrafficEventType.VEHICLE_BLOCKED: 'Agent blocked',
+    TrafficEventType.COLLISION_STATIC: 'collisions_pedestrian',
+    TrafficEventType.COLLISION_PEDESTRIAN: 'collisions_vehicle',
+    TrafficEventType.COLLISION_VEHICLE: 'collisions_layout',
+    TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 'red_light',
+    TrafficEventType.STOP_INFRACTION: 'stop_infraction',
+    TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'outside_route_lanes',
+    TrafficEventType.MIN_SPEED_INFRACTION: 'min_speed_infractions',
+    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicles_infractions',
+    TrafficEventType.SCENARIO_TIMEOUT: 'scenario_timeouts',
+    TrafficEventType.ROUTE_DEVIATION: 'route_dev',
+    TrafficEventType.VEHICLE_BLOCKED: 'vehicle_blocked',
 }
 
 # Limit the entry status to some values. Eligible should always be gotten from this table
@@ -60,24 +60,25 @@ ROUND_DIGITS_SCORE = 6
 
 class RouteRecord():
     def __init__(self):
+        self.index = -1
         self.route_id = None
-        self.result = 'Started'
+        self.status = 'Started'
         self.num_infractions = 0
         self.infractions = {}
         for event_name in PENALTY_NAME_DICT.values():
             self.infractions[event_name] = []
-        self.infractions['Route timeouts'] = []
+        self.infractions['route_timeout'] = []
 
         self.scores = {
-            'Driving score': 0,
-            'Route completion': 0,
-            'Infraction penalty': 0
+            'score_route': 0,
+            'score_penalty': 0,
+            'score_composed': 0
         }
 
         self.meta = {
-            'Route length': 0,
-            'Game duration': 0,
-            'System duration': 0,
+            'route_length': 0,
+            'duration_game': 0,
+            'duration_system': 0,
         }
 
     def to_json(self):
@@ -87,21 +88,23 @@ class RouteRecord():
 
 class GlobalRecord():
     def __init__(self):
-        self.result = 'Perfect'
-        self.infractions_per_km = {}
+        self.index = -1
+        self.route_id = -1
+        self.status = 'Perfect'
+        self.infractions = {}
         for event_name in PENALTY_NAME_DICT.values():
-            self.infractions_per_km[event_name] = 0
-        self.infractions_per_km['Route timeouts'] = 0
+            self.infractions[event_name] = 0
+        self.infractions['route_timeout'] = 0
 
         self.scores_mean = {
-            'Driving score': 0,
-            'Route completion': 0,
-            'Infraction penalty': 0
+            'score_composed': 0,
+            'score_route': 0,
+            'score_penalty': 0
         }
         self.scores_std_dev = self.scores_mean.copy()
 
         self.meta = {
-            'exceptions': {}
+            'exceptions': []
         }
 
     def to_json(self):
@@ -133,6 +136,7 @@ class Results():
         self.eligible = ELIGIBLE_VALUES[self.entry_status]
         self.sensors = []
         self.values = []
+        self.labels = []
 
     def to_json(self):
         """Return a JSON serializable object"""
@@ -142,6 +146,7 @@ class Results():
         d['eligible'] = self.eligible
         d['sensors'] = self.sensors
         d['values'] = self.values
+        d['labels'] = self.labels
 
         return d
 
@@ -207,6 +212,9 @@ class StatisticsManager(object):
             int(x.route_id.split('_rep')[-1])
         ))
 
+        for i, record in enumerate(self._results.checkpoint.records):
+            record.index = i
+
     def write_live_results(self, index, ego_speed, ego_control, ego_location):
         """Writes live results"""
         route_record = self._results.checkpoint.records[index]
@@ -236,12 +244,12 @@ class StatisticsManager(object):
                     "Total infractions: {}\n"
                     "Last 5 infractions:\n".format(
                         route_record.route_id,
-                        route_record.scores["Driving score"],
-                        route_record.scores["Route completion"],
-                        route_record.scores["Infraction penalty"],
-                        route_record.meta["Route length"],
-                        route_record.meta["Game duration"],
-                        route_record.meta["System duration"],
+                        route_record.scores["score_composed"],
+                        route_record.scores["score_route"],
+                        route_record.scores["score_penalty"],
+                        route_record.meta["route_length"],
+                        route_record.meta["duration_game"],
+                        route_record.meta["duration_system"],
                         ego_control.throttle,
                         ego_control.brake,
                         ego_control.steer,
@@ -326,6 +334,7 @@ class StatisticsManager(object):
 
         index = config.index
         route_record = self._results.checkpoint.records[index]
+        route_record.index = index
 
         target_reached = False
         score_penalty = 1.0
@@ -334,14 +343,14 @@ class StatisticsManager(object):
             route_record.infractions[event_name] = []
 
         # Update the route meta
-        route_record.meta['Route length'] = self._route_length
-        route_record.meta['Game duration'] = round(duration_time_game, ROUND_DIGITS)
-        route_record.meta['System duration'] = round(duration_time_system, ROUND_DIGITS)
+        route_record.meta['route_length'] = self._route_length
+        route_record.meta['duration_game'] = round(duration_time_game, ROUND_DIGITS)
+        route_record.meta['duration_system'] = round(duration_time_system, ROUND_DIGITS)
 
         # Update the route infractions
         if self._scenario:
             if self._scenario.timeout_node.timeout:
-                route_record.infractions['Route timeouts'].append('Route timeout.')
+                route_record.infractions['route_timeout'].append('Route timeout.')
                 failure_message = "Agent timed out"
 
             for node in self._scenario.get_criteria():
@@ -370,19 +379,19 @@ class StatisticsManager(object):
                         target_reached = score_route >= 100
 
         # Update route scores
-        route_record.scores['Route completion'] = round(score_route, ROUND_DIGITS_SCORE)
-        route_record.scores['Infraction penalty'] = round(score_penalty, ROUND_DIGITS_SCORE)
-        route_record.scores['Driving score'] = round(max(score_route * score_penalty, 0.0), ROUND_DIGITS_SCORE)
+        route_record.scores['score_route'] = round(score_route, ROUND_DIGITS_SCORE)
+        route_record.scores['score_penalty'] = round(score_penalty, ROUND_DIGITS_SCORE)
+        route_record.scores['score_composed'] = round(max(score_route * score_penalty, 0.0), ROUND_DIGITS_SCORE)
 
         # Update result
         route_record.num_infractions = sum([len(route_record.infractions[key]) for key in route_record.infractions])
 
         if target_reached:
-            route_record.result = 'Completed' if route_record.num_infractions > 0 else 'Perfect'
+            route_record.status = 'Completed' if route_record.num_infractions > 0 else 'Perfect'
         else:
-            route_record.result = 'Failed'
+            route_record.status = 'Failed'
             if failure_message:
-                route_record.result += ' - ' + failure_message
+                route_record.status += ' - ' + failure_message
 
         # Add the new data, or overwrite a previous result (happens when resuming the simulation)
         record_len = len(self._results.checkpoint.records)
@@ -405,28 +414,30 @@ class StatisticsManager(object):
             return len(route_record.infractions[key])
 
         global_record = GlobalRecord()
-        global_result = global_record.result
+        global_result = global_record.status
 
         route_records = self._results.checkpoint.records
 
         # Calculate the score's means and result
         for route_record in route_records:
 
-            global_record.scores_mean['Route completion'] += route_record.scores['Route completion'] / self._total_routes
-            global_record.scores_mean['Infraction penalty'] += route_record.scores['Infraction penalty'] / self._total_routes
-            global_record.scores_mean['Driving score'] += route_record.scores['Driving score'] / self._total_routes
+            global_record.scores_mean['score_route'] += route_record.scores['score_route'] / self._total_routes
+            global_record.scores_mean['score_penalty'] += route_record.scores['score_penalty'] / self._total_routes
+            global_record.scores_mean['score_composed'] += route_record.scores['score_composed'] / self._total_routes
 
             # Downgrade the global result if need be ('Perfect' -> 'Completed' -> 'Failed'), and record the failed routes
-            route_result = 'Failed' if 'Failed' in route_record.result else route_record.result
+            route_result = 'Failed' if 'Failed' in route_record.status else route_record.status
             if route_result == 'Failed':
-                global_record.meta['exceptions'][route_record.route_id] = route_record.result
+                global_record.meta['exceptions'].append((route_record.route_id,
+                                                         route_record.index,
+                                                         route_record.status))
                 global_result = route_result
             elif global_result == 'Perfect' and route_result != 'Perfect':
                 global_result = route_result
 
         for item in global_record.scores_mean:
             global_record.scores_mean[item] = round(global_record.scores_mean[item], ROUND_DIGITS_SCORE)
-        global_record.result = global_result
+        global_record.status = global_result
 
         # Calculate the score's standard deviation
         if self._total_routes == 1:
@@ -445,31 +456,62 @@ class StatisticsManager(object):
         # Calculate the number of infractions per km
         km_driven = 0
         for route_record in route_records:
-            km_driven += route_record.meta['Route length'] / 1000 * route_record.scores['Route completion'] / 100
-            for key in global_record.infractions_per_km:
-                global_record.infractions_per_km[key] += get_infractions_value(route_record, key)
+            km_driven += route_record.meta['route_length'] / 1000 * route_record.scores['score_route'] / 100
+            for key in global_record.infractions:
+                global_record.infractions[key] += get_infractions_value(route_record, key)
         km_driven = max(km_driven, 0.001)
 
-        for key in global_record.infractions_per_km:
+        for key in global_record.infractions:
             # Special case for the % based criteria.
             if key != PENALTY_NAME_DICT[TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION]:
-                global_record.infractions_per_km[key] /= km_driven
-            global_record.infractions_per_km[key] = round(global_record.infractions_per_km[key], ROUND_DIGITS)
+                global_record.infractions[key] /= km_driven
+            global_record.infractions[key] = round(global_record.infractions[key], ROUND_DIGITS)
 
         # Save the global records
         self._results.checkpoint.global_record = global_record
 
-        # Change the values
-        self._results.values = {}
-        for key, item in global_record.scores_mean.items():
-            self._results.values[key] = item
-        for key, item in global_record.infractions_per_km.items():
-            self._results.values[key] = item
+        # Change the values and labels. These MUST HAVE A MATCHING ORDER
+        self._results.values = [
+            str(global_record.scores_mean['score_composed']),
+            str(global_record.scores_mean['score_route']),
+            str(global_record.scores_mean['score_penalty']),
+            str(global_record.scores_mean['score_penalty']),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_PEDESTRIAN]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_VEHICLE]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_STATIC]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.TRAFFIC_LIGHT_INFRACTION]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.STOP_INFRACTION]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.ROUTE_DEVIATION]]),
+            str(global_record.infractions['route_timeout']),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.VEHICLE_BLOCKED]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.SCENARIO_TIMEOUT]]),
+            str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.MIN_SPEED_INFRACTION]]),
+        ]
+
+        self._results.labels = [
+            "Avg. driving score",
+            "Avg. route completion",
+            "Avg. infraction penalty",
+            "Collisions with pedestrians",
+            "Collisions with vehicles",
+            "Collisions with layout",
+            "Red lights infractions",
+            "Stop sign infractions",
+            "Off-road infractions",
+            "Route deviations",
+            "Route timeouts",
+            "Agent blocked",
+            "Yield emergency vehicles infractions",
+            "Scenario timeouts",
+            "Min speed infractions"
+        ]
 
         # Change the entry status and eligible
         entry_status = 'Finished'
         for route_record in route_records:
-            route_status = route_record.result
+            route_status = route_record.status
             if 'Simulation crashed' in route_status:
                 entry_status = 'Crashed'
             elif "Agent's sensors were invalid" in route_status:
@@ -508,7 +550,7 @@ class StatisticsManager(object):
 
             else:
                 for record in route_records:
-                    if record.result == 'Started':
+                    if record.status == 'Started':
                         error_message = "Found a route record with missing data"
                         break
 

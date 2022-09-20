@@ -82,7 +82,7 @@ def main():
     statistics_manager.save_sensors(sensors)
     statistics_manager.save_progress(total_routes, total_routes)
     statistics_manager.compute_global_statistics()
-    statistics_manager.validate_and_write_statistics()
+    statistics_manager.validate_and_write_statistics(True, False)
 
 
 if __name__ == '__main__':
