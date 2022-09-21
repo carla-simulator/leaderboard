@@ -57,34 +57,45 @@ if [ -z "$TEAM_CODE_ROOT" ]; then
   exit 1
 fi
 
-rm -fr .tmp
-mkdir -p .tmp
+rm -fr .lbtmp
+mkdir -p .lbtmp
 
-cp -fr ${CARLA_ROOT}/PythonAPI  .tmp
-mv .tmp/PythonAPI/carla/dist/carla*-py2*.egg .tmp/PythonAPI/carla/dist/carla-leaderboard-py2.7.egg
-mv .tmp/PythonAPI/carla/dist/carla*-py3*.egg .tmp/PythonAPI/carla/dist/carla-leaderboard-py3x.egg
+echo "Copying CARLA Python API"
+cp -fr ${CARLA_ROOT}/PythonAPI  .lbtmp
+mv .lbtmp/PythonAPI/carla/dist/carla*-py2*.egg .lbtmp/PythonAPI/carla/dist/carla-leaderboard-py2.7.egg
+mv .lbtmp/PythonAPI/carla/dist/carla*-py3*.egg .lbtmp/PythonAPI/carla/dist/carla-leaderboard-py3x.egg
 
-cp -fr ${SCENARIO_RUNNER_ROOT}/ .tmp
-cp -fr ${LEADERBOARD_ROOT}/ .tmp
+echo "Copying Scenario Runner"
+cp -fr ${SCENARIO_RUNNER_ROOT}/ .lbtmp
+rm -fr .lbtmp/scenario_runner/.git
+
+echo "Copying Leaderboard"
+cp -fr ${LEADERBOARD_ROOT}/ .lbtmp
+rm -fr .lbtmp/leaderboard/.git
+
 if [ ! -z "$ROS_DISTRO" ]; then
-  cp -fr ${CARLA_ROS_BRIDGE_ROOT}/ .tmp/carla_ros_bridge
+  echo "Copying ROS Bridge"
+  cp -fr ${CARLA_ROS_BRIDGE_ROOT}/ .lbtmp/carla_ros_bridge
 fi
-cp -fr ${TEAM_CODE_ROOT}/ .tmp/team_code
 
-cp ${LEADERBOARD_ROOT}/scripts/agent_entrypoint.sh .tmp/agent_entrypoint.sh
+echo "Copying team code folder"
+cp -fr ${TEAM_CODE_ROOT}/ .lbtmp/team_code
 
+cp ${LEADERBOARD_ROOT}/scripts/agent_entrypoint.sh .lbtmp/agent_entrypoint.sh
+
+echo "Building docker"
 # build docker image
 if [ -z "$ROS_DISTRO" ]; then
   docker build \
     --force-rm  \
     -t leaderboard-user \
-    -f ${LEADERBOARD_ROOT}/scripts/Dockerfile.master .
+    -f ${LEADERBOARD_ROOT}/scripts/Dockerfile.master .lbtmp
 else
   docker build \
     --force-rm  \
     -t leaderboard-user:ros-$ROS_DISTRO \
-    -f ${LEADERBOARD_ROOT}/scripts/Dockerfile.ros . \
+    -f ${LEADERBOARD_ROOT}/scripts/Dockerfile.ros .lbtmp \
     --build-arg ROS_DISTRO=$ROS_DISTRO
 fi
 
-rm -fr .tmp
+rm -fr .lbtmp

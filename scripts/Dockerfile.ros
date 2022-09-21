@@ -43,21 +43,16 @@ ENV LEADERBOARD_ROOT "/workspace/leaderboard"
 ENV CARLA_ROS_BRIDGE_ROOT "/workspace/carla_ros_bridge"
 ENV TEAM_CODE_ROOT "/workspace/team_code"
 
-COPY .tmp/PythonAPI /workspace/CARLA/PythonAPI
+COPY PythonAPI ${CARLA_ROOT}/PythonAPI
+COPY scenario_runner ${SCENARIO_RUNNER_ROOT}
+COPY leaderboard ${LEADERBOARD_ROOT}
 
-COPY .tmp/scenario_runner/srunner ${SCENARIO_RUNNER_ROOT}/srunner
+COPY carla_ros_bridge/carla_ros_bridge ${CARLA_ROS_BRIDGE_ROOT}/src/carla_ros_bridge
+COPY carla_ros_bridge/carla_common ${CARLA_ROS_BRIDGE_ROOT}/src/carla_common
+COPY carla_ros_bridge/carla_msgs ${CARLA_ROS_BRIDGE_ROOT}/src/carla_msgs
+COPY carla_ros_bridge/ros_compatibility ${CARLA_ROS_BRIDGE_ROOT}/src/ros_compatibility
 
-COPY .tmp/leaderboard/data ${LEADERBOARD_ROOT}/data
-COPY .tmp/leaderboard/leaderboard ${LEADERBOARD_ROOT}/leaderboard
-COPY .tmp/leaderboard/scripts ${LEADERBOARD_ROOT}/scripts
-COPY .tmp/leaderboard/script.sh ${LEADERBOARD_ROOT}/script.sh
-
-COPY .tmp/carla_ros_bridge/carla_ros_bridge ${CARLA_ROS_BRIDGE_ROOT}/src/carla_ros_bridge
-COPY .tmp/carla_ros_bridge/carla_common ${CARLA_ROS_BRIDGE_ROOT}/src/carla_common
-COPY .tmp/carla_ros_bridge/carla_msgs ${CARLA_ROS_BRIDGE_ROOT}/src/carla_msgs
-COPY .tmp/carla_ros_bridge/ros_compatibility ${CARLA_ROS_BRIDGE_ROOT}/src/ros_compatibility
-
-COPY .tmp/team_code ${TEAM_CODE_ROOT}
+COPY team_code ${TEAM_CODE_ROOT}
 
 # Install carla ros bridge
 RUN /bin/bash -c 'source /opt/ros/$ROS_DISTRO/setup.bash; \
@@ -114,7 +109,8 @@ RUN pip3 install \
      dictor \
      requests \
      ephem \
-     tabulate
+     tabulate \
+     simple-watchdog-timer
 
 ############################################################################################
 ####                     BEGINNING OF AGENT SPECIFIC COMMANDS                           ####
@@ -140,7 +136,7 @@ RUN /bin/echo \
   fi; \
   source $TEAM_CODE_ROOT/install/setup.bash;' >> ${HOME}/agent_sources.sh
 
-COPY .tmp/agent_entrypoint.sh /
+COPY agent_entrypoint.sh /
 ENTRYPOINT ["/agent_entrypoint.sh"]
 
 CMD ["/bin/bash"]

@@ -44,10 +44,10 @@ ENV SCENARIO_RUNNER_ROOT "/workspace/scenario_runner"
 ENV LEADERBOARD_ROOT "/workspace/leaderboard"
 ENV TEAM_CODE_ROOT "/workspace/team_code"
 
-COPY .tmp/PythonAPI ${CARLA_ROOT}/PythonAPI
-COPY .tmp/scenario_runner ${SCENARIO_RUNNER_ROOT}
-COPY .tmp/leaderboard ${LEADERBOARD_ROOT}
-COPY .tmp/team_code ${TEAM_CODE_ROOT}
+COPY PythonAPI ${CARLA_ROOT}/PythonAPI
+COPY scenario_runner ${SCENARIO_RUNNER_ROOT}
+COPY leaderboard ${LEADERBOARD_ROOT}
+COPY team_code ${TEAM_CODE_ROOT}
 
 RUN pip3 install -r ${SCENARIO_RUNNER_ROOT}/requirements.txt
 RUN pip3 install -r ${LEADERBOARD_ROOT}/requirements.txt
@@ -62,7 +62,7 @@ ENV PYTHONPATH "${CARLA_ROOT}/PythonAPI/carla/dist/carla-leaderboard-py3x.egg":"
 ############################################################################################
 
 ENV TEAM_AGENT ${TEAM_CODE_ROOT}/npc_agent.py
-ENV TEAM_CONFIG ${TEAM_CODE_ROOT}/YOUR_CONFIG_FILE
+# ENV TEAM_CONFIG ${TEAM_CODE_ROOT}/YOUR_CONFIG_FILE
 ENV CHALLENGE_TRACK_CODENAME SENSORS
 
 ############################################################################################
