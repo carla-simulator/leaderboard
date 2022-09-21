@@ -61,7 +61,8 @@ ENV PYTHONPATH "${CARLA_ROOT}/PythonAPI/carla/dist/carla-leaderboard-py3x.egg":"
 ####                     BEGINNING OF AGENT SPECIFIC COMMANDS                           ####
 ############################################################################################
 
-ENV TEAM_AGENT ${LEADERBOARD_ROOT}/leaderboard/autoagents/npc_agent.py
+ENV TEAM_AGENT ${TEAM_CODE_ROOT}/npc_agent.py
+ENV TEAM_CONFIG ${TEAM_CODE_ROOT}/YOUR_CONFIG_FILE
 ENV CHALLENGE_TRACK_CODENAME SENSORS
 
 ############################################################################################
