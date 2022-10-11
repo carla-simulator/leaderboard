@@ -4,14 +4,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="983.5" y="5382.2" z="371"/>
@@ -189,7 +185,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-266.2" y="5888.6" z="363.9" yaw="-90.6"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
             <trigger_point x="-411.2" y="5920.0" z="365.6" yaw="71.3"/>
@@ -272,7 +268,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-343.4" y="5056.3" z="374.2" yaw="0.1"/>
             <distance value="100"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-268.0" y="4989.9" z="373.9" yaw="-90.6"/>
@@ -282,7 +278,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-243.1" y="4950.4" z="373.8" yaw="350.5"/>
             <distance value="90"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_4" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-175.1" y="4878.7" z="373.6" yaw="276.5"/>
@@ -306,7 +302,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-557.5" y="4834.9" z="375.5" yaw="-179.9"/>
             <distance value="120"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_6" type="OppositeVehicleTakingPriority">
             <trigger_point x="-721.8" y="4896.8" z="374.6" yaw="-244.7"/>
@@ -341,14 +337,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-710.9" y="3650.8" z="365"/>
@@ -488,6 +480,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1275.3" y="3263.4" z="347.0" yaw="22.4"/>
             <distance value="100"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-1236.1" y="3407.9" z="349.4" yaw="80.5"/>
@@ -541,7 +534,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-1450.9" y="3331.7" z="353.6" yaw="88.4"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-1309.3" y="3689.4" z="354.9" yaw="-12.7"/>
@@ -600,14 +593,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-174.5" y="4467.8" z="373.1"/>
@@ -839,7 +828,7 @@
             <distance value="50"/>
             <frequency value="75"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="12"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-495.4" y="4353.0" z="374.1" yaw="269.9"/>
@@ -923,14 +912,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1080.4" y="4141.4" z="366.6"/>
@@ -1287,14 +1272,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1382.1" y="2246.0" z="363.7"/>
@@ -1379,7 +1360,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="1381.8" y="1868.4" z="354.7" yaw="-90.1"/>
             <distance value="110"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="2104.0" y="1950.2" z="356.5" yaw="-0.2"/>
@@ -1445,7 +1426,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="1985.4" y="1853.4" z="357.7" yaw="270.1"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
             <trigger_point x="1985.3" y="1913.8" z="358.5" yaw="270.1"/>
@@ -1498,7 +1479,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="1841.1" y="1720.8" z="356.4" yaw="-0.0"/>
             <distance value="110"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_12" type="DynamicObjectCrossing">
             <trigger_point x="2047.6" y="1950.4" z="357.9" yaw="-0.2"/>
@@ -1529,7 +1510,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="1923.4" y="2642.1" z="367.3" yaw="179.8"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_14" type="DynamicObjectCrossing">
             <trigger_point x="2032.0" y="2412.5" z="365.9" yaw="-0.1"/>
@@ -1635,14 +1616,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="3710.6" y="1885.6" z="349.4"/>
@@ -1849,7 +1826,7 @@
             <distance value="70"/>
             <frequency value="85"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="11"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="2772.6" y="2335.4" z="355.6" yaw="89.8"/>
@@ -1919,14 +1896,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="3713.3" y="2300.1" z="358.9"/>
@@ -2125,7 +2098,7 @@
             <trigger_point x="3640.7" y="-1578.9" z="312.6" yaw="-128.3"/>
             <distance value="135"/>
             <frequency value="110"/>
-            <bicycle_speed value="15"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="3376.3" y="-1731.2" z="317.7" yaw="-171.8"/>
@@ -2138,7 +2111,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="2954.2" y="-1728.3" z="324.7" yaw="178.5"/>
             <distance value="130"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="2679.6" y="-1695.3" z="328.2" yaw="171.7"/>
@@ -2202,14 +2175,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="2724.4" y="-1458.6" z="336.7"/>
@@ -2339,7 +2308,7 @@
             <distance value="110"/>
             <frequency value="125"/>
             <bicycle_drive_distance value="150"/>
-            <bicycle_speed value="15"/>
+            <bicycle_speed value="7"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="-731.7" y="-83.1" z="345.1" yaw="0.0"/>
@@ -2362,7 +2331,7 @@
             <distance value="100"/>
             <frequency value="100"/>
             <bicycle_drive_distance value="200"/>
-            <bicycle_speed value="15"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="779.9" y="1996.2" z="355.3" yaw="90.1"/>
@@ -2398,14 +2367,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-3211.5" y="632.8" z="326.4"/>
@@ -2495,7 +2460,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-3236.1" y="643.1" z="327.5" yaw="154.7"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-3377.0" y="666.3" z="330.9" yaw="163.0"/>
@@ -2539,7 +2504,7 @@
             <distance value="120"/>
             <frequency value="130"/>
             <bicycle_drive_distance value="200"/>
-            <bicycle_speed value="18"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="-5220.5" y="628.5" z="307.2" yaw="98.8"/>
@@ -2566,11 +2531,8 @@
             <distance value="100"/>
             <frequency value="140"/>
             <bicycle_drive_distance value="150"/>
-            <bicycle_speed value="15"/>
+            <bicycle_speed value="7"/>
          </scenario>
-         <!-- <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-3932.4" y="2086.7" z="339.0" yaw="42.2"/>
-         </scenario> -->
          <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
             <trigger_point x="-3735.6" y="1951.2" z="336.5" yaw="329.3"/>
             <distance value="70"/>
@@ -2600,7 +2562,7 @@
             <distance value="90"/>
             <frequency value="125"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="13"/>
+            <bicycle_speed value="11"/>
          </scenario>
          <scenario name="AccidentTwoWays_8" type="AccidentTwoWays">
             <trigger_point x="-2031.0" y="1606.7" z="337.0" yaw="0.5"/>
@@ -2635,14 +2597,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="1639.5" y="4464.2" z="365.0"/>
@@ -2863,7 +2821,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="1550.9" y="3752.5" z="358.9" yaw="278.9"/>
             <distance value="100"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="1454.9" y="3662.9" z="360.5" yaw="189.3"/>
@@ -2907,7 +2865,7 @@
             <distance value="60"/>
             <frequency value="85"/>
             <bicycle_drive_distance value="70"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1482.1" y="4492.0" z="366.7" yaw="9.3"/>
@@ -3011,14 +2969,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="3163.0" y="5061.5" z="367.7"/>
@@ -3263,7 +3217,7 @@
             <distance value="60"/>
             <frequency value="90"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="PedestrianCrossing_4" type="PedestrianCrossing">
             <trigger_point x="3715.1" y="4268.7" z="368.6" yaw="9.0"/>
@@ -3375,14 +3329,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-284.4" y="4039.0" z="372.1"/>
@@ -3641,14 +3591,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="249.4" y="4666.3" z="371.1"/>
@@ -3968,14 +3914,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="3220.4" y="4720.0" z="367.1"/>
@@ -4192,7 +4134,7 @@
             <distance value="50"/>
             <frequency value="85"/>
             <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="13"/>
+            <bicycle_speed value="11"/>
          </scenario>
          <scenario name="PedestrianCrossing_3" type="PedestrianCrossing">
             <trigger_point x="3139.5" y="5183.5" z="368.2" yaw="99.2"/>
@@ -4223,7 +4165,7 @@
             <distance value="50"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="14"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="SignalizedJunctionRightTurn_2" type="SignalizedJunctionRightTurn">
             <trigger_point x="3108.0" y="5397.4" z="368.6" yaw="279.2"/>
@@ -4337,14 +4279,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="2234.7" y="4566.3" z="362.3"/>
@@ -4708,7 +4646,7 @@
             <distance value="60"/>
             <frequency value="90"/>
             <bicycle_drive_distance value="80"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="VehicleTurningRoute_4" type="VehicleTurningRoute">
             <trigger_point x="282.8" y="5403.1" z="366.9" yaw="159.7"/>
@@ -4754,14 +4692,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="3451.8" y="4758.9" z="368.0"/>
@@ -4981,14 +4915,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-1590.5" y="5819.1" z="376.2"/>
@@ -5134,14 +5064,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="2628.0" y="3730.1" z="356.0"/>
@@ -5326,18 +5252,14 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
-         <position x="-1567.2" y="5713.8" z="376.3"/>
-         <position x="-1664.6" y="5891.4" z="376.5"/>
+         <!-- <position x="-1567.2" y="5713.8" z="376.3"/>
+         <position x="-1664.6" y="5891.4" z="376.5"/> -->
          <position x="-1727.0" y="5969.0" z="376.8"/>
          <position x="-2296.6" y="6206.7" z="378.6"/>
          <position x="-2520.6" y="5930.2" z="379.5"/>
@@ -5570,14 +5492,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="2487.2" y="2642.8" z="365.5"/>
@@ -5786,14 +5704,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="252.2" y="4674.3" z="371.1"/>
@@ -6006,7 +5920,7 @@
             <distance value="70"/>
             <frequency value="100"/>
             <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="7"/>
          </scenario>
          <scenario name="PriorityAtJunction_6" type="PriorityAtJunction">
             <trigger_point x="463.4" y="4564.3" z="370.3" yaw="89.7"/>
@@ -6069,7 +5983,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1259.3" y="5677.6" z="375.1" yaw="-23.6"/>
             <distance value="90"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-1193.5" y="5546.2" z="375.9" yaw="-90.2"/>
@@ -6129,14 +6043,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="983.5" y="5416.4" z="371.3"/>
@@ -6185,9 +6095,6 @@
             <blocker_model value="static.prop.container"/>
             <crossing_angle value="4"/>
          </scenario>
-         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
-            <trigger_point x="205.9" y="5915.5" z="361.1" yaw="-179.5"/>
-         </scenario>
          <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="235.0" y="6103.6" z="358.1" yaw="-0.0"/>
          </scenario>
@@ -6206,8 +6113,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="918.7" y="4996.9" z="371.3" yaw="-0.1"/>
             <start_actor_flow x="1023.1" y="4990.2" z="371.4"/>
-            <flow_speed value="20"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="30" to="60"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="1555.1" y="4814.6" z="369.3" yaw="90.3"/>
@@ -6215,8 +6122,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="1693.5" y="4998.3" z="368.8" yaw="-0.1"/>
             <start_actor_flow x="1681.0" y="4998.3" z="369.0"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="10" to="45"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="10" to="55"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
             <trigger_point x="1751.1" y="5509.1" z="368.3" yaw="89.6"/>
@@ -6265,7 +6172,7 @@
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="599.5" y="5824.8" z="366.1" yaw="179.1"/>
-            <distance value="5"/>
+            <distance value="40"/>
             <direction value="right"/>
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="8"/>
@@ -6284,7 +6191,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="147.9" y="5855.3" z="362.1" yaw="270.0"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="212.4" y="5645.4" z="364.9" yaw="282.7"/>
@@ -6294,12 +6201,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="86.1" y="5627.8" z="366.4" yaw="94.1"/>
             <distance value="100"/>
-            <offset value="0.5"/>
-         </scenario>
-         <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
-            <trigger_point x="58.0" y="5739.0" z="365.0" yaw="108.0"/>
-            <distance value="80"/>
-            <frequency from="45" to="90"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="40.1" y="6067.8" z="358.5" yaw="90.6"/>
@@ -6332,7 +6234,7 @@
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="298.6" y="5576.7" z="366.4" yaw="179.9"/>
          </scenario>
-         <scenario name="BlockedIntersection_1" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="243.6" y="5576.8" z="365.6" yaw="179.9"/>
          </scenario>
          <scenario name="InvadingTurn_3" type="InvadingTurn">
@@ -6351,15 +6253,10 @@
          <scenario name="PriorityAtJunction_1" type="PriorityAtJunction">
             <trigger_point x="742.7" y="5291.2" z="371.4" yaw="359.2"/>
          </scenario>
-         <scenario name="StaticCutIn_3" type="StaticCutIn">
-            <trigger_point x="819.5" y="4999.0" z="371.2" yaw="357.3"/>
-            <distance value="80"/>
-            <direction value="right"/>
-         </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="987.5" y="4894.2" z="371.1" yaw="-90.0"/>
             <distance value="90"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
             <trigger_point x="987.4" y="4960.7" z="371.3" yaw="-90.0"/>
@@ -6385,7 +6282,7 @@
          <scenario name="HardBreakRoute_8" type="HardBreakRoute">
             <trigger_point x="1449.7" y="4736.9" z="370.3" yaw="0.3"/>
          </scenario>
-         <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
+         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="1529.8" y="4737.2" z="369.4" yaw="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
@@ -6417,7 +6314,7 @@
             <distance value="60"/>
             <frequency value="90"/>
             <bicycle_drive_distance value="70"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
             <trigger_point x="1797.1" y="5823.7" z="367.4" yaw="-0.0"/>
@@ -6452,14 +6349,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="2655.9" y="2468.5" z="360.2"/>
@@ -6574,7 +6467,7 @@
             <distance value="80"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="14"/>
+            <bicycle_speed value="11"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="1984.7" y="2227.4" z="363.3" yaw="270.1"/>
@@ -6648,7 +6541,7 @@
             <distance value="70"/>
             <frequency value="75"/>
             <bicycle_drive_distance value="50"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="7"/>
          </scenario>
          <scenario name="BlockedIntersection_3" type="VehicleTurningRoute">
             <trigger_point x="2376.9" y="-439.3" z="338.7" yaw="269.8"/>
@@ -6683,7 +6576,7 @@
             <distance value="80"/>
             <frequency value="90"/>
             <bicycle_drive_distance value="50"/>
-            <bicycle_speed value="12"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
             <trigger_point x="2957.2" y="-650.9" z="329.3" yaw="0.1"/>
@@ -6708,14 +6601,14 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3187.3" y="-1345.9" z="328.1" yaw="270.0"/>
             <distance value="110"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_5" type="HazardAtSideLaneTwoWays">
             <trigger_point x="3025.0" y="-1458.8" z="332.1" yaw="180.0"/>
             <distance value="70"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="300"/>
-            <bicycle_speed value="15"/>
+            <bicycle_speed value="8"/>
          </scenario>
       </scenarios>
    </route>
@@ -6724,14 +6617,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="3601.5" y="2010.6" z="349.1"/>
@@ -6840,7 +6729,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3601.6" y="1951.8" z="347.6" yaw="-89.9"/>
             <distance value="90"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
             <trigger_point x="3526.1" y="1723.6" z="343.4" yaw="-124.9"/>
@@ -6912,7 +6801,7 @@
             <distance value="70"/>
             <frequency value="100"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="13"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="3749.4" y="3916.3" z="368.9" yaw="9.3"/>
@@ -7033,14 +6922,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1379.6" y="2234.9" z="363.5"/>
@@ -7189,7 +7074,7 @@
             <distance value="80"/>
             <frequency value="95"/>
             <bicycle_drive_distance value="70"/>
-            <bicycle_speed value="14"/>
+            <bicycle_speed value="10"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_4" type="ConstructionObstacleTwoWays">
             <trigger_point x="779.2" y="2758.9" z="352.5" yaw="90.1"/>
@@ -7362,14 +7247,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-835.1" y="152.2" z="349.0"/>
@@ -7460,7 +7341,7 @@
             <distance value="100"/>
             <frequency value="85"/>
             <bicycle_drive_distance value="80"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="7"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="122.0" y="-82.7" z="328.2" yaw="0.0"/>
@@ -7502,7 +7383,7 @@
             <distance value="70"/>
             <frequency value="75"/>
             <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="2635.6" y="-907.5" z="330.2" yaw="-0.2"/>
@@ -7527,7 +7408,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3399.2" y="-488.9" z="325.2" yaw="-0.6"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="3482.0" y="-356.3" z="325.4" yaw="89.5"/>
@@ -7549,7 +7430,7 @@
             <distance value="80"/>
             <frequency value="85"/>
             <bicycle_drive_distance value="70"/>
-            <bicycle_speed value="15"/>
+            <bicycle_speed value="9"/>
          </scenario>
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="2913.1" y="-94.2" z="328.7" yaw="180.0"/>
@@ -7580,14 +7461,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="1156.5" y="3679.0" z="367.3"/>
@@ -7683,7 +7560,7 @@
             <distance value="70"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="7"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="988.6" y="3586.9" z="370.3" yaw="189.3"/>
@@ -7791,14 +7668,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-628.4" y="6281.9" z="359.5"/>
@@ -7984,7 +7857,7 @@
             <distance value="80"/>
             <frequency value="90"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="10"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-3068.3" y="3589.6" z="355.1" yaw="248.2"/>
@@ -8003,14 +7876,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-3279.6" y="3071.6" z="359.4"/>
@@ -8039,7 +7908,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-3422.7" y="3536.1" z="362.7" yaw="89.1"/>
             <distance value="150"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-3518.2" y="3577.0" z="361.7" yaw="205.4"/>
@@ -8056,7 +7925,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-3942.7" y="3591.0" z="342.9" yaw="75.5"/>
             <distance value="130"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-3922.2" y="3719.2" z="342.4" yaw="87.5"/>
@@ -8078,7 +7947,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-3604.6" y="3976.7" z="361.1" yaw="322.9"/>
             <distance value="160"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-3395.5" y="4027.7" z="364.4" yaw="28.6"/>
@@ -8092,6 +7961,8 @@
          </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-3504.6" y="4374.7" z="362.0" yaw="69.9"/>
+            <distance value="100"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
             <trigger_point x="-3331.4" y="4562.3" z="365.9" yaw="356.3"/>
@@ -8107,9 +7978,6 @@
             <trigger_point x="-3223.5" y="4141.9" z="365.0" yaw="330.5"/>
             <frequency from="40" to="100"/>
          </scenario>
-         <!-- <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
-            <trigger_point x="-2951.4" y="3898.8" z="360.4" yaw="322.2"/>
-         </scenario> -->
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="-2995.9" y="3769.3" z="357.6" yaw="245.7"/>
             <distance value="100"/>
@@ -8123,7 +7991,7 @@
          </scenario>
          <scenario name="InvadingTurn_5" type="InvadingTurn">
             <trigger_point x="-3028.4" y="3408.3" z="353.5" yaw="-24.2"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="-2969.2" y="3381.6" z="350.4" yaw="-24.2"/>
@@ -8169,6 +8037,7 @@
          <scenario name="InvadingTurn_6" type="InvadingTurn">
             <trigger_point x="-3011.7" y="1764.4" z="331.3" yaw="1.3"/>
             <distance value="130"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="-2800.2" y="1848.8" z="326.5" yaw="37.0"/>
@@ -8183,7 +8052,7 @@
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-2688.4" y="2222.3" z="340.5" yaw="108.4"/>
             <distance value="200"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
             <trigger_point x="-2730.3" y="2383.6" z="347.1" yaw="37.3"/>
@@ -8195,6 +8064,7 @@
          <scenario name="InvadingTurn_8" type="InvadingTurn">
             <trigger_point x="-2586.3" y="2367.0" z="341.2" yaw="330.0"/>
             <distance value="150"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="-2538.2" y="2430.7" z="335.0" yaw="153.4"/>
@@ -8241,14 +8111,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-1251.0" y="1609.8" z="328.9"/>
@@ -8279,7 +8145,7 @@
             <distance value="70"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="12"/>
+            <bicycle_speed value="7"/>
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-1626.7" y="1606.6" z="324.9" yaw="-179.5"/>
@@ -8303,7 +8169,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1944.4" y="1361.9" z="325.3" yaw="262.0"/>
             <distance value="120"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-2062.7" y="1241.3" z="319.6" yaw="193.9"/>
@@ -8320,7 +8186,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-2353.4" y="1070.3" z="321.6" yaw="206.3"/>
             <distance value="100"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-2522.0" y="1013.6" z="317.6" yaw="224.4"/>
@@ -8331,12 +8197,12 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-2594.6" y="855.2" z="313.2" yaw="224.7"/>
             <distance value="110"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-2748.6" y="833.4" z="313.7" yaw="168.9"/>
             <distance value="90"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="-2863.3" y="783.3" z="316.3" yaw="251.5"/>
@@ -8347,7 +8213,7 @@
          <scenario name="InvadingTurn_5" type="InvadingTurn">
             <trigger_point x="-2834.0" y="662.5" z="311.5" yaw="293.3"/>
             <distance value="110"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="-2822.7" y="627.4" z="310.8" yaw="280.1"/>
@@ -8380,7 +8246,7 @@
             <distance value="100"/>
             <frequency value="75"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="13"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="-3356.5" y="1027.3" z="342.8" yaw="108.6"/>
@@ -8391,9 +8257,6 @@
          <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="-3389.7" y="1098.2" z="344.4" yaw="116.7"/>
          </scenario>
-         <!-- <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
-            <trigger_point x="-3416.5" y="1166.4" z="345.2" yaw="106.2"/>
-         </scenario> -->
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
             <trigger_point x="-3484.2" y="1183.6" z="347.4" yaw="197.5"/>
             <distance value="90"/>
@@ -8407,7 +8270,7 @@
          <scenario name="InvadingTurn_6" type="InvadingTurn">
             <trigger_point x="-3682.6" y="1107.5" z="347.5" yaw="-103.0"/>
             <distance value="100"/>
-            <offset value="0.75"/>
+            <offset value="0.4"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="-3744.0" y="967.3" z="344.1" yaw="-115.6"/>
@@ -8426,7 +8289,7 @@
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-3768.2" y="627.8" z="340.1" yaw="-97.0"/>
             <distance value="120"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="-3801.9" y="542.2" z="339.7" yaw="-125.9"/>
@@ -8443,14 +8306,14 @@
             <distance value="70"/>
             <frequency value="75"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="14"/>
+            <bicycle_speed value="11"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_8" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-3431.8" y="1258.1" z="346.5" yaw="92.8"/>
             <distance value="90"/>
             <frequency from="50" to="115"/>
             <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="13"/>
+            <bicycle_speed value="8"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
             <trigger_point x="-3406.8" y="1418.6" z="348.7" yaw="69.4"/>
@@ -8493,12 +8356,12 @@
          <scenario name="InvadingTurn_8" type="InvadingTurn">
             <trigger_point x="-4096.1" y="1695.1" z="327.8" yaw="198.2"/>
             <distance value="110"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="InvadingTurn_9" type="InvadingTurn">
             <trigger_point x="-4206.9" y="1642.7" z="325.8" yaw="225.3"/>
             <distance value="150"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ControlLoss_7" type="ControlLoss">
             <trigger_point x="-4232.9" y="1607.0" z="325.4" yaw="232.2"/>
@@ -8537,14 +8400,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="983.5" y="5382.2" z="371"/>
@@ -8722,7 +8581,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-266.2" y="5888.6" z="363.9" yaw="-90.6"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
             <trigger_point x="-411.2" y="5920.0" z="365.6" yaw="71.3"/>
@@ -8805,7 +8664,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-343.4" y="5056.3" z="374.2" yaw="0.1"/>
             <distance value="100"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-268.0" y="4989.9" z="373.9" yaw="-90.6"/>
@@ -8815,7 +8674,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-243.1" y="4950.4" z="373.8" yaw="350.5"/>
             <distance value="90"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_4" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-175.1" y="4878.7" z="373.6" yaw="276.5"/>
@@ -8839,7 +8698,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-557.5" y="4834.9" z="375.5" yaw="-179.9"/>
             <distance value="120"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_6" type="OppositeVehicleTakingPriority">
             <trigger_point x="-721.8" y="4896.8" z="374.6" yaw="-244.7"/>
@@ -8874,14 +8733,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-710.9" y="3650.8" z="365"/>
@@ -9021,6 +8876,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1275.3" y="3263.4" z="347.0" yaw="22.4"/>
             <distance value="100"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-1236.1" y="3407.9" z="349.4" yaw="80.5"/>
@@ -9074,7 +8930,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-1450.9" y="3331.7" z="353.6" yaw="88.4"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-1309.3" y="3689.4" z="354.9" yaw="-12.7"/>
@@ -9133,14 +8989,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-174.5" y="4467.8" z="373.1"/>
@@ -9227,8 +9079,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="-566.7" y="3925.9" z="370.0" yaw="-0.3"/>
             <start_actor_flow x="-583.7" y="3924.0" z="370.3"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="15" to="45"/>
+            <flow_speed value="6"/>
+            <source_dist_interval from="30" to="50"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-500.6" y="3946.2" z="369.6" yaw="90.2"/>
@@ -9456,14 +9308,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="1080.4" y="4141.4" z="366.6"/>
@@ -9731,8 +9579,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="301.7" y="3915.3" z="366.0" yaw="179.7"/>
             <start_actor_flow x="208.5" y="3924.5" z="366.0"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="10" to="35"/>
+            <flow_speed value="5"/>
+            <source_dist_interval from="10" to="60"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="246.2" y="3945.6" z="365.7" yaw="90.0"/>
@@ -9820,14 +9668,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="1382.1" y="2246.0" z="363.7"/>
@@ -9912,7 +9756,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="1381.8" y="1868.4" z="354.7" yaw="-90.1"/>
             <distance value="110"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="2104.0" y="1950.2" z="356.5" yaw="-0.2"/>
@@ -9978,7 +9822,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="1985.4" y="1853.4" z="357.7" yaw="270.1"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
             <trigger_point x="1985.3" y="1913.8" z="358.5" yaw="270.1"/>
@@ -10031,7 +9875,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="1841.1" y="1720.8" z="356.4" yaw="-0.0"/>
             <distance value="110"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_12" type="DynamicObjectCrossing">
             <trigger_point x="2047.6" y="1950.4" z="357.9" yaw="-0.2"/>
@@ -10062,7 +9906,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="1923.4" y="2642.1" z="367.3" yaw="179.8"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_14" type="DynamicObjectCrossing">
             <trigger_point x="2032.0" y="2412.5" z="365.9" yaw="-0.1"/>
@@ -10168,14 +10012,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="3710.6" y="1885.6" z="349.4"/>
@@ -10452,14 +10292,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="3713.3" y="2300.1" z="358.9"/>
@@ -10671,7 +10507,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="2954.2" y="-1728.3" z="324.7" yaw="178.5"/>
             <distance value="130"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="2679.6" y="-1695.3" z="328.2" yaw="171.7"/>
@@ -10735,14 +10571,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="2724.4" y="-1458.6" z="336.7"/>
@@ -10931,14 +10763,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-3211.5" y="632.8" z="326.4"/>
@@ -11028,7 +10856,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-3236.1" y="643.1" z="327.5" yaw="154.7"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-3377.0" y="666.3" z="330.9" yaw="163.0"/>
@@ -11168,14 +10996,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="1639.5" y="4464.2" z="365.0"/>
@@ -11396,7 +11220,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="1550.9" y="3752.5" z="358.9" yaw="278.9"/>
             <distance value="100"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="1454.9" y="3662.9" z="360.5" yaw="189.3"/>
@@ -11544,14 +11368,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="3163.0" y="5061.5" z="367.7"/>
@@ -11908,14 +11728,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="-284.4" y="4039.0" z="372.1"/>
@@ -12145,8 +11961,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="-562.5" y="3925.9" z="370.0" yaw="-0.3"/>
             <start_actor_flow x="-562.5" y="3928.1" z="370.0"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="10" to="40"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="20" to="60"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-458.4" y="3981.8" z="370.4" yaw="-0.1"/>
@@ -12174,14 +11990,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="249.4" y="4666.3" z="371.1"/>
@@ -12350,8 +12162,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="1703.4" y="4998.2" z="368.6" yaw="-0.1"/>
             <start_actor_flow x="1703.4" y="5000.5" z="368.6"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="15" to="45"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="15" to="70"/>
          </scenario>
          <scenario name="PriorityAtJunction_3" type="PriorityAtJunction">
             <trigger_point x="1748.9" y="5158.0" z="368.5" yaw="89.6"/>
@@ -12501,14 +12313,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="3220.4" y="4720.0" z="367.1"/>
@@ -12616,8 +12424,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="2547.5" y="4193.9" z="359.3" yaw="189.2"/>
             <start_actor_flow x="2429.6" y="4181.3" z="358.9"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="15" to="4605"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
             <trigger_point x="2253.9" y="4434.7" z="360.6" yaw="99.5"/>
@@ -12870,14 +12678,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="2234.7" y="4566.3" z="362.3"/>
@@ -12928,8 +12732,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="2388.3" y="4164.8" z="358.6" yaw="189.2"/>
             <start_actor_flow x="2375.6" y="4162.7" z="358.6"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="15" to="50"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="20" to="5650"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2312.6" y="4074.2" z="357.2" yaw="277.8"/>
@@ -12940,8 +12744,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="1775.1" y="4068.7" z="359.0" yaw="189.2"/>
             <start_actor_flow x="1659.0" y="4056.4" z="359.4"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="10" to="45"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="75"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1432.3" y="4127.7" z="362.1" yaw="189.2"/>
@@ -12961,8 +12765,8 @@
          <scenario name="CrossingBicycleFlow_3" type="CrossingBicycleFlow">
             <trigger_point x="1244.5" y="3985.9" z="364.7" yaw="9.2"/>
             <start_actor_flow x="1357.9" y="3997.7" z="363.0"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="15" to="50"/>
+            <flow_speed value="11"/>
+            <source_dist_interval from="25" to="80"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="1081.5" y="3837.2" z="368.2" yaw="189.2"/>
@@ -12979,8 +12783,8 @@
          <scenario name="CrossingBicycleFlow_3" type="CrossingBicycleFlow">
             <trigger_point x="821.7" y="3915.5" z="370.7" yaw="185.4"/>
             <start_actor_flow x="747.5" y="3919.7" z="371.0"/>
-            <flow_speed value="13"/>
-            <source_dist_interval from="15" to="40"/>
+            <flow_speed value="6"/>
+            <source_dist_interval from="25" to="55"/>
          </scenario>
          <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="782.4" y="4049.2" z="370.4" yaw="90.1"/>
@@ -13007,8 +12811,8 @@
          <scenario name="CrossingBicycleFlow_4" type="CrossingBicycleFlow">
             <trigger_point x="455.3" y="5088.9" z="369.5" yaw="164.3"/>
             <start_actor_flow x="321.0" y="5124.5" z="369.1"/>
-            <flow_speed value="14"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="15" to="65"/>
          </scenario>
          <scenario name="JunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="359.5" y="5290.6" z="368.1" yaw="89.7"/>
@@ -13018,8 +12822,8 @@
          <scenario name="CrossingBicycleFlow_5" type="CrossingBicycleFlow">
             <trigger_point x="58.6" y="5209.4" z="370.5" yaw="156.7"/>
             <start_actor_flow x="36.4" y="5219.0" z="370.7"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="20" to="50"/>
+            <flow_speed value="5"/>
+            <source_dist_interval from="25" to="60"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
             <trigger_point x="-42.7" y="5161.1" z="371.9" yaw="245.7"/>
@@ -13033,8 +12837,8 @@
          <scenario name="CrossingBicycleFlow_5" type="CrossingBicycleFlow">
             <trigger_point x="37.6" y="5229.0" z="370.7" yaw="-23.3"/>
             <start_actor_flow x="59.3" y="5219.7" z="370.5"/>
-            <flow_speed value="11"/>
-            <source_dist_interval from="10" to="50"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="30" to="70"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
             <trigger_point x="2251.7" y="4466.1" z="361.0" yaw="-80.5"/>
@@ -13287,14 +13091,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="3451.8" y="4758.9" z="368.0"/>
@@ -13514,14 +13314,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-1590.5" y="5819.1" z="376.2"/>
@@ -13667,14 +13463,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="2628.0" y="3730.1" z="356.0"/>
@@ -13859,14 +13651,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-1567.2" y="5713.8" z="376.3"/>
@@ -14103,14 +13891,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="2487.2" y="2642.8" z="365.5"/>
@@ -14319,14 +14103,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="252.2" y="4674.3" z="371.1"/>
@@ -14602,7 +14382,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1259.3" y="5677.6" z="375.1" yaw="-23.6"/>
             <distance value="90"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-1193.5" y="5546.2" z="375.9" yaw="-90.2"/>
@@ -14662,14 +14442,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="983.5" y="5416.4" z="371.3"/>
@@ -14739,8 +14515,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="918.7" y="4996.9" z="371.3" yaw="-0.1"/>
             <start_actor_flow x="1023.1" y="4990.2" z="371.4"/>
-            <flow_speed value="20"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="30" to="75"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="1555.1" y="4814.6" z="369.3" yaw="90.3"/>
@@ -14748,8 +14524,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="1693.5" y="4998.3" z="368.8" yaw="-0.1"/>
             <start_actor_flow x="1681.0" y="4998.3" z="369.0"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="10" to="45"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="10" to="65"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
             <trigger_point x="1751.1" y="5509.1" z="368.3" yaw="89.6"/>
@@ -14817,7 +14593,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="147.9" y="5855.3" z="362.1" yaw="270.0"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="212.4" y="5645.4" z="364.9" yaw="282.7"/>
@@ -14827,7 +14603,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="86.1" y="5627.8" z="366.4" yaw="94.1"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
             <trigger_point x="58.0" y="5739.0" z="365.0" yaw="108.0"/>
@@ -14892,7 +14668,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="987.5" y="4894.2" z="371.1" yaw="-90.0"/>
             <distance value="90"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
             <trigger_point x="987.4" y="4960.7" z="371.3" yaw="-90.0"/>
@@ -14985,14 +14761,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="2655.9" y="2468.5" z="360.2"/>
@@ -15241,7 +15013,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3187.3" y="-1345.9" z="328.1" yaw="270.0"/>
             <distance value="110"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_5" type="HazardAtSideLaneTwoWays">
             <trigger_point x="3025.0" y="-1458.8" z="332.1" yaw="180.0"/>
@@ -15257,14 +15029,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="3601.5" y="2010.6" z="349.1"/>
@@ -15373,7 +15141,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3601.6" y="1951.8" z="347.6" yaw="-89.9"/>
             <distance value="90"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
             <trigger_point x="3526.1" y="1723.6" z="343.4" yaw="-124.9"/>
@@ -15566,14 +15334,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="1379.6" y="2234.9" z="363.5"/>
@@ -15895,14 +15659,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-835.1" y="152.2" z="349.0"/>
@@ -16060,7 +15820,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3399.2" y="-488.9" z="325.2" yaw="-0.6"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="3482.0" y="-356.3" z="325.4" yaw="89.5"/>
@@ -16113,14 +15873,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="1156.5" y="3679.0" z="367.3"/>
@@ -16324,14 +16080,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="-628.4" y="6281.9" z="359.5"/>
@@ -16536,14 +16288,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="70.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-3279.6" y="3071.6" z="359.4"/>
@@ -16572,7 +16320,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-3422.7" y="3536.1" z="362.7" yaw="89.1"/>
             <distance value="150"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-3518.2" y="3577.0" z="361.7" yaw="205.4"/>
@@ -16589,7 +16337,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-3942.7" y="3591.0" z="342.9" yaw="75.5"/>
             <distance value="130"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-3922.2" y="3719.2" z="342.4" yaw="87.5"/>
@@ -16611,7 +16359,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-3604.6" y="3976.7" z="361.1" yaw="322.9"/>
             <distance value="160"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-3395.5" y="4027.7" z="364.4" yaw="28.6"/>
@@ -16625,6 +16373,8 @@
          </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-3504.6" y="4374.7" z="362.0" yaw="69.9"/>
+            <distance value="100"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
             <trigger_point x="-3331.4" y="4562.3" z="365.9" yaw="356.3"/>
@@ -16656,7 +16406,7 @@
          </scenario>
          <scenario name="InvadingTurn_5" type="InvadingTurn">
             <trigger_point x="-3028.4" y="3408.3" z="353.5" yaw="-24.2"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="-2969.2" y="3381.6" z="350.4" yaw="-24.2"/>
@@ -16702,6 +16452,7 @@
          <scenario name="InvadingTurn_6" type="InvadingTurn">
             <trigger_point x="-3011.7" y="1764.4" z="331.3" yaw="1.3"/>
             <distance value="130"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="-2800.2" y="1848.8" z="326.5" yaw="37.0"/>
@@ -16716,7 +16467,7 @@
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-2688.4" y="2222.3" z="340.5" yaw="108.4"/>
             <distance value="200"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
             <trigger_point x="-2730.3" y="2383.6" z="347.1" yaw="37.3"/>
@@ -16728,6 +16479,7 @@
          <scenario name="InvadingTurn_8" type="InvadingTurn">
             <trigger_point x="-2586.3" y="2367.0" z="341.2" yaw="330.0"/>
             <distance value="150"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="-2538.2" y="2430.7" z="335.0" yaw="153.4"/>
@@ -16774,14 +16526,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="50.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="50.0"/>
       </weathers>
       <waypoints>
          <position x="-1251.0" y="1609.8" z="328.9"/>
@@ -16836,7 +16584,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1944.4" y="1361.9" z="325.3" yaw="262.0"/>
             <distance value="120"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-2062.7" y="1241.3" z="319.6" yaw="193.9"/>
@@ -16853,7 +16601,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-2353.4" y="1070.3" z="321.6" yaw="206.3"/>
             <distance value="100"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-2522.0" y="1013.6" z="317.6" yaw="224.4"/>
@@ -16864,12 +16612,12 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-2594.6" y="855.2" z="313.2" yaw="224.7"/>
             <distance value="110"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-2748.6" y="833.4" z="313.7" yaw="168.9"/>
             <distance value="90"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="-2863.3" y="783.3" z="316.3" yaw="251.5"/>
@@ -16880,7 +16628,7 @@
          <scenario name="InvadingTurn_5" type="InvadingTurn">
             <trigger_point x="-2834.0" y="662.5" z="311.5" yaw="293.3"/>
             <distance value="110"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="-2822.7" y="627.4" z="310.8" yaw="280.1"/>
@@ -16940,7 +16688,7 @@
          <scenario name="InvadingTurn_6" type="InvadingTurn">
             <trigger_point x="-3682.6" y="1107.5" z="347.5" yaw="-103.0"/>
             <distance value="100"/>
-            <offset value="0.75"/>
+            <offset value="0.4"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="-3744.0" y="967.3" z="344.1" yaw="-115.6"/>
@@ -16959,7 +16707,7 @@
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-3768.2" y="627.8" z="340.1" yaw="-97.0"/>
             <distance value="120"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="-3801.9" y="542.2" z="339.7" yaw="-125.9"/>
@@ -17026,12 +16774,12 @@
          <scenario name="InvadingTurn_8" type="InvadingTurn">
             <trigger_point x="-4096.1" y="1695.1" z="327.8" yaw="198.2"/>
             <distance value="110"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="InvadingTurn_9" type="InvadingTurn">
             <trigger_point x="-4206.9" y="1642.7" z="325.8" yaw="225.3"/>
             <distance value="150"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ControlLoss_7" type="ControlLoss">
             <trigger_point x="-4232.9" y="1607.0" z="325.4" yaw="232.2"/>
@@ -17070,14 +16818,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="983.5" y="5382.2" z="371"/>
@@ -17255,7 +16999,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-266.2" y="5888.6" z="363.9" yaw="-90.6"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_5" type="OppositeVehicleTakingPriority">
             <trigger_point x="-411.2" y="5920.0" z="365.6" yaw="71.3"/>
@@ -17338,7 +17082,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-343.4" y="5056.3" z="374.2" yaw="0.1"/>
             <distance value="100"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-268.0" y="4989.9" z="373.9" yaw="-90.6"/>
@@ -17348,7 +17092,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-243.1" y="4950.4" z="373.8" yaw="350.5"/>
             <distance value="90"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionLeftTurn_4" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-175.1" y="4878.7" z="373.6" yaw="276.5"/>
@@ -17372,7 +17116,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-557.5" y="4834.9" z="375.5" yaw="-179.9"/>
             <distance value="120"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_6" type="OppositeVehicleTakingPriority">
             <trigger_point x="-721.8" y="4896.8" z="374.6" yaw="-244.7"/>
@@ -17407,14 +17151,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-710.9" y="3650.8" z="365"/>
@@ -17554,6 +17294,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1275.3" y="3263.4" z="347.0" yaw="22.4"/>
             <distance value="100"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-1236.1" y="3407.9" z="349.4" yaw="80.5"/>
@@ -17607,7 +17348,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-1450.9" y="3331.7" z="353.6" yaw="88.4"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="-1309.3" y="3689.4" z="354.9" yaw="-12.7"/>
@@ -17666,14 +17407,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="-174.5" y="4467.8" z="373.1"/>
@@ -17760,8 +17497,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="-566.7" y="3925.9" z="370.0" yaw="-0.3"/>
             <start_actor_flow x="-583.7" y="3924.0" z="370.3"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="15" to="45"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="30" to="65"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-500.6" y="3946.2" z="369.6" yaw="90.2"/>
@@ -17989,14 +17726,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="1080.4" y="4141.4" z="366.6"/>
@@ -18265,7 +17998,7 @@
             <trigger_point x="301.7" y="3915.3" z="366.0" yaw="179.7"/>
             <start_actor_flow x="208.5" y="3924.5" z="366.0"/>
             <flow_speed value="10"/>
-            <source_dist_interval from="10" to="35"/>
+            <source_dist_interval from="20" to="80"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="246.2" y="3945.6" z="365.7" yaw="90.0"/>
@@ -18353,14 +18086,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1382.1" y="2246.0" z="363.7"/>
@@ -18445,7 +18174,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="1381.8" y="1868.4" z="354.7" yaw="-90.1"/>
             <distance value="110"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="2104.0" y="1950.2" z="356.5" yaw="-0.2"/>
@@ -18511,7 +18240,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="1985.4" y="1853.4" z="357.7" yaw="270.1"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
             <trigger_point x="1985.3" y="1913.8" z="358.5" yaw="270.1"/>
@@ -18564,7 +18293,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="1841.1" y="1720.8" z="356.4" yaw="-0.0"/>
             <distance value="110"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_12" type="DynamicObjectCrossing">
             <trigger_point x="2047.6" y="1950.4" z="357.9" yaw="-0.2"/>
@@ -18595,7 +18324,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="1923.4" y="2642.1" z="367.3" yaw="179.8"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_14" type="DynamicObjectCrossing">
             <trigger_point x="2032.0" y="2412.5" z="365.9" yaw="-0.1"/>
@@ -18701,14 +18430,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="3710.6" y="1885.6" z="349.4"/>
@@ -18985,14 +18710,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="3713.3" y="2300.1" z="358.9"/>
@@ -19204,7 +18925,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="2954.2" y="-1728.3" z="324.7" yaw="178.5"/>
             <distance value="130"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="2679.6" y="-1695.3" z="328.2" yaw="171.7"/>
@@ -19268,14 +18989,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="2724.4" y="-1458.6" z="336.7"/>
@@ -19464,14 +19181,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-3211.5" y="632.8" z="326.4"/>
@@ -19561,7 +19274,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-3236.1" y="643.1" z="327.5" yaw="154.7"/>
             <distance value="100"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-3377.0" y="666.3" z="330.9" yaw="163.0"/>
@@ -19701,14 +19414,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="1639.5" y="4464.2" z="365.0"/>
@@ -19929,7 +19638,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="1550.9" y="3752.5" z="358.9" yaw="278.9"/>
             <distance value="100"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="1454.9" y="3662.9" z="360.5" yaw="189.3"/>
@@ -20077,14 +19786,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="3163.0" y="5061.5" z="367.7"/>
@@ -20441,14 +20146,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="-284.4" y="4039.0" z="372.1"/>
@@ -20678,8 +20379,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="-562.5" y="3925.9" z="370.0" yaw="-0.3"/>
             <start_actor_flow x="-562.5" y="3928.1" z="370.0"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="10" to="40"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="10" to="70"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-458.4" y="3981.8" z="370.4" yaw="-0.1"/>
@@ -20707,14 +20408,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="249.4" y="4666.3" z="371.1"/>
@@ -20883,8 +20580,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="1703.4" y="4998.2" z="368.6" yaw="-0.1"/>
             <start_actor_flow x="1703.4" y="5000.5" z="368.6"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="15" to="45"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="20" to="60"/>
          </scenario>
          <scenario name="PriorityAtJunction_3" type="PriorityAtJunction">
             <trigger_point x="1748.9" y="5158.0" z="368.5" yaw="89.6"/>
@@ -21034,14 +20731,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="3220.4" y="4720.0" z="367.1"/>
@@ -21149,8 +20842,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="2547.5" y="4193.9" z="359.3" yaw="189.2"/>
             <start_actor_flow x="2429.6" y="4181.3" z="358.9"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="20" to="70"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
             <trigger_point x="2253.9" y="4434.7" z="360.6" yaw="99.5"/>
@@ -21403,14 +21096,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="2234.7" y="4566.3" z="362.3"/>
@@ -21461,8 +21150,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="2388.3" y="4164.8" z="358.6" yaw="189.2"/>
             <start_actor_flow x="2375.6" y="4162.7" z="358.6"/>
-            <flow_speed value="15"/>
-            <source_dist_interval from="15" to="50"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="20" to="70"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2312.6" y="4074.2" z="357.2" yaw="277.8"/>
@@ -21473,8 +21162,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="1775.1" y="4068.7" z="359.0" yaw="189.2"/>
             <start_actor_flow x="1659.0" y="4056.4" z="359.4"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="10" to="45"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="20" to="80"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="1432.3" y="4127.7" z="362.1" yaw="189.2"/>
@@ -21494,8 +21183,8 @@
          <scenario name="CrossingBicycleFlow_3" type="CrossingBicycleFlow">
             <trigger_point x="1244.5" y="3985.9" z="364.7" yaw="9.2"/>
             <start_actor_flow x="1357.9" y="3997.7" z="363.0"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="15" to="50"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="25" to="65"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="1081.5" y="3837.2" z="368.2" yaw="189.2"/>
@@ -21512,8 +21201,8 @@
          <scenario name="CrossingBicycleFlow_3" type="CrossingBicycleFlow">
             <trigger_point x="821.7" y="3915.5" z="370.7" yaw="185.4"/>
             <start_actor_flow x="747.5" y="3919.7" z="371.0"/>
-            <flow_speed value="13"/>
-            <source_dist_interval from="15" to="40"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="25" to="60"/>
          </scenario>
          <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="782.4" y="4049.2" z="370.4" yaw="90.1"/>
@@ -21540,8 +21229,8 @@
          <scenario name="CrossingBicycleFlow_4" type="CrossingBicycleFlow">
             <trigger_point x="455.3" y="5088.9" z="369.5" yaw="164.3"/>
             <start_actor_flow x="321.0" y="5124.5" z="369.1"/>
-            <flow_speed value="14"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="20" to="70"/>
          </scenario>
          <scenario name="JunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="359.5" y="5290.6" z="368.1" yaw="89.7"/>
@@ -21551,8 +21240,8 @@
          <scenario name="CrossingBicycleFlow_5" type="CrossingBicycleFlow">
             <trigger_point x="58.6" y="5209.4" z="370.5" yaw="156.7"/>
             <start_actor_flow x="36.4" y="5219.0" z="370.7"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="20" to="50"/>
+            <flow_speed value="6"/>
+            <source_dist_interval from="15" to="60"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
             <trigger_point x="-42.7" y="5161.1" z="371.9" yaw="245.7"/>
@@ -21566,8 +21255,8 @@
          <scenario name="CrossingBicycleFlow_5" type="CrossingBicycleFlow">
             <trigger_point x="37.6" y="5229.0" z="370.7" yaw="-23.3"/>
             <start_actor_flow x="59.3" y="5219.7" z="370.5"/>
-            <flow_speed value="11"/>
-            <source_dist_interval from="10" to="50"/>
+            <flow_speed value="7"/>
+            <source_dist_interval from="20" to="70"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
             <trigger_point x="2251.7" y="4466.1" z="361.0" yaw="-80.5"/>
@@ -21820,14 +21509,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="3451.8" y="4758.9" z="368.0"/>
@@ -22047,14 +21732,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-1590.5" y="5819.1" z="376.2"/>
@@ -22200,14 +21881,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="2628.0" y="3730.1" z="356.0"/>
@@ -22392,14 +22069,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="-1567.2" y="5713.8" z="376.3"/>
@@ -22636,14 +22309,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="2487.2" y="2642.8" z="365.5"/>
@@ -22852,14 +22521,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="252.2" y="4674.3" z="371.1"/>
@@ -23135,7 +22800,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1259.3" y="5677.6" z="375.1" yaw="-23.6"/>
             <distance value="90"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-1193.5" y="5546.2" z="375.9" yaw="-90.2"/>
@@ -23195,14 +22860,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="983.5" y="5416.4" z="371.3"/>
@@ -23272,8 +22933,8 @@
          <scenario name="CrossingBicycleFlow_1" type="CrossingBicycleFlow">
             <trigger_point x="918.7" y="4996.9" z="371.3" yaw="-0.1"/>
             <start_actor_flow x="1023.1" y="4990.2" z="371.4"/>
-            <flow_speed value="20"/>
-            <source_dist_interval from="20" to="45"/>
+            <flow_speed value="11"/>
+            <source_dist_interval from="35" to="80"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="1555.1" y="4814.6" z="369.3" yaw="90.3"/>
@@ -23281,8 +22942,8 @@
          <scenario name="CrossingBicycleFlow_2" type="CrossingBicycleFlow">
             <trigger_point x="1693.5" y="4998.3" z="368.8" yaw="-0.1"/>
             <start_actor_flow x="1681.0" y="4998.3" z="369.0"/>
-            <flow_speed value="17"/>
-            <source_dist_interval from="10" to="45"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="10" to="75"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_2" type="OppositeVehicleRunningRedLight">
             <trigger_point x="1751.1" y="5509.1" z="368.3" yaw="89.6"/>
@@ -23350,7 +23011,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="147.9" y="5855.3" z="362.1" yaw="270.0"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="212.4" y="5645.4" z="364.9" yaw="282.7"/>
@@ -23360,7 +23021,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="86.1" y="5627.8" z="366.4" yaw="94.1"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
             <trigger_point x="58.0" y="5739.0" z="365.0" yaw="108.0"/>
@@ -23425,7 +23086,7 @@
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="987.5" y="4894.2" z="371.1" yaw="-90.0"/>
             <distance value="90"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
             <trigger_point x="987.4" y="4960.7" z="371.3" yaw="-90.0"/>
@@ -23518,14 +23179,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="2655.9" y="2468.5" z="360.2"/>
@@ -23774,7 +23431,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3187.3" y="-1345.9" z="328.1" yaw="270.0"/>
             <distance value="110"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_5" type="HazardAtSideLaneTwoWays">
             <trigger_point x="3025.0" y="-1458.8" z="332.1" yaw="180.0"/>
@@ -23790,14 +23447,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="3601.5" y="2010.6" z="349.1"/>
@@ -23906,7 +23559,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3601.6" y="1951.8" z="347.6" yaw="-89.9"/>
             <distance value="90"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
             <trigger_point x="3526.1" y="1723.6" z="343.4" yaw="-124.9"/>
@@ -24099,14 +23752,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1379.6" y="2234.9" z="363.5"/>
@@ -24428,14 +24077,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-835.1" y="152.2" z="349.0"/>
@@ -24593,7 +24238,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="3399.2" y="-488.9" z="325.2" yaw="-0.6"/>
             <distance value="100"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="3482.0" y="-356.3" z="325.4" yaw="89.5"/>
@@ -24646,14 +24291,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="1156.5" y="3679.0" z="367.3"/>
@@ -24857,14 +24498,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="-628.4" y="6281.9" z="359.5"/>
@@ -25069,14 +24706,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-3279.6" y="3071.6" z="359.4"/>
@@ -25105,7 +24738,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-3422.7" y="3536.1" z="362.7" yaw="89.1"/>
             <distance value="150"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-3518.2" y="3577.0" z="361.7" yaw="205.4"/>
@@ -25122,7 +24755,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-3942.7" y="3591.0" z="342.9" yaw="75.5"/>
             <distance value="130"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-3922.2" y="3719.2" z="342.4" yaw="87.5"/>
@@ -25144,7 +24777,7 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-3604.6" y="3976.7" z="361.1" yaw="322.9"/>
             <distance value="160"/>
-            <offset value="0.5"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-3395.5" y="4027.7" z="364.4" yaw="28.6"/>
@@ -25158,6 +24791,8 @@
          </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-3504.6" y="4374.7" z="362.0" yaw="69.9"/>
+            <distance value="100"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
             <trigger_point x="-3331.4" y="4562.3" z="365.9" yaw="356.3"/>
@@ -25189,7 +24824,7 @@
          </scenario>
          <scenario name="InvadingTurn_5" type="InvadingTurn">
             <trigger_point x="-3028.4" y="3408.3" z="353.5" yaw="-24.2"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="-2969.2" y="3381.6" z="350.4" yaw="-24.2"/>
@@ -25235,6 +24870,7 @@
          <scenario name="InvadingTurn_6" type="InvadingTurn">
             <trigger_point x="-3011.7" y="1764.4" z="331.3" yaw="1.3"/>
             <distance value="130"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
             <trigger_point x="-2800.2" y="1848.8" z="326.5" yaw="37.0"/>
@@ -25249,7 +24885,7 @@
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-2688.4" y="2222.3" z="340.5" yaw="108.4"/>
             <distance value="200"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
             <trigger_point x="-2730.3" y="2383.6" z="347.1" yaw="37.3"/>
@@ -25307,14 +24943,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="30.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-1251.0" y="1609.8" z="328.9"/>
@@ -25369,7 +25001,7 @@
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="-1944.4" y="1361.9" z="325.3" yaw="262.0"/>
             <distance value="120"/>
-            <offset value="0.6"/>
+            <offset value="0.15"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-2062.7" y="1241.3" z="319.6" yaw="193.9"/>
@@ -25386,7 +25018,7 @@
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="-2353.4" y="1070.3" z="321.6" yaw="206.3"/>
             <distance value="100"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-2522.0" y="1013.6" z="317.6" yaw="224.4"/>
@@ -25397,12 +25029,12 @@
          <scenario name="InvadingTurn_3" type="InvadingTurn">
             <trigger_point x="-2594.6" y="855.2" z="313.2" yaw="224.7"/>
             <distance value="110"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="InvadingTurn_4" type="InvadingTurn">
             <trigger_point x="-2748.6" y="833.4" z="313.7" yaw="168.9"/>
             <distance value="90"/>
-            <offset value="0.55"/>
+            <offset value="0.2"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="-2863.3" y="783.3" z="316.3" yaw="251.5"/>
@@ -25413,7 +25045,7 @@
          <scenario name="InvadingTurn_5" type="InvadingTurn">
             <trigger_point x="-2834.0" y="662.5" z="311.5" yaw="293.3"/>
             <distance value="110"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="-2822.7" y="627.4" z="310.8" yaw="280.1"/>
@@ -25473,7 +25105,7 @@
          <scenario name="InvadingTurn_6" type="InvadingTurn">
             <trigger_point x="-3682.6" y="1107.5" z="347.5" yaw="-103.0"/>
             <distance value="100"/>
-            <offset value="0.75"/>
+            <offset value="0.4"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="-3744.0" y="967.3" z="344.1" yaw="-115.6"/>
@@ -25492,7 +25124,7 @@
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-3768.2" y="627.8" z="340.1" yaw="-97.0"/>
             <distance value="120"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="-3801.9" y="542.2" z="339.7" yaw="-125.9"/>
@@ -25559,12 +25191,12 @@
          <scenario name="InvadingTurn_8" type="InvadingTurn">
             <trigger_point x="-4096.1" y="1695.1" z="327.8" yaw="198.2"/>
             <distance value="110"/>
-            <offset value="0.65"/>
+            <offset value="0.25"/>
          </scenario>
          <scenario name="InvadingTurn_9" type="InvadingTurn">
             <trigger_point x="-4206.9" y="1642.7" z="325.8" yaw="225.3"/>
             <distance value="150"/>
-            <offset value="0.7"/>
+            <offset value="0.3"/>
          </scenario>
          <scenario name="ControlLoss_7" type="ControlLoss">
             <trigger_point x="-4232.9" y="1607.0" z="325.4" yaw="232.2"/>
