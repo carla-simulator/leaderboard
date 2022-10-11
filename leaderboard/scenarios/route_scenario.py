@@ -183,7 +183,7 @@ class RouteScenario(BasicScenario):
             else:
                 pass
 
-        CarlaDataProvider.get_client().apply_batch_sync(batch)
+        CarlaDataProvider.get_client().apply_batch(batch)
 
     # pylint: disable=no-self-use
     def _draw_waypoints(self, world, waypoints, vertical_shift, size, persistency=-1):
