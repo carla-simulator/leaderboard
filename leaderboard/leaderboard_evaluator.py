@@ -372,6 +372,9 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
             self.statistics_manager.remove_scenario()
 
+            # Write the route results to the endpoint
+            self.statistics_manager.write_statistics()
+
         # Shutdown ROS1 bridge server if necessary
         if self._ros1_server is not None:
             self._ros1_server.shutdown()

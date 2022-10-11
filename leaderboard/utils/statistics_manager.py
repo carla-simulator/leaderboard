@@ -559,4 +559,11 @@ class StatisticsManager(object):
 
             self.save_entry_status('Invalid')
 
+        self.write_statistics()
+
+    def write_statistics(self):
+        """
+        Saves the statistics into the endpoint. Used to save results mid simulation,
+        for the final results, use 'instead of 'validate_and_write_statistics' instead.
+        """
         save_dict(self._endpoint, self._results.to_json())
