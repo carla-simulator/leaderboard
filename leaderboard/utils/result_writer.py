@@ -116,12 +116,10 @@ class ResultOutputProvider(object):
         # Timeout
         name = "Timeout"
 
-        actual_value = self._data.scenario_duration_game
-
-        if self._data.scenario_duration_game < self._data.scenario.timeout:
-            result = '\033[92m'+'SUCCESS'+'\033[0m'
-        else:
+        if self._data.scenario.timeout_node.timeout:
             result = '\033[91m'+'FAILURE'+'\033[0m'
+        else:
+            result = '\033[92m'+'SUCCESS'+'\033[0m'
 
         list_statistics.extend([[name, result, '']])
 
