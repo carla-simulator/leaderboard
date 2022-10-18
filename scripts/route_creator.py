@@ -147,7 +147,6 @@ def save_data(filename, route_id, points):
     weather_spaces = spaces*4*" "
     temp = temp.replace(" cloudiness", "\n" + weather_spaces + "cloudiness")
     temp = temp.replace(" wind_intensity", "\n" + weather_spaces + "wind_intensity")
-    temp = temp.replace(" fog_density", "\n" + weather_spaces + "fog_density")
     new_data = temp.replace(" mie_scattering_scale", "\n" + weather_spaces + "mie_scattering_scale")
 
     with open(filename, 'w') as f:
