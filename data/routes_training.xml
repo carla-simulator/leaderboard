@@ -1870,12 +1870,12 @@
          <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
             <trigger_point x="3942.7" y="1194.3" z="338.6" yaw="-90.4"/>
             <distance value="130"/>
-            <frequency from="55" to="180"/>
+            <frequency from="55" to="165"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="3878.3" y="571.9" z="337.1" yaw="-127.0"/>
             <distance value="100"/>
-            <frequency from="75" to="220"/>
+            <frequency from="75" to="200"/>
          </scenario>
          <scenario name="InterurbanActorFlow_1" type="InterurbanActorFlow">
             <trigger_point x="3743.7" y="67.8" z="330.5" yaw="-96.3"/>
@@ -1887,7 +1887,7 @@
          <scenario name="ParkedObstacleTwoWays_2" type="ParkedObstacleTwoWays">
             <trigger_point x="3436.8" y="-294.6" z="327.0" yaw="180.1"/>
             <distance value="120"/>
-            <frequency from="65" to="210"/>
+            <frequency from="65" to="195"/>
          </scenario>
          <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="2373.4" y="-180.9" z="333.4" yaw="90.4"/>
@@ -1941,12 +1941,12 @@
          <scenario name="ParkedObstacleTwoWays_5" type="ParkedObstacleTwoWays">
             <trigger_point x="3940.4" y="873.2" z="342.3" yaw="-90.4"/>
             <distance value="80"/>
-            <frequency from="65" to="160"/>
+            <frequency from="65" to="150"/>
          </scenario>
          <scenario name="AccidentTwoWays_5" type="AccidentTwoWays">
             <trigger_point x="3809.8" y="368.8" z="334.2" yaw="-98.4"/>
             <distance value="90"/>
-            <frequency from="65" to="165"/>
+            <frequency from="65" to="145"/>
          </scenario>
          <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="3485.8" y="-220" z="323.5" yaw="269.5"/>
@@ -1983,7 +1983,7 @@
          <scenario name="ConstructionObstacleTwoWays_4" type="ConstructionObstacleTwoWays">
             <trigger_point x="3116.5" y="-294.9" z="329.4" yaw="180.1"/>
             <distance value="115"/>
-            <frequency from="65" to="140"/>
+            <frequency from="65" to="130"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="2374.6" y="-125.7" z="335.9" yaw="88.0"/>
@@ -1991,7 +1991,7 @@
          <scenario name="AccidentTwoWays_6" type="AccidentTwoWays">
             <trigger_point x="2455.8" y="-92.7" z="333.7" yaw="0.4"/>
             <distance value="95"/>
-            <frequency from="60" to="150"/>
+            <frequency from="60" to="145"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="2624.8" y="-91.6" z="330.2" yaw="0.4"/>
@@ -2010,7 +2010,7 @@
          <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
             <trigger_point x="3740.0" y="-356.3" z="323.4" yaw="-89.2"/>
             <distance value="130"/>
-            <frequency from="60" to="145"/>
+            <frequency from="60" to="140"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="3743.4" y="-652.5" z="319.7" yaw="-90.4"/>
@@ -2018,12 +2018,12 @@
          <scenario name="ConstructionObstacleTwoWays_6" type="ConstructionObstacleTwoWays">
             <trigger_point x="3739.9" y="-789.4" z="319.7" yaw="-92.5"/>
             <distance value="120"/>
-            <frequency from="65" to="145"/>
+            <frequency from="65" to="135"/>
          </scenario>
          <scenario name="AccidentTwoWays_7" type="AccidentTwoWays">
             <trigger_point x="3732.4" y="-1054.9" z="320.1" yaw="-90.7"/>
             <distance value="110"/>
-            <frequency from="60" to="140"/>
+            <frequency from="60" to="130"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
             <trigger_point x="3640.7" y="-1578.9" z="312.6" yaw="-128.3"/>
@@ -2037,7 +2037,7 @@
          <scenario name="ParkedObstacleTwoWays_7" type="ParkedObstacleTwoWays">
             <trigger_point x="3152.3" y="-1732.3" z="321.5" yaw="178.9"/>
             <distance value="120"/>
-            <frequency from="65" to="160"/>
+            <frequency from="65" to="145"/>
          </scenario>
          <scenario name="InvadingTurn_2" type="InvadingTurn">
             <trigger_point x="2954.2" y="-1728.3" z="324.7" yaw="178.5"/>
@@ -2057,8 +2057,8 @@
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_2" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="2844.0" y="-295.3" z="324.7" yaw="180.1"/>
-            <flow_speed value="14"/>
-            <source_dist_interval from="20" to="50"/>
+            <flow_speed value="12"/>
+            <source_dist_interval from="20" to="55"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="2783.4" y="-329.0" z="326.1" yaw="270.0"/>
