@@ -774,13 +774,10 @@
             <flow_speed value="10"/>
             <source_dist_interval from="15" to="40"/>
          </scenario>
-         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
-            <trigger_point x="-709.4" y="4033.9" z="370.0" yaw="269.9"/>
-         </scenario>
          <scenario name="SignalizedJunctionRightTurn_4" type="SignalizedJunctionRightTurn">
             <trigger_point x="-775.4" y="3979.5" z="368.4" yaw="179.9"/>
             <flow_speed value="15"/>
-            <source_dist_interval from="25" to="50"/>
+            <source_dist_interval from="25" to="70"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="-582.0" y="4195.3" z="373.0" yaw="-0.1"/>
@@ -794,18 +791,18 @@
          <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-656.9" y="4409.0" z="373.0" yaw="-0.1"/>
             <distance value="50"/>
-            <frequency value="75"/>
+            <frequency value="95"/>
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="8"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
             <trigger_point x="-495.4" y="4353.0" z="374.1" yaw="269.9"/>
             <flow_speed value="16"/>
-            <source_dist_interval from="20" to="60"/>
+            <source_dist_interval from="20" to="70"/>
          </scenario>
          <scenario name="ParkedObstacle_1" type="ParkedObstacle">
             <trigger_point x="-434.9" y="4303.4" z="373.9" yaw="-0.3"/>
-            <distance value="80"/>
+            <distance value="50"/>
             <speed value="60"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
@@ -815,13 +812,10 @@
             <trigger_point x="-147.2" y="4301.7" z="373.0" yaw="-0.3"/>
             <speed value="50"/>
          </scenario>
-         <scenario name="HardBreakRoute_6" type="HardBreakRoute">
-            <trigger_point x="-29.0" y="4301.0" z="372.5" yaw="-0.3"/>
-         </scenario>
-         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="SignalizedJunctionLeftTurn_2" type="SignalizedJunctionLeftTurn">
             <trigger_point x="179.4" y="4296.6" z="371.5" yaw="-0.3"/>
             <flow_speed value="14"/>
-            <source_dist_interval from="15" to="50"/>
+            <source_dist_interval from="15" to="70"/>
          </scenario>
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
             <trigger_point x="251.5" y="4250.2" z="371.1" yaw="-90.1"/>
@@ -853,10 +847,10 @@
          <scenario name="PedestrianCrossing_6" type="PedestrianCrossing">
             <trigger_point x="-70.3" y="3529.4" z="364.2" yaw="-90.1"/>
          </scenario>
-         <scenario name="NonSignalizedJunctionRightTurn_5" type="NonSignalizedJunctionRightTurn">
+         <scenario name="SignalizedJunctionRightTurn_5" type="SignalizedJunctionRightTurn">
             <trigger_point x="-179.3" y="3661.3" z="366.1" yaw="89.6"/>
             <flow_speed value="10"/>
-            <source_dist_interval from="15" to="40"/>
+            <source_dist_interval from="15" to="60"/>
          </scenario>
          <scenario name="ParkingCrossingPedestrian_12" type="ParkingCrossingPedestrian">
             <trigger_point x="-283.6" y="3670.6" z="368.1" yaw="-90.4"/>
