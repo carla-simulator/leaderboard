@@ -694,11 +694,6 @@
             <direction value="right"/>
          </scenario>
          <scenario name="SignalizedJunctionRightTurn_3" type="SignalizedJunctionRightTurn">
-            <trigger_point x="-670.5" y="4085.9" z="370.9" yaw="179.8"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="15" to="40"/>
-         </scenario>
-         <scenario name="SignalizedJunctionRightTurn_4" type="SignalizedJunctionRightTurn">
             <trigger_point x="-775.4" y="3979.5" z="368.4" yaw="179.9"/>
             <flow_speed value="15"/>
             <source_dist_interval from="25" to="70"/>
@@ -839,7 +834,7 @@
             <trigger_point x="-179.7" y="3589.4" z="366.3" yaw="89.6"/>
             <direction value="left"/>
          </scenario>
-         <scenario name="SignalizedJunctionRightTurn_5" type="SignalizedJunctionRightTurn">
+         <scenario name="SignalizedJunctionRightTurn_4" type="SignalizedJunctionRightTurn">
             <trigger_point x="-179.3" y="3661.3" z="366.1" yaw="89.6"/>
             <flow_speed value="10"/>
             <source_dist_interval from="15" to="60"/>
@@ -2066,14 +2061,6 @@
             <flow_speed value="15"/>
             <source_dist_interval from="25" to="80"/>
          </scenario>
-         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
-            <trigger_point x="2395.9" y="-1678.3" z="335.1" yaw="179.7"/>
-         </scenario>
-         <scenario name="ParkedObstacleTwoWays_8" type="ParkedObstacleTwoWays">
-            <trigger_point x="2368.8" y="-1603.4" z="336.9" yaw="89.4"/>
-            <distance value="100"/>
-            <frequency from="50" to="105"/>
-         </scenario>
       </scenarios>
    </route>
    <route id="7" town="Town12">
@@ -2107,9 +2094,6 @@
             <trigger_point x="2465.6" y="-1458.4" z="339.9" yaw="180.0"/>
             <flow_speed value="13"/>
             <source_dist_interval from="50" to="65"/>
-         </scenario>
-         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
-            <trigger_point x="2400.3" y="-1458.4" z="339.8" yaw="180.0"/>
          </scenario>
          <scenario name="InterurbanAdvancedActorFlow_1" type="InterurbanAdvancedActorFlow">
             <trigger_point x="2372.9" y="-1525.9" z="337.2" yaw="269.4"/>
@@ -7937,10 +7921,6 @@
             <distance value="200"/>
             <offset value="0.3"/>
          </scenario>
-         <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
-            <trigger_point x="-2730.3" y="2383.6" z="347.1" yaw="37.3"/>
-            <frequency from="40" to="90"/>
-         </scenario>
          <scenario name="InvadingTurn_7" type="InvadingTurn">
             <trigger_point x="-2586.3" y="2367.0" z="341.2" yaw="330.0"/>
             <distance value="150"/>
@@ -7959,7 +7939,7 @@
             <bicycle_drive_distance value="40"/>
             <bicycle_speed value="9"/>
          </scenario>
-         <scenario name="ParkedObstacleTwoWays_7" type="ParkedObstacleTwoWays">
+         <scenario name="ParkedObstacleTwoWays_6" type="ParkedObstacleTwoWays">
             <trigger_point x="-2770.5" y="2621.3" z="345.3" yaw="96.5"/>
             <frequency from="40" to="100"/>
          </scenario>
@@ -7974,12 +7954,6 @@
          </scenario>
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="-2843.5" y="2988.1" z="351.7" yaw="111.5"/>
-         </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_8" type="HazardAtSideLaneTwoWays">
-            <trigger_point x="-2925.3" y="3163.4" z="350.1" yaw="92.4"/>
-            <frequency value="100"/>
-            <bicycle_drive_distance value="60"/>
-            <bicycle_speed value="5"/>
          </scenario>
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
             <trigger_point x="-2913.3" y="3333.9" z="348.0" yaw="121.3"/>
@@ -8050,7 +8024,7 @@
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-1899.2" y="1429.8" z="328.3" yaw="210.7"/>
             <distance value="50"/>
-            <blocker_model value="vehicle.static.patrol_2021"/>
+            <blocker_model value="vehicle.nissan.patrol_2021"/>
             <crossing_angle value="15"/>
          </scenario>
          <scenario name="InvadingTurn_1" type="InvadingTurn">
@@ -8135,12 +8109,6 @@
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="8"/>
          </scenario>
-         <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
-            <trigger_point x="-3356.5" y="1027.3" z="342.8" yaw="108.6"/>
-            <distance value="50"/>
-            <blocker_model value="static.prop.container"/>
-            <crossing_angle value="12"/>
-         </scenario>
          <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="-3389.7" y="1098.2" z="344.4" yaw="116.7"/>
          </scenario>
@@ -8162,7 +8130,7 @@
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
             <trigger_point x="-3744.0" y="967.3" z="344.1" yaw="-115.6"/>
             <distance value="55"/>
-            <blocker_model value="static.prop.busstoplb"/>
+            <blocker_model value="vehicle.mini.cooper_s"/>
             <crossing_angle value="15"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_3" type="ParkedObstacleTwoWays">
@@ -8198,7 +8166,7 @@
          <scenario name="HazardAtSideLaneTwoWays_8" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-3431.8" y="1258.1" z="346.5" yaw="92.8"/>
             <distance value="90"/>
-            <frequency from="50" to="115"/>
+            <frequency value="90"/>
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="8"/>
          </scenario>
@@ -8215,10 +8183,6 @@
             <distance value="45"/>
             <blocker_model value="vehicle.tesla.model3"/>
             <crossing_angle value="5"/>
-         </scenario>
-         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
-            <trigger_point x="-3550.8" y="1676.3" z="347.1" yaw="165.8"/>
-            <direction value="left"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_9" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-3653.3" y="1718.5" z="340.0" yaw="152.4"/>
@@ -16448,7 +16412,7 @@
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
             <trigger_point x="-1899.2" y="1429.8" z="328.3" yaw="210.7"/>
             <distance value="50"/>
-            <blocker_model value="vehicle.static.patrol_2021"/>
+            <blocker_model value="vehicle.nissan.patrol_2021"/>
             <crossing_angle value="15"/>
          </scenario>
          <scenario name="InvadingTurn_1" type="InvadingTurn">
