@@ -84,8 +84,8 @@ class LeaderboardEvaluator(object):
 
         dist = pkg_resources.get_distribution("carla")
         if dist.version != 'leaderboard':
-            if LooseVersion(dist.version) < LooseVersion('0.9.10'):
-                raise ImportError("CARLA version 0.9.10.1 or newer required. CARLA version found: {}".format(dist))
+            if LooseVersion(dist.version) < LooseVersion('0.9.13'):
+                raise ImportError("CARLA version 0.9.13 or newer required. CARLA version found: {}".format(dist))
 
         # Load agent
         module_name = os.path.basename(args.agent).split('.')[0]
@@ -150,7 +150,7 @@ class LeaderboardEvaluator(object):
         # Simulation still running and in synchronous mode?
         a_watchdog_running = self._get_running_status()
         sm_watchdog_running = hasattr(self, 'manager') and self.manager.get_running_status()
-        if not a_watchdog_running or (not sm_watchdog_running and hasattr(self, 'world') and self.world):
+        if not a_watchdog_running or (sm_watchdog_running and hasattr(self, 'world') and self.world):
             # Reset to asynchronous mode
             self.world.tick()  # TODO: Make sure all scenario actors have been destroyed
             settings = self.world.get_settings()
@@ -399,7 +399,7 @@ def main():
     parser.add_argument('--traffic-manager-seed', default=0, type=int,
                         help='Seed used by the TrafficManager (default: 0)')
     parser.add_argument('--debug', type=int,
-                        help='Run with debug output', default=0)
+                       help='Run with debug output', default=0)
     parser.add_argument('--record', type=str, default='',
                         help='Use CARLA recording feature to create a recording of the scenario')
     parser.add_argument('--timeout', default=300.0, type=float,
