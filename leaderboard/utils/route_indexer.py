@@ -80,7 +80,7 @@ class RouteIndexer():
 
             check_index += 1
 
-        if "Crashed" in route_data[-1]['status']:
+        if "crashed" in route_data[-1]['status'].lower():
             self.index = max(0, progress[0] - 1)  # Repeat the last route
         else:
             self.index = progress[0]  # The crashed route wasn't saved, so start from the progress value
