@@ -1342,9 +1342,6 @@
             <flow_speed value="9"/>
             <source_dist_interval from="15" to="60"/>
          </scenario>
-         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
-            <trigger_point x="1783.3" y="1999.6" z="360.8" yaw="269.8"/>
-         </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="1780.8" y="2003.1" z="360.8" yaw="89.8"/>
          </scenario>
@@ -1403,7 +1400,7 @@
             <blocker_model value="static.prop.advertisement"/>
             <crossing_angle value="10"/>
          </scenario>
-         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
+         <scenario name="BlockedIntersection_2" type="BlockedIntersection">
             <trigger_point x="2150.0" y="1950.2" z="356.5" yaw="-0.2"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
@@ -1475,7 +1472,7 @@
             <bicycle_drive_distance value="60"/>
             <bicycle_speed value="10"/>
          </scenario>
-         <scenario name="BlockedIntersection_4" type="BlockedIntersection">
+         <scenario name="BlockedIntersection_3" type="BlockedIntersection">
             <trigger_point x="2653.2" y="2370.5" z="360.3" yaw="89.9"/>
          </scenario>
          <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
@@ -1528,7 +1525,7 @@
          <scenario name="HardBreakRoute_8" type="HardBreakRoute">
             <trigger_point x="2185.3" y="2464.3" z="364.8" yaw="90.1"/>
          </scenario>
-         <scenario name="BlockedIntersection_5" type="BlockedIntersection">
+         <scenario name="BlockedIntersection_4" type="BlockedIntersection">
             <trigger_point x="2185.2" y="2494.0" z="365.0" yaw="90.1"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
