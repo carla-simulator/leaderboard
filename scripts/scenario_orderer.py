@@ -115,7 +115,7 @@ def main():
             with open(full_name, 'r') as f:
                 map_contents = f.read()
             tmap = carla.Map(route_town, map_contents)
-            grp = GlobalRoutePlanner(tmap, 20.0)
+            grp = GlobalRoutePlanner(tmap, 5.0)
         prev_town = route_town
 
         # Extract all the route
