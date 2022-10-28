@@ -225,7 +225,7 @@ def show_saved_scenarios(filename, route_id, world):
         for scenario in route.find('scenarios').iter('scenario'):
             name = scenario.attrib.get('name')
             trigger_location = convert_elem_to_location(scenario.find('trigger_point'))
-            world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
+            world.debug.draw_point(trigger_location + carla.Location(z=0.2), size=0.1, color=carla.Color(125, 0, 0))
             world.debug.draw_string(trigger_location + carla.Location(z=0.5), name, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
 
     if not found_id:
@@ -241,7 +241,7 @@ def get_scenario_type(tmap, world, spectator):
             break
 
     wp = tmap.get_waypoint(spectator.get_location())
-    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
+    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.1, color=carla.Color(125, 0, 0))
     world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
     trigger_point = (
         str(round(wp.transform.location.x, 1)),
@@ -274,7 +274,7 @@ def get_attributes_data(scen_type, trigger_point, tmap, world, spectator):
 def get_transform_data(a_name, scen_type, tmap, world, spectator):
     input(f"\033[1m> Enter the '{a_name}' transform \033[0m")
     wp = tmap.get_waypoint(spectator.get_location())
-    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
+    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.1, color=carla.Color(125, 0, 0))
     world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
     return (
         str(round(wp.transform.location.x, 1)),
@@ -295,7 +295,7 @@ def get_location_data(a_name, scen_type, tmap, world, spectator, a_type):
         lane_type = carla.LaneType.Driving
 
     wp = tmap.get_waypoint(spectator.get_location(), lane_type=lane_type)
-    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.3, color=carla.Color(125, 0, 0))
+    world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.1, color=carla.Color(125, 0, 0))
     world.debug.draw_string(wp.transform.location + carla.Location(z=0.5), scen_type, True, color=carla.Color(0, 0 , 125), life_time=LIFE_TIME)
 
     loc =  (
