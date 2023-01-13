@@ -144,10 +144,6 @@ class AgentWrapper(object):
             attributes['image_size_x'] = str(sensor_spec['width'])
             attributes['image_size_y'] = str(sensor_spec['height'])
             attributes['fov'] = str(sensor_spec['fov'])
-            attributes['lens_circle_multiplier'] = str(3.0)
-            attributes['lens_circle_falloff'] = str(3.0)
-            attributes['chromatic_aberration_intensity'] = str(0.5)
-            attributes['chromatic_aberration_offset'] = str(0)
 
             sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
                                              z=sensor_spec['z'])
