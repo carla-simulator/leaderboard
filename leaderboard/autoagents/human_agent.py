@@ -124,6 +124,8 @@ class HumanAgent(AutonomousAgent):
         self._controller = KeyboardControl(path_to_conf_file)
         self._prev_timestamp = 0
 
+        self._clock = pygame.time.Clock()
+
     def sensors(self):
         """
         Define the sensor suite required by the agent
@@ -165,6 +167,7 @@ class HumanAgent(AutonomousAgent):
         """
         Execute one step of navigation.
         """
+        self._clock.tick_busy_loop(20)
         self.agent_engaged = True
         self._hic.run_interface(input_data)
 
