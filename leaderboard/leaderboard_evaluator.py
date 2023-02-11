@@ -165,7 +165,7 @@ class LeaderboardEvaluator(object):
                                                                              vehicle.transform,
                                                                              vehicle.rolename,
                                                                              color=vehicle.color,
-                                                                             vehicle_category=vehicle.category))
+                                                                             actor_category=vehicle.category))
 
         else:
             ego_vehicle_missing = True
