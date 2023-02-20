@@ -600,11 +600,6 @@
             <distance value="70"/>
             <frequency from="35" to="110"/>
          </scenario>
-         <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
-            <trigger_point x="5734.3" y="4509.7" z="160.7" yaw="0.1"/>
-            <distance value="80"/>
-            <frequency from="35" to="110"/>
-         </scenario>
          <scenario name="InvadingTurn_1" type="InvadingTurn">
             <trigger_point x="6525.1" y="4247.7" z="171.6" yaw="-178.8"/>
             <distance value="120"/>
@@ -735,59 +730,59 @@
             <distance value="70"/>
             <frequency from="35" to="100"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_8" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_9" type="ParkingCrossingPedestrian">
             <trigger_point x="5777.5" y="4941.4" z="162.5" yaw="90.9"/>
             <distance value="50"/>
             <direction value="right"/>
             <crossing_angle value="2"/>
          </scenario>
-         <scenario name="PedestrianCrossing_6" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_8" type="PedestrianCrossing">
             <trigger_point x="5776.8" y="4989.7" z="162.5" yaw="90.9"/>
          </scenario>
-         <scenario name="PedestrianCrossing_7" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_9" type="PedestrianCrossing">
             <trigger_point x="5775.2" y="5098.2" z="162.3" yaw="90.9"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_9" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_10" type="ParkingCrossingPedestrian">
             <trigger_point x="5775.3" y="5094.0" z="162.3" yaw="90.9"/>
             <distance value="50"/>
             <direction value="right"/>
             <crossing_angle value="1"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_10" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_11" type="ParkingCrossingPedestrian">
             <trigger_point x="5751.3" y="5218.2" z="161.5" yaw="180.2"/>
             <distance value="45"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="ParkingCutIn_7" type="ParkingCutIn">
+         <scenario name="ParkingCutIn_8" type="ParkingCutIn">
             <trigger_point x="5593.2" y="5066.1" z="158.9" yaw="0.7"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="ParkingCutIn_8" type="ParkingCutIn">
+         <scenario name="ParkingCutIn_9" type="ParkingCutIn">
             <trigger_point x="5763.6" y="4759.3" z="162.0" yaw="180.4"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_11" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_12" type="ParkingCrossingPedestrian">
             <trigger_point x="5512.3" y="4509.4" z="158.3" yaw="0.1"/>
             <distance value="45"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_12" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_13" type="ParkingCrossingPedestrian">
             <trigger_point x="5596.5" y="4509.5" z="159.1" yaw="0.1"/>
             <distance value="50"/>
             <direction value="right"/>
             <crossing_angle value="3"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_13" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_14" type="ParkingCrossingPedestrian">
             <trigger_point x="6113.7" y="4510.1" z="167.2" yaw="0.1"/>
             <distance value="70"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_14" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_15" type="ParkingCrossingPedestrian">
             <trigger_point x="6323.0" y="4531.7" z="171.2" yaw="90.9"/>
             <distance value="70"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="PedestrianCrossing_8" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_10" type="PedestrianCrossing">
             <trigger_point x="6320.7" y="4676.1" z="172.2" yaw="90.9"/>
          </scenario>
          <scenario name="VehicleOpensDoorTwoWays_5" type="VehicleOpensDoorTwoWays">
@@ -795,36 +790,36 @@
             <distance value="75"/>
             <frequency from="40" to="110"/>
          </scenario>
-         <scenario name="PedestrianCrossing_9" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_11" type="PedestrianCrossing">
             <trigger_point x="6315.8" y="4985.8" z="172.7" yaw="90.9"/>
          </scenario>
-         <scenario name="ParkingCutIn_9" type="ParkingCutIn">
+         <scenario name="ParkingCutIn_10" type="ParkingCutIn">
             <trigger_point x="6331.6" y="5223.3" z="172.0" yaw="0.2"/>
             <direction value="right"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
             <trigger_point x="6429.8" y="5223.6" z="173.7" yaw="0.2"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_15" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_16" type="ParkingCrossingPedestrian">
             <trigger_point x="6496.4" y="5197.8" z="175.0" yaw="270.9"/>
             <distance value="55"/>
             <direction value="right"/>
             <crossing_angle value="5"/>
          </scenario>
-         <scenario name="PedestrianCrossing_10" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_12" type="PedestrianCrossing">
             <trigger_point x="6497.0" y="5157.1" z="175.2" yaw="270.9"/>
          </scenario>
-         <scenario name="ParkingCutIn_10" type="ParkingCutIn">
+         <scenario name="ParkingCutIn_11" type="ParkingCutIn">
             <trigger_point x="6498.5" y="5056.1" z="175.7" yaw="270.9"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_16" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_17" type="ParkingCrossingPedestrian">
             <trigger_point x="6499.5" y="4996.8" z="175.9" yaw="270.9"/>
             <distance value="65"/>
             <direction value="right"/>
             <crossing_angle value="3"/>
          </scenario>
-         <scenario name="PedestrianCrossing_11" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_13" type="PedestrianCrossing">
             <trigger_point x="6501.0" y="4898.6" z="176.0" yaw="270.9"/>
          </scenario>
          <scenario name="VehicleOpensDoorTwoWays_6" type="VehicleOpensDoorTwoWays">
@@ -847,17 +842,17 @@
          <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
             <trigger_point x="5787.0" y="4304.7" z="160.5" yaw="90.9"/>
          </scenario>
-         <scenario name="ParkingCrossingPedestrian_17" type="ParkingCrossingPedestrian">
+         <scenario name="ParkingCrossingPedestrian_8" type="ParkingCrossingPedestrian">
             <trigger_point x="6045.3" y="4507.0" z="165.9" yaw="180.1"/>
             <distance value="70"/>
          </scenario>
-         <scenario name="PedestrianCrossing_12" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_6" type="PedestrianCrossing">
             <trigger_point x="5943.3" y="4506.9" z="164.0" yaw="180.1"/>
          </scenario>
-         <scenario name="ParkingCutIn_11" type="ParkingCutIn">
+         <scenario name="ParkingCutIn_7" type="ParkingCutIn">
             <trigger_point x="5783.0" y="4574.7" z="161.7" yaw="90.9"/>
          </scenario>
-         <scenario name="PedestrianCrossing_13" type="PedestrianCrossing">
+         <scenario name="PedestrianCrossing_7" type="PedestrianCrossing">
             <trigger_point x="5782.4" y="4613.2" z="161.8" yaw="90.9"/>
          </scenario>
       </scenarios>
