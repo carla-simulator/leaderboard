@@ -1822,6 +1822,10 @@
          <scenario name="ControlLoss_7" type="ControlLoss">
             <trigger_point x="2399.2" y="5157.2" z="172.6" yaw="91.8"/>
          </scenario>
+         <scenario name="HighwayCutIn_1" type="HighwayCutIn">
+            <trigger_point x="340.4" y="6096.3" z="165.3" yaw="-174.0"/>
+            <other_actor_location x="337.3" y="6062.3" z="165.2"/>
+         </scenario>
       </scenarios>
    </route>
    <route id="4" town="Town13">
@@ -1933,7 +1937,7 @@
             <offset value="0.4"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
-            <trigger_point x="-1024.7" y="4752.9" z="146.6" yaw="205.6"/>
+            <trigger_point x="-1075.98" y="4728.33" z="146.95" yaw="205.57"/>
             <distance value="88"/>
             <frequency value="40"/>
             <bicycle_drive_distance value="95"/>
@@ -2098,7 +2102,7 @@
             <trigger_point x="443.9" y="4833.6" z="165.8" yaw="150.3"/>
          </scenario>
          <scenario name="HardBreakRoute_8" type="HardBreakRoute">
-            <trigger_point x="-1144.0" y="4694.1" z="147.6" yaw="209.3"/>
+            <trigger_point x="-1308.74" y="4566.17" z="149.97" yaw="226.34"/>
          </scenario>
          <scenario name="ControlLoss_11" type="ControlLoss">
             <trigger_point x="-1154.5" y="4688.1" z="147.7" yaw="210.3"/>
