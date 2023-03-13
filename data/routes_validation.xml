@@ -2183,28 +2183,13 @@
             <flow_speed value="9"/>
             <source_dist_interval from="12" to="48"/>
          </scenario>
-         <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-2229.8" y="-508.6" z="164.8" yaw="0.2"/>
             <flow_speed value="14"/>
             <source_dist_interval from="17" to="60"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-1901.9" y="-781.9" z="156.0" yaw="180.1"/>
-         </scenario>
-         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
-            <trigger_point x="-1942.8" y="-736.6" z="157.0" yaw="89.9"/>
-         </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-2004.2" y="-680.0" z="158.6" yaw="179.7"/>
-         </scenario>
          <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
-            <trigger_point x="-2262.2" y="-511.4" z="165.3" yaw="-179.8"/>
-         </scenario>
-         <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="-2315.9" y="-717.2" z="163.0" yaw="-90.2"/>
-         </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-2474.1" y="-571.3" z="167.4" yaw="89.8"/>
          </scenario>
          <scenario name="InterurbanAdvancedActorFlow_1" type="InterurbanAdvancedActorFlow">
             <trigger_point x="-2151.7" y="-894.2" z="158.2" yaw="270.1"/>
@@ -2285,36 +2270,28 @@
             <distance value="170"/>
             <offset value="0.6"/>
          </scenario>
-         <scenario name="Accident_1" type="Accident">
-            <trigger_point x="-2418.3" y="-2730.6" z="154.4" yaw="19.6"/>
-            <distance value="75"/>
-            <speed value="50"/>
-         </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
-            <trigger_point x="-2315.3" y="-553.1" z="165.6" yaw="-90.2"/>
-         </scenario>
-         <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="-2152.1" y="-528.0" z="163.2" yaw="270.1"/>
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-2152.0" y="-561.8" z="162.7" yaw="270.1"/>
          </scenario>
-         <scenario name="ControlLoss_3" type="ControlLoss">
+         <scenario name="ControlLoss_2" type="ControlLoss">
             <trigger_point x="-2366.6" y="-1007.0" z="159.4" yaw="180.5"/>
          </scenario>
-         <scenario name="ControlLoss_4" type="ControlLoss">
+         <scenario name="ControlLoss_3" type="ControlLoss">
             <trigger_point x="-3656.3" y="-1017.3" z="163.4" yaw="180.5"/>
          </scenario>
-         <scenario name="ControlLoss_5" type="ControlLoss">
+         <scenario name="ControlLoss_4" type="ControlLoss">
             <trigger_point x="-3508.7" y="-2858.3" z="159.8" yaw="-0.0"/>
          </scenario>
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
-            <trigger_point x="-3503.8" y="-2858.3" z="159.8" yaw="-0.0"/>
+            <trigger_point x="-3450.69" y="-2858.31" z="159.28" yaw="-0.02"/>
          </scenario>
-         <scenario name="ControlLoss_6" type="ControlLoss">
+         <scenario name="ControlLoss_5" type="ControlLoss">
             <trigger_point x="-1949.1" y="-2499.2" z="154.3" yaw="33.7"/>
          </scenario>
-         <scenario name="ControlLoss_7" type="ControlLoss">
+         <scenario name="ControlLoss_6" type="ControlLoss">
             <trigger_point x="-1600.8" y="-2228.0" z="156.3" yaw="39.2"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
@@ -2354,7 +2331,7 @@
             <trigger_point x="-1461.0" y="-2105.6" z="157.2" yaw="38.4"/>
             <distance value="140"/>
          </scenario>
-         <scenario name="Accident_2" type="Accident">
+         <scenario name="Accident_1" type="Accident">
             <trigger_point x="-1168.1" y="-1894.6" z="160.0" yaw="32.5"/>
             <distance value="80"/>
             <speed value="60"/>
@@ -2399,17 +2376,32 @@
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
             <trigger_point x="-146.6" y="-1485.5" z="168.0" yaw="-56.8"/>
          </scenario>
-         <scenario name="ControlLoss_8" type="ControlLoss">
+         <scenario name="ControlLoss_7" type="ControlLoss">
             <trigger_point x="-982.9" y="-1776.5" z="162.0" yaw="32.5"/>
          </scenario>
-         <scenario name="ControlLoss_9" type="ControlLoss">
+         <scenario name="ControlLoss_8" type="ControlLoss">
             <trigger_point x="-157.0" y="-1469.6" z="168.0" yaw="-56.8"/>
          </scenario>
-         <scenario name="ControlLoss_10" type="ControlLoss">
+         <scenario name="ControlLoss_9" type="ControlLoss">
             <trigger_point x="-70.4" y="-1602.2" z="168.3" yaw="-56.8"/>
          </scenario>
-         <scenario name="ControlLoss_11" type="ControlLoss">
+         <scenario name="ControlLoss_10" type="ControlLoss">
             <trigger_point x="955.6" y="-2404.9" z="155.1" yaw="211.4"/>
+         </scenario>
+         <scenario name="StaticCutIn_1" type="StaticCutIn">
+            <trigger_point x="-2367.6" y="-2711.8" z="154.3" yaw="21.1"/>
+            <distance value="80"/>
+         </scenario>
+         <scenario name="BlockedIntersection_1" type="BlockedIntersection">
+            <trigger_point x="-1896.1" y="-781.9" z="155.9" yaw="180.1"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="-2004.5" y="-680.0" z="158.6" yaw="179.7"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_1" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="-2474.1" y="-580.2" z="167.3" yaw="89.8"/>
+            <flow_speed value="13"/>
+            <source_dist_interval from="10" to="88"/>
          </scenario>
       </scenarios>
    </route>
@@ -2466,12 +2458,7 @@
             <flow_speed value="14"/>
             <source_dist_interval from="18" to="55"/>
          </scenario>
-         <scenario name="NonSignalizedJunctionRightTurn_4" type="NonSignalizedJunctionRightTurn">
-            <trigger_point x="-1112.0" y="613.6" z="151.3" yaw="-89.8"/>
-            <flow_speed value="14"/>
-            <source_dist_interval from="20" to="55"/>
-         </scenario>
-         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="NonSignalizedJunctionLeftTurn_5" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-1724.9" y="1942.3" z="151.4" yaw="185.3"/>
             <flow_speed value="11"/>
             <source_dist_interval from="15" to="50"/>
@@ -2479,15 +2466,9 @@
          <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
             <trigger_point x="-1453.1" y="-111.6" z="154.5" yaw="269.2"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-1659.5" y="81.4" z="158.3" yaw="97.5"/>
-         </scenario>
          <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
             <trigger_point x="-1526.4" y="127.5" z="156.3" yaw="0.0"/>
             <direction value="left"/>
-         </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_2" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-1300.9" y="312.3" z="153.5" yaw="108.5"/>
          </scenario>
          <scenario name="VehicleTurningRoute_3" type="VehicleTurningRoute">
             <trigger_point x="-457.7" y="863.3" z="149.8" yaw="32.2"/>
@@ -2647,24 +2628,13 @@
             <flow_speed value="9"/>
             <source_dist_interval from="18" to="55"/>
          </scenario>
-         <scenario name="NonSignalizedJunctionRightTurn_3" type="NonSignalizedJunctionRightTurn">
-            <trigger_point x="-1102.2" y="484.1" z="151.5" yaw="110.0"/>
-            <flow_speed value="12"/>
-            <source_dist_interval from="20" to="55"/>
-         </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_3" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-1336.4" y="518.3" z="153.7" yaw="194.4"/>
-         </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_4" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="-1432.0" y="610.6" z="154.6" yaw="110.3"/>
-         </scenario>
          <scenario name="BlockedIntersection_1" type="BlockedIntersection">
             <trigger_point x="-1293.2" y="678.9" z="152.6" yaw="0.5"/>
          </scenario>
          <scenario name="VehicleTurningRoute_2" type="VehicleTurningRoute">
             <trigger_point x="-1227.1" y="908.0" z="150.8" yaw="90.1"/>
          </scenario>
-         <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
+         <scenario name="NonSignalizedJunctionLeftTurn_6" type="NonSignalizedJunctionLeftTurn">
             <trigger_point x="-1405.6" y="2634.0" z="147.8" yaw="191.5"/>
             <flow_speed value="10"/>
             <source_dist_interval from="18" to="45"/>
@@ -2772,6 +2742,21 @@
          </scenario>
          <scenario name="ControlLoss_16" type="ControlLoss">
             <trigger_point x="-2126.0" y="2868.7" z="152.1" yaw="125.1"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_3" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="-1298.4" y="304.6" z="153.5" yaw="108.1"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="10" to="85"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_2" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="-1658.7" y="75.2" z="158.3" yaw="97.5"/>
+            <flow_speed value="8"/>
+            <source_dist_interval from="10" to="78"/>
+         </scenario>
+         <scenario name="NonSignalizedJunctionLeftTurn_4" type="NonSignalizedJunctionLeftTurn">
+            <trigger_point x="-1429.0" y="602.6" z="154.6" yaw="111.3"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="69"/>
          </scenario>
       </scenarios>
    </route>
