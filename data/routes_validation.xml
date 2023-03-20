@@ -153,9 +153,6 @@
             <distance value="60"/>
             <frequency from="45" to="120"/>
          </scenario>
-         <scenario name="PedestrianCrossing_10" type="PedestrianCrossing">
-            <trigger_point x="2965.64" y="814.14" z="169.30" yaw="89.12"/>
-         </scenario>
          <scenario name="PedestrianCrossing_9" type="PedestrianCrossing">
             <trigger_point x="2968.90" y="637.11" z="169.53" yaw="93.64"/>
          </scenario>
@@ -3077,13 +3074,6 @@
             <distance value="75"/>
             <frequency from="50" to="100"/>
          </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
-            <trigger_point x="-4150.0" y="1355.8" z="165.1" yaw="244.7"/>
-            <distance value="70"/>
-            <frequency value="76"/>
-            <bicycle_drive_distance value="90"/>
-            <bicycle_speed value="9"/>
-         </scenario>
          <scenario name="AccidentTwoWays_4" type="AccidentTwoWays">
             <trigger_point x="-4270.5" y="1100.0" z="166.8" yaw="246.3"/>
             <distance value="75"/>
@@ -3154,9 +3144,6 @@
          <scenario name="HardBreakRoute_11" type="HardBreakRoute">
             <trigger_point x="-4112.2" y="-59.4" z="172.9" yaw="0.1"/>
          </scenario>
-         <scenario name="HardBreakRoute_12" type="HardBreakRoute">
-            <trigger_point x="-4625.7" y="-188.9" z="165.8" yaw="-17.7"/>
-         </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
             <trigger_point x="-4169.4" y="4330.0" z="175.3" yaw="0.5"/>
          </scenario>
@@ -3221,7 +3208,7 @@
             <trigger_point x="-4724.1" y="-350.9" z="164.6" yaw="180.5"/>
          </scenario>
          <scenario name="ControlLoss_22" type="ControlLoss">
-            <trigger_point x="-4721.8" y="112.9" z="164.2" yaw="0.1"/>
+            <trigger_point x="-4706.34" y="112.92" z="164.45" yaw="0.11"/>
          </scenario>
          <scenario name="ControlLoss_23" type="ControlLoss">
             <trigger_point x="-4637.4" y="-185.2" z="165.7" yaw="-17.7"/>
@@ -3783,6 +3770,9 @@
       <scenarios>
          <scenario name="ParkingExit_1" type="ParkingExit">
             <trigger_point x="5581.6" y="3556.7" z="158.0" yaw="179.4"/>
+            <direction value="right"/>
+            <front_vehicle_distance value="9"/>
+            <behind_vehicle_distance value="9"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="5471.3" y="3557.8" z="158.5" yaw="179.4"/>
