@@ -330,7 +330,7 @@
             <trigger_point x="3346.6" y="557.4" z="174.1" yaw="270.1"/>
          </scenario>
          <scenario name="VehicleOpensDoorTwoWays_6" type="VehicleOpensDoorTwoWays">
-            <trigger_point x="3332.7" y="513.2" z="174.0" yaw="180.6"/>
+            <trigger_point x="3316.75" y="513.01" z="173.85" yaw="180.59"/>
             <distance value="80"/>
             <frequency from="45" to="80"/>
          </scenario>
@@ -3001,7 +3001,7 @@
             <blocker_model value="static.prop.haybalelb"/>
          </scenario>
          <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
-            <trigger_point x="-4107.6" y="4152.8" z="179.9" yaw="180.3"/>
+            <trigger_point x="-4114.76" y="4152.79" z="179.83" yaw="180.33"/>
             <distance value="66"/>
             <frequency from="38" to="58"/>
          </scenario>
@@ -3016,7 +3016,7 @@
             <offset value="0.6"/>
          </scenario>
          <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
-            <trigger_point x="-4154.2" y="3612.0" z="186.4" yaw="0.6"/>
+            <trigger_point x="-4142.48" y="3612.10" z="186.44" yaw="0.59"/>
             <distance value="75"/>
             <frequency from="40" to="83"/>
          </scenario>
@@ -3031,7 +3031,7 @@
             <frequency from="35" to="90"/>
          </scenario>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
-            <trigger_point x="-4108.8" y="3932.0" z="184.0" yaw="0.3"/>
+            <trigger_point x="-4096.69" y="3932.08" z="184.09" yaw="0.31"/>
             <distance value="75"/>
             <frequency from="40" to="110"/>
          </scenario>
@@ -3079,7 +3079,7 @@
             <distance value="75"/>
             <frequency from="40" to="90"/>
          </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
+         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-4339.1" y="707.3" z="169.1" yaw="273.9"/>
             <distance value="75"/>
             <frequency value="80"/>
