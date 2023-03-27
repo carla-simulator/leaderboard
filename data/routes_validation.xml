@@ -1802,9 +1802,6 @@
          <scenario name="HardBreakRoute_2" type="HardBreakRoute">
             <trigger_point x="1490.7" y="1112.4" z="156.5" yaw="357.8"/>
          </scenario>
-         <scenario name="HardBreakRoute_3" type="HardBreakRoute">
-            <trigger_point x="1644.0" y="1106.4" z="153.5" yaw="357.8"/>
-         </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="1991.3" y="1090.8" z="154.1" yaw="178.8"/>
             <distance value="88"/>
