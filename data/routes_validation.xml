@@ -2,7 +2,7 @@
    <route id="0" town="Town13">
       <!-- Urbanization route -->
       <weathers>
-      <!-- From slightly cloudy with a gentle breeze and a low-hanging fog to mild rain -->
+         <!-- From slightly cloudy with a gentle breeze and a low-hanging fog to mild rain -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
             wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
@@ -105,12 +105,12 @@
          </scenario>
          <scenario name="StaticCutIn_5" type="StaticCutIn">
             <trigger_point x="5060.9" y="1177.3" z="145.9" yaw="-136.4"/>
-            <distance value="100"/>
+            <distance value="120"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_6" type="StaticCutIn">
             <trigger_point x="4822.8" y="951.6" z="154.1" yaw="-136.6"/>
-            <distance value="80"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
@@ -257,21 +257,18 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="7057.3" y="3308.3" z="170.7" yaw="-90.2"/>
-            <distance value="70"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="7056.4" y="3046.2" z="168.4" yaw="269.8"/>
-            <distance value="75"/>
+            <distance value="100"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="5778.4" y="1725.8" z="147.1" yaw="215.4"/>
-            <distance value="65"/>
+            <distance value="100"/>
             <direction value="right"/>
-         </scenario>
-         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
-            <trigger_point x="5710.8" y="1676.9" z="146.7" yaw="216.4"/>
          </scenario>
          <scenario name="PedestrianCrossing_7" type="PedestrianCrossing">
             <trigger_point x="4266.89" y="1010.63" z="175.11" yaw="177.99"/>
@@ -311,7 +308,7 @@
          </scenario>
          <scenario name="StaticCutIn_4" type="StaticCutIn">
             <trigger_point x="5357.8" y="1416.0" z="144.1" yaw="216.5"/>
-            <distance value="80"/>
+            <distance value="120"/>
             <direction value="right"/>
          </scenario>
          <scenario name="ParkingCutIn_2" type="ParkingCutIn">
@@ -974,7 +971,7 @@
    <route id="2" town="Town13">
       <!-- Urbanization + residential -->
       <weathers>
-      <!-- From a clear day with a gentle breeze and light fog to a slightly cloudy dusk with low wind and moderately dense fog -->
+         <!-- From a clear day with a gentle breeze and light fog to a slightly cloudy dusk with low wind and moderately dense fog -->
          <weather route_percentage="0"
             cloudiness="0.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
             wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
@@ -1359,7 +1356,7 @@
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="2817.0" y="5654.5" z="160.8" yaw="-29.2"/>
-            <distance value="60"/>
+            <distance value="113"/>
             <direction value="right"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
@@ -1457,7 +1454,7 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="2847.2" y="2904.8" z="180.1" yaw="160.4"/>
-            <distance value="80"/>
+            <distance value="112"/>
             <direction value="right"/>
          </scenario>
          <scenario name="ControlLoss_9" type="ControlLoss">
@@ -3316,7 +3313,7 @@
    <route id="8" town="Town13">
       <!-- Rural + Highway -->
       <weathers>
-      <!-- From clear and sunny with a light breeze to partly cloudy -->
+         <!-- From clear and sunny with a light breeze to partly cloudy -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
             wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
@@ -3661,7 +3658,7 @@
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="-5733.9" y="3310.5" z="170.4" yaw="-94.4"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-2188.3" y="5905.4" z="153.5" yaw="176.2"/>
@@ -3734,12 +3731,12 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="-5584.7" y="5690.9" z="191.6" yaw="-129.1"/>
-            <distance value="80"/>
+            <distance value="100"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="-5675.9" y="5550.4" z="192.4" yaw="-116.8"/>
-            <distance value="82"/>
+            <distance value="102"/>
             <direction value="right"/>
          </scenario>
          <scenario name="Accident_1" type="Accident">
@@ -3761,7 +3758,7 @@
    <route id="9" town="Town13">
       <!-- Urban + residential -->
       <weathers>
-      <!-- From partly cloudy with strong winds and no precipitation to heavy rain with strong winds and mostly cloudy skies -->
+         <!-- From partly cloudy with strong winds and no precipitation to heavy rain with strong winds and mostly cloudy skies -->
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
             wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
@@ -4185,12 +4182,12 @@
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="4401.2" y="4442.0" z="147.9" yaw="90.3"/>
-            <distance value="77"/>
+            <distance value="100"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_4" type="StaticCutIn">
             <trigger_point x="4400.5" y="4603.4" z="147.5" yaw="90.3"/>
-            <distance value="78"/>
+            <distance value="109"/>
             <direction value="right"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
@@ -4262,12 +4259,12 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="5187.9" y="3073.5" z="154.0" yaw="180.3"/>
-            <distance value="80"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="4949.6" y="3072.4" z="152.0" yaw="180.3"/>
-            <distance value="83"/>
+            <distance value="120"/>
             <direction value="right"/>
          </scenario>
          <scenario name="HazardAtSideLane_1" type="HazardAtSideLane">
@@ -4287,12 +4284,12 @@
          </scenario>
          <scenario name="StaticCutIn_5" type="StaticCutIn">
             <trigger_point x="4345.0" y="5092.1" z="147.6" yaw="112.6"/>
-            <distance value="80"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_6" type="StaticCutIn">
             <trigger_point x="4220.8" y="5289.9" z="149.2" yaw="131.6"/>
-            <distance value="82"/>
+            <distance value="110"/>
             <direction value="right"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_12" type="VehicleTurningRoutePedestrian">
@@ -4409,12 +4406,12 @@
          </scenario>
          <scenario name="StaticCutIn_5" type="StaticCutIn">
             <trigger_point x="5060.9" y="1177.3" z="145.9" yaw="-136.4"/>
-            <distance value="100"/>
+            <distance value="120"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_6" type="StaticCutIn">
             <trigger_point x="4822.8" y="951.6" z="154.1" yaw="-136.6"/>
-            <distance value="80"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
@@ -4561,21 +4558,18 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="7057.3" y="3308.3" z="170.7" yaw="-90.2"/>
-            <distance value="70"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="7056.4" y="3046.2" z="168.4" yaw="269.8"/>
-            <distance value="75"/>
+            <distance value="100"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="5778.4" y="1725.8" z="147.1" yaw="215.4"/>
-            <distance value="65"/>
+            <distance value="100"/>
             <direction value="right"/>
-         </scenario>
-         <scenario name="HardBreakRoute_5" type="HardBreakRoute">
-            <trigger_point x="5710.8" y="1676.9" z="146.7" yaw="216.4"/>
          </scenario>
          <scenario name="PedestrianCrossing_7" type="PedestrianCrossing">
             <trigger_point x="4266.89" y="1010.63" z="175.11" yaw="177.99"/>
@@ -4615,7 +4609,7 @@
          </scenario>
          <scenario name="StaticCutIn_4" type="StaticCutIn">
             <trigger_point x="5357.8" y="1416.0" z="144.1" yaw="216.5"/>
-            <distance value="80"/>
+            <distance value="120"/>
             <direction value="right"/>
          </scenario>
          <scenario name="ParkingCutIn_2" type="ParkingCutIn">
@@ -5663,7 +5657,7 @@
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="2817.0" y="5654.5" z="160.8" yaw="-29.2"/>
-            <distance value="60"/>
+            <distance value="113"/>
             <direction value="right"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
@@ -5761,7 +5755,7 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="2847.2" y="2904.8" z="180.1" yaw="160.4"/>
-            <distance value="80"/>
+            <distance value="112"/>
             <direction value="right"/>
          </scenario>
          <scenario name="ControlLoss_9" type="ControlLoss">
@@ -7965,7 +7959,7 @@
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="-5733.9" y="3310.5" z="170.4" yaw="-94.4"/>
-            <distance value="80"/>
+            <distance value="120"/>
          </scenario>
          <scenario name="HardBreakRoute_1" type="HardBreakRoute">
             <trigger_point x="-2188.3" y="5905.4" z="153.5" yaw="176.2"/>
@@ -8038,12 +8032,12 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="-5584.7" y="5690.9" z="191.6" yaw="-129.1"/>
-            <distance value="80"/>
+            <distance value="100"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="-5675.9" y="5550.4" z="192.4" yaw="-116.8"/>
-            <distance value="82"/>
+            <distance value="102"/>
             <direction value="right"/>
          </scenario>
          <scenario name="Accident_1" type="Accident">
@@ -8489,12 +8483,12 @@
          </scenario>
          <scenario name="StaticCutIn_3" type="StaticCutIn">
             <trigger_point x="4401.2" y="4442.0" z="147.9" yaw="90.3"/>
-            <distance value="77"/>
+            <distance value="100"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_4" type="StaticCutIn">
             <trigger_point x="4400.5" y="4603.4" z="147.5" yaw="90.3"/>
-            <distance value="78"/>
+            <distance value="109"/>
             <direction value="right"/>
          </scenario>
          <scenario name="HardBreakRoute_3" type="HardBreakRoute">
@@ -8566,12 +8560,12 @@
          </scenario>
          <scenario name="StaticCutIn_1" type="StaticCutIn">
             <trigger_point x="5187.9" y="3073.5" z="154.0" yaw="180.3"/>
-            <distance value="80"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_2" type="StaticCutIn">
             <trigger_point x="4949.6" y="3072.4" z="152.0" yaw="180.3"/>
-            <distance value="83"/>
+            <distance value="120"/>
             <direction value="right"/>
          </scenario>
          <scenario name="HazardAtSideLane_1" type="HazardAtSideLane">
@@ -8591,12 +8585,12 @@
          </scenario>
          <scenario name="StaticCutIn_5" type="StaticCutIn">
             <trigger_point x="4345.0" y="5092.1" z="147.6" yaw="112.6"/>
-            <distance value="80"/>
+            <distance value="105"/>
             <direction value="right"/>
          </scenario>
          <scenario name="StaticCutIn_6" type="StaticCutIn">
             <trigger_point x="4220.8" y="5289.9" z="149.2" yaw="131.6"/>
-            <distance value="82"/>
+            <distance value="110"/>
             <direction value="right"/>
          </scenario>
          <scenario name="VehicleTurningRoutePedestrian_12" type="VehicleTurningRoutePedestrian">
