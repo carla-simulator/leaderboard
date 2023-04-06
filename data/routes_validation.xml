@@ -1625,13 +1625,6 @@
             <flow_speed value="17"/>
             <source_dist_interval from="20" to="75"/>
          </scenario>
-         <scenario name="MergerIntoSlowTrafficV2_3" type="MergerIntoSlowTrafficV2">
-            <trigger_point x="432.2" y="6108.7" z="165.6" yaw="-170.5"/>
-            <start_actor_flow x="434.7" y="6026.0" z="165.5"/>
-            <end_actor_flow x="-328.1" y="6028.0" z="155.5"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="15" to="30"/>
-         </scenario>
          <scenario name="MergerIntoSlowTraffic_2" type="MergerIntoSlowTraffic">
             <trigger_point x="-377.2" y="5990.9" z="154.6" yaw="-144.6"/>
             <start_actor_flow x="-373.2" y="5946.7" z="154.6"/>
@@ -1711,7 +1704,7 @@
          <scenario name="ControlLoss_6" type="ControlLoss">
             <trigger_point x="2415.0" y="4771.7" z="178.7" yaw="91.5"/>
          </scenario>
-         <scenario name="HardBreakRoute_14" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_13" type="HardBreakRoute">
             <trigger_point x="1500.3" y="6448.4" z="147.9" yaw="-174.1"/>
          </scenario>
          <scenario name="ControlLoss_9" type="ControlLoss">
@@ -1777,7 +1770,7 @@
             <distance value="90"/>
             <speed value="60"/>
          </scenario>
-         <scenario name="HardBreakRoute_12" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_11" type="HardBreakRoute">
             <trigger_point x="2372.1" y="6008.3" z="166.6" yaw="91.8"/>
          </scenario>
          <scenario name="ControlLoss_8" type="ControlLoss">
@@ -1797,7 +1790,7 @@
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
             <trigger_point x="2064.9" y="3665.7" z="170.3" yaw="56.8"/>
          </scenario>
-         <scenario name="HardBreakRoute_11" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_10" type="HardBreakRoute">
             <trigger_point x="2411.5" y="4882.5" z="176.8" yaw="91.8"/>
          </scenario>
          <scenario name="ControlLoss_7" type="ControlLoss">
@@ -1807,8 +1800,12 @@
             <trigger_point x="340.4" y="6096.3" z="165.3" yaw="-174.0"/>
             <other_actor_location x="337.3" y="6062.3" z="165.2"/>
          </scenario>
-         <scenario name="HardBreakRoute_13" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_12" type="HardBreakRoute">
             <trigger_point x="2302.1" y="6353.0" z="162.5" yaw="132.3"/>
+         </scenario>
+         <scenario name="Accident_4" type="Accident">
+            <trigger_point x="613.3" y="6150.3" z="164.6" yaw="-163.6"/>
+            <distance value="90"/>
          </scenario>
       </scenarios>
    </route>
@@ -2803,7 +2800,7 @@
    <route id="7" town="Town13">
       <!-- Rural + interurban -->
       <weathers>
-      <!-- From partly cloudy with strong winds and light rain to cloudy and dry with stronger winds -->
+         <!-- From partly cloudy with strong winds and light rain to cloudy and dry with stronger winds -->
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="20.0" precipitation_deposits="50.0" wetness="0.0"
             wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
@@ -3070,7 +3067,7 @@
             <offset value="0.4"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
-            <trigger_point x="-3875.5" y="4154.2" z="181.6" yaw="180.3"/>
+            <trigger_point x="-3891.96" y="4154.07" z="181.6" yaw="180.33"/>
             <distance value="70"/>
             <frequency from="35" to="90"/>
          </scenario>
@@ -3636,20 +3633,13 @@
             <frequency from="35" to="95"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
-            <trigger_point x="-4559.0" y="4845.9" z="167.2" yaw="176.7"/>
-            <distance value="80"/>
-            <frequency value="77"/>
-            <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="13"/>
-         </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-4881.8" y="4870.1" z="171.1" yaw="175.5"/>
             <distance value="75"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="15"/>
          </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
+         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-5231.7" y="4894.7" z="178.3" yaw="177.4"/>
             <distance value="70"/>
             <frequency value="75"/>
@@ -3678,7 +3668,7 @@
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="-4506.2" y="4558.8" z="168.0" yaw="0.0"/>
          </scenario>
-         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_8" type="HardBreakRoute">
             <trigger_point x="-5745.6" y="4704.9" z="186.6" yaw="-88.9"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
@@ -3714,10 +3704,10 @@
          <scenario name="ControlLoss_11" type="ControlLoss">
             <trigger_point x="-4534.7" y="4816.9" z="167.0" yaw="271.0"/>
          </scenario>
-         <scenario name="ControlLoss_12" type="ControlLoss">
+         <scenario name="ControlLoss_13" type="ControlLoss">
             <trigger_point x="-4863.7" y="4868.7" z="170.8" yaw="175.5"/>
          </scenario>
-         <scenario name="ControlLoss_13" type="ControlLoss">
+         <scenario name="ControlLoss_14" type="ControlLoss">
             <trigger_point x="-5745.7" y="4709.6" z="186.7" yaw="-88.9"/>
          </scenario>
          <scenario name="HighwayCutIn_1" type="HighwayCutIn">
@@ -3744,14 +3734,20 @@
             <distance value="72"/>
             <speed value="50"/>
          </scenario>
-         <scenario name="HardBreakRoute_8" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_9" type="HardBreakRoute">
             <trigger_point x="-5727.8" y="3613.7" z="169.8" yaw="-88.9"/>
          </scenario>
-         <scenario name="ControlLoss_14" type="ControlLoss">
+         <scenario name="ControlLoss_15" type="ControlLoss">
             <trigger_point x="-5728.6" y="3659.1" z="170.0" yaw="-88.9"/>
          </scenario>
-         <scenario name="ControlLoss_15" type="ControlLoss">
+         <scenario name="ControlLoss_16" type="ControlLoss">
             <trigger_point x="-5727.0" y="3447.9" z="169.8" yaw="-91.4"/>
+         </scenario>
+         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+            <trigger_point x="-4577.7" y="4847.0" z="167.3" yaw="176.4"/>
+         </scenario>
+         <scenario name="ControlLoss_12" type="ControlLoss">
+            <trigger_point x="-4585.0" y="4847.5" z="167.4" yaw="176.4"/>
          </scenario>
       </scenarios>
    </route>
@@ -4292,11 +4288,11 @@
             <distance value="110"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_12" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="3630.5" y="4991.1" z="174.4" yaw="1.2"/>
-         </scenario>
          <scenario name="VehicleTurningRoutePedestrian_15" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3727.2" y="4990.4" z="169.5" yaw="181.2"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="3632.4" y="4991.2" z="174.3" yaw="1.2"/>
          </scenario>
       </scenarios>
    </route>
@@ -5926,13 +5922,6 @@
             <flow_speed value="17"/>
             <source_dist_interval from="20" to="75"/>
          </scenario>
-         <scenario name="MergerIntoSlowTrafficV2_3" type="MergerIntoSlowTrafficV2">
-            <trigger_point x="432.2" y="6108.7" z="165.6" yaw="-170.5"/>
-            <start_actor_flow x="434.7" y="6026.0" z="165.5"/>
-            <end_actor_flow x="-328.1" y="6028.0" z="155.5"/>
-            <flow_speed value="10"/>
-            <source_dist_interval from="15" to="30"/>
-         </scenario>
          <scenario name="MergerIntoSlowTraffic_2" type="MergerIntoSlowTraffic">
             <trigger_point x="-377.2" y="5990.9" z="154.6" yaw="-144.6"/>
             <start_actor_flow x="-373.2" y="5946.7" z="154.6"/>
@@ -6012,7 +6001,7 @@
          <scenario name="ControlLoss_6" type="ControlLoss">
             <trigger_point x="2415.0" y="4771.7" z="178.7" yaw="91.5"/>
          </scenario>
-         <scenario name="HardBreakRoute_14" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_13" type="HardBreakRoute">
             <trigger_point x="1500.3" y="6448.4" z="147.9" yaw="-174.1"/>
          </scenario>
          <scenario name="ControlLoss_9" type="ControlLoss">
@@ -6078,7 +6067,7 @@
             <distance value="90"/>
             <speed value="60"/>
          </scenario>
-         <scenario name="HardBreakRoute_12" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_11" type="HardBreakRoute">
             <trigger_point x="2372.1" y="6008.3" z="166.6" yaw="91.8"/>
          </scenario>
          <scenario name="ControlLoss_8" type="ControlLoss">
@@ -6098,7 +6087,7 @@
          <scenario name="HardBreakRoute_7" type="HardBreakRoute">
             <trigger_point x="2064.9" y="3665.7" z="170.3" yaw="56.8"/>
          </scenario>
-         <scenario name="HardBreakRoute_11" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_10" type="HardBreakRoute">
             <trigger_point x="2411.5" y="4882.5" z="176.8" yaw="91.8"/>
          </scenario>
          <scenario name="ControlLoss_7" type="ControlLoss">
@@ -6108,8 +6097,12 @@
             <trigger_point x="340.4" y="6096.3" z="165.3" yaw="-174.0"/>
             <other_actor_location x="337.3" y="6062.3" z="165.2"/>
          </scenario>
-         <scenario name="HardBreakRoute_13" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_12" type="HardBreakRoute">
             <trigger_point x="2302.1" y="6353.0" z="162.5" yaw="132.3"/>
+         </scenario>
+         <scenario name="Accident_4" type="Accident">
+            <trigger_point x="613.3" y="6150.3" z="164.6" yaw="-163.6"/>
+            <distance value="90"/>
          </scenario>
       </scenarios>
    </route>
@@ -7371,7 +7364,7 @@
             <offset value="0.4"/>
          </scenario>
          <scenario name="AccidentTwoWays_2" type="AccidentTwoWays">
-            <trigger_point x="-3875.5" y="4154.2" z="181.6" yaw="180.3"/>
+            <trigger_point x="-3891.96" y="4154.07" z="181.6" yaw="180.33"/>
             <distance value="70"/>
             <frequency from="35" to="90"/>
          </scenario>
@@ -7937,20 +7930,13 @@
             <frequency from="35" to="95"/>
          </scenario>
          <scenario name="HazardAtSideLaneTwoWays_2" type="HazardAtSideLaneTwoWays">
-            <trigger_point x="-4559.0" y="4845.9" z="167.2" yaw="176.7"/>
-            <distance value="80"/>
-            <frequency value="77"/>
-            <bicycle_drive_distance value="100"/>
-            <bicycle_speed value="13"/>
-         </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-4881.8" y="4870.1" z="171.1" yaw="175.5"/>
             <distance value="75"/>
             <frequency value="80"/>
             <bicycle_drive_distance value="100"/>
             <bicycle_speed value="15"/>
          </scenario>
-         <scenario name="HazardAtSideLaneTwoWays_4" type="HazardAtSideLaneTwoWays">
+         <scenario name="HazardAtSideLaneTwoWays_3" type="HazardAtSideLaneTwoWays">
             <trigger_point x="-5231.7" y="4894.7" z="178.3" yaw="177.4"/>
             <distance value="70"/>
             <frequency value="75"/>
@@ -7979,7 +7965,7 @@
          <scenario name="HardBreakRoute_6" type="HardBreakRoute">
             <trigger_point x="-4506.2" y="4558.8" z="168.0" yaw="0.0"/>
          </scenario>
-         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_8" type="HardBreakRoute">
             <trigger_point x="-5745.6" y="4704.9" z="186.6" yaw="-88.9"/>
          </scenario>
          <scenario name="ControlLoss_1" type="ControlLoss">
@@ -8015,10 +8001,10 @@
          <scenario name="ControlLoss_11" type="ControlLoss">
             <trigger_point x="-4534.7" y="4816.9" z="167.0" yaw="271.0"/>
          </scenario>
-         <scenario name="ControlLoss_12" type="ControlLoss">
+         <scenario name="ControlLoss_13" type="ControlLoss">
             <trigger_point x="-4863.7" y="4868.7" z="170.8" yaw="175.5"/>
          </scenario>
-         <scenario name="ControlLoss_13" type="ControlLoss">
+         <scenario name="ControlLoss_14" type="ControlLoss">
             <trigger_point x="-5745.7" y="4709.6" z="186.7" yaw="-88.9"/>
          </scenario>
          <scenario name="HighwayCutIn_1" type="HighwayCutIn">
@@ -8045,14 +8031,20 @@
             <distance value="72"/>
             <speed value="50"/>
          </scenario>
-         <scenario name="HardBreakRoute_8" type="HardBreakRoute">
+         <scenario name="HardBreakRoute_9" type="HardBreakRoute">
             <trigger_point x="-5727.8" y="3613.7" z="169.8" yaw="-88.9"/>
          </scenario>
-         <scenario name="ControlLoss_14" type="ControlLoss">
+         <scenario name="ControlLoss_15" type="ControlLoss">
             <trigger_point x="-5728.6" y="3659.1" z="170.0" yaw="-88.9"/>
          </scenario>
-         <scenario name="ControlLoss_15" type="ControlLoss">
+         <scenario name="ControlLoss_16" type="ControlLoss">
             <trigger_point x="-5727.0" y="3447.9" z="169.8" yaw="-91.4"/>
+         </scenario>
+         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+            <trigger_point x="-4577.7" y="4847.0" z="167.3" yaw="176.4"/>
+         </scenario>
+         <scenario name="ControlLoss_12" type="ControlLoss">
+            <trigger_point x="-4585.0" y="4847.5" z="167.4" yaw="176.4"/>
          </scenario>
       </scenarios>
    </route>
@@ -8593,11 +8585,11 @@
             <distance value="110"/>
             <direction value="right"/>
          </scenario>
-         <scenario name="VehicleTurningRoutePedestrian_12" type="VehicleTurningRoutePedestrian">
-            <trigger_point x="3630.5" y="4991.1" z="174.4" yaw="1.2"/>
-         </scenario>
          <scenario name="VehicleTurningRoutePedestrian_15" type="VehicleTurningRoutePedestrian">
             <trigger_point x="3727.2" y="4990.4" z="169.5" yaw="181.2"/>
+         </scenario>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="3632.4" y="4991.2" z="174.3" yaw="1.2"/>
          </scenario>
       </scenarios>
    </route>
