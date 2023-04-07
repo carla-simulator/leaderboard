@@ -44,7 +44,6 @@ class ScenarioManager(object):
     4. If needed, cleanup with manager.stop_scenario()
     """
 
-
     def __init__(self, timeout, statistics_manager, debug_mode=0):
         """
         Setups up the parameters, which will be filled at load_scenario()
@@ -64,6 +63,7 @@ class ScenarioManager(object):
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = 0.0
+        self.start_game_time = 0.0
         self.end_system_time = 0.0
         self.end_game_time = 0.0
 
@@ -93,6 +93,7 @@ class ScenarioManager(object):
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = 0.0
+        self.start_game_time = 0.0
         self.end_system_time = 0.0
         self.end_game_time = 0.0
 
