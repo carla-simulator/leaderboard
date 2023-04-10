@@ -62,25 +62,22 @@ class LeaderboardEvaluator(object):
         Setup CARLA client and world
         Setup ScenarioManager
         """
-        self.statistics_manager = statistics_manager
+        self.world = None
+        self.manager = None
         self.sensors = None
         self.sensors_initialized = False
         self.sensor_icons = []
+        self.agent_instance = None
+
+        self.statistics_manager = statistics_manager
 
         # This is the ROS1 bridge server instance. This is not encapsulated inside the ROS1 agent because the same
         # instance is used on all the routes (i.e., the server is not restarted between routes). This is done
         # to avoid reconnection issues between the server and the roslibpy client.
         self._ros1_server = None
 
-        # First of all, we need to create the client that will send the requests
-        # to the simulator. Here we'll assume the simulator is accepting
-        # requests in the localhost at port 2000.
-        self.client = carla.Client(args.host, args.port)
-        if args.timeout:
-            self.client_timeout = args.timeout
-        self.client.set_timeout(self.client_timeout)
-
-        self.traffic_manager = self.client.get_trafficmanager(args.traffic_manager_port)
+        # Setup the simulation
+        self.client, self.client_timeout, self.traffic_manager = self._setup_simulation(args)
 
         dist = pkg_resources.get_distribution("carla")
         if dist.version != 'leaderboard':
@@ -140,50 +137,84 @@ class LeaderboardEvaluator(object):
         if self._agent_watchdog:
             self._agent_watchdog.stop()
 
-        if hasattr(self, 'agent_instance') and self.agent_instance:
+        if self.agent_instance:
             self.agent_instance.destroy()
             self.agent_instance = None
 
-        if hasattr(self, 'statistics_manager') and self.statistics_manager:
+        if self.statistics_manager:
             self.statistics_manager.scenario = None
 
-        # Simulation still running and in synchronous mode?
+        if self.manager:
+            self.manager.cleanup()
+
+        # self.world.tick()
+
+    def _setup_simulation(self, args):
+        """
+        Prepares the simualtion by getting the client, and setting up the world and traffic manager settings
+        """
+        client = carla.Client(args.host, args.port)
+        if args.timeout:
+            client_timeout = args.timeout
+        client.set_timeout(client_timeout)
+
+        # Use whatever world we are in, as we care about changing the settings
+        start_world = client.get_world()
+        settings = start_world.get_settings()
+        settings.fixed_delta_seconds = 1.0 / self.frame_rate
+        settings.synchronous_mode = True
+        settings.tile_stream_distance = 650
+        settings.actor_active_distance = 650
+        settings.spectator_as_ego = False
+        start_world.apply_settings(settings)
+
+        traffic_manager = client.get_trafficmanager(args.traffic_manager_port)
+        traffic_manager.set_synchronous_mode(True)
+        traffic_manager.set_hybrid_physics_mode(True)
+
+        CarlaDataProvider.set_client(client)
+        CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
+
+        return client, client_timeout, traffic_manager
+
+    def _reset_world_settings(self):
+        """
+        Changes the modified world settign back to asynchronous
+        """
+        # Has simulation failed?
         a_watchdog_running = self._get_running_status()
-        sm_watchdog_running = hasattr(self, 'manager') and self.manager.get_running_status()
-        if not a_watchdog_running or (not sm_watchdog_running and hasattr(self, 'world') and self.world):
+        sm_watchdog_running = self.manager and self.manager.get_running_status()
+        print(a_watchdog_running)
+        print(sm_watchdog_running)
+        print(self.world)
+        if not a_watchdog_running or (not sm_watchdog_running and self.world):
             # Reset to asynchronous mode
             self.world.tick()  # TODO: Make sure all scenario actors have been destroyed
             settings = self.world.get_settings()
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
             self.world.apply_settings(settings)
-            self.traffic_manager.set_synchronous_mode(False)
-            self.traffic_manager.set_hybrid_physics_mode(False)
 
-        if self.manager:
-            self.manager.cleanup()
+        # Make the TM back to async
+        self.traffic_manager.set_synchronous_mode(False)
+        self.traffic_manager.set_hybrid_physics_mode(False)
 
     def _load_and_wait_for_world(self, args, town):
         """
-        Load a new CARLA world and provide data to CarlaDataProvider
+        Load a new CARLA world without changing the settings and provide data to CarlaDataProvider
         """
+        self.world = self.client.load_world(town, reset_settings=False)
 
-        self.world = self.client.load_world(town)
-        settings = self.world.get_settings()
-        settings.fixed_delta_seconds = 1.0 / self.frame_rate
-        settings.synchronous_mode = True
+        # Large Map settigns are always reset, for some reason
+        settings = self.world .get_settings()
         settings.tile_stream_distance = 650
         settings.actor_active_distance = 650
         self.world.apply_settings(settings)
 
         self.world.reset_all_traffic_lights()
-
-        CarlaDataProvider.set_client(self.client)
         CarlaDataProvider.set_world(self.world)
-        CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
 
-        self.traffic_manager.set_synchronous_mode(True)
-        self.traffic_manager.set_hybrid_physics_mode(True)
+        # This must be here so that all route repetitions use the same 'unmodified' seed
         self.traffic_manager.set_random_device_seed(args.traffic_manager_seed)
 
         # Wait for the world to be ready
@@ -375,6 +406,9 @@ class LeaderboardEvaluator(object):
         # Shutdown ROS1 bridge server if necessary
         if self._ros1_server is not None:
             self._ros1_server.shutdown()
+
+        # Go back to asynchronous mode
+        self._reset_world_settings()
 
         # Save global statistics
         print("\033[1m> Registering the global statistics\033[0m")
