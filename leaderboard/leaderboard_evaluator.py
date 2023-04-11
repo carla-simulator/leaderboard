@@ -100,6 +100,8 @@ class LeaderboardEvaluator(object):
         self._agent_watchdog = None
         signal.signal(signal.SIGINT, self._signal_handler)
 
+        self._client_timed_out = False
+
     def _signal_handler(self, signum, frame):
         """
         Terminate scenario ticking when receiving a signal interrupt.
@@ -145,9 +147,8 @@ class LeaderboardEvaluator(object):
             self.statistics_manager.scenario = None
 
         if self.manager:
+            self._client_timed_out = not self.manager.get_running_status()
             self.manager.cleanup()
-
-        # self.world.tick()
 
     def _setup_simulation(self, args):
         """
@@ -163,8 +164,6 @@ class LeaderboardEvaluator(object):
         settings = start_world.get_settings()
         settings.fixed_delta_seconds = 1.0 / self.frame_rate
         settings.synchronous_mode = True
-        settings.tile_stream_distance = 650
-        settings.actor_active_distance = 650
         settings.spectator_as_ego = False
         start_world.apply_settings(settings)
 
@@ -179,15 +178,10 @@ class LeaderboardEvaluator(object):
 
     def _reset_world_settings(self):
         """
-        Changes the modified world settign back to asynchronous
+        Changes the modified world settings back to asynchronous
         """
         # Has simulation failed?
-        a_watchdog_running = self._get_running_status()
-        sm_watchdog_running = self.manager and self.manager.get_running_status()
-        print(a_watchdog_running)
-        print(sm_watchdog_running)
-        print(self.world)
-        if not a_watchdog_running or (not sm_watchdog_running and self.world):
+        if self.world and self.manager and not self._client_timed_out:
             # Reset to asynchronous mode
             self.world.tick()  # TODO: Make sure all scenario actors have been destroyed
             settings = self.world.get_settings()
@@ -195,9 +189,9 @@ class LeaderboardEvaluator(object):
             settings.fixed_delta_seconds = None
             self.world.apply_settings(settings)
 
-        # Make the TM back to async
-        self.traffic_manager.set_synchronous_mode(False)
-        self.traffic_manager.set_hybrid_physics_mode(False)
+            # Make the TM back to async
+            self.traffic_manager.set_synchronous_mode(False)
+            self.traffic_manager.set_hybrid_physics_mode(False)
 
     def _load_and_wait_for_world(self, args, town):
         """
@@ -212,6 +206,8 @@ class LeaderboardEvaluator(object):
         self.world.apply_settings(settings)
 
         self.world.reset_all_traffic_lights()
+        CarlaDataProvider.set_client(self.client)
+        CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
         CarlaDataProvider.set_world(self.world)
 
         # This must be here so that all route repetitions use the same 'unmodified' seed
