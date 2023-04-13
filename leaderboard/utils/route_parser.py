@@ -103,7 +103,6 @@ class RouteParser(object):
         tree = ET.parse(route_filename)
         if routes_subset:
             subset_list = get_routes_subset()
-            print(subset_list)
         for route in tree.iter("route"):
 
             route_id = route.attrib['id']
