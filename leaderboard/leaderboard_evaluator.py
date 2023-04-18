@@ -162,8 +162,8 @@ class LeaderboardEvaluator(object):
         # Use whatever world we are in, as we care about changing the settings
         start_world = client.get_world()
         settings = start_world.get_settings()
-        settings.fixed_delta_seconds = 1.0 / self.frame_rate
         settings.synchronous_mode = True
+        settings.fixed_delta_seconds = 1.0 / self.frame_rate
         settings.spectator_as_ego = False
         start_world.apply_settings(settings)
 
@@ -187,6 +187,7 @@ class LeaderboardEvaluator(object):
             settings = self.world.get_settings()
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
+            settings.spectator_as_ego = True
             self.world.apply_settings(settings)
 
             # Make the TM back to async
