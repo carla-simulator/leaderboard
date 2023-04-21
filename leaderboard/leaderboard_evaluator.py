@@ -45,16 +45,14 @@ sensors_to_icons = {
     'sensor.speedometer':       'carla_speedometer'
 }
 
-
 class LeaderboardEvaluator(object):
-
     """
-    TODO: document me!
+    Main class of the Leaderboard. Everything is handled from here,
+    from parsing the given files, to preparing the simulation, to running the route.
     """
 
     # Tunable parameters
     client_timeout = 10.0  # in seconds
-    wait_for_world = 20.0  # in seconds
     frame_rate = 20.0      # in Hz
 
     def __init__(self, args, statistics_manager):
@@ -150,29 +148,32 @@ class LeaderboardEvaluator(object):
             self._client_timed_out = not self.manager.get_running_status()
             self.manager.cleanup()
 
+        # Make sure no sensors are left streaming
+        alive_sensors = self.world.get_actors().filter('*sensor*')
+        for sensor in alive_sensors:
+            sensor.stop()
+            sensor.destroy()
+
     def _setup_simulation(self, args):
         """
-        Prepares the simualtion by getting the client, and setting up the world and traffic manager settings
+        Prepares the simulation by getting the client, and setting up the world and traffic manager settings
         """
         client = carla.Client(args.host, args.port)
         if args.timeout:
             client_timeout = args.timeout
         client.set_timeout(client_timeout)
 
-        # Use whatever world we are in, as we care about changing the settings
-        start_world = client.get_world()
-        settings = start_world.get_settings()
-        settings.synchronous_mode = True
-        settings.fixed_delta_seconds = 1.0 / self.frame_rate
-        settings.spectator_as_ego = False
-        start_world.apply_settings(settings)
+        settings = carla.WorldSettings(
+            synchronous_mode = True,
+            fixed_delta_seconds = 1.0 / self.frame_rate,
+            deterministic_ragdolls = True,
+            spectator_as_ego = False
+        )
+        client.get_world().apply_settings(settings)
 
         traffic_manager = client.get_trafficmanager(args.traffic_manager_port)
         traffic_manager.set_synchronous_mode(True)
         traffic_manager.set_hybrid_physics_mode(True)
-
-        CarlaDataProvider.set_client(client)
-        CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
 
         return client, client_timeout, traffic_manager
 
@@ -187,6 +188,7 @@ class LeaderboardEvaluator(object):
             settings = self.world.get_settings()
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
+            settings.deterministic_ragdolls = False
             settings.spectator_as_ego = True
             self.world.apply_settings(settings)
 
@@ -200,8 +202,8 @@ class LeaderboardEvaluator(object):
         """
         self.world = self.client.load_world(town, reset_settings=False)
 
-        # Large Map settigns are always reset, for some reason
-        settings = self.world .get_settings()
+        # Large Map settings are always reset, for some reason
+        settings = self.world.get_settings()
         settings.tile_stream_distance = 650
         settings.actor_active_distance = 650
         self.world.apply_settings(settings)
