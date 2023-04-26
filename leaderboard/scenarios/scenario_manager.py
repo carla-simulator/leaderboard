@@ -199,8 +199,7 @@ class ScenarioManager(object):
 
             if self._debug_mode > 2:
                 print("\n")
-                py_trees.display.print_ascii_tree(
-                    self.scenario_tree, show_status=True)
+                py_trees.display.print_ascii_tree(self.scenario_tree, show_status=True)
                 sys.stdout.flush()
 
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
