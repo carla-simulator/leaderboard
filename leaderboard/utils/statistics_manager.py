@@ -123,7 +123,8 @@ class Checkpoint():
         d = {}
         d['global_record'] = self.global_record.to_json() if self.global_record else {}
         d['progress'] = self.progress
-        d['records'] = [x.to_json() for x in self.records]
+        d['records'] = []
+        d['records'] = [x.to_json() for x in self.records if x.index != -1]  # Index -1 = Route in progress
 
         return d
 
@@ -196,7 +197,7 @@ class StatisticsManager(object):
         if data:
             route_records = dictor(data, '_checkpoint.records')
             if route_records:
-                for record in data['_checkpoint']['records']:
+                for record in route_records:
                     self._results.checkpoint.records.append(to_route_record(record))
 
     def clear_records(self):
@@ -560,4 +561,11 @@ class StatisticsManager(object):
 
             self.save_entry_status('Invalid')
 
+        save_dict(self._endpoint, self._results.to_json())
+
+    def write_statistics(self):
+        """
+        Writes the results into the endpoint. Meant to be used only for partial evaluations,
+        use 'validate_and_write_statistics' for the final one as it only validates the data.
+        """
         save_dict(self._endpoint, self._results.to_json())
