@@ -54,7 +54,7 @@ def main():
         print("No output method was selected. Use either '--endpoint', or '--show' to get the route results")
         sys.exit(0)
 
-    root =  etree.parse(args.file).getroot()
+    root = etree.parse(args.file).getroot()
     total_distance = 0
     total_num_scenarios = 0
     total_scenarios = {}

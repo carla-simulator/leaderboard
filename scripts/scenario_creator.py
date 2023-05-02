@@ -203,81 +203,7 @@ SCENARIO_TYPES ={
     ],
     "PriorityAtJunction": [
     ],
-
 }
-
-
-def order_saved_scenarios(filename, route_id, world, tmap):
-    def convert_elem_to_location(elem):
-        """Convert an ElementTree.Element to a CARLA Location"""
-        return carla.Location(float(elem.attrib.get('x')), float(elem.attrib.get('y')), float(elem.attrib.get('z')))
-
-    def get_scenario_route_position(trigger_location):
-        position = 0
-        distance = float('inf')
-        for i, (wp, _) in enumerate(route_wps):
-            route_distance = wp.transform.location.distance(trigger_location)
-            if route_distance < distance:
-                distance = route_distance
-                position = i
-        return position
-
-    grp = GlobalRoutePlanner(tmap, 1)
-
-    tree = etree.parse(filename)
-    root = tree.getroot()
-
-    scenarios = None
-    route_wps = []
-    prev_route_keypoint = None
-    scenarios = []
-
-    for route in root.iter("route"):
-        if route.attrib['id'] != route_id:
-            continue
-        
-        # Scenarios data
-        for scenario in route.find('scenarios').iter('scenario'):
-            scenarios.append(scenario)
-
-        # Route data
-        for position in route.find('waypoints').iter('position'):
-            route_keypoint = convert_elem_to_location(position)
-            if prev_route_keypoint:
-                route_wps.extend(grp.trace_route(prev_route_keypoint, route_keypoint))
-            prev_route_keypoint = route_keypoint
-
-    if scenarios is None:
-        print(f"\n\033[91mCouldn't find the id '{route_id} in the given routes file\033[0m")
-        return
-
-    for wp, _ in route_wps:
-        world.debug.draw_point(wp.transform.location + carla.Location(z=0.2), size=0.1, color=carla.Color(255, 155, 0))
-
-    # Order the scenarios according to route position
-    scenario_and_pos = []
-    for scenario in scenarios:
-        trigger_location = convert_elem_to_location(scenario.find('trigger_point'))
-        route_position = get_scenario_route_position(trigger_location)
-        scenario_and_pos.append([scenario, route_position])
-    scenario_and_pos = sorted(scenario_and_pos, key=lambda x: x[1])
-
-    # Update the scenarios. TODO: reorder them
-    scenario_names = {}
-    for scen_type in list(SCENARIO_TYPES):
-        scenario_names[scen_type] = 1
-
-    for scenario, _ in scenario_and_pos:
-        scen_type = scenario.attrib['type']
-        scen_name = f"{scen_type}_{scenario_names[scen_type]}"
-        scenario.set("name", scen_name)
-        scenario_names[scen_type] += 1
-
-    prettify_and_save_tree(filename, tree)
-
-
-def get_i(elem):
-    return float(elem.get('i'))
 
 
 def show_saved_scenarios(filename, route_id, world):
@@ -502,7 +428,6 @@ def main():
     argparser.add_argument('--port', metavar='P', default=2000, type=int, help='TCP port of CARLA Simulator (default: 2000)')
     argparser.add_argument('-f', '--file', required=True, nargs="+", help='File at which to place the scenarios')
     argparser.add_argument('-s', '--show-only', action='store_true', help='Only shows the route')
-    argparser.add_argument('-o', '--order', action='store_true', help='Only orders the scenarios')
     args = argparser.parse_args()
 
     # Get the client
