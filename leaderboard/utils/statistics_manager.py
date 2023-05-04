@@ -104,6 +104,9 @@ class GlobalRecord():
         self.scores_std_dev = self.scores_mean.copy()
 
         self.meta = {
+            "total_length": 0,
+            "duration_game": 0,
+            "duration_system": 0,
             'exceptions': []
         }
 
@@ -425,6 +428,10 @@ class StatisticsManager(object):
             global_record.scores_mean['score_route'] += route_record.scores['score_route'] / self._total_routes
             global_record.scores_mean['score_penalty'] += route_record.scores['score_penalty'] / self._total_routes
             global_record.scores_mean['score_composed'] += route_record.scores['score_composed'] / self._total_routes
+
+            global_record.meta['route_length'] += route_record.meta['route_length']
+            global_record.meta['duration_game'] += route_record.meta['duration_game']
+            global_record.meta['duration_system'] += route_record.meta['duration_system']
 
             # Downgrade the global result if need be ('Perfect' -> 'Completed' -> 'Failed'), and record the failed routes
             route_result = 'Failed' if 'Failed' in route_record.status else route_record.status
