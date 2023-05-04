@@ -385,7 +385,7 @@ class LeaderboardEvaluator(object):
         """
         Run the challenge mode
         """
-        route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions)
+        route_indexer = RouteIndexer(args.routes, args.scenarios, args.repetitions, args.routes_subset)
 
         if args.resume:
             route_indexer.resume(args.checkpoint)
@@ -438,6 +438,10 @@ def main():
                         type=int,
                         default=1,
                         help='Number of repetitions per route.')
+    parser.add_argument('--routes-subset',
+                        default='',
+                        type=str,
+                        help='Execute a specific set of routes')
 
     # agent-related options
     parser.add_argument("-a", "--agent", type=str, help="Path to Agent's py file to evaluate", required=True)
