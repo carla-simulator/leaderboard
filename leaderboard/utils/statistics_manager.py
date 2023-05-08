@@ -429,7 +429,7 @@ class StatisticsManager(object):
             global_record.scores_mean['score_penalty'] += route_record.scores['score_penalty'] / self._total_routes
             global_record.scores_mean['score_composed'] += route_record.scores['score_composed'] / self._total_routes
 
-            global_record.meta['route_length'] += route_record.meta['route_length']
+            global_record.meta['total_length'] += route_record.meta['route_length']
             global_record.meta['duration_game'] += route_record.meta['duration_game']
             global_record.meta['duration_system'] += route_record.meta['duration_system']
 
