@@ -142,7 +142,7 @@ class LeaderboardEvaluator(object):
             self.agent_instance = None
 
         if self.statistics_manager:
-            self.statistics_manager.scenario = None
+            self.statistics_manager.remove_scenario()
 
         if self.manager:
             self._client_timed_out = not self.manager.get_running_status()
@@ -229,10 +229,10 @@ class LeaderboardEvaluator(object):
         Computes and saves the route statistics
         """
         print("\033[1m> Registering the route statistics\033[0m")
+        self.statistics_manager.save_entry_status(entry_status)
         self.statistics_manager.compute_route_statistics(
             config, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
         )
-        self.statistics_manager.save_entry_status(entry_status)
 
     def _load_and_run_scenario(self, args, config):
         """
@@ -299,6 +299,7 @@ class LeaderboardEvaluator(object):
 
                 self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
                 self.statistics_manager.save_sensors(self.sensor_icons)
+                self.statistics_manager.write_statistics()
 
                 self.sensors_initialized = True
 
@@ -390,6 +391,7 @@ class LeaderboardEvaluator(object):
         else:
             self.statistics_manager.clear_records()
         self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
+        self.statistics_manager.write_statistics()
 
         crashed = False
         while route_indexer.peek() and not crashed:
@@ -398,9 +400,9 @@ class LeaderboardEvaluator(object):
             config = route_indexer.get_next_config()
             crashed = self._load_and_run_scenario(args, config)
 
-            # Save the progress and remove the scenario
+            # Save the progress and write the route statistics
             self.statistics_manager.save_progress(route_indexer.index, route_indexer.total)
-            self.statistics_manager.remove_scenario()
+            self.statistics_manager.write_statistics()
 
         # Shutdown ROS1 bridge server if necessary
         if self._ros1_server is not None:
