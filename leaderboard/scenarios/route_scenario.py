@@ -66,6 +66,7 @@ class RouteScenario(BasicScenario):
         self.route = self._get_route(config)
         self.list_scenarios = []
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
+        self.sampled_scenario_definitions = sampled_scenario_definitions
 
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
@@ -270,6 +271,47 @@ class RouteScenario(BasicScenario):
                 all_scenario_classes[member[0]] = member[1]
 
         return all_scenario_classes
+    
+    # Original version, just for backup
+    # def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False):
+    #     """
+    #     Initializes the class of all the scenarios that will be present in the route.
+    #     If a class fails to be initialized, a warning is printed but the route execution isn't stopped
+    #     """
+    #     all_scenario_classes = self.get_all_scenario_classes()
+    #     self.list_scenarios = []
+    #     ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
+
+    #     if debug:
+    #         tmap = CarlaDataProvider.get_map()
+    #         for scenario_config in scenario_definitions:
+    #             scenario_loc = scenario_config.trigger_points[0].location
+    #             debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
+    #             world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
+    #             world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
+    #                                     color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
+
+    #     for scenario_number, scenario_config in enumerate(scenario_definitions):
+    #         scenario_config.ego_vehicles = [ego_data]
+    #         scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
+    #         scenario_config.route = self.route
+
+    #         try:
+    #             scenario_class = all_scenario_classes[scenario_config.type]
+    #             scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+
+    #             # Do a tick every once in a while to avoid spawning everything at the same time
+    #             if scenario_number % scenarios_per_tick == 0:
+    #                 world.tick()
+
+    #         except Exception as e:
+    #             print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
+    #             if debug:
+    #                 print(f"\n{traceback.format_exc()}")
+    #             print("\033[0m", end="")
+    #             continue
+
+    #         self.list_scenarios.append(scenario_instance)
 
     def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False):
         """
@@ -277,26 +319,50 @@ class RouteScenario(BasicScenario):
         If a class fails to be initialized, a warning is printed but the route execution isn't stopped
         """
         all_scenario_classes = self.get_all_scenario_classes()
-        self.list_scenarios = []
+        # self.list_scenarios = []
         ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
+
+        # some scenarios are not working properly, just ignore them temporarily
+        white_list_scenarios = ["ParkingExit", "ParkingCutIn", "VehicleOpensDoorTwoWays", "ParkingCrossingPedestrian"] 
 
         if debug:
             tmap = CarlaDataProvider.get_map()
             for scenario_config in scenario_definitions:
                 scenario_loc = scenario_config.trigger_points[0].location
                 debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
+                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=1) # tmp: just change the life_time 1/tick
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-                                        color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
+                                        color=carla.Color(0, 0, 128), life_time=1, persistent_lines=True) # tmp: just change the life_time 1/tick
 
         for scenario_number, scenario_config in enumerate(scenario_definitions):
+
+            if scenario_config.name in [x.config.name for x in self.list_scenarios]:
+                # print("Skipping scenario '{}' as it was already loaded".format(scenario_config.name))
+                continue
+
             scenario_config.ego_vehicles = [ego_data]
             scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             scenario_config.route = self.route
 
             try:
                 scenario_class = all_scenario_classes[scenario_config.type]
-                scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+                trigger_location = scenario_config.trigger_points[0].location
+
+                if scenario_config.type in white_list_scenarios:
+                    print(f"init scenario {scenario_config.name}")
+                    scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+                else:
+                    ego_location = CarlaDataProvider.get_location(ego_vehicle)
+                    if ego_location is None:
+                        # print("No ego location, skipping scenario")
+                        continue
+                    elif trigger_location.distance(ego_location) < 200: # only init scenarios that are close to ego
+                        # Scenario will be init here
+                        print(f"init scenario {scenario_config.name}")
+                        scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+                    else:
+                        # print(f"Skipping scenario '{scenario_config.name}' because it is too far away from the ego vehicle")
+                        continue
 
                 # Do a tick every once in a while to avoid spawning everything at the same time
                 if scenario_number % scenarios_per_tick == 0:
@@ -308,8 +374,9 @@ class RouteScenario(BasicScenario):
                     print(f"\n{traceback.format_exc()}")
                 print("\033[0m", end="")
                 continue
-
-            self.list_scenarios.append(scenario_instance)
+            
+            if scenario_instance not in self.list_scenarios:
+                self.list_scenarios.append(scenario_instance)
 
     # pylint: enable=no-self-use
     def _initialize_actors(self, config):
