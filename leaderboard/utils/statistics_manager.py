@@ -212,7 +212,7 @@ class StatisticsManager(object):
         global_record.status = 'Completed'
         global_record.scores_std_dev = RouteRecord().scores
 
-        global_record.meta['route_length'] = 0
+        global_record.meta['total_length'] = 0
         global_record.meta['duration_system'] = 0
         global_record.meta['duration_game'] = 0
 
@@ -222,7 +222,7 @@ class StatisticsManager(object):
                 global_record.scores['score_penalty'] += route_record.scores['score_penalty']
                 global_record.scores['score_composed'] += route_record.scores['score_composed']
 
-                global_record.meta['route_length'] += route_record.meta['route_length']
+                global_record.meta['total_length'] += route_record.meta['route_length']
                 global_record.meta['duration_game'] += route_record.meta['duration_game']
                 global_record.meta['duration_system'] += route_record.meta['duration_system']
 
