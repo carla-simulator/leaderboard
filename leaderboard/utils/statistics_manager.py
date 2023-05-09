@@ -54,6 +54,14 @@ PENALTY_NAME_DICT = {
 ENTRY_STATUS_VALUES = ['Started', 'Finished', 'Rejected', 'Crashed', 'Invalid']
 ELIGIBLE_VALUES = {'Started': False, 'Finished': True, 'Rejected': False, 'Crashed': False, 'Invalid': False}
 
+# Dictionary mapping a route failure with the 'entry status' and 'status'
+FAILURE_MESSAGES = {
+    "Simulation" : ["Crashed", "Simulation crashed"],
+    "Sensors": ["Rejected", "Agent's sensors were invalid"],
+    "Agent_init": ["Started", "Agent couldn't be set up"],
+    "Agent_runtime": ["Started", "Agent crashed"]
+}
+
 ROUND_DIGITS = 3
 ROUND_DIGITS_SCORE = 6
 

@@ -77,17 +77,17 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
         # Check if the sensor is valid
         if agent_track == Track.SENSORS:
             if sensor['type'].startswith('sensor.opendrive_map'):
-                raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(agent_track))
+                raise SensorConfigurationInvalid("Illegal sensor 'sensor.opendrive_map' used for Track [{}]!".format(agent_track))
 
         # Check the sensors validity
         if sensor['type'] not in ALLOWED_SENSORS:
-            raise SensorConfigurationInvalid("Illegal sensor used. {} are not allowed!".format(sensor['type']))
+            raise SensorConfigurationInvalid("Illegal sensor '{}' used for Track [{}]!".format(sensor['type'], agent_track))
 
         # Check the extrinsics of the sensor
         if 'x' in sensor and 'y' in sensor and 'z' in sensor:
             if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
                 raise SensorConfigurationInvalid(
-                    "Illegal sensor extrinsics used for Track [{}]!".format(agent_track))
+                    "Illegal sensor extrinsics used for sensor '{}'. Max allowed radius is {}m".format(sensor['id'], MAX_ALLOWED_RADIUS_SENSOR))
 
         # Check the amount of sensors
         if sensor['type'] in sensor_count:

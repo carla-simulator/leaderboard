@@ -216,7 +216,7 @@ class ScenarioManager(object):
         """
         if self._watchdog:
             return self._watchdog.get_status()
-        return False
+        return True
 
     def stop_scenario(self):
         """
