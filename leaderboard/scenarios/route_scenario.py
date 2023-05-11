@@ -65,6 +65,7 @@ class RouteScenario(BasicScenario):
         self.config = config
         self.route = self._get_route(config)
         self.list_scenarios = []
+        self.scenarios_processed_map = {}
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
         self.sampled_scenario_definitions = sampled_scenario_definitions
 
@@ -323,6 +324,7 @@ class RouteScenario(BasicScenario):
         ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
 
         # some scenarios are not working properly, just ignore them temporarily
+        # TODO: fix them
         white_list_scenarios = ["ParkingExit", "ParkingCutIn", "VehicleOpensDoorTwoWays", "ParkingCrossingPedestrian"] 
 
         if debug:
@@ -336,8 +338,8 @@ class RouteScenario(BasicScenario):
 
         for scenario_number, scenario_config in enumerate(scenario_definitions):
 
+            # Skipping scenario as it was already loaded
             if scenario_config.name in [x.config.name for x in self.list_scenarios]:
-                # print("Skipping scenario '{}' as it was already loaded".format(scenario_config.name))
                 continue
 
             scenario_config.ego_vehicles = [ego_data]
@@ -377,6 +379,46 @@ class RouteScenario(BasicScenario):
             
             if scenario_instance not in self.list_scenarios:
                 self.list_scenarios.append(scenario_instance)
+                self.scenarios_processed_map[scenario_instance] = False
+
+    def _process_runtime_init_scenarios(self):
+        """
+        Process the scenarios that were initialized at runtime
+        Add then into scenario_tree
+        """
+        scenario_trigger_distance = DIST_THRESHOLD  # Max trigger distance between route and scenario
+
+        scenario_behaviors = []
+        blackboard_list = []
+
+        route_behavior_node = None
+        for node in self.behavior_tree.children:
+            if node.name == "Route Behavior":
+                route_behavior_node = node
+                break
+        if route_behavior_node is None:
+            raise Exception("No route behavior node found")
+
+        for scenario in self.list_scenarios:
+            if not self.scenarios_processed_map[scenario]:
+                
+                if scenario.behavior_tree is not None:
+                    scenario_behaviors.append(scenario.behavior_tree)
+                    blackboard_list.append([scenario.config.route_var_name,
+                                            scenario.config.trigger_points[0].location])
+                    self.scenarios_processed_map[scenario] = True # Mark it as processed
+                    print(f"Add scenario {scenario.config.name} to behavior tree")
+
+        # Add the behavior that manages the scenario trigger conditions
+        scenario_triggerer = ScenarioTriggerer(
+            self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
+        route_behavior_node.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
+
+        route_behavior_node.add_children(scenario_behaviors)
+
+        # TODO: add test criteria for scenarios
+
+
 
     # pylint: enable=no-self-use
     def _initialize_actors(self, config):
@@ -409,6 +451,7 @@ class RouteScenario(BasicScenario):
                 scenario_behaviors.append(scenario.behavior_tree)
                 blackboard_list.append([scenario.config.route_var_name,
                                         scenario.config.trigger_points[0].location])
+                self.scenarios_processed_map[scenario] = True # Mark it as processed
 
         # Add the behavior that manages the scenario trigger conditions
         scenario_triggerer = ScenarioTriggerer(
