@@ -232,14 +232,14 @@ class LeaderboardEvaluator(object):
             raise Exception("The CARLA server uses the wrong map!"
                             " This scenario requires the use of map {}".format(town))
 
-    def _register_statistics(self, config, entry_status, crash_message=""):
+    def _register_statistics(self, route_index, entry_status, crash_message=""):
         """
         Computes and saves the route statistics
         """
         print("\033[1m> Registering the route statistics\033[0m")
         self.statistics_manager.save_entry_status(entry_status)
         self.statistics_manager.compute_route_statistics(
-            config, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
+            route_index, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
         )
 
     def _load_and_run_scenario(self, args, config):
@@ -264,8 +264,7 @@ class LeaderboardEvaluator(object):
         try:
             self._load_and_wait_for_world(args, config.town)
             self.route_scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
-            config.route = self.route_scenario.route
-            self.statistics_manager.set_scenario(config, self.route_scenario)
+            self.statistics_manager.set_scenario(self.route_scenario)
 
         except Exception:
             # The scenario is wrong -> set the ejecution to crashed and stop
@@ -273,7 +272,7 @@ class LeaderboardEvaluator(object):
             print(f"\n{traceback.format_exc()}\033[0m")
 
             entry_status, crash_message = FAILURE_MESSAGES["Simulation"]
-            self._register_statistics(config, entry_status, crash_message)
+            self._register_statistics(config.index, entry_status, crash_message)
             self._cleanup()
             return True
 
@@ -318,7 +317,7 @@ class LeaderboardEvaluator(object):
             print(f"{e}\033[0m\n")
 
             entry_status, crash_message = FAILURE_MESSAGES["Sensors"]
-            self._register_statistics(config, entry_status, crash_message)
+            self._register_statistics(config.index, entry_status, crash_message)
             self._cleanup()
             return True
 
@@ -328,7 +327,7 @@ class LeaderboardEvaluator(object):
             print(f"\n{traceback.format_exc()}\033[0m")
 
             entry_status, crash_message = FAILURE_MESSAGES["Agent_init"]
-            self._register_statistics(config, entry_status, crash_message)
+            self._register_statistics(config.index, entry_status, crash_message)
             self._cleanup()
             return False
 
@@ -339,7 +338,7 @@ class LeaderboardEvaluator(object):
             # Load scenario and run it
             if args.record:
                 self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(config, self.route_scenario, self.agent_instance, config.repetition_index)
+            self.manager.load_scenario(self.route_scenario, self.agent_instance, config.index, config.repetition_index)
             self.manager.run_scenario()
 
         except AgentError:
@@ -359,7 +358,7 @@ class LeaderboardEvaluator(object):
         try:
             print("\033[1m> Stopping the route\033[0m")
             self.manager.stop_scenario()
-            self._register_statistics(config, entry_status, crash_message)
+            self._register_statistics(config.index, entry_status, crash_message)
 
             if args.record:
                 self.client.stop_recorder()

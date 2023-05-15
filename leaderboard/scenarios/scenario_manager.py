@@ -48,7 +48,7 @@ class ScenarioManager(object):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
-        self.config = None
+        self.route_index = None
         self.scenario = None
         self.scenario_tree = None
         self.ego_vehicles = None
@@ -101,14 +101,14 @@ class ScenarioManager(object):
         self._watchdog = None
         self._agent_watchdog = None
 
-    def load_scenario(self, config, scenario, agent, rep_number):
+    def load_scenario(self, scenario, agent, route_index, rep_number):
         """
         Load a new scenario
         """
 
         GameTime.restart()
         self._agent_wrapper = AgentWrapperFactory.get_wrapper(agent)
-        self.config = config
+        self.route_index = route_index
         self.scenario = scenario
         self.scenario_tree = scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
@@ -185,13 +185,13 @@ class ScenarioManager(object):
 
                 # Update live statistics
                 self._statistics_manager.compute_route_statistics(
-                    self.config,
+                    self.route_index,
                     self.scenario_duration_system,
                     self.scenario_duration_game,
                     failure_message=""
                 )
                 self._statistics_manager.write_live_results(
-                    self.config.index,
+                    self.route_index,
                     self.ego_vehicles[0].get_velocity().length(),
                     ego_action,
                     self.ego_vehicles[0].get_location()
@@ -254,13 +254,4 @@ class ScenarioManager(object):
         """
         Analyzes and prints the results of the route
         """
-        global_result = '\033[92m'+'SUCCESS'+'\033[0m'
-
-        for criterion in self.scenario.get_criteria():
-            if criterion.test_status != "SUCCESS":
-                global_result = '\033[91m'+'FAILURE'+'\033[0m'
-
-        if self.scenario.timeout_node.timeout:
-            global_result = '\033[91m'+'FAILURE'+'\033[0m'
-
-        ResultOutputProvider(self, global_result)
+        ResultOutputProvider(self)

@@ -171,11 +171,11 @@ def to_route_record(record_dict):
     return record
 
 
-def compute_route_length(config):
+def compute_route_length(route):
     route_length = 0.0
     previous_location = None
 
-    for transform, _ in config.route:
+    for transform, _ in route:
         location = transform.location
         if previous_location:
             dist_vec = location - previous_location
@@ -313,17 +313,17 @@ class StatisticsManager(object):
         else:
             self._results.checkpoint.records.append(route_record)
 
-    def set_scenario(self, config, scenario):
+    def set_scenario(self, scenario):
         """Sets the scenario from which the statistics will be taken"""
         self._scenario = scenario
-        self._route_length = round(compute_route_length(config), ROUND_DIGITS)
+        self._route_length = round(compute_route_length(scenario.route), ROUND_DIGITS)
 
     def remove_scenario(self):
         """Removes the scenario"""
         self._scenario = None
         self._route_length = 0
 
-    def compute_route_statistics(self, config, duration_time_system=-1, duration_time_game=-1, failure_message=""):
+    def compute_route_statistics(self, route_index, duration_time_system=-1, duration_time_game=-1, failure_message=""):
         """
         Compute the current statistics by evaluating all relevant scenario criteria.
         Failure message will not be empty if an external source has stopped the simulations (i.e simulation crash).
@@ -344,9 +344,8 @@ class StatisticsManager(object):
                 raise ValueError("Found a criteria with an unknown penalty type")
             return score_penalty
 
-        index = config.index
-        route_record = self._results.checkpoint.records[index]
-        route_record.index = index
+        route_record = self._results.checkpoint.records[route_index]
+        route_record.index = route_index
 
         target_reached = False
         score_penalty = 1.0
@@ -407,10 +406,10 @@ class StatisticsManager(object):
 
         # Add the new data, or overwrite a previous result (happens when resuming the simulation)
         record_len = len(self._results.checkpoint.records)
-        if index == record_len:
+        if route_index == record_len:
             self._results.checkpoint.records.append(route_record)
-        elif index < record_len:
-            self._results.checkpoint.records[index] = route_record
+        elif route_index < record_len:
+            self._results.checkpoint.records[route_index] = route_record
         else:
             raise ValueError("Not enough entries in the route record")
 
