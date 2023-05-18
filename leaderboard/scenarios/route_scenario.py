@@ -66,6 +66,9 @@ class RouteScenario(BasicScenario):
         self.route = self._get_route(config)
         self.list_scenarios = []
         self.scenarios_processed_map = {}
+        self.all_scenario_classes = None
+        self.ego_data = None
+        self.scenario_triggerer = None
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
         self.sampled_scenario_definitions = sampled_scenario_definitions
 
@@ -81,7 +84,7 @@ class RouteScenario(BasicScenario):
         )
 
         self._parked_ids = []
-        self._spawn_parked_ids()
+        # self._spawn_parked_ids() # tmp: remove parked vehicles
 
         super(RouteScenario, self).__init__(
             config.name, [ego_vehicle], config, world, debug_mode > 3, False, criteria_enable
@@ -319,22 +322,24 @@ class RouteScenario(BasicScenario):
         Initializes the class of all the scenarios that will be present in the route.
         If a class fails to be initialized, a warning is printed but the route execution isn't stopped
         """
-        all_scenario_classes = self.get_all_scenario_classes()
-        # self.list_scenarios = []
-        ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
+        if self.all_scenario_classes is None:
+            self.all_scenario_classes = self.get_all_scenario_classes()
+        if self.ego_data is None:
+            self.ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
 
         # some scenarios are not working properly, just ignore them temporarily
-        # TODO: fix them
-        white_list_scenarios = ["ParkingExit", "ParkingCutIn", "VehicleOpensDoorTwoWays", "ParkingCrossingPedestrian"] 
+        # TODO: fix the parked vehicles runtime init
+        # white_list_scenarios = ["ParkingExit", "ParkingCutIn", "VehicleOpensDoorTwoWays", "ParkingCrossingPedestrian"] 
+        white_list_scenarios = [] 
 
         if debug:
             tmap = CarlaDataProvider.get_map()
             for scenario_config in scenario_definitions:
                 scenario_loc = scenario_config.trigger_points[0].location
                 debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=1) # tmp: just change the life_time 1/tick
+                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=0.1) # tmp: just change the life_time smaller
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-                                        color=carla.Color(0, 0, 128), life_time=1, persistent_lines=True) # tmp: just change the life_time 1/tick
+                                        color=carla.Color(0, 0, 128), life_time=0.1, persistent_lines=True) # tmp: just change the life_time smaller
 
         for scenario_number, scenario_config in enumerate(scenario_definitions):
 
@@ -342,12 +347,12 @@ class RouteScenario(BasicScenario):
             if scenario_config.name in [x.config.name for x in self.list_scenarios]:
                 continue
 
-            scenario_config.ego_vehicles = [ego_data]
+            scenario_config.ego_vehicles = [self.ego_data]
             scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             scenario_config.route = self.route
 
             try:
-                scenario_class = all_scenario_classes[scenario_config.type]
+                scenario_class = self.all_scenario_classes[scenario_config.type]
                 trigger_location = scenario_config.trigger_points[0].location
 
                 if scenario_config.type in white_list_scenarios:
@@ -381,6 +386,10 @@ class RouteScenario(BasicScenario):
                 self.list_scenarios.append(scenario_instance)
                 self.scenarios_processed_map[scenario_instance] = False
 
+                # TODO: add bevaivor tree here
+
+
+    # TODO: a bit convoluted, move it to build_scenario
     def _process_runtime_init_scenarios(self):
         """
         Process the scenarios that were initialized at runtime
@@ -410,14 +419,36 @@ class RouteScenario(BasicScenario):
                     print(f"Add scenario {scenario.config.name} to behavior tree")
 
         # Add the behavior that manages the scenario trigger conditions
-        scenario_triggerer = ScenarioTriggerer(
-            self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
-        route_behavior_node.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
+        # if len(blackboard_list) > 0:
+        #     scenario_triggerer = ScenarioTriggerer(
+        #         self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
+        #     route_behavior_node.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
 
-        route_behavior_node.add_children(scenario_behaviors)
+        # add to blackboard
+        if self.scenario_triggerer is not None:
+            self.scenario_triggerer._blackboard_list += blackboard_list
 
-        # TODO: add test criteria for scenarios
 
+        if len(scenario_behaviors) > 0:
+            route_behavior_node.add_children(scenario_behaviors)
+
+        # add test criteria for scenarios
+        # criteria_node = None
+        # for node in self.scenario_tree.children:
+        #     if node.name == "Criteria":
+        #         criteria_node = node
+        #         break
+        # if criteria_node is None:
+        #     raise Exception("No Criteria node found")
+        
+        # for scenario in self.list_scenarios:
+        #     scenario_criteria = scenario.get_criteria()
+        #     if len(scenario_criteria) == 0:
+        #         continue  # No need to create anything
+
+        #     criteria_node.add_child(
+        #         self._create_criterion_tree(scenario, scenario_criteria)
+        #     )
 
 
     # pylint: enable=no-self-use
@@ -457,6 +488,9 @@ class RouteScenario(BasicScenario):
         scenario_triggerer = ScenarioTriggerer(
             self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
         behavior.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
+
+        # register var
+        self.scenario_triggerer = scenario_triggerer
 
         # Add the Background Activity
         behavior.add_child(BackgroundBehavior(self.ego_vehicles[0], self.route, name="BackgroundActivity"))
