@@ -45,8 +45,6 @@ def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('-f', '--file-paths', nargs="+", required=True, help='path to all the files containing the partial results')
     argparser.add_argument('-e', '--endpoint', required=True, help='path to the endpoint containing the joined results')
-    argparser.add_argument('-g', '--global-statistics', action="store_true", help='Computes the global statistics')
-    argparser.add_argument('-v', '--validate', action="store_true", help='Validates the results')
     args = argparser.parse_args()
 
     # Initialize the statistics manager
@@ -74,7 +72,9 @@ def main():
         int(x.split('_rep')[-1])
     ))
 
-    if args.validate:
+    global_statistics = total_routes == total_progress
+
+    if global_statistics:
         check_duplicates(route_ids)
         check_missing_data(route_ids)
 
@@ -86,13 +86,9 @@ def main():
     statistics_manager.save_sensors(sensors)
     statistics_manager.save_progress(total_routes, total_progress)
     statistics_manager.save_entry_status('Started')
-    if args.global_statistics:
+    if global_statistics:
         statistics_manager.compute_global_statistics()
-    if not args.validate:
-        statistics_manager.write_statistics()
-    else:
         statistics_manager.validate_and_write_statistics(True, False)
-
 
 if __name__ == '__main__':
     main()
