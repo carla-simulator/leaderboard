@@ -52,8 +52,6 @@ def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('-f', '--file-paths', nargs="+", required=True, help='path to all the files containing the partial results')
     argparser.add_argument('-e', '--endpoint', required=True, help='path to the endpoint containing the joined results')
-    argparser.add_argument('-g', '--global-statistics', action="store_true", help='Computes the global statistics')
-    argparser.add_argument('-v', '--validate', action="store_true", help='Validates the results')
     args = argparser.parse_args()
 
     sensors = []
@@ -92,7 +90,7 @@ def main():
     save_dict(args.endpoint, statistics_records)
 
     # Save global records
-    if args.global_statistics:
+    if total_routes == total_progress:
         statistics_manager = StatisticsManager()
         for file in args.file_paths:
             statistics_manager.resume(file)  # Add the files info to the statistics manager
