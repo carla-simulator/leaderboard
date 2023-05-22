@@ -58,14 +58,18 @@ def main():
 
     for file in args.file_paths:
         data = fetch_dict(file)
+        if not data:
+            continue
+
         route_ids.extend([x['route_id'] for x in data['_checkpoint']['records']])
         total_routes += len(data['_checkpoint']['records'])
         total_progress += data['_checkpoint']['progress'][1]
 
-        if not sensors:
-            sensors = data['sensors']
-        elif data['sensors'] != sensors:
-            raise ValueError("Stopping. Found two files with different sensor configurations")
+        if data['sensors']:
+            if not sensors:
+                sensors = data['sensors']
+            elif data['sensors'] != sensors:
+                raise ValueError("Stopping. Found two files with different sensor configurations")
 
     route_ids.sort(key=lambda x: (
         int(x.split('_')[1]),
