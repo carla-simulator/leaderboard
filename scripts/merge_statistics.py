@@ -90,7 +90,7 @@ def main():
     save_dict(args.endpoint, statistics_records)
 
     # Save global records
-    if total_routes == total_progress:
+    if total_progress != 0 and total_routes == total_progress:
         statistics_manager = StatisticsManager()
         for file in args.file_paths:
             statistics_manager.resume(file)  # Add the files info to the statistics manager
