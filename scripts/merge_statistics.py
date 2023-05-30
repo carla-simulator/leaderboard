@@ -76,7 +76,7 @@ def main():
         int(x.split('_rep')[-1])
     ))
 
-    global_statistics = total_routes == total_progress
+    global_statistics = total_progress != 0 and total_routes == total_progress
 
     if global_statistics:
         check_duplicates(route_ids)
