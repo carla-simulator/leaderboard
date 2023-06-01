@@ -227,7 +227,12 @@ class StatisticsManager(object):
                 global_record.meta['duration_system'] += route_record.meta['duration_system']
 
                 for key in global_record.infractions.keys():
-                    route_length_kms = max(route_record.scores['score_route'] / 100 * route_record.meta['route_length'] / 1000.0, 0.001)
+                    # If the vehicle hasn't moved, either there'll be no infractions,
+                    # or they will be caused by the Leaderboard initalization
+                    if route_record.scores['score_route'] == 0:
+                        continue
+
+                    route_length_kms = route_record.scores['score_route'] / 100 * route_record.meta['route_length'] / 1000.0
                     if isinstance(global_record.infractions[key], list):
                         global_record.infractions[key] = len(route_record.infractions[key]) / route_length_kms
                     else:
