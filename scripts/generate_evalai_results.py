@@ -16,10 +16,8 @@ def main():
     data = fetch_dict(args.file_path)
     if '_checkpoint' in data:
         global_records = data['_checkpoint']['global_record']
-
-        output = {
-            "result":
-            [
+        if global_records:
+            output = [
                 {
                     "split": "leaderboard",
                     "show_to_participant": True,
@@ -39,11 +37,8 @@ def main():
                     }
                 }
             ]
-        }
-    else:
-        output = {
-            "result":
-            [
+        else:
+            output = [
                 {
                     "split": "leaderboard",
                     "show_to_participant": True,
@@ -63,7 +58,6 @@ def main():
                     }
                 }
             ]
-        }
 
     save_dict(args.endpoint, output)
 
