@@ -78,15 +78,16 @@ def main():
     pretty_output += "\n"
 
     # Route data
-    pretty_output += "And here is a glossary of each route:\n"
+    if route_records:
+        pretty_output += "And here is a glossary of each route:\n"
 
-    for route in route_records:
-        pretty_output += "\n"
-        pretty_output += f"- Index: {route['index']}\n"
-        pretty_output += f"  - Route ID: {route['route_id']}\n"
-        pretty_output += f"  - Status: {route['status']}\n"
-        pretty_output += f"  - Ratio: {route['ratio']}x\n"
-        pretty_output += f"  - FPS: {20*route['ratio']}\n"
+        for route in route_records:
+            pretty_output += "\n"
+            pretty_output += f"- Index: {route['index']}\n"
+            pretty_output += f"  - Route ID: {route['route_id']}\n"
+            pretty_output += f"  - Status: {route['status']}\n"
+            pretty_output += f"  - Ratio: {route['ratio']}x\n"
+            pretty_output += f"  - FPS: {20*route['ratio']}\n"
 
     with open(args.endpoint, 'w') as fd:
         fd.write(pretty_output)
