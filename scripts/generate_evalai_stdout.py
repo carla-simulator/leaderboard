@@ -34,7 +34,7 @@ def main():
         sys.exit(0)
 
     pretty_output = "Here is a summary of the submission's current results\n\n"
-    pretty_output += "Starting with the general information:\n"
+    pretty_output += "General information:\n"
 
     # Sensors
     pretty_output += "- Sensors:\n"
@@ -79,7 +79,7 @@ def main():
 
     # Route data
     if route_records:
-        pretty_output += "And here is a glossary of each route:\n"
+        pretty_output += "Glossary of each route:\n"
 
         for route in route_records:
             pretty_output += "\n"
