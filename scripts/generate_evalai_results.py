@@ -13,6 +13,28 @@ def main():
     argparser.add_argument('-e', '--endpoint', required=True, help='path to the endpoint containing the joined results')
     args = argparser.parse_args()
 
+    # Base output
+    output = [
+        {
+            "split": "leaderboard",
+            "show_to_participant": True,
+            "accuracies": {
+                "Driving score": 0,
+                "Route completion": 0,
+                "Infraction penalty": 0,
+                "Collisions pedestrians": 0,
+                "Collisions vehicles": 0,
+                "Collisions layout": 0,
+                "Red light infractions": 0,
+                "Stop sign infractions": 0,
+                "Off-road infractions": 0,
+                "Route deviations": 0,
+                "Route timeouts": 0,
+                "Agent blocked": 0,
+            }
+        }
+    ]
+
     data = fetch_dict(args.file_path)
     if '_checkpoint' in data:
         global_records = data['_checkpoint']['global_record']
@@ -34,27 +56,6 @@ def main():
                         "Route deviations": global_records['infractions']['route_dev'],
                         "Route timeouts": global_records['infractions']['route_timeout'],
                         "Agent blocked": global_records['infractions']['vehicle_blocked']
-                    }
-                }
-            ]
-        else:
-            output = [
-                {
-                    "split": "leaderboard",
-                    "show_to_participant": True,
-                    "accuracies": {
-                        "Driving score": 0,
-                        "Route completion": 0,
-                        "Infraction penalty": 0,
-                        "Collisions pedestrians": 0,
-                        "Collisions vehicles": 0,
-                        "Collisions layout": 0,
-                        "Red light infractions": 0,
-                        "Stop sign infractions": 0,
-                        "Off-road infractions": 0,
-                        "Route deviations": 0,
-                        "Route timeouts": 0,
-                        "Agent blocked": 0,
                     }
                 }
             ]

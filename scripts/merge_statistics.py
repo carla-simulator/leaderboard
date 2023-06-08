@@ -93,6 +93,8 @@ def main():
     if global_statistics:
         statistics_manager.compute_global_statistics()
         statistics_manager.validate_and_write_statistics(True, False)
+    else:
+        statistics_manager.write_statistics()
 
 if __name__ == '__main__':
     main()

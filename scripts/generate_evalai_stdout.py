@@ -27,6 +27,10 @@ def main():
 
     if not data or 'sensors' not in data or '_checkpoint' not in data \
         or 'progress' not in data['_checkpoint'] or 'records' not in data['_checkpoint']:
+        pretty_output = "Initializing the submission, no data avaialable yet.\n"
+        pretty_output = "More information will be found here once the submission starts running.\n"
+        with open(args.endpoint, 'w') as fd:
+            fd.write(pretty_output)
         sys.exit(0)
 
     pretty_output = "Here is a summary of the submission's current results\n\n"
@@ -46,7 +50,10 @@ def main():
 
     # Completed routes
     completed_routes, total_routes = data['_checkpoint']['progress']
-    pretty_output += f"- Completed {completed_routes} out of the {total_routes} routes\n"
+    if completed_routes == total_routes:
+        pretty_output += f"- All {total_routes} route have been completed\n"
+    else:
+        pretty_output += f"- Completed {completed_routes} out of the {total_routes} routes\n"
 
     # Routes data
     total_duration_game = 0
@@ -57,34 +64,27 @@ def main():
             "route_id": record['route_id'],
             "index": record['index'],
             "status": record['status'],
-            "score_route": record['scores']['score_route'],
-            "score_penalty": record['scores']['score_penalty'],
-            "score_composed": record['scores']['score_composed'],
-            "duration_game": record['meta']['duration_game'],
-            "duration_system": record['meta']['duration_system'],
+            "ratio": (record['meta']['duration_game'])/(record['meta']['duration_system']),
         })
 
         total_duration_game += record['meta']['duration_game']
         total_duration_system += record['meta']['duration_system']
 
     # General duration
-    pretty_output += f"- Game duration has been of {total_duration_game}s\n"
-    pretty_output += f"- System duration has been of {total_duration_system}s\n"
+    pretty_output += f"- Submission ratio of {total_duration_game / total_duration_system}x\n"
+    pretty_output += f"- Submission FPS of {20*total_duration_game / total_duration_system}\n"
     pretty_output += "\n"
 
     # Route data
-    pretty_output += "As for each route's information:\n"
+    pretty_output += "And here is a glossary of each route:\n"
 
     for route in route_records:
         pretty_output += "\n"
         pretty_output += f"- Index: {route['index']}\n"
         pretty_output += f"  - Route ID: {route['route_id']}\n"
         pretty_output += f"  - Status: {route['status']}\n"
-        pretty_output += f"  - Route completion: {route['score_route']}\n"
-        pretty_output += f"  - Infraction Penalty: {route['score_penalty']}\n"
-        pretty_output += f"  - Driving Score: {route['score_composed']}\n"
-        pretty_output += f"  - Game Duration: {route['duration_game']}\n"
-        pretty_output += f"  - System Duration: {route['duration_system']}\n"
+        pretty_output += f"  - Ratio: {route['ratio']}x\n"
+        pretty_output += f"  - FPS: {20*route['ratio']}\n"
 
     with open(args.endpoint, 'w') as fd:
         fd.write(pretty_output)
