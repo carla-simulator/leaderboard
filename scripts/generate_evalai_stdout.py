@@ -60,19 +60,21 @@ def main():
     total_duration_system = 0
     route_records = []
     for record in data['_checkpoint']['records']:
+        ratio = 0 if record['meta']['duration_system'] == 0 else record['meta']['duration_game']/record['meta']['duration_system']
         route_records.append({
             "route_id": record['route_id'],
             "index": record['index'],
             "status": record['status'],
-            "ratio": (record['meta']['duration_game'])/(record['meta']['duration_system']),
+            "ratio": ratio,
         })
 
         total_duration_game += record['meta']['duration_game']
         total_duration_system += record['meta']['duration_system']
 
     # General duration
-    pretty_output += f"- Submission ratio of {total_duration_game / total_duration_system}x\n"
-    pretty_output += f"- Submission FPS of {20*total_duration_game / total_duration_system}\n"
+    ratio = 0 if total_duration_system == 0 else total_duration_game / total_duration_system
+    pretty_output += f"- Submission ratio of {ratio}x\n"
+    pretty_output += f"- Submission FPS of {20*ratio}\n"
     pretty_output += "\n"
 
     # Route data
