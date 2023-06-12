@@ -72,6 +72,9 @@ class RouteScenario(BasicScenario):
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
         self.sampled_scenario_definitions = sampled_scenario_definitions
 
+        self.behavior_node = None # behavior node created by _create_behavior()
+        self.criteria_node = None # criteria node created by _create_test_criteria()
+
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
             raise ValueError("Shutting down, couldn't spawn the ego vehicle")
@@ -400,29 +403,36 @@ class RouteScenario(BasicScenario):
         scenario_behaviors = []
         blackboard_list = []
 
-        route_behavior_node = None
-        for node in self.behavior_tree.children:
-            if node.name == "Route Behavior":
-                route_behavior_node = node
-                break
-        if route_behavior_node is None:
+        if self.behavior_node is None:
             raise Exception("No route behavior node found")
+        
+        if self.criteria_node is None:
+            raise Exception("No criteria node found")
 
         for scenario in self.list_scenarios:
             if not self.scenarios_processed_map[scenario]:
                 
+                self.scenarios_processed_map[scenario] = True # Mark it as processed
+
+                # process behavior
                 if scenario.behavior_tree is not None:
                     scenario_behaviors.append(scenario.behavior_tree)
                     blackboard_list.append([scenario.config.route_var_name,
                                             scenario.config.trigger_points[0].location])
-                    self.scenarios_processed_map[scenario] = True # Mark it as processed
                     print(f"Add scenario {scenario.config.name} to behavior tree")
 
-        # Add the behavior that manages the scenario trigger conditions
-        # if len(blackboard_list) > 0:
-        #     scenario_triggerer = ScenarioTriggerer(
-        #         self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
-        #     route_behavior_node.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
+                # process criteria
+                scenario_criteria = scenario.get_criteria()
+                if len(scenario_criteria) == 0:
+                    continue  # No need to create anything
+                else:
+                    print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
+                    self.criteria_node.add_child(
+                        self._create_criterion_tree(scenario, scenario_criteria)
+                    )
+                
+
+
 
         # add to blackboard
         if self.scenario_triggerer is not None:
@@ -430,25 +440,8 @@ class RouteScenario(BasicScenario):
 
 
         if len(scenario_behaviors) > 0:
-            route_behavior_node.add_children(scenario_behaviors)
+            self.behavior_node.add_children(scenario_behaviors)
 
-        # add test criteria for scenarios
-        # criteria_node = None
-        # for node in self.scenario_tree.children:
-        #     if node.name == "Criteria":
-        #         criteria_node = node
-        #         break
-        # if criteria_node is None:
-        #     raise Exception("No Criteria node found")
-        
-        # for scenario in self.list_scenarios:
-        #     scenario_criteria = scenario.get_criteria()
-        #     if len(scenario_criteria) == 0:
-        #         continue  # No need to create anything
-
-        #     criteria_node.add_child(
-        #         self._create_criterion_tree(scenario, scenario_criteria)
-        #     )
 
 
     # pylint: enable=no-self-use
@@ -474,6 +467,7 @@ class RouteScenario(BasicScenario):
         behavior = py_trees.composites.Parallel(name="Route Behavior",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
 
+        self.behavior_node = behavior
         scenario_behaviors = []
         blackboard_list = []
 
@@ -505,6 +499,8 @@ class RouteScenario(BasicScenario):
         """
         criteria = py_trees.composites.Parallel(name="Criteria",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+
+        self.criteria_node = criteria
 
         # End condition
         criteria.add_child(RouteCompletionTest(self.ego_vehicles[0], route=self.route))
