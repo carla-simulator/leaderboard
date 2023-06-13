@@ -173,10 +173,10 @@ class ScenarioManager(object):
             except Exception as e:
                 raise AgentError(e)
             
-            # build scenarios if necessary
-            self.scenario._build_scenarios(CarlaDataProvider.get_world(), self.ego_vehicles[0], self.scenario.sampled_scenario_definitions, timeout=10000, debug=self._debug_mode > 0)
-            # mount new scenarios behavior
-            self.scenario._process_runtime_init_scenarios()
+            # # build scenarios if necessary
+            # self.scenario._build_scenarios(CarlaDataProvider.get_world(), self.ego_vehicles[0], self.scenario.sampled_scenario_definitions, timeout=10000, debug=self._debug_mode > 0)
+            # # mount new scenarios behavior
+            # self.scenario._process_runtime_init_scenarios()
 
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)

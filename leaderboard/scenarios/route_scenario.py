@@ -65,15 +65,7 @@ class RouteScenario(BasicScenario):
         self.config = config
         self.route = self._get_route(config)
         self.list_scenarios = []
-        self.scenarios_processed_map = {}
-        self.all_scenario_classes = None
-        self.ego_data = None
-        self.scenario_triggerer = None
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
-        self.sampled_scenario_definitions = sampled_scenario_definitions
-
-        self.behavior_node = None # behavior node created by _create_behavior()
-        self.criteria_node = None # criteria node created by _create_test_criteria()
 
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
@@ -87,7 +79,7 @@ class RouteScenario(BasicScenario):
         )
 
         self._parked_ids = []
-        # self._spawn_parked_ids() # tmp: remove parked vehicles
+        self._spawn_parked_ids()
 
         super(RouteScenario, self).__init__(
             config.name, [ego_vehicle], config, world, debug_mode > 3, False, criteria_enable
@@ -106,6 +98,7 @@ class RouteScenario(BasicScenario):
 
         # prepare route's trajectory (interpolate and add the GPS route)
         self.gps_route, self.route = interpolate_trajectory(config.keypoints)
+        CarlaDataProvider.set_ego_route(self.route)
         return self.route
 
     def _filter_scenarios(self, scenario_configs):
@@ -278,101 +271,33 @@ class RouteScenario(BasicScenario):
                 all_scenario_classes[member[0]] = member[1]
 
         return all_scenario_classes
-    
-    # Original version, just for backup
-    # def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False):
-    #     """
-    #     Initializes the class of all the scenarios that will be present in the route.
-    #     If a class fails to be initialized, a warning is printed but the route execution isn't stopped
-    #     """
-    #     all_scenario_classes = self.get_all_scenario_classes()
-    #     self.list_scenarios = []
-    #     ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
-
-    #     if debug:
-    #         tmap = CarlaDataProvider.get_map()
-    #         for scenario_config in scenario_definitions:
-    #             scenario_loc = scenario_config.trigger_points[0].location
-    #             debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-    #             world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
-    #             world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-    #                                     color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
-
-    #     for scenario_number, scenario_config in enumerate(scenario_definitions):
-    #         scenario_config.ego_vehicles = [ego_data]
-    #         scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
-    #         scenario_config.route = self.route
-
-    #         try:
-    #             scenario_class = all_scenario_classes[scenario_config.type]
-    #             scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
-
-    #             # Do a tick every once in a while to avoid spawning everything at the same time
-    #             if scenario_number % scenarios_per_tick == 0:
-    #                 world.tick()
-
-    #         except Exception as e:
-    #             print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
-    #             if debug:
-    #                 print(f"\n{traceback.format_exc()}")
-    #             print("\033[0m", end="")
-    #             continue
-
-    #         self.list_scenarios.append(scenario_instance)
 
     def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False):
         """
         Initializes the class of all the scenarios that will be present in the route.
         If a class fails to be initialized, a warning is printed but the route execution isn't stopped
         """
-        if self.all_scenario_classes is None:
-            self.all_scenario_classes = self.get_all_scenario_classes()
-        if self.ego_data is None:
-            self.ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
-
-        # some scenarios are not working properly, just ignore them temporarily
-        # TODO: fix the parked vehicles runtime init
-        # white_list_scenarios = ["ParkingExit", "ParkingCutIn", "VehicleOpensDoorTwoWays", "ParkingCrossingPedestrian"] 
-        white_list_scenarios = [] 
+        all_scenario_classes = self.get_all_scenario_classes()
+        self.list_scenarios = []
+        ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
 
         if debug:
             tmap = CarlaDataProvider.get_map()
             for scenario_config in scenario_definitions:
                 scenario_loc = scenario_config.trigger_points[0].location
                 debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=0.1) # tmp: just change the life_time smaller
+                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-                                        color=carla.Color(0, 0, 128), life_time=0.1, persistent_lines=True) # tmp: just change the life_time smaller
+                                        color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
 
         for scenario_number, scenario_config in enumerate(scenario_definitions):
-
-            # Skipping scenario as it was already loaded
-            if scenario_config.name in [x.config.name for x in self.list_scenarios]:
-                continue
-
-            scenario_config.ego_vehicles = [self.ego_data]
+            scenario_config.ego_vehicles = [ego_data]
             scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             scenario_config.route = self.route
 
             try:
-                scenario_class = self.all_scenario_classes[scenario_config.type]
-                trigger_location = scenario_config.trigger_points[0].location
-
-                if scenario_config.type in white_list_scenarios:
-                    print(f"init scenario {scenario_config.name}")
-                    scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
-                else:
-                    ego_location = CarlaDataProvider.get_location(ego_vehicle)
-                    if ego_location is None:
-                        # print("No ego location, skipping scenario")
-                        continue
-                    elif trigger_location.distance(ego_location) < 200: # only init scenarios that are close to ego
-                        # Scenario will be init here
-                        print(f"init scenario {scenario_config.name}")
-                        scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
-                    else:
-                        # print(f"Skipping scenario '{scenario_config.name}' because it is too far away from the ego vehicle")
-                        continue
+                scenario_class = all_scenario_classes[scenario_config.type]
+                scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
 
                 # Do a tick every once in a while to avoid spawning everything at the same time
                 if scenario_number % scenarios_per_tick == 0:
@@ -384,65 +309,8 @@ class RouteScenario(BasicScenario):
                     print(f"\n{traceback.format_exc()}")
                 print("\033[0m", end="")
                 continue
-            
-            if scenario_instance not in self.list_scenarios:
-                self.list_scenarios.append(scenario_instance)
-                self.scenarios_processed_map[scenario_instance] = False
 
-                # TODO: add bevaivor tree here
-
-
-    # TODO: a bit convoluted, move it to build_scenario
-    def _process_runtime_init_scenarios(self):
-        """
-        Process the scenarios that were initialized at runtime
-        Add then into scenario_tree
-        """
-        scenario_trigger_distance = DIST_THRESHOLD  # Max trigger distance between route and scenario
-
-        scenario_behaviors = []
-        blackboard_list = []
-
-        if self.behavior_node is None:
-            raise Exception("No route behavior node found")
-        
-        if self.criteria_node is None:
-            raise Exception("No criteria node found")
-
-        for scenario in self.list_scenarios:
-            if not self.scenarios_processed_map[scenario]:
-                
-                self.scenarios_processed_map[scenario] = True # Mark it as processed
-
-                # process behavior
-                if scenario.behavior_tree is not None:
-                    scenario_behaviors.append(scenario.behavior_tree)
-                    blackboard_list.append([scenario.config.route_var_name,
-                                            scenario.config.trigger_points[0].location])
-                    print(f"Add scenario {scenario.config.name} to behavior tree")
-
-                # process criteria
-                scenario_criteria = scenario.get_criteria()
-                if len(scenario_criteria) == 0:
-                    continue  # No need to create anything
-                else:
-                    print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
-                    self.criteria_node.add_child(
-                        self._create_criterion_tree(scenario, scenario_criteria)
-                    )
-                
-
-
-
-        # add to blackboard
-        if self.scenario_triggerer is not None:
-            self.scenario_triggerer._blackboard_list += blackboard_list
-
-
-        if len(scenario_behaviors) > 0:
-            self.behavior_node.add_children(scenario_behaviors)
-
-
+            self.list_scenarios.append(scenario_instance)
 
     # pylint: enable=no-self-use
     def _initialize_actors(self, config):
@@ -467,7 +335,6 @@ class RouteScenario(BasicScenario):
         behavior = py_trees.composites.Parallel(name="Route Behavior",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
 
-        self.behavior_node = behavior
         scenario_behaviors = []
         blackboard_list = []
 
@@ -476,15 +343,11 @@ class RouteScenario(BasicScenario):
                 scenario_behaviors.append(scenario.behavior_tree)
                 blackboard_list.append([scenario.config.route_var_name,
                                         scenario.config.trigger_points[0].location])
-                self.scenarios_processed_map[scenario] = True # Mark it as processed
 
         # Add the behavior that manages the scenario trigger conditions
         scenario_triggerer = ScenarioTriggerer(
             self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
         behavior.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
-
-        # register var
-        self.scenario_triggerer = scenario_triggerer
 
         # Add the Background Activity
         behavior.add_child(BackgroundBehavior(self.ego_vehicles[0], self.route, name="BackgroundActivity"))
@@ -499,8 +362,6 @@ class RouteScenario(BasicScenario):
         """
         criteria = py_trees.composites.Parallel(name="Criteria",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
-
-        self.criteria_node = criteria
 
         # End condition
         criteria.add_child(RouteCompletionTest(self.ego_vehicles[0], route=self.route))
