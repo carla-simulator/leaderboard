@@ -135,13 +135,13 @@
    <route id="9" town="Town13">
       <!-- OppositeVehicleTakingPriority -->
       <waypoints>
-         <position x="-2151.9" y="-696.7" z="160.8"/>
-         <position x="-2151.8" y="-739.5" z="160.2"/>
-         <position x="-2151.7" y="-820.9" z="159.1"/>
+         <position x="3231.5" y="4068.5" z="183.1"/>
+         <position x="3352.5" y="4069.6" z="179.8"/>
       </waypoints>
       <scenarios>
          <scenario name="OppositeVehicleTakingPriority_2" type="OppositeVehicleTakingPriority">
-            <trigger_point x="-2151.8" y="-739.5" z="160.2" yaw="270.1"/>
+            <trigger_point x="3270.6" y="4069.1" z="182.2" yaw="0.8"/>
+            <direction value="left"/>
          </scenario>
       </scenarios>
    </route>
@@ -336,15 +336,71 @@
    <route id="23" town="Town13">
       <!-- Accident -->
       <waypoints>
-
+         <position x="-1225.4" y="-1931.3" z="159.3"/>
+         <position x="-1173.1" y="-1897.8" z="159.9"/>
+         <position x="-1038.8" y="-1812.2" z="161.4"/>
       </waypoints>
       <scenarios>
-               <scenario name="Accident_1" type="Accident">
-                  <trigger_point x="-1168.1" y="-1894.6" z="160.0" yaw="32.5"/>
-                  <distance value="80"/>
-                  <speed value="60"/>
-               </scenario>
+         <scenario name="Accident_1" type="Accident">
+            <trigger_point x="-1168.1" y="-1894.6" z="160.0" yaw="32.5"/>
+            <distance value="80"/>
+            <speed value="60"/>
+         </scenario>
       </scenarios>
+   </route>
+   <route id="24" town="Town13">
+      <!-- AccidentTwoWays -->
+      <waypoints>
+         <position x="3184.2" y="3308.8" z="181.4"/>
+         <position x="2998.2" y="3303.2" z="181.8"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
+            <trigger_point x="3170.66" y="3308.37" z="181.61" yaw="181.73"/>
+            <distance value="65"/>
+            <frequency from="50" to="115"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="25" town="Town13">
+      <!-- VehicleOpensDoorTwoWays -->
+      <waypoints>
+         <position x="5440.1" y="3789.1" z="159.3"/>
+         <position x="5621.4" y="3787.4" z="158.4"/>
+         <position x="5661.8" y="3787.0" z="158.3"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="VehicleOpensDoorTwoWays_1" type="VehicleOpensDoorTwoWays">
+            <trigger_point x="5537.6" y="3788.2" z="158.8" yaw="359.4"/>
+            <distance value="75"/>
+            <frequency from="20" to="75"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="26" town="Town13">
+      <!-- HazardAtSideLane -->
+      <waypoints>
+         <position x="4568.4" y="3635.6" z="152.8"/>
+         <position x="4539.2" y="3677.0" z="152.3"/>
+         <position x="4410.3" y="3939.4" z="149.9"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="HazardAtSideLane_1" type="HazardAtSideLane">
+            <trigger_point x="4540.6" y="3675.1" z="152.3" yaw="126.7"/>
+            <distance value="70"/>
+            <bicycle_drive_distance value="80"/>
+            <bicycle_speed value="11"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="27" town="Town13">
+      <!--  -->
+      <waypoints>
+
+</waypoints>
+      <scenarios>
+
+</scenarios>
    </route>
    <route id="999" town="Town13">
       <!--  -->
