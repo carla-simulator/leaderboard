@@ -145,20 +145,6 @@
          </scenario>
       </scenarios>
    </route>
-   <route id="34" town="Town13">
-      <waypoints>
-         <position x="6090.4" y="4311.7" z="164.9"/>
-         <position x="6092.0" y="4161.8" z="163.5"/>
-      </waypoints>
-      <scenarios>
-         <scenario name="ParkingExit_1" type="ParkingExit">
-            <trigger_point x="6090.4" y="4311.7" z="164.9" yaw="270.6"/>
-            <direction value="right"/>
-            <front_vehicle_distance value="9"/>
-            <behind_vehicle_distance value="9"/>
-         </scenario>
-      </scenarios>
-   </route>
    <route id="10" town="Town13">
       <!-- ParkingCrossingPedestrian -->
       <waypoints>
@@ -394,21 +380,127 @@
       </scenarios>
    </route>
    <route id="27" town="Town13">
-      <!--  -->
+      <!-- HazardAtSideLaneTwoWays -->
       <waypoints>
-
-</waypoints>
+         <position x="289.7" y="1135.8" z="148.2"/>
+         <position x="625.4" y="1136.9" z="147.2"/>
+      </waypoints>
       <scenarios>
-
-</scenarios>
+         <scenario name="HazardAtSideLaneTwoWays_1" type="HazardAtSideLaneTwoWays">
+            <trigger_point x="322.0" y="1138.2" z="148.1" yaw="3.6"/>
+            <distance value="75"/>
+            <frequency value="80"/>
+            <bicycle_drive_distance value="100"/>
+            <bicycle_speed value="10"/>
+         </scenario>
+      </scenarios>
    </route>
-   <route id="999" town="Town13">
+   <route id="28" town="Town13">
+      <!-- InvadingTurn less curve -->
+      <waypoints>
+         <position x="-1177.8" y="5144.0" z="147.2"/>
+         <position x="-1465.7" y="5336.4" z="150.1"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="InvadingTurn_2" type="InvadingTurn">
+            <trigger_point x="-1209.5" y="5182.9" z="147.3" yaw="132.0"/>
+            <distance value="110"/>
+            <offset value="0.6"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="29" town="Town13">
+      <!-- InvadingTurn much curve -->
+      <waypoints>
+         <position x="-2331.6" y="-778.2" z="162.3"/>
+         <position x="-2474.0" y="-534.6" z="168.0"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="InvadingTurn_1" type="InvadingTurn">
+            <trigger_point x="-2341.6" y="-778.2" z="162.4" yaw="179.6"/>
+            <distance value="130"/>
+            <offset value="0.3"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="30" town="Town13">
+      <!-- HighwayCutIn -->
+      <waypoints>
+         <position x="-2680.0" y="5964.7" z="158.6"/>
+         <position x="-3131.2" y="6003.8" z="164.4"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="HighwayCutIn_1" type="HighwayCutIn">
+            <trigger_point x="-2768.1" y="5999.7" z="160.0" yaw="167.3"/>
+            <other_actor_location x="-2766.5" y="6011.6" z="160.0"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="31" town="Town13">
       <!--  -->
       <waypoints>
-
-</waypoints>
+         <position x="5223.0" y="3960.2" z="160.4"/>
+         <position x="5222.6" y="3815.4" z="160.7"/>
+      </waypoints>
       <scenarios>
-
-</scenarios>
+         <scenario name="ParkingCutIn_1" type="ParkingCutIn">
+            <trigger_point x="5223.0" y="3946.6" z="160.4" yaw="269.8"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="32" town="Town13">
+      <!-- StaticCutIn -->
+      <waypoints>
+         <position x="4401.4" y="4405.5" z="148.0"/>
+         <position x="4400.0" y="4679.1" z="147.3"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="StaticCutIn_3" type="StaticCutIn">
+            <trigger_point x="4401.2" y="4442.0" z="147.9" yaw="90.3"/>
+            <distance value="100"/>
+            <direction value="right"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="33" town="Town13">
+      <!-- HardBreakRoute -->
+      <waypoints>
+         <position x="-2883.4" y="4672.9" z="179.6"/>
+         <position x="-2580.8" y="4622.9" z="177.2"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="HardBreakRoute_7" type="HardBreakRoute">
+            <trigger_point x="-2790.9" y="4657.6" z="179.3" yaw="-9.4"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="34" town="Town13">
+      <waypoints>
+         <position x="6090.4" y="4311.7" z="164.9"/>
+         <position x="6092.0" y="4161.8" z="163.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ParkingExit_1" type="ParkingExit">
+            <trigger_point x="6090.4" y="4311.7" z="164.9" yaw="270.6"/>
+            <direction value="right"/>
+            <front_vehicle_distance value="9"/>
+            <behind_vehicle_distance value="9"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="35" town="Town13">
+      <!-- YieldToEmergencyVehicle -->
+      <waypoints>
+         <position x="-3342.2" y="-2858.3" z="158.4"/>
+         <position x="-3206.4" y="-2858.4" z="157.5"/>
+         <position x="-2733.4" y="-2820.1" z="155.5"/>
+         <position x="-2583.8" y="-2785.8" z="155.0"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="YieldToEmergencyVehicle_1" type="YieldToEmergencyVehicle">
+            <trigger_point x="-3212.1" y="-2858.4" z="157.6" yaw="-0.0"/>
+            <distance value="150"/>
+         </scenario>
+      </scenarios>
    </route>
 </routes>
