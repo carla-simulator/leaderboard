@@ -56,6 +56,7 @@ class RouteScenario(BasicScenario):
     """
 
     category = "RouteScenario"
+    INIT_THRESHOLD = 200 # Runtime initialization trigger distance to ego (m)
 
     def __init__(self, world, config, debug_mode=0, criteria_enable=True):
         """
@@ -366,8 +367,8 @@ class RouteScenario(BasicScenario):
                     if ego_location is None:
                         # print("No ego location, skipping scenario")
                         continue
-                    elif trigger_location.distance(ego_location) < 200: # only init scenarios that are close to ego
-                        # Scenario will be init here
+                    elif trigger_location.distance(ego_location) < self.INIT_THRESHOLD: # only init scenarios that are close to ego
+                        # Scenario will init here
                         print(f"init scenario {scenario_config.name}")
                         scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
                     else:
@@ -385,62 +386,49 @@ class RouteScenario(BasicScenario):
                 print("\033[0m", end="")
                 continue
             
+            # Add new scenarios to list
             if scenario_instance not in self.list_scenarios:
                 self.list_scenarios.append(scenario_instance)
                 self.scenarios_processed_map[scenario_instance] = False
 
-                # TODO: add bevaivor tree here
+        # Process the scenarios that were initialized at runtime
+        # Add their behaviors and criterias
+        if self.behavior_node is None or self.criteria_node is None:
+            # Not ready yet
+            return
+        else:
+            scenario_behaviors = []
+            blackboard_list = []
+
+            for scenario in self.list_scenarios:
+                if not self.scenarios_processed_map[scenario]:
+                    
+                    self.scenarios_processed_map[scenario] = True # Mark it as processed
+
+                    # process behavior
+                    if scenario.behavior_tree is not None:
+                        scenario_behaviors.append(scenario.behavior_tree)
+                        blackboard_list.append([scenario.config.route_var_name,
+                                                scenario.config.trigger_points[0].location])
+                        print(f"Add scenario {scenario.config.name} to behavior tree")
+
+                    # process criteria
+                    scenario_criteria = scenario.get_criteria()
+                    if len(scenario_criteria) == 0:
+                        continue  # No need to create anything
+                    else:
+                        print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
+                        self.criteria_node.add_child(
+                            self._create_criterion_tree(scenario, scenario_criteria)
+                        )
+
+            # add to blackboard
+            if self.scenario_triggerer is not None:
+                self.scenario_triggerer._blackboard_list += blackboard_list
 
 
-    # TODO: a bit convoluted, move it to build_scenario
-    def _process_runtime_init_scenarios(self):
-        """
-        Process the scenarios that were initialized at runtime
-        Add then into scenario_tree
-        """
-        scenario_trigger_distance = DIST_THRESHOLD  # Max trigger distance between route and scenario
-
-        scenario_behaviors = []
-        blackboard_list = []
-
-        if self.behavior_node is None:
-            raise Exception("No route behavior node found")
-        
-        if self.criteria_node is None:
-            raise Exception("No criteria node found")
-
-        for scenario in self.list_scenarios:
-            if not self.scenarios_processed_map[scenario]:
-                
-                self.scenarios_processed_map[scenario] = True # Mark it as processed
-
-                # process behavior
-                if scenario.behavior_tree is not None:
-                    scenario_behaviors.append(scenario.behavior_tree)
-                    blackboard_list.append([scenario.config.route_var_name,
-                                            scenario.config.trigger_points[0].location])
-                    print(f"Add scenario {scenario.config.name} to behavior tree")
-
-                # process criteria
-                scenario_criteria = scenario.get_criteria()
-                if len(scenario_criteria) == 0:
-                    continue  # No need to create anything
-                else:
-                    print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
-                    self.criteria_node.add_child(
-                        self._create_criterion_tree(scenario, scenario_criteria)
-                    )
-                
-
-
-
-        # add to blackboard
-        if self.scenario_triggerer is not None:
-            self.scenario_triggerer._blackboard_list += blackboard_list
-
-
-        if len(scenario_behaviors) > 0:
-            self.behavior_node.add_children(scenario_behaviors)
+            if len(scenario_behaviors) > 0:
+                self.behavior_node.add_children(scenario_behaviors)
 
 
 
