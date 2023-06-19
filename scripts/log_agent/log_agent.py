@@ -197,6 +197,7 @@ class KeyboardControl(KeyboardControl_):
     def _record_control(self):
 
         velocity = self._player.get_velocity()
+        angular_velocity = self._player.get_angular_velocity()
         acceleration = self._player.get_acceleration()
         transform = self._player.get_transform()
 
@@ -216,6 +217,12 @@ class KeyboardControl(KeyboardControl_):
                     'y': round(velocity.y, 1),
                     'z': round(velocity.z, 1),
                     'value': round(velocity.length(), 1)
+                },
+                'angular_velocity': {
+                    'x': round(angular_velocity.x, 1),
+                    'y': round(angular_velocity.y, 1),
+                    'z': round(angular_velocity.z, 1),
+                    'value': round(angular_velocity.length(), 1)
                 },
                 'acceleration': {
                     'x': round(acceleration.x, 1),
