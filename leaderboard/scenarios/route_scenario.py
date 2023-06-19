@@ -76,6 +76,9 @@ class RouteScenario(BasicScenario):
         self.behavior_node = None # behavior node created by _create_behavior()
         self.criteria_node = None # criteria node created by _create_test_criteria()
 
+        self.all_occupied_parking_locations = []
+        self.all_available_parking_slots = []
+
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
             raise ValueError("Shutting down, couldn't spawn the ego vehicle")
@@ -83,11 +86,14 @@ class RouteScenario(BasicScenario):
         if debug_mode>0:
             self._draw_waypoints(world, self.route, vertical_shift=0.1, size=0.1, persistency=10000, downsample=10)
 
+        self._parked_ids = []
+        self._init_parking_slots()
+
         self._build_scenarios(
             world, ego_vehicle, sampled_scenario_definitions, timeout=10000, debug=debug_mode > 0
         )
 
-        self._parked_ids = []
+        # self._parked_ids = []
         # self._spawn_parked_ids() # tmp: remove parked vehicles
 
         super(RouteScenario, self).__init__(
@@ -146,6 +152,99 @@ class RouteScenario(BasicScenario):
         world.tick()
 
         return ego_vehicle
+    
+    def _init_parking_slots(self, max_distance=100, route_step=10):
+        """Spawn parked vehicles."""
+
+        def is_close(slot_location):
+            for i in range(0, len(self.route), route_step):
+                route_transform = self.route[i][0]
+                if route_transform.location.distance(slot_location) < max_distance:
+                    return True
+            return False
+
+        min_x, min_y = float('inf'), float('inf')
+        max_x, max_y = float('-inf'), float('-inf')
+        for route_transform, _ in self.route:
+            min_x = min(min_x, route_transform.location.x - max_distance)
+            min_y = min(min_y, route_transform.location.y - max_distance)
+            max_x = max(max_x, route_transform.location.x + max_distance)
+            max_y = max(max_y, route_transform.location.y + max_distance)
+
+        # Occupied parking locations
+        all_occupied_parking_locations = []
+        for scenario in self.list_scenarios:
+            all_occupied_parking_locations.extend(scenario.get_parking_slots())
+
+        all_available_parking_slots = []
+        map_name = CarlaDataProvider.get_map().name.split('/')[-1]
+        all_available_parking_slots = getattr(parked_vehicles, map_name, [])
+
+        # Exclude parking slots that are too far from the route
+        for slot in all_available_parking_slots:
+            slot_transform = carla.Transform(
+                location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
+                rotation=carla.Rotation(slot["rotation"][0], slot["rotation"][1], slot["rotation"][2])
+            )
+
+            in_area = (min_x < slot_transform.location.x < max_x) and (min_y < slot_transform.location.y < max_y)
+            close_to_route = is_close(slot_transform.location)
+            if not in_area or not close_to_route:
+                all_available_parking_slots.remove(slot)
+                continue
+
+        self.all_available_parking_slots = all_available_parking_slots
+
+
+    def _spawn_parked_ids_setp(self, ego_vehicle, max_scenario_distance=10):
+        """Spawn parked vehicles."""
+        def is_free(slot_location):
+            for occupied_slot in self.all_occupied_parking_locations:
+                if slot_location.distance(occupied_slot) < max_scenario_distance:
+                    return False
+            return True
+
+
+        SpawnActor = carla.command.SpawnActor
+
+
+        # Update occupied parking locations
+        for scenario in self.list_scenarios:
+            self.all_occupied_parking_locations.extend(scenario.get_parking_slots())
+        # Exlude duplicate values
+        # TODO: optimize. This can be done in scenario init loop
+        self.all_occupied_parking_locations = list(set(self.all_occupied_parking_locations))
+
+        ego_location = CarlaDataProvider.get_location(ego_vehicle)
+        if ego_location is None:
+            # print("No ego location, skipping scenario")
+            return
+
+        batch = []
+        for slot in self.all_available_parking_slots:
+            slot_transform = carla.Transform(
+                location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
+                rotation=carla.Rotation(slot["rotation"][0], slot["rotation"][1], slot["rotation"][2])
+            )
+
+            # Check if the slot is close to ego
+
+            if slot_transform.location.distance(ego_location) < self.INIT_THRESHOLD-20:
+                if is_free(slot_transform.location):
+                    mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
+                    mesh_bp.set_attribute("mesh_path", slot["mesh"])
+                    mesh_bp.set_attribute("scale", "0.9")
+                    batch.append(SpawnActor(mesh_bp, slot_transform))
+
+                self.all_available_parking_slots.remove(slot)
+            else:
+                continue
+
+        # Add the actors to _parked_ids
+        for response in CarlaDataProvider.get_client().apply_batch_sync(batch):
+            if not response.error:
+                self._parked_ids.append(response.actor_id)
+
 
     def _spawn_parked_ids(self, max_distance=100, max_scenario_distance=10, route_step=10):
         """Spawn parked vehicles."""
@@ -429,6 +528,9 @@ class RouteScenario(BasicScenario):
 
             if len(scenario_behaviors) > 0:
                 self.behavior_node.add_children(scenario_behaviors)
+
+        # Process parked vehicles
+        self._spawn_parked_ids_setp(ego_vehicle)
 
 
 
