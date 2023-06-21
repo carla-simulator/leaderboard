@@ -457,7 +457,7 @@ class StatisticsManager(object):
         # Calculate the score's standard deviation
         if self._total_routes == 1:
             for key in global_record.scores_std_dev:
-                global_record.scores_std_dev[key] = 'NaN'
+                global_record.scores_std_dev[key] = 0
         else:
             for route_record in route_records:
                 for key in global_record.scores_std_dev:
