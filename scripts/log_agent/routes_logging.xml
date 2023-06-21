@@ -502,4 +502,289 @@
          </scenario>
       </scenarios>
    </route>
+   <route id="36" town="Town13">
+      <!-- VehicleTurningRoute right -->
+      <waypoints>
+         <position x="-1990.8" y="-680.1" z="158.4"/>
+         <position x="-2051.2" y="-716.9" z="158.9"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="-2004.5" y="-680.0" z="158.6" yaw="179.7"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="37" town="Town13">
+      <!-- VehicleTurningRoute left -->
+      <waypoints>
+         <position x="-1990.8" y="-680.1" z="158.4"/>
+         <position x="-2053.3" y="-648.3" z="159.8"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="VehicleTurningRoute_1" type="VehicleTurningRoute">
+            <trigger_point x="-2004.5" y="-680.0" z="158.6" yaw="179.7"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="38" town="Town13">
+      <!-- MergerIntoSlowTraffic -->
+      <waypoints>
+         <position x="-3270.1" y="5980.9" z="165.5"/>
+         <position x="-3561.4" y="5899.1" z="168.3"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="MergerIntoSlowTraffic_1" type="MergerIntoSlowTraffic">
+            <trigger_point x="-3353.9" y="5936.9" z="166.0" yaw="-153.8"/>
+            <start_actor_flow x="-3347.1" y="5901.2" z="165.5"/>
+            <end_actor_flow x="-3603.2" y="5898.7" z="168.9"/>
+            <flow_speed value="9"/>
+            <source_dist_interval from="15" to="45"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="39" town="Town13">
+      <!-- MergerIntoSlowTrafficV2 -->
+      <waypoints>
+         <position x="1230.3" y="1227.8" z="157.0"/>
+         <position x="1275.8" y="1232.3" z="157.0"/>
+         <position x="1320.9" y="1217.7" z="157.0"/>
+         <position x="1362.5" y="1176.4" z="157.0"/>
+         <position x="1442.4" y="1114.2" z="157.0"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="MergerIntoSlowTrafficV2_1" type="MergerIntoSlowTrafficV2">
+            <trigger_point x="1317.35" y="1219.67" z="157.00" yaw="-27.88"/>
+            <start_actor_flow x="1339.1" y="1245.6" z="156.6"/>
+            <end_actor_flow x="1402.6" y="1118.2" z="157.0"/>
+            <flow_speed value="10"/>
+            <source_dist_interval from="15" to="30"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="40" town="Town13">
+      <!-- ConstructionObstacle -->
+      <waypoints>
+         <position x="5772.6" y="4125.8" z="159.5"/>
+         <position x="5656.7" y="4140.1" z="159.0"/>
+         <position x="5586.5" y="4168.0" z="158.9"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ConstructionObstacle_1" type="ConstructionObstacle">
+            <trigger_point x="5766.54" y="4125.88" z="159.48" yaw="179.44"/>
+            <distance value="80"/>
+            <speed value="49"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="41" town="Town13">
+      <!-- ConstructionObstacleTwoWays -->
+      <waypoints>
+         <position x="2637.1" y="5216.2" z="163.3"/>
+         <position x="2638.1" y="5000.9" z="167.4"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
+            <trigger_point x="2637.1" y="5206.4" z="163.5" yaw="270.3"/>
+            <distance value="77"/>
+            <frequency from="35" to="115"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="42" town="Town13">
+      <!-- ParkedObstacle -->
+      <waypoints>
+         <position x="4642.7" y="3089.2" z="149.3"/>
+         <position x="4639.1" y="3209.4" z="150.4"/>
+         <position x="4638.2" y="3238.6" z="150.7"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ParkedObstacle_1" type="ParkedObstacle">
+            <trigger_point x="4642.6" y="3094.4" z="149.3" yaw="91.7"/>
+            <distance value="70"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="43" town="Town13">
+      <!-- ParkedObstacleTwoWays -->
+      <waypoints>
+         <position x="3882.6" y="5483.9" z="158.5"/>
+         <position x="3850.5" y="5283.1" z="161.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ParkedObstacleTwoWays_1" type="ParkedObstacleTwoWays">
+            <trigger_point x="3882.2" y="5481.7" z="158.6" yaw="260.3"/>
+            <distance value="75"/>
+            <frequency from="25" to="90"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="44" town="Town13">
+      <!-- ControlLoss -->
+      <waypoints>
+         <position x="3882.6" y="5483.9" z="158.5"/>
+         <position x="3860.48" y="5354.75" z="160.44"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="ControlLoss_1" type="ControlLoss">
+            <trigger_point x="3877.9" y="5456.8" z="158.9" yaw="260.3"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="45" town="Town13">
+      <!-- DynamicObjectCrossing left container -->
+      <waypoints>
+         <position x="2778.7" y="3573.7" z="177.3"/>
+         <position x="2844.0" y="3574.7" z="178.8"/>
+         <position x="2904.9" y="3575.6" z="179.8"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
+            <trigger_point x="2785.68" y="3573.79" z="177.50" yaw="0.9"/>
+            <distance value="60"/>
+            <blocker_model value="static.prop.container"/>
+            <crossing_angle value="2"/>
+            <direction value="left"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="46" town="Town13">
+      <!-- DynamicObjectCrossing right container -->
+      <waypoints>
+         <position x="2778.7" y="3573.7" z="177.3"/>
+         <position x="2844.0" y="3574.7" z="178.8"/>
+         <position x="2904.9" y="3575.6" z="179.8"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_7" type="DynamicObjectCrossing">
+            <trigger_point x="2785.68" y="3573.79" z="177.50" yaw="0.9"/>
+            <distance value="60"/>
+            <blocker_model value="static.prop.container"/>
+            <crossing_angle value="2"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="47" town="Town13">
+      <!-- DynamicObjectCrossing left advertisement -->
+      <waypoints>
+         <position x="6906.8" y="2560.8" z="166.8"/>
+         <position x="6764.2" y="2560.6" z="165.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="6897.89" y="2560.83" z="166.77" yaw="90.6"/>
+            <distance value="70"/>
+            <blocker_model value="static.prop.advertisement"/>
+            <crossing_angle value="3"/>
+            <direction value="left"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="48" town="Town13">
+      <!-- DynamicObjectCrossing right advertisement -->
+      <waypoints>
+         <position x="6906.8" y="2560.8" z="166.8"/>
+         <position x="6764.2" y="2560.6" z="165.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="6897.89" y="2560.83" z="166.77" yaw="90.6"/>
+            <distance value="70"/>
+            <blocker_model value="static.prop.advertisement"/>
+            <crossing_angle value="3"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="49" town="Town13">
+      <!-- DynamicObjectCrossing left busstoplb -->
+      <waypoints>
+         <position x="6906.8" y="2560.8" z="166.8"/>
+         <position x="6764.2" y="2560.6" z="165.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="6897.89" y="2560.83" z="166.77" yaw="90.6"/>
+            <distance value="70"/>
+            <blocker_model value="static.prop.busstoplb"/>
+            <crossing_angle value="3"/>
+            <direction value="left"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="50" town="Town13">
+      <!-- DynamicObjectCrossing right busstoplb -->
+      <waypoints>
+         <position x="6906.8" y="2560.8" z="166.8"/>
+         <position x="6764.2" y="2560.6" z="165.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="6897.89" y="2560.83" z="166.77" yaw="90.6"/>
+            <distance value="70"/>
+            <blocker_model value="static.prop.busstoplb"/>
+            <crossing_angle value="3"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="51" town="Town13">
+      <!-- DynamicObjectCrossing left foodcart -->
+      <waypoints>
+         <position x="6906.8" y="2560.8" z="166.8"/>
+         <position x="6764.2" y="2560.6" z="165.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="6897.89" y="2560.83" z="166.77" yaw="90.6"/>
+            <distance value="70"/>
+            <blocker_model value="static.prop.foodcart"/>
+            <crossing_angle value="3"/>
+            <direction value="left"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="52" town="Town13">
+      <!-- DynamicObjectCrossing right foodcart -->
+      <waypoints>
+         <position x="6906.8" y="2560.8" z="166.8"/>
+         <position x="6764.2" y="2560.6" z="165.5"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="6897.89" y="2560.83" z="166.77" yaw="90.6"/>
+            <distance value="70"/>
+            <blocker_model value="static.prop.foodcart"/>
+            <crossing_angle value="3"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="53" town="Town13">
+      <!-- DynamicObjectCrossing left haybalelb -->
+      <waypoints>
+         <position x="-3713.2" y="5871.9" z="170.5"/>
+         <position x="-3711.5" y="5757.2" z="169.2"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="-3713.10" y="5864.51" z="170.42" yaw="270.8"/>
+            <distance value="60"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="2"/>
+            <direction value="left"/>
+         </scenario>
+      </scenarios>
+   </route>
+   <route id="54" town="Town13">
+      <!-- DynamicObjectCrossing right haybalelb -->
+      <waypoints>
+         <position x="-3713.2" y="5871.9" z="170.5"/>
+         <position x="-3711.5" y="5757.2" z="169.2"/>
+      </waypoints>
+      <scenarios>
+         <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
+            <trigger_point x="-3713.10" y="5864.51" z="170.42" yaw="270.8"/>
+            <distance value="60"/>
+            <blocker_model value="static.prop.haybalelb"/>
+            <crossing_angle value="2"/>
+         </scenario>
+      </scenarios>
+   </route>
 </routes>
