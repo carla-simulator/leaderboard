@@ -44,7 +44,7 @@ PENALTY_NAME_DICT = {
     TrafficEventType.STOP_INFRACTION: 'stop_infraction',
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'outside_route_lanes',
     TrafficEventType.MIN_SPEED_INFRACTION: 'min_speed_infractions',
-    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicles_infractions',
+    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicle_infractions',
     TrafficEventType.SCENARIO_TIMEOUT: 'scenario_timeouts',
     TrafficEventType.ROUTE_DEVIATION: 'route_dev',
     TrafficEventType.VEHICLE_BLOCKED: 'vehicle_blocked',
