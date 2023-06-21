@@ -17,6 +17,7 @@ import time
 
 import py_trees
 import carla
+import threading
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
@@ -71,6 +72,8 @@ class ScenarioManager(object):
         self._agent_watchdog = None
 
         self._statistics_manager = statistics_manager
+
+        self._rlock = threading.RLock()
 
         # Use the callback_id inside the signal handler to allow external interrupts
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -173,9 +176,20 @@ class ScenarioManager(object):
             except Exception as e:
                 raise AgentError(e)
             
-            # build scenarios if necessary
-            self.scenario._build_scenarios(CarlaDataProvider.get_world(), self.ego_vehicles[0], self.scenario.sampled_scenario_definitions, timeout=10000, debug=self._debug_mode > 0)
+            def build_scenarios(scenario, world, ego_vehicle, timeout, debug, rlock):
+                scenario._build_scenarios(
+                    world,
+                    ego_vehicle,
+                    scenario.sampled_scenario_definitions,
+                    timeout=timeout,
+                    debug=debug,
+                    rlock=rlock
+                )
+            
+            t = threading.Thread(target=build_scenarios, args=(self.scenario, CarlaDataProvider.get_world(), self.ego_vehicles[0],  10000, self._debug_mode > 0, self._rlock))
 
+            t.start()
+            
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
 
