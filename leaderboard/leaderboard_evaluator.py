@@ -410,7 +410,7 @@ class LeaderboardEvaluator(object):
         # Go back to asynchronous mode
         self._reset_world_settings()
 
-        if crashed:
+        if not crashed:
             # Save global statistics
             print("\033[1m> Registering the global statistics\033[0m")
             self.statistics_manager.compute_global_statistics()
