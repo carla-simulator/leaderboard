@@ -410,11 +410,13 @@ class LeaderboardEvaluator(object):
         # Go back to asynchronous mode
         self._reset_world_settings()
 
-        # Save global statistics
-        print("\033[1m> Registering the global statistics\033[0m")
-        self.statistics_manager.compute_global_statistics()
-        self.statistics_manager.validate_and_write_statistics(self.sensors_initialized, crashed)
+        if crashed:
+            # Save global statistics
+            print("\033[1m> Registering the global statistics\033[0m")
+            self.statistics_manager.compute_global_statistics()
+            self.statistics_manager.validate_and_write_statistics(self.sensors_initialized, crashed)
 
+        return crashed
 
 def main():
     description = "CARLA AD Leaderboard Evaluation: evaluate your Agent in CARLA scenarios\n"
@@ -463,10 +465,14 @@ def main():
 
     statistics_manager = StatisticsManager(arguments.checkpoint, arguments.debug_checkpoint)
     leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
-    leaderboard_evaluator.run(arguments)
+    crashed = leaderboard_evaluator.run(arguments)
 
     del leaderboard_evaluator
 
+    if crashed:
+        sys.exit(-1)
+    else:
+        sys.exit(0)
 
 if __name__ == '__main__':
     main()
