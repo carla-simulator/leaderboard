@@ -209,14 +209,6 @@ class RouteScenario(BasicScenario):
 
         SpawnActor = carla.command.SpawnActor
 
-
-        # Update occupied parking locations
-        for scenario in self.list_scenarios:
-            self.all_occupied_parking_locations.extend(scenario.get_parking_slots())
-        # Exlude duplicate values
-        # TODO: optimize. This can be done in scenario init loop
-        self.all_occupied_parking_locations = list(set(self.all_occupied_parking_locations))
-
         ego_location = CarlaDataProvider.get_location(ego_vehicle)
         if ego_location is None:
             return
@@ -474,6 +466,7 @@ class RouteScenario(BasicScenario):
                         if scenario_instance not in self.list_scenarios:
                             self.list_scenarios.append(scenario_instance)
                             list_scenarios_now.append(scenario_instance)
+                            self.all_occupied_parking_locations.extend(scenario_instance.get_parking_slots()) # Update parking slots
                     else:
                         continue
 
