@@ -413,7 +413,7 @@ class RouteScenario(BasicScenario):
 
     #         self.list_scenarios.append(scenario_instance)
 
-    def _build_scenarios(self, world, ego_vehicle, scenario_definitions, timeout=300, debug=False, rlock=None):
+    def _build_scenarios(self, world, ego_vehicle, scenario_definitions, timeout=300, debug=False):
         """
         Initializes the class of all the scenarios that will be present in the route.
         If a class fails to be initialized, a warning is printed but the route execution isn't stopped
@@ -421,104 +421,95 @@ class RouteScenario(BasicScenario):
 
         list_scenarios_now = []
 
-        if rlock is not None:
-            rlock.acquire()
+        if self.all_scenario_classes is None:
+            self.all_scenario_classes = self.get_all_scenario_classes()
+        if self.ego_data is None:
+            self.ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
 
-        try:
+        if debug:
+            tmap = CarlaDataProvider.get_map()
+            for scenario_config in scenario_definitions:
+                scenario_loc = scenario_config.trigger_points[0].location
+                debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
+                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=0.5) # tmp: just change the life_time smaller
+                world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
+                                        color=carla.Color(0, 0, 128), life_time=0.5, persistent_lines=True) # tmp: just change the life_time smaller
 
-            if self.all_scenario_classes is None:
-                self.all_scenario_classes = self.get_all_scenario_classes()
-            if self.ego_data is None:
-                self.ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
+        for scenario_number, scenario_config in enumerate(scenario_definitions):
 
-            if debug:
-                tmap = CarlaDataProvider.get_map()
-                for scenario_config in scenario_definitions:
-                    scenario_loc = scenario_config.trigger_points[0].location
-                    debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                    world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=0.1) # tmp: just change the life_time smaller
-                    world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-                                            color=carla.Color(0, 0, 128), life_time=0.1, persistent_lines=True) # tmp: just change the life_time smaller
+            # Skipping scenario as it was already loaded
+            if scenario_config.name in [x.config.name for x in self.list_scenarios]:
+                continue
 
-            for scenario_number, scenario_config in enumerate(scenario_definitions):
+            scenario_config.ego_vehicles = [self.ego_data]
+            scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
+            scenario_config.route = self.route
 
-                # Skipping scenario as it was already loaded
-                if scenario_config.name in [x.config.name for x in self.list_scenarios]:
+            try:
+                scenario_class = self.all_scenario_classes[scenario_config.type]
+                trigger_location = scenario_config.trigger_points[0].location
+
+
+                ego_location = CarlaDataProvider.get_location(ego_vehicle)
+                if ego_location is None:
+                    continue
+                elif trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
+                    # Only init scenarios that are close to ego
+                    print(f"init scenario {scenario_config.name}")
+                    scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+                    # Add new scenarios to list
+                    if scenario_instance not in self.list_scenarios:
+                        self.list_scenarios.append(scenario_instance)
+                        list_scenarios_now.append(scenario_instance)
+                        self.all_occupied_parking_locations.extend(scenario_instance.get_parking_slots()) # Update parking slots
+                else:
                     continue
 
-                scenario_config.ego_vehicles = [self.ego_data]
-                scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
-                scenario_config.route = self.route
+            except Exception as e:
+                print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
+                if debug:
+                    print(f"\n{traceback.format_exc()}")
+                print("\033[0m", end="")
+                continue
+            
 
-                try:
-                    scenario_class = self.all_scenario_classes[scenario_config.type]
-                    trigger_location = scenario_config.trigger_points[0].location
+        # Process the scenarios that were initialized
+        if self.behavior_node is None or self.criteria_node is None:
+            # Not ready yet
+            return
+        else:
+            scenario_behaviors = []
+            blackboard_list = []
 
+            for scenario in list_scenarios_now:
 
-                    ego_location = CarlaDataProvider.get_location(ego_vehicle)
-                    if ego_location is None:
-                        continue
-                    elif trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
-                        # Only init scenarios that are close to ego
-                        print(f"init scenario {scenario_config.name}")
-                        scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
-                        # Add new scenarios to list
-                        if scenario_instance not in self.list_scenarios:
-                            self.list_scenarios.append(scenario_instance)
-                            list_scenarios_now.append(scenario_instance)
-                            self.all_occupied_parking_locations.extend(scenario_instance.get_parking_slots()) # Update parking slots
-                    else:
-                        continue
+                # process behavior
+                if scenario.behavior_tree is not None:
+                    scenario_behaviors.append(scenario.behavior_tree)
+                    blackboard_list.append([scenario.config.route_var_name,
+                                            scenario.config.trigger_points[0].location])
+                    # print(f"Add scenario {scenario.config.name} to behavior tree")
 
-                except Exception as e:
-                    print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
-                    if debug:
-                        print(f"\n{traceback.format_exc()}")
-                    print("\033[0m", end="")
-                    continue
-                
+                # process criteria
+                scenario_criteria = scenario.get_criteria()
+                if len(scenario_criteria) == 0:
+                    continue  # No need to create anything
+                else:
+                    # print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
+                    self.criteria_node.add_child(
+                        self._create_criterion_tree(scenario, scenario_criteria)
+                    )
 
-            # Process the scenarios that were initialized
-            if self.behavior_node is None or self.criteria_node is None:
-                # Not ready yet
-                return
-            else:
-                scenario_behaviors = []
-                blackboard_list = []
-
-                for scenario in list_scenarios_now:
-
-                    # process behavior
-                    if scenario.behavior_tree is not None:
-                        scenario_behaviors.append(scenario.behavior_tree)
-                        blackboard_list.append([scenario.config.route_var_name,
-                                                scenario.config.trigger_points[0].location])
-                        # print(f"Add scenario {scenario.config.name} to behavior tree")
-
-                    # process criteria
-                    scenario_criteria = scenario.get_criteria()
-                    if len(scenario_criteria) == 0:
-                        continue  # No need to create anything
-                    else:
-                        # print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
-                        self.criteria_node.add_child(
-                            self._create_criterion_tree(scenario, scenario_criteria)
-                        )
-
-                # Add to blackboard
-                if self.scenario_triggerer is not None:
-                    self.scenario_triggerer._blackboard_list += blackboard_list
+            # Add to blackboard
+            if self.scenario_triggerer is not None:
+                self.scenario_triggerer._blackboard_list += blackboard_list
 
 
-                if len(scenario_behaviors) > 0:
-                    self.behavior_node.add_children(scenario_behaviors)
+            if len(scenario_behaviors) > 0:
+                self.behavior_node.add_children(scenario_behaviors)
 
-            # Process parked vehicles
-            self._spawn_parked_ids_step(ego_vehicle)
-
-        finally:
-            if rlock is not None:
-                rlock.release()
+        # Process parked vehicles
+        self._spawn_parked_ids_step(ego_vehicle)
 
 
 

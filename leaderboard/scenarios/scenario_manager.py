@@ -73,8 +73,6 @@ class ScenarioManager(object):
 
         self._statistics_manager = statistics_manager
 
-        self._rlock = threading.RLock()
-
         # Use the callback_id inside the signal handler to allow external interrupts
         signal.signal(signal.SIGINT, self.signal_handler)
 
@@ -125,6 +123,19 @@ class ScenarioManager(object):
 
         self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
 
+    def build_scenarios_loop(self, world, timeout, debug):
+        print("enter build_scenarios_loop")
+        while self._running:
+            self.scenario._build_scenarios(
+                world,
+                self.ego_vehicles[0],
+                self.scenario.sampled_scenario_definitions,
+                timeout=timeout,
+                debug=debug
+            )
+            # delay 1s
+            time.sleep(1)
+
     def run_scenario(self):
         """
         Trigger the start of the scenario and wait for it to finish/fail
@@ -141,6 +152,10 @@ class ScenarioManager(object):
         self._agent_watchdog.start()
 
         self._running = True
+
+        # Thread for _build_scenarios
+        t = threading.Thread(target=self.build_scenarios_loop, args=(CarlaDataProvider.get_world(),  10000, self._debug_mode > 0))
+        t.start()
 
         while self._running:
             self._tick_scenario()
@@ -175,20 +190,6 @@ class ScenarioManager(object):
 
             except Exception as e:
                 raise AgentError(e)
-            
-            def build_scenarios(scenario, world, ego_vehicle, timeout, debug, rlock):
-                scenario._build_scenarios(
-                    world,
-                    ego_vehicle,
-                    scenario.sampled_scenario_definitions,
-                    timeout=timeout,
-                    debug=debug,
-                    rlock=rlock
-                )
-            
-            t = threading.Thread(target=build_scenarios, args=(self.scenario, CarlaDataProvider.get_world(), self.ego_vehicles[0],  10000, self._debug_mode > 0, self._rlock))
-
-            t.start()
             
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
