@@ -66,7 +66,6 @@ class RouteScenario(BasicScenario):
         self.config = config
         self.route = self._get_route(config)
         self.list_scenarios = []
-        self.scenarios_processed_map = {}
         self.all_scenario_classes = None
         self.ego_data = None
         self.scenario_triggerer = None
@@ -422,11 +421,13 @@ class RouteScenario(BasicScenario):
 
     #         self.list_scenarios.append(scenario_instance)
 
-    def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False, rlock=None):
+    def _build_scenarios(self, world, ego_vehicle, scenario_definitions, timeout=300, debug=False, rlock=None):
         """
         Initializes the class of all the scenarios that will be present in the route.
         If a class fails to be initialized, a warning is printed but the route execution isn't stopped
         """
+
+        list_scenarios_now = []
 
         if rlock is not None:
             rlock.acquire()
@@ -472,7 +473,7 @@ class RouteScenario(BasicScenario):
                         # Add new scenarios to list
                         if scenario_instance not in self.list_scenarios:
                             self.list_scenarios.append(scenario_instance)
-                            self.scenarios_processed_map[scenario_instance] = False
+                            list_scenarios_now.append(scenario_instance)
                     else:
                         continue
 
@@ -492,27 +493,24 @@ class RouteScenario(BasicScenario):
                 scenario_behaviors = []
                 blackboard_list = []
 
-                for scenario in self.list_scenarios:
-                    if not self.scenarios_processed_map[scenario]:
-                        
-                        self.scenarios_processed_map[scenario] = True # Mark it as processed
+                for scenario in list_scenarios_now:
 
-                        # process behavior
-                        if scenario.behavior_tree is not None:
-                            scenario_behaviors.append(scenario.behavior_tree)
-                            blackboard_list.append([scenario.config.route_var_name,
-                                                    scenario.config.trigger_points[0].location])
-                            # print(f"Add scenario {scenario.config.name} to behavior tree")
+                    # process behavior
+                    if scenario.behavior_tree is not None:
+                        scenario_behaviors.append(scenario.behavior_tree)
+                        blackboard_list.append([scenario.config.route_var_name,
+                                                scenario.config.trigger_points[0].location])
+                        # print(f"Add scenario {scenario.config.name} to behavior tree")
 
-                        # process criteria
-                        scenario_criteria = scenario.get_criteria()
-                        if len(scenario_criteria) == 0:
-                            continue  # No need to create anything
-                        else:
-                            # print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
-                            self.criteria_node.add_child(
-                                self._create_criterion_tree(scenario, scenario_criteria)
-                            )
+                    # process criteria
+                    scenario_criteria = scenario.get_criteria()
+                    if len(scenario_criteria) == 0:
+                        continue  # No need to create anything
+                    else:
+                        # print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
+                        self.criteria_node.add_child(
+                            self._create_criterion_tree(scenario, scenario_criteria)
+                        )
 
                 # Add to blackboard
                 if self.scenario_triggerer is not None:
@@ -563,7 +561,6 @@ class RouteScenario(BasicScenario):
                 scenario_behaviors.append(scenario.behavior_tree)
                 blackboard_list.append([scenario.config.route_var_name,
                                         scenario.config.trigger_points[0].location])
-                self.scenarios_processed_map[scenario] = True # Mark it as processed
 
         # Add the behavior that manages the scenario trigger conditions
         scenario_triggerer = ScenarioTriggerer(
