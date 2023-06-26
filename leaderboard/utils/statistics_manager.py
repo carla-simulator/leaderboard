@@ -44,7 +44,7 @@ PENALTY_NAME_DICT = {
     TrafficEventType.STOP_INFRACTION: 'stop_infraction',
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'outside_route_lanes',
     TrafficEventType.MIN_SPEED_INFRACTION: 'min_speed_infractions',
-    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicles_infractions',
+    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicle_infractions',
     TrafficEventType.SCENARIO_TIMEOUT: 'scenario_timeouts',
     TrafficEventType.ROUTE_DEVIATION: 'route_dev',
     TrafficEventType.VEHICLE_BLOCKED: 'vehicle_blocked',
@@ -457,7 +457,7 @@ class StatisticsManager(object):
         # Calculate the score's standard deviation
         if self._total_routes == 1:
             for key in global_record.scores_std_dev:
-                global_record.scores_std_dev[key] = 'NaN'
+                global_record.scores_std_dev[key] = 0
         else:
             for route_record in route_records:
                 for key in global_record.scores_std_dev:
