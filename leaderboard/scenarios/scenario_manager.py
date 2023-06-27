@@ -123,16 +123,14 @@ class ScenarioManager(object):
 
         self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
 
-    def build_scenarios_loop(self, world, timeout, debug):
+    def build_scenarios_loop(self, debug):
+        """
+        Keep periodically trying to start the scenarios that are close to the ego vehicle
+        Additionally, do the same for the spawned vehicles
+        """
         while self._running:
-            self.scenario._build_scenarios(
-                world,
-                self.ego_vehicles[0],
-                self.scenario.sampled_scenario_definitions,
-                timeout=timeout,
-                debug=debug
-            )
-            # delay 1s
+            self.scenario.build_scenarios(self.ego_vehicles[0], debug=debug)
+            self.scenario.spawn_parked_vehicles(self.ego_vehicles[0])
             time.sleep(1)
 
     def run_scenario(self):
@@ -152,8 +150,8 @@ class ScenarioManager(object):
 
         self._running = True
 
-        # Thread for _build_scenarios
-        t = threading.Thread(target=self.build_scenarios_loop, args=(CarlaDataProvider.get_world(),  10000, self._debug_mode > 0))
+        # Thread for build_scenarios
+        t = threading.Thread(target=self.build_scenarios_loop, args=(self._debug_mode > 0, ))
         t.start()
 
         while self._running:
