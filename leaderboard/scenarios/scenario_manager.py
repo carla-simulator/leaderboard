@@ -187,7 +187,7 @@ class ScenarioManager(object):
 
             except Exception as e:
                 raise AgentError(e)
-            
+
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
 
