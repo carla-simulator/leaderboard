@@ -203,7 +203,6 @@ SCENARIO_TYPES ={
     ],
     "PriorityAtJunction": [
     ],
-
 }
 
 def show_saved_scenarios(filename, route_id, world):

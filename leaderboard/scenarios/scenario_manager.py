@@ -17,6 +17,7 @@ import time
 
 import py_trees
 import carla
+import threading
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
@@ -44,12 +45,11 @@ class ScenarioManager(object):
     4. If needed, cleanup with manager.stop_scenario()
     """
 
-
     def __init__(self, timeout, statistics_manager, debug_mode=0):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
-        self.config = None
+        self.route_index = None
         self.scenario = None
         self.scenario_tree = None
         self.ego_vehicles = None
@@ -64,6 +64,7 @@ class ScenarioManager(object):
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = 0.0
+        self.start_game_time = 0.0
         self.end_system_time = 0.0
         self.end_game_time = 0.0
 
@@ -93,6 +94,7 @@ class ScenarioManager(object):
         self.scenario_duration_system = 0.0
         self.scenario_duration_game = 0.0
         self.start_system_time = 0.0
+        self.start_game_time = 0.0
         self.end_system_time = 0.0
         self.end_game_time = 0.0
 
@@ -100,14 +102,14 @@ class ScenarioManager(object):
         self._watchdog = None
         self._agent_watchdog = None
 
-    def load_scenario(self, config, scenario, agent, rep_number):
+    def load_scenario(self, scenario, agent, route_index, rep_number):
         """
         Load a new scenario
         """
 
         GameTime.restart()
         self._agent_wrapper = AgentWrapperFactory.get_wrapper(agent)
-        self.config = config
+        self.route_index = route_index
         self.scenario = scenario
         self.scenario_tree = scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
@@ -120,6 +122,16 @@ class ScenarioManager(object):
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
         self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
+
+    def build_scenarios_loop(self, debug):
+        """
+        Keep periodically trying to start the scenarios that are close to the ego vehicle
+        Additionally, do the same for the spawned vehicles
+        """
+        while self._running:
+            self.scenario.build_scenarios(self.ego_vehicles[0], debug=debug)
+            self.scenario.spawn_parked_vehicles(self.ego_vehicles[0])
+            time.sleep(1)
 
     def run_scenario(self):
         """
@@ -137,6 +149,10 @@ class ScenarioManager(object):
         self._agent_watchdog.start()
 
         self._running = True
+
+        # Thread for build_scenarios
+        t = threading.Thread(target=self.build_scenarios_loop, args=(self._debug_mode > 0, ))
+        t.start()
 
         while self._running:
             self._tick_scenario()
@@ -184,13 +200,13 @@ class ScenarioManager(object):
 
                 # Update live statistics
                 self._statistics_manager.compute_route_statistics(
-                    self.config,
+                    self.route_index,
                     self.scenario_duration_system,
                     self.scenario_duration_game,
                     failure_message=""
                 )
                 self._statistics_manager.write_live_results(
-                    self.config.index,
+                    self.route_index,
                     self.ego_vehicles[0].get_velocity().length(),
                     ego_action,
                     self.ego_vehicles[0].get_location()
@@ -198,8 +214,7 @@ class ScenarioManager(object):
 
             if self._debug_mode > 2:
                 print("\n")
-                py_trees.display.print_ascii_tree(
-                    self.scenario_tree, show_status=True)
+                py_trees.display.print_ascii_tree(self.scenario_tree, show_status=True)
                 sys.stdout.flush()
 
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
@@ -216,7 +231,7 @@ class ScenarioManager(object):
         """
         if self._watchdog:
             return self._watchdog.get_status()
-        return False
+        return True
 
     def stop_scenario(self):
         """
@@ -254,13 +269,4 @@ class ScenarioManager(object):
         """
         Analyzes and prints the results of the route
         """
-        global_result = '\033[92m'+'SUCCESS'+'\033[0m'
-
-        for criterion in self.scenario.get_criteria():
-            if criterion.test_status != "SUCCESS":
-                global_result = '\033[91m'+'FAILURE'+'\033[0m'
-
-        if self.scenario.timeout_node.timeout:
-            global_result = '\033[91m'+'FAILURE'+'\033[0m'
-
-        ResultOutputProvider(self, global_result)
+        ResultOutputProvider(self)

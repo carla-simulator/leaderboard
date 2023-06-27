@@ -38,14 +38,13 @@ def check_missing_data(route_ids):
 
 
 def main():
-    """Used to help with the visualization of the scenario trigger points"""
-    description = "Utility script to merge two or more statistics into one. "
-    description += "While some checks are done, it is best to ensure that merging all files makes sense"
-    argparser = argparse.ArgumentParser(description=description)
-    argparser.add_argument('-f', '--file-paths', nargs="+", required=True,
-                        help='path to the .json files containing the results')
-    argparser.add_argument('-e', '--endpoint', required=True,
-                        help='path to the .json files containing the joined results')
+    """
+    Utility script to merge two or more statistics into one.
+    While some checks are done, it is best to ensure that merging all files makes sense
+    """
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('-f', '--file-paths', nargs="+", required=True, help='path to all the files containing the partial results')
+    argparser.add_argument('-e', '--endpoint', required=True, help='path to the endpoint containing the joined results')
     args = argparser.parse_args()
 
     # Initialize the statistics manager
@@ -55,24 +54,33 @@ def main():
     sensors = []
     route_ids = []
     total_routes = 0
+    total_progress = 0
 
     for file in args.file_paths:
         data = fetch_dict(file)
+        if not data:
+            continue
+
         route_ids.extend([x['route_id'] for x in data['_checkpoint']['records']])
         total_routes += len(data['_checkpoint']['records'])
+        total_progress += data['_checkpoint']['progress'][1]
 
-        if not sensors:
-            sensors = data['sensors']
-        elif data['sensors'] != sensors:
-            raise ValueError("Stopping. Found two files with different sensor configurations")
+        if data['sensors']:
+            if not sensors:
+                sensors = data['sensors']
+            elif data['sensors'] != sensors:
+                raise ValueError("Stopping. Found two files with different sensor configurations")
 
     route_ids.sort(key=lambda x: (
         int(x.split('_')[1]),
         int(x.split('_rep')[-1])
     ))
 
-    check_duplicates(route_ids)
-    check_missing_data(route_ids)
+    global_statistics = total_progress != 0 and total_routes == total_progress
+
+    if global_statistics:
+        check_duplicates(route_ids)
+        check_missing_data(route_ids)
 
     # All good, join the data and get the global results
     for file in args.file_paths:
@@ -80,10 +88,13 @@ def main():
 
     statistics_manager.sort_records()
     statistics_manager.save_sensors(sensors)
-    statistics_manager.save_progress(total_routes, total_routes)
-    statistics_manager.compute_global_statistics()
-    statistics_manager.validate_and_write_statistics(True, False)
-
+    statistics_manager.save_progress(total_routes, total_progress)
+    statistics_manager.save_entry_status('Started')
+    if global_statistics:
+        statistics_manager.compute_global_statistics()
+        statistics_manager.validate_and_write_statistics(True, False)
+    else:
+        statistics_manager.write_statistics()
 
 if __name__ == '__main__':
     main()

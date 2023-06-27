@@ -34,6 +34,7 @@ MAPS_LOCATIONS = {
     "Town10HD_Opt": "Unreal/CarlaUE4/Content/Carla/Maps/OpenDrive/Town10HD_Opt.xodr",
     "Town11": "Unreal/CarlaUE4/Content/Carla/Maps/Town11/OpenDrive/Town11.xodr",
     "Town12": "Unreal/CarlaUE4/Content/Carla/Maps/Town12/OpenDrive/Town12.xodr",
+    "Town13": "Unreal/CarlaUE4/Content/Carla/Maps/Town13/OpenDrive/Town13.xodr",
 }
 
 def convert_elem_to_location(elem):
@@ -53,7 +54,7 @@ def main():
         print("No output method was selected. Use either '--endpoint', or '--show' to get the route results")
         sys.exit(0)
 
-    root =  etree.parse(args.file).getroot()
+    root = etree.parse(args.file).getroot()
     total_distance = 0
     total_num_scenarios = 0
     total_scenarios = {}
