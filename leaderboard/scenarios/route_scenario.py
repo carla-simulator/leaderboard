@@ -83,7 +83,6 @@ class RouteScenario(BasicScenario):
 
         self.route_locations = [self.route[i][0].location for i in range(len(self.route))]
         self.route_location_index_map = {} # a cache table to avoid repeated search of route location index
-        self.route_distance_matrix = self._build_route_distance_matrix()
 
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
@@ -163,28 +162,6 @@ class RouteScenario(BasicScenario):
 
         return ego_vehicle
     
-    def _build_route_distance_matrix(self, step=10):
-        """
-        Builds a distance matrix for the route, where the entry at (i, j) is the distance from
-        the ith waypoint to the jth waypoint. This is used for dynamic programming to compute
-        """
-        n = len(self.route_locations)
-        distances = np.zeros((n, n)) # Creates an nxn matrix filled with zeros
-        path_sums = np.zeros((n, n)) # Create another nxn matrix for dynamic programming
-
-        for i in range(0, n):
-            for j in range(i+1, n):
-                if j <= i+step:
-                    # Directly compute distance without sum if j is close to i
-                    path_sums[i][j] = self.route_locations[i].distance(self.route_locations[j])
-                else:
-                    # Use DP to get the sum of distances from i to j
-                    path_sums[i][j] = path_sums[i][j-1] + self.route_locations[j-1].distance(self.route_locations[j])
-                
-                distances[i][j] = path_sums[i][j]
-                distances[j][i] = distances[i][j] # as i,j distance will be same as j,i distance
-        return distances
-    
     def _find_nearest_index(self, locations, point):
         # Check if point in self.route_location_index_map, then return the index
         if point in self.route_location_index_map:
@@ -209,7 +186,7 @@ class RouteScenario(BasicScenario):
         if loc_from_index == loc_to_index:
             return 0
         elif loc_from_index < loc_to_index:
-            return self.route_distance_matrix[loc_from_index][loc_to_index]
+            return sum(self.route_locations[i].distance(self.route_locations[i+1]) for i in range(loc_from_index, loc_to_index))
         else:
             return self.INIT_THRESHOLD*2 # Return a large number if passed
 
@@ -477,6 +454,7 @@ class RouteScenario(BasicScenario):
                 if ego_location is None:
                     continue
                 elif self._within_route_distance(ego_location, trigger_location, self.INIT_THRESHOLD):
+                    print("init scenario: ", scenario_config.name)
                     # Only init scenarios that are close to ego
                     scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
                     # Add new scenarios to list
