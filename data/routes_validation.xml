@@ -5,14 +5,10 @@
          <!-- From slightly cloudy with a gentle breeze and a low-hanging fog to mild rain -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="10.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="15.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="6090.4" y="4311.7" z="164.9"/>
@@ -436,14 +432,10 @@
       <weathers>
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="10.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="50.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="50.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="10.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="10.0"/>
       </weathers>
       <waypoints>
          <position x="6770.8" y="5443.4" z="178.7"/>
@@ -963,14 +955,10 @@
          <!-- From a clear day with a gentle breeze and light fog to a slightly cloudy dusk with low wind and moderately dense fog -->
          <weather route_percentage="0"
             cloudiness="0.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="10.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="15.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="15.0"/>
       </weathers>
       <waypoints>
          <position x="2536.1" y="2284.9" z="172.5"/>
@@ -1478,14 +1466,10 @@
          <!-- From a partly cloudy day with light rain, a soft breeze, and low fog to a mostly cloudy day with dry conditions -->
          <weather route_percentage="0"
             cloudiness="15.0" precipitation="20.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="5.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="5.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="30.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="249.8" y="1319.6" z="148.1"/>
@@ -1804,14 +1788,10 @@
       <!-- From a nearly clear day with a gentle breeze and light fog to a slightly cloudy day as the sun lowers -->
          <weather route_percentage="0"
             cloudiness="2.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="20.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1835.7" y="5826.3" z="147.7"/>
@@ -2104,14 +2084,10 @@
          <!-- From a slightly cloudy day with a gentle breeze and dense fog to a nearly clear day with the same breeze and significantly reduced fog -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="25.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="25.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-1720.9" y="-781.7" z="153.8"/>
@@ -2437,13 +2413,11 @@
          <weather route_percentage="0"
             cloudiness="15.0" precipitation="0.0" precipitation_deposits="40.0" wetness="0.0"
             wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
             wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-1589.0" y="-10.5" z="156.8"/>
@@ -2792,14 +2766,10 @@
          <!-- From partly cloudy with strong winds and light rain to cloudy and dry with stronger winds -->
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="20.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="60.0" precipitation="0.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="-4228.0" y="4329.5" z="174.5"/>
@@ -3302,14 +3272,10 @@
          <!-- From clear and sunny with a light breeze to partly cloudy -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="75.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="-2077.8" y="5729.8" z="154.2"/>
@@ -3719,14 +3685,10 @@
          <!-- From partly cloudy with strong winds and no precipitation to heavy rain with strong winds and mostly cloudy skies -->
          <weather route_percentage="0"
             cloudiness="20.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="5581.6" y="3556.7" z="158.0"/>
@@ -4251,14 +4213,10 @@
       <!-- From a heavily overcast and stormy downpour to a slightly less cloudy, windy, and rainy night -->
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="4.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0">
          <weather route_percentage="100"
             cloudiness="90.0" precipitation="50.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="8.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="8.0"/>
       </weathers>
       <waypoints>
          <position x="6090.4" y="4311.7" z="164.9"/>
@@ -4682,14 +4640,10 @@
       <!-- From a moderately cloudy and stormy downpour to an overcast evening with light rain, strong winds, and extremely dense fog -->
          <weather route_percentage="0"
             cloudiness="50.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="30.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-45.0"
-            fog_density="80.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-45.0" fog_density="80.0"/>
       </weathers>
       <waypoints>
          <position x="6770.8" y="5443.4" z="178.7"/>
@@ -5209,14 +5163,10 @@
       <!-- From a slightly cloudy day with gentle breeze, mild rain, and thick fog to a similarly clear day with a low sun and even denser fog -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="10.0" precipitation_deposits="20.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="45.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="45.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="70.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="70.0"/>
       </weathers>
       <waypoints>
          <position x="2536.1" y="2284.9" z="172.5"/>
@@ -5724,14 +5674,10 @@
       <!-- From a moderately cloudy day with moderate rain to a mostly cloudy evening with dry conditions and a gentle wind -->
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="60.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="25.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="25.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="50.0" wetness="20.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-45.0"
-            fog_density="6.0" fog_distance="1" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-45.0" fog_density="6.0"/>
       </weathers>
       <waypoints>
          <position x="249.8" y="1319.6" z="148.1"/>
@@ -6050,14 +5996,10 @@
       <!-- From a moderately cloudy day with a gentle breeze and light fog to a similarly cloudy night with light rain -->
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="0.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="15.0" fog_density="2.0"/>
          <weather route_percentage="100"
             cloudiness="40.0" precipitation="30.0" precipitation_deposits="50.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="2.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="2.0"/>
       </weathers>
       <waypoints>
          <position x="1835.7" y="5826.3" z="147.7"/>
@@ -6350,14 +6292,10 @@
       <!-- From heavy rain with overcast skies and strong winds to mostly cloudy with low-hanging fog and a gentle breeze -->
          <weather route_percentage="0"
             cloudiness="40.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="7.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="7.0"/>
          <weather route_percentage="100"
             cloudiness="90.0" precipitation="40.0" precipitation_deposits="60.0" wetness="0.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0"
-            fog_density="35.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="90.0" fog_density="35.0"/>
       </weathers>
       <waypoints>
          <position x="-1720.9" y="-781.7" z="153.8"/>
@@ -6682,14 +6620,10 @@
       <!-- From dense fog with a low-hanging mist to heavy rain and fog with overcast skies -->
          <weather route_percentage="0"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="25.0" fog_distance="75.0" fog_falloff="1.0" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="25.0" />
          <weather route_percentage="100"
             cloudiness="80.0" precipitation="80.0" precipitation_deposits="80.0" wetness="80.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
       </weathers>
       <waypoints>
          <position x="-1589.0" y="-10.5" z="156.8"/>
@@ -7038,14 +6972,10 @@
       <!-- From heavy rain with low-hanging fog and strong winds to a severe thunderstorm with dense fog and strong winds -->
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="40.0" precipitation_deposits="60.0" wetness="80.0"
-            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="60.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="60.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="60.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0"
-            fog_density="100.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="0.0" fog_density="100.0"/>
       </weathers>
       <waypoints>
          <position x="-4228.0" y="4329.5" z="174.5"/>
@@ -7548,14 +7478,10 @@
       <!-- From dense fog with overcast skies and a gentle breeze to partly cloudy -->
          <weather route_percentage="0"
             cloudiness="80.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0"
-            fog_density="70.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="70.0"/>
          <weather route_percentage="100"
             cloudiness="5.0" precipitation="0.0" precipitation_deposits="35.0" wetness="0.0"
-            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="90.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="10.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="90.0"/>
       </weathers>
       <waypoints>
          <position x="-2077.8" y="5729.8" z="154.2"/>
@@ -7965,14 +7891,10 @@
       <!-- From mostly cloudy with low-hanging fog to heavy rain at midnight -->
          <weather route_percentage="0"
             cloudiness="60.0" precipitation="0.0" precipitation_deposits="50.0" wetness="60.0"
-            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="30.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
          <weather route_percentage="100"
             cloudiness="100.0" precipitation="75.0" precipitation_deposits="90.0" wetness="100.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0"
-            fog_density="3.0" fog_distance="0.75" fog_falloff="0.1" scattering_intensity="1.0"
-            mie_scattering_scale="0.03"/>
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="3.0"/>
       </weathers>
       <waypoints>
          <position x="5581.6" y="3556.7" z="158.0"/>

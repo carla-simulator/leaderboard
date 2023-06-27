@@ -37,9 +37,9 @@ PENALTY_PERC_DICT = {
 }
 
 PENALTY_NAME_DICT = {
-    TrafficEventType.COLLISION_STATIC: 'collisions_pedestrian',
-    TrafficEventType.COLLISION_PEDESTRIAN: 'collisions_vehicle',
-    TrafficEventType.COLLISION_VEHICLE: 'collisions_layout',
+    TrafficEventType.COLLISION_STATIC: 'collisions_layout',
+    TrafficEventType.COLLISION_PEDESTRIAN: 'collisions_pedestrian',
+    TrafficEventType.COLLISION_VEHICLE: 'collisions_vehicle',
     TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 'red_light',
     TrafficEventType.STOP_INFRACTION: 'stop_infraction',
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'outside_route_lanes',
@@ -490,7 +490,6 @@ class StatisticsManager(object):
             str(global_record.scores_mean['score_composed']),
             str(global_record.scores_mean['score_route']),
             str(global_record.scores_mean['score_penalty']),
-            str(global_record.scores_mean['score_penalty']),
             str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_PEDESTRIAN]]),
             str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_VEHICLE]]),
             str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_STATIC]]),
@@ -575,7 +574,7 @@ class StatisticsManager(object):
 
             self.save_entry_status('Invalid')
 
-        save_dict(self._endpoint, self._results.to_json())
+        self.write_statistics()
 
     def write_statistics(self):
         """

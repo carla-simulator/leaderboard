@@ -30,12 +30,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Installing conda
 RUN curl -o ~/miniconda.sh -LO https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh  && \
-     chmod +x ~/miniconda.sh && \
-     ~/miniconda.sh -b -p /opt/conda && \
-     rm ~/miniconda.sh && \
-     /opt/conda/bin/conda clean -ya && \
-     /opt/conda/bin/conda create -n python37 python=3.7 numpy networkx scipy six requests
- 
+    chmod +x ~/miniconda.sh && \
+    ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -ya && \
+    /opt/conda/bin/conda create -n python37 python=3.7 numpy networkx scipy six requests
+
+ENV PATH "${CARLA_ROOT}/PythonAPI/carla/dist/carla-leaderboard-py3x.egg":"/opt/conda/envs/python37/bin":"/opt/conda/envs/bin":$PATH
+
 # Copy the files into the docker
 WORKDIR /workspace
 
