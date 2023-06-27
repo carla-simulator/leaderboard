@@ -73,6 +73,7 @@ class RouteScenario(BasicScenario):
         self.scenario_triggerer = None
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
         self.sampled_scenario_definitions = sampled_scenario_definitions
+        self.rest_scenario_definitions = sampled_scenario_definitions.copy()
 
         self.behavior_node = None # behavior node created by _create_behavior()
         self.criteria_node = None # criteria node created by _create_test_criteria()
@@ -132,12 +133,13 @@ class RouteScenario(BasicScenario):
         - scenario_configs: list of ScenarioConfiguration
         """
         new_scenarios_config = []
-        for scenario_config in scenario_configs:
+        for scenario_number, scenario_config in enumerate(scenario_configs):
             trigger_point = scenario_config.trigger_points[0]
             if not RouteParser.is_scenario_at_route(trigger_point, self.route):
                 print("WARNING: Ignoring scenario '{}' as it is too far from the route".format(scenario_config.name))
                 continue
 
+            scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             new_scenarios_config.append(scenario_config)
 
         return new_scenarios_config
@@ -181,9 +183,6 @@ class RouteScenario(BasicScenario):
                 
                 distances[i][j] = path_sums[i][j]
                 distances[j][i] = distances[i][j] # as i,j distance will be same as j,i distance
-
-
-                
         return distances
     
     def _find_nearest_index(self, locations, point):
@@ -464,14 +463,9 @@ class RouteScenario(BasicScenario):
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
                                         color=carla.Color(0, 0, 128), life_time=1, persistent_lines=True) # tmp: just change the life_time smaller
 
-        for scenario_number, scenario_config in enumerate(scenario_definitions):
-
-            # Skipping scenario as it was already loaded
-            if scenario_config.name in [x.config.name for x in self.list_scenarios]:
-                continue
+        for scenario_config in self.rest_scenario_definitions:
 
             scenario_config.ego_vehicles = [self.ego_data]
-            scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             scenario_config.route = self.route
 
             try:
@@ -486,10 +480,10 @@ class RouteScenario(BasicScenario):
                     # Only init scenarios that are close to ego
                     scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
                     # Add new scenarios to list
-                    if scenario_instance not in self.list_scenarios:
-                        self.list_scenarios.append(scenario_instance)
-                        list_scenarios_now.append(scenario_instance)
-                        self.all_occupied_parking_locations.extend(scenario_instance.get_parking_slots()) # Update parking slots
+                    self.list_scenarios.append(scenario_instance)
+                    list_scenarios_now.append(scenario_instance)
+                    self.all_occupied_parking_locations.extend(scenario_instance.get_parking_slots()) # Update parking slots
+                    self.rest_scenario_definitions.remove(scenario_config)
                 else:
                     continue
 
@@ -498,6 +492,7 @@ class RouteScenario(BasicScenario):
                 if debug:
                     print(f"\n{traceback.format_exc()}")
                 print("\033[0m", end="")
+                self.rest_scenario_definitions.remove(scenario_config)
                 continue
             
 
