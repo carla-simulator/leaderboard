@@ -2147,7 +2147,7 @@
             <flow_speed value="12"/>
             <source_dist_interval from="17" to="60"/>
          </scenario>
-         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+         <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
             <trigger_point x="-2101.5" y="-511.1" z="162.4" yaw="179.9"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_3" type="NonSignalizedJunctionRightTurn">
@@ -6393,7 +6393,7 @@
             <flow_speed value="12"/>
             <source_dist_interval from="17" to="60"/>
          </scenario>
-         <scenario name="OppositeVehicleTakingPriority_1" type="OppositeVehicleTakingPriority">
+         <scenario name="OppositeVehicleRunningRedLight_1" type="OppositeVehicleRunningRedLight">
             <trigger_point x="-2101.5" y="-511.1" z="162.4" yaw="179.9"/>
          </scenario>
          <scenario name="NonSignalizedJunctionRightTurn_3" type="NonSignalizedJunctionRightTurn">

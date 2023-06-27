@@ -17,6 +17,7 @@ import time
 
 import py_trees
 import carla
+import threading
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
@@ -122,6 +123,18 @@ class ScenarioManager(object):
 
         self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
 
+    def build_scenarios_loop(self, world, timeout, debug):
+        while self._running:
+            self.scenario._build_scenarios(
+                world,
+                self.ego_vehicles[0],
+                self.scenario.sampled_scenario_definitions,
+                timeout=timeout,
+                debug=debug
+            )
+            # delay 1s
+            time.sleep(1)
+
     def run_scenario(self):
         """
         Trigger the start of the scenario and wait for it to finish/fail
@@ -138,6 +151,10 @@ class ScenarioManager(object):
         self._agent_watchdog.start()
 
         self._running = True
+
+        # Thread for _build_scenarios
+        t = threading.Thread(target=self.build_scenarios_loop, args=(CarlaDataProvider.get_world(),  10000, self._debug_mode > 0))
+        t.start()
 
         while self._running:
             self._tick_scenario()
@@ -172,7 +189,7 @@ class ScenarioManager(object):
 
             except Exception as e:
                 raise AgentError(e)
-
+            
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
 

@@ -18,6 +18,7 @@ import importlib
 import inspect
 import py_trees
 import traceback
+import numpy as np
 
 import carla
 from agents.navigation.local_planner import RoadOption
@@ -56,6 +57,8 @@ class RouteScenario(BasicScenario):
     """
 
     category = "RouteScenario"
+    INIT_THRESHOLD = 500 # Runtime initialization trigger distance to ego (m)
+    PARKED_VEHICLES_INIT_THRESHOLD = INIT_THRESHOLD - 50 # Runtime initialization trigger distance to parked vehicles (m)
 
     def __init__(self, world, config, debug_mode=0, criteria_enable=True):
         """
@@ -65,7 +68,21 @@ class RouteScenario(BasicScenario):
         self.config = config
         self.route = self._get_route(config)
         self.list_scenarios = []
+        self.all_scenario_classes = None
+        self.ego_data = None
+        self.scenario_triggerer = None
         sampled_scenario_definitions = self._filter_scenarios(config.scenario_configs)
+        self.sampled_scenario_definitions = sampled_scenario_definitions
+        self.rest_scenario_definitions = sampled_scenario_definitions.copy()
+
+        self.behavior_node = None # behavior node created by _create_behavior()
+        self.criteria_node = None # criteria node created by _create_test_criteria()
+
+        self.all_occupied_parking_locations = []
+        self.all_available_parking_slots = []
+
+        self.route_locations = [self.route[i][0].location for i in range(len(self.route))]
+        self.route_location_index_map = {} # a cache table to avoid repeated search of route location index
 
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
@@ -74,16 +91,19 @@ class RouteScenario(BasicScenario):
         if debug_mode>0:
             self._draw_waypoints(world, self.route, vertical_shift=0.1, size=0.1, persistency=10000, downsample=10)
 
+        self._parked_ids = []
+        self._init_parking_slots()
+
         self._build_scenarios(
             world, ego_vehicle, sampled_scenario_definitions, timeout=10000, debug=debug_mode > 0
         )
 
-        self._parked_ids = []
-        self._spawn_parked_ids()
-
         super(RouteScenario, self).__init__(
             config.name, [ego_vehicle], config, world, debug_mode > 3, False, criteria_enable
         )
+
+        # Set runtime init mode
+        CarlaDataProvider.set_runtime_init_mode(True)
 
     def _get_route(self, config):
         """
@@ -109,12 +129,13 @@ class RouteScenario(BasicScenario):
         - scenario_configs: list of ScenarioConfiguration
         """
         new_scenarios_config = []
-        for scenario_config in scenario_configs:
+        for scenario_number, scenario_config in enumerate(scenario_configs):
             trigger_point = scenario_config.trigger_points[0]
             if not RouteParser.is_scenario_at_route(trigger_point, self.route):
                 print("WARNING: Ignoring scenario '{}' as it is too far from the route".format(scenario_config.name))
                 continue
 
+            scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             new_scenarios_config.append(scenario_config)
 
         return new_scenarios_config
@@ -137,14 +158,48 @@ class RouteScenario(BasicScenario):
         world.tick()
 
         return ego_vehicle
+    
+    def _find_nearest_index(self, locations, point):
+        # Check if point in self.route_location_index_map, then return the index
+        if point in self.route_location_index_map:
+            return self.route_location_index_map[point]
+        else:
+            index = min(range(len(locations)), key = lambda index: locations[index].distance(point))
+            self.route_location_index_map[point] = index
+        return index
 
-    def _spawn_parked_ids(self, max_distance=100, max_scenario_distance=10, route_step=10):
+    def _get_distance_by_route(self, loc_from, loc_to, distance_threshold=20):
+        """
+        Get distance along route between two locations
+        """
+        # If close enough, return the euclidean distance
+        eu_dist = loc_from.distance(loc_to)
+        if eu_dist < distance_threshold:
+            return eu_dist
+
+        loc_from_index = self._find_nearest_index(self.route_locations, loc_from)
+        loc_to_index = self._find_nearest_index(self.route_locations[loc_from_index+1:], loc_to)
+        # Calculate the distance along route
+        if loc_from_index == loc_to_index:
+            return 0
+        elif loc_from_index < loc_to_index:
+            return sum(self.route_locations[i].distance(self.route_locations[i+1]) for i in range(loc_from_index, loc_to_index))
+        else:
+            return self.INIT_THRESHOLD*2 # Return a large number if passed
+
+
+    def _within_route_distance(self, loc_from, loc_to, distance_threshold=100):
+        """
+        Check if the distance between two locations is within the route
+        """
+        # If the euclidean distance is within the distance_threshold, return True
+        if loc_from.distance(loc_to) > distance_threshold:
+            return False
+        else:
+            return self._get_distance_by_route(loc_from, loc_to) < distance_threshold
+    
+    def _init_parking_slots(self, max_distance=100, route_step=10):
         """Spawn parked vehicles."""
-        def is_free(slot_location):
-            for occupied_slot in all_occupied_parking_locations:
-                if slot_location.distance(occupied_slot) < max_scenario_distance:
-                    return False
-            return True
 
         def is_close(slot_location):
             for i in range(0, len(self.route), route_step):
@@ -152,8 +207,6 @@ class RouteScenario(BasicScenario):
                 if route_transform.location.distance(slot_location) < max_distance:
                     return True
             return False
-
-        SpawnActor = carla.command.SpawnActor
 
         min_x, min_y = float('inf'), float('inf')
         max_x, max_y = float('-inf'), float('-inf')
@@ -172,23 +225,58 @@ class RouteScenario(BasicScenario):
         map_name = CarlaDataProvider.get_map().name.split('/')[-1]
         all_available_parking_slots = getattr(parked_vehicles, map_name, [])
 
-        batch = []
+        # Exclude parking slots that are too far from the route
         for slot in all_available_parking_slots:
             slot_transform = carla.Transform(
                 location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
                 rotation=carla.Rotation(slot["rotation"][0], slot["rotation"][1], slot["rotation"][2])
             )
 
-            if not (min_x < slot_transform.location.x < max_x) or not (min_y < slot_transform.location.y < max_y):
+            in_area = (min_x < slot_transform.location.x < max_x) and (min_y < slot_transform.location.y < max_y)
+            close_to_route = is_close(slot_transform.location)
+            if not in_area or not close_to_route:
+                all_available_parking_slots.remove(slot)
                 continue
 
-            if is_free(slot_transform.location) and is_close(slot_transform.location):
-                mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
-                mesh_bp.set_attribute("mesh_path", slot["mesh"])
-                mesh_bp.set_attribute("scale", "0.9")
-                batch.append(SpawnActor(mesh_bp, slot_transform))
+        self.all_available_parking_slots = all_available_parking_slots
 
-        self._parked_ids = []
+
+    def _spawn_parked_ids_step(self, ego_vehicle, max_scenario_distance=10):
+        """Spawn parked vehicles."""
+        def is_free(slot_location):
+            for occupied_slot in self.all_occupied_parking_locations:
+                if slot_location.distance(occupied_slot) < max_scenario_distance:
+                    return False
+            return True
+
+
+        SpawnActor = carla.command.SpawnActor
+
+        ego_location = CarlaDataProvider.get_location(ego_vehicle)
+        if ego_location is None:
+            return
+
+        batch = []
+        for slot in self.all_available_parking_slots:
+            slot_transform = carla.Transform(
+                location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
+                rotation=carla.Rotation(slot["rotation"][0], slot["rotation"][1], slot["rotation"][2])
+            )
+
+            # Check if the slot is close to ego
+
+            if self._within_route_distance(ego_location, slot_transform.location, self.PARKED_VEHICLES_INIT_THRESHOLD):
+                if is_free(slot_transform.location):
+                    mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
+                    mesh_bp.set_attribute("mesh_path", slot["mesh"])
+                    mesh_bp.set_attribute("scale", "0.9")
+                    batch.append(SpawnActor(mesh_bp, slot_transform))
+
+                self.all_available_parking_slots.remove(slot)
+            else:
+                continue
+
+        # Add the actors to _parked_ids
         for response in CarlaDataProvider.get_client().apply_batch_sync(batch):
             if not response.error:
                 self._parked_ids.append(response.actor_id)
@@ -271,45 +359,100 @@ class RouteScenario(BasicScenario):
 
         return all_scenario_classes
 
-    def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False):
+    def _build_scenarios(self, world, ego_vehicle, scenario_definitions, timeout=300, debug=False):
         """
         Initializes the class of all the scenarios that will be present in the route.
         If a class fails to be initialized, a warning is printed but the route execution isn't stopped
         """
-        all_scenario_classes = self.get_all_scenario_classes()
-        self.list_scenarios = []
-        ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
+
+        list_scenarios_now = []
+
+        if self.all_scenario_classes is None:
+            self.all_scenario_classes = self.get_all_scenario_classes()
+        if self.ego_data is None:
+            self.ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
 
         if debug:
             tmap = CarlaDataProvider.get_map()
             for scenario_config in scenario_definitions:
                 scenario_loc = scenario_config.trigger_points[0].location
                 debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
+                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=1) # tmp: just change the life_time smaller
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-                                        color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
+                                        color=carla.Color(0, 0, 128), life_time=1, persistent_lines=True) # tmp: just change the life_time smaller
 
-        for scenario_number, scenario_config in enumerate(scenario_definitions):
-            scenario_config.ego_vehicles = [ego_data]
-            scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
+        for scenario_config in self.rest_scenario_definitions:
+
+            scenario_config.ego_vehicles = [self.ego_data]
             scenario_config.route = self.route
 
             try:
-                scenario_class = all_scenario_classes[scenario_config.type]
-                scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+                scenario_class = self.all_scenario_classes[scenario_config.type]
+                trigger_location = scenario_config.trigger_points[0].location
 
-                # Do a tick every once in a while to avoid spawning everything at the same time
-                if scenario_number % scenarios_per_tick == 0:
-                    world.tick()
+
+                ego_location = CarlaDataProvider.get_location(ego_vehicle)
+                if ego_location is None:
+                    continue
+                elif self._within_route_distance(ego_location, trigger_location, self.INIT_THRESHOLD):
+                    # Only init scenarios that are close to ego
+                    scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
+                    # Add new scenarios to list
+                    self.list_scenarios.append(scenario_instance)
+                    list_scenarios_now.append(scenario_instance)
+                    self.all_occupied_parking_locations.extend(scenario_instance.get_parking_slots()) # Update parking slots
+                    self.rest_scenario_definitions.remove(scenario_config)
+                else:
+                    continue
 
             except Exception as e:
                 print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
                 if debug:
                     print(f"\n{traceback.format_exc()}")
                 print("\033[0m", end="")
+                self.rest_scenario_definitions.remove(scenario_config)
                 continue
+            
 
-            self.list_scenarios.append(scenario_instance)
+        # Process the scenarios that were initialized
+        if self.behavior_node is None or self.criteria_node is None:
+            # Not ready yet
+            return
+        else:
+            scenario_behaviors = []
+            blackboard_list = []
+
+            for scenario in list_scenarios_now:
+
+                # process behavior
+                if scenario.behavior_tree is not None:
+                    scenario_behaviors.append(scenario.behavior_tree)
+                    blackboard_list.append([scenario.config.route_var_name,
+                                            scenario.config.trigger_points[0].location])
+                    # print(f"Add scenario {scenario.config.name} to behavior tree")
+
+                # process criteria
+                scenario_criteria = scenario.get_criteria()
+                if len(scenario_criteria) == 0:
+                    continue  # No need to create anything
+                else:
+                    # print(f"Add criteria of scenario {scenario.config.name} to criteria tree")
+                    self.criteria_node.add_child(
+                        self._create_criterion_tree(scenario, scenario_criteria)
+                    )
+
+            # Add to blackboard
+            if self.scenario_triggerer is not None:
+                self.scenario_triggerer._blackboard_list += blackboard_list
+
+
+            if len(scenario_behaviors) > 0:
+                self.behavior_node.add_children(scenario_behaviors)
+
+        # Process parked vehicles
+        self._spawn_parked_ids_step(ego_vehicle)
+
+
 
     # pylint: enable=no-self-use
     def _initialize_actors(self, config):
@@ -334,6 +477,7 @@ class RouteScenario(BasicScenario):
         behavior = py_trees.composites.Parallel(name="Route Behavior",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
 
+        self.behavior_node = behavior
         scenario_behaviors = []
         blackboard_list = []
 
@@ -348,6 +492,9 @@ class RouteScenario(BasicScenario):
             self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
         behavior.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
 
+        # register var
+        self.scenario_triggerer = scenario_triggerer
+
         # Add the Background Activity
         behavior.add_child(BackgroundBehavior(self.ego_vehicles[0], self.route, name="BackgroundActivity"))
 
@@ -361,6 +508,8 @@ class RouteScenario(BasicScenario):
         """
         criteria = py_trees.composites.Parallel(name="Criteria",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+
+        self.criteria_node = criteria
 
         # End condition
         criteria.add_child(RouteCompletionTest(self.ego_vehicles[0], route=self.route))
