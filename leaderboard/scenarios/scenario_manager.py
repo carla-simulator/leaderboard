@@ -124,7 +124,6 @@ class ScenarioManager(object):
         self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
 
     def build_scenarios_loop(self, world, timeout, debug):
-        print("enter build_scenarios_loop")
         while self._running:
             self.scenario._build_scenarios(
                 world,

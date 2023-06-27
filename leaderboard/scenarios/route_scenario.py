@@ -18,6 +18,7 @@ import importlib
 import inspect
 import py_trees
 import traceback
+import numpy as np
 
 import carla
 from agents.navigation.local_planner import RoadOption
@@ -56,7 +57,8 @@ class RouteScenario(BasicScenario):
     """
 
     category = "RouteScenario"
-    INIT_THRESHOLD = 200 # Runtime initialization trigger distance to ego (m)
+    INIT_THRESHOLD = 500 # Runtime initialization trigger distance to ego (m)
+    PARKED_VEHICLES_INIT_THRESHOLD = INIT_THRESHOLD - 50 # Runtime initialization trigger distance to parked vehicles (m)
 
     def __init__(self, world, config, debug_mode=0, criteria_enable=True):
         """
@@ -77,6 +79,10 @@ class RouteScenario(BasicScenario):
 
         self.all_occupied_parking_locations = []
         self.all_available_parking_slots = []
+
+        self.route_locations = [self.route[i][0].location for i in range(len(self.route))]
+        self.route_location_index_map = {} # a cache table to avoid repeated search of route location index
+        self.route_distance_matrix = self._build_route_distance_matrix()
 
         ego_vehicle = self._spawn_ego_vehicle(world)
         if ego_vehicle is None:
@@ -155,6 +161,70 @@ class RouteScenario(BasicScenario):
 
         return ego_vehicle
     
+    def _build_route_distance_matrix(self, step=10):
+        """
+        Builds a distance matrix for the route, where the entry at (i, j) is the distance from
+        the ith waypoint to the jth waypoint. This is used for dynamic programming to compute
+        """
+        n = len(self.route_locations)
+        distances = np.zeros((n, n)) # Creates an nxn matrix filled with zeros
+        path_sums = np.zeros((n, n)) # Create another nxn matrix for dynamic programming
+
+        for i in range(0, n):
+            for j in range(i+1, n):
+                if j <= i+step:
+                    # Directly compute distance without sum if j is close to i
+                    path_sums[i][j] = self.route_locations[i].distance(self.route_locations[j])
+                else:
+                    # Use DP to get the sum of distances from i to j
+                    path_sums[i][j] = path_sums[i][j-1] + self.route_locations[j-1].distance(self.route_locations[j])
+                
+                distances[i][j] = path_sums[i][j]
+                distances[j][i] = distances[i][j] # as i,j distance will be same as j,i distance
+
+
+                
+        return distances
+    
+    def _find_nearest_index(self, locations, point):
+        # Check if point in self.route_location_index_map, then return the index
+        if point in self.route_location_index_map:
+            return self.route_location_index_map[point]
+        else:
+            index = min(range(len(locations)), key = lambda index: locations[index].distance(point))
+            self.route_location_index_map[point] = index
+        return index
+
+    def _get_distance_by_route(self, loc_from, loc_to, distance_threshold=20):
+        """
+        Get distance along route between two locations
+        """
+        # If close enough, return the euclidean distance
+        eu_dist = loc_from.distance(loc_to)
+        if eu_dist < distance_threshold:
+            return eu_dist
+
+        loc_from_index = self._find_nearest_index(self.route_locations, loc_from)
+        loc_to_index = self._find_nearest_index(self.route_locations[loc_from_index+1:], loc_to)
+        # Calculate the distance along route
+        if loc_from_index == loc_to_index:
+            return 0
+        elif loc_from_index < loc_to_index:
+            return self.route_distance_matrix[loc_from_index][loc_to_index]
+        else:
+            return self.INIT_THRESHOLD*2 # Return a large number if passed
+
+
+    def _within_route_distance(self, loc_from, loc_to, distance_threshold=100):
+        """
+        Check if the distance between two locations is within the route
+        """
+        # If the euclidean distance is within the distance_threshold, return True
+        if loc_from.distance(loc_to) > distance_threshold:
+            return False
+        else:
+            return self._get_distance_by_route(loc_from, loc_to) < distance_threshold
+    
     def _init_parking_slots(self, max_distance=100, route_step=10):
         """Spawn parked vehicles."""
 
@@ -222,7 +292,7 @@ class RouteScenario(BasicScenario):
 
             # Check if the slot is close to ego
 
-            if slot_transform.location.distance(ego_location) < self.INIT_THRESHOLD-20:
+            if self._within_route_distance(ego_location, slot_transform.location, self.PARKED_VEHICLES_INIT_THRESHOLD):
                 if is_free(slot_transform.location):
                     mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
                     mesh_bp.set_attribute("mesh_path", slot["mesh"])
@@ -371,47 +441,6 @@ class RouteScenario(BasicScenario):
                 all_scenario_classes[member[0]] = member[1]
 
         return all_scenario_classes
-    
-    # Original version, just for backup
-    # def _build_scenarios(self, world, ego_vehicle, scenario_definitions, scenarios_per_tick=5, timeout=300, debug=False):
-    #     """
-    #     Initializes the class of all the scenarios that will be present in the route.
-    #     If a class fails to be initialized, a warning is printed but the route execution isn't stopped
-    #     """
-    #     all_scenario_classes = self.get_all_scenario_classes()
-    #     self.list_scenarios = []
-    #     ego_data = ActorConfigurationData(ego_vehicle.type_id, ego_vehicle.get_transform(), 'hero')
-
-    #     if debug:
-    #         tmap = CarlaDataProvider.get_map()
-    #         for scenario_config in scenario_definitions:
-    #             scenario_loc = scenario_config.trigger_points[0].location
-    #             debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-    #             world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=timeout)
-    #             world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-    #                                     color=carla.Color(0, 0, 128), life_time=timeout, persistent_lines=True)
-
-    #     for scenario_number, scenario_config in enumerate(scenario_definitions):
-    #         scenario_config.ego_vehicles = [ego_data]
-    #         scenario_config.route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
-    #         scenario_config.route = self.route
-
-    #         try:
-    #             scenario_class = all_scenario_classes[scenario_config.type]
-    #             scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
-
-    #             # Do a tick every once in a while to avoid spawning everything at the same time
-    #             if scenario_number % scenarios_per_tick == 0:
-    #                 world.tick()
-
-    #         except Exception as e:
-    #             print(f"\033[93mSkipping scenario '{scenario_config.name}' due to setup error: {e}")
-    #             if debug:
-    #                 print(f"\n{traceback.format_exc()}")
-    #             print("\033[0m", end="")
-    #             continue
-
-    #         self.list_scenarios.append(scenario_instance)
 
     def _build_scenarios(self, world, ego_vehicle, scenario_definitions, timeout=300, debug=False):
         """
@@ -431,9 +460,9 @@ class RouteScenario(BasicScenario):
             for scenario_config in scenario_definitions:
                 scenario_loc = scenario_config.trigger_points[0].location
                 debug_loc = tmap.get_waypoint(scenario_loc).transform.location + carla.Location(z=0.2)
-                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=0.5) # tmp: just change the life_time smaller
+                world.debug.draw_point(debug_loc, size=0.2, color=carla.Color(128, 0, 0), life_time=1) # tmp: just change the life_time smaller
                 world.debug.draw_string(debug_loc, str(scenario_config.name), draw_shadow=False,
-                                        color=carla.Color(0, 0, 128), life_time=0.5, persistent_lines=True) # tmp: just change the life_time smaller
+                                        color=carla.Color(0, 0, 128), life_time=1, persistent_lines=True) # tmp: just change the life_time smaller
 
         for scenario_number, scenario_config in enumerate(scenario_definitions):
 
@@ -453,9 +482,8 @@ class RouteScenario(BasicScenario):
                 ego_location = CarlaDataProvider.get_location(ego_vehicle)
                 if ego_location is None:
                     continue
-                elif trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
+                elif self._within_route_distance(ego_location, trigger_location, self.INIT_THRESHOLD):
                     # Only init scenarios that are close to ego
-                    print(f"init scenario {scenario_config.name}")
                     scenario_instance = scenario_class(world, [ego_vehicle], scenario_config, timeout=timeout)
                     # Add new scenarios to list
                     if scenario_instance not in self.list_scenarios:
