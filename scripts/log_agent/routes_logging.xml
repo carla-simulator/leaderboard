@@ -105,13 +105,12 @@
    <route id="7" town="Town13">
       <!-- NonSignalizedJunctionRightTurn slow -->
       <waypoints>
-         <position x="2965.6" y="2772.7" z="182.1"/>
-         <position x="2995.3" y="2830.3" z="182.8"/>
-         <position x="2966.1" y="2859.0" z="182.4"/>
+         <position x="2984.79" y="3185.13" z="182.29"/>
+         <position x="2943.35" y="3225.14" z="181.53"/>
       </waypoints>
       <scenarios>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
-            <trigger_point x="2974.7" y="2790.5" z="182.3" yaw="62.7"/>
+            <trigger_point x="2984.80" y="3189.74" z="182.27" yaw="89.98"/>
             <flow_speed value="8"/>
             <source_dist_interval from="10" to="50"/>
          </scenario>
@@ -120,13 +119,12 @@
    <route id="8" town="Town13">
       <!-- NonSignalizedJunctionRightTurn fast -->
       <waypoints>
-         <position x="2965.6" y="2772.7" z="182.1"/>
-         <position x="2995.3" y="2830.3" z="182.8"/>
-         <position x="2966.1" y="2859.0" z="182.4"/>
+         <position x="2984.79" y="3185.13" z="182.29"/>
+         <position x="2943.35" y="3225.14" z="181.53"/>
       </waypoints>
       <scenarios>
          <scenario name="NonSignalizedJunctionRightTurn_1" type="NonSignalizedJunctionRightTurn">
-            <trigger_point x="2974.7" y="2790.5" z="182.3" yaw="62.7"/>
+            <trigger_point x="2984.80" y="3189.74" z="182.27" yaw="89.98"/>
             <flow_speed value="15"/>
             <source_dist_interval from="18" to="65"/>
          </scenario>
@@ -179,6 +177,9 @@
          <position x="6904.2" y="3936.8" z="174.7"/>
       </waypoints>
       <scenarios>
+         <scenario name="PriorityAtJunction_1" type="PriorityAtJunction">
+            <trigger_point x="6843.1" y="3976.4" z="174.1" yaw="-0.3"/>
+         </scenario>
          <scenario name="VehicleTurningRoutePedestrian_1" type="VehicleTurningRoutePedestrian">
             <trigger_point x="6846.1" y="3976.4" z="174.1" yaw="-0.3"/>
          </scenario>
@@ -314,8 +315,8 @@
             <trigger_point x="-642.5" y="-1559.6" z="162.7" yaw="32.5"/>
             <start_actor_flow x="-645.1" y="-1557.3" z="162.7"/>
             <end_actor_flow x="-492.0" y="-1443.0" z="160.6"/>
-            <flow_speed value="13"/>
-            <source_dist_interval from="10" to="78"/>
+            <flow_speed value="11"/>
+            <source_dist_interval from="10" to="80"/>
          </scenario>
       </scenarios>
    </route>
@@ -338,7 +339,7 @@
       <!-- AccidentTwoWays -->
       <waypoints>
          <position x="3184.2" y="3308.8" z="181.4"/>
-         <position x="2998.2" y="3303.2" z="181.8"/>
+         <position x="3020.2" y="3303.2" z="181.8"/>
       </waypoints>
       <scenarios>
          <scenario name="AccidentTwoWays_1" type="AccidentTwoWays">
@@ -426,13 +427,13 @@
    <route id="30" town="Town13">
       <!-- HighwayCutIn -->
       <waypoints>
-         <position x="-2680.0" y="5964.7" z="158.6"/>
-         <position x="-3131.2" y="6003.8" z="164.4"/>
+         <position x="-2695.74" y="6012.35" z="159.24"/>
+         <position x="-2936.34" y="6009.55" z="162.15"/>
       </waypoints>
       <scenarios>
          <scenario name="HighwayCutIn_1" type="HighwayCutIn">
-            <trigger_point x="-2768.1" y="5999.7" z="160.0" yaw="167.3"/>
-            <other_actor_location x="-2766.5" y="6011.6" z="160.0"/>
+            <trigger_point x="-2703.12" y="6012.45" z="159.13" yaw="-179.30"/>
+            <other_actor_location x="-2720.90" y="5984.93" z="159.19"/>
          </scenario>
       </scenarios>
    </route>
@@ -440,7 +441,7 @@
       <!--  -->
       <waypoints>
          <position x="5223.0" y="3960.2" z="160.4"/>
-         <position x="5222.6" y="3815.4" z="160.7"/>
+         <position x="5222.6" y="3845.4" z="160.7"/>
       </waypoints>
       <scenarios>
          <scenario name="ParkingCutIn_1" type="ParkingCutIn">
@@ -585,7 +586,7 @@
       <scenarios>
          <scenario name="ConstructionObstacleTwoWays_1" type="ConstructionObstacleTwoWays">
             <trigger_point x="2637.1" y="5206.4" z="163.5" yaw="270.3"/>
-            <distance value="77"/>
+            <distance value="80"/>
             <frequency from="35" to="115"/>
          </scenario>
       </scenarios>
