@@ -331,8 +331,8 @@
             <frequency from="25" to="65"/>
          </scenario>
          <scenario name="ParkedObstacle_1" type="ParkedObstacle">
-            <trigger_point x="6111.5" y="4132.2" z="163.5" yaw="359.4"/>
-            <distance value="70"/>
+            <trigger_point x="6745.11" y="4252.39" z="175.22" yaw="-178.78"/>
+            <distance value="66"/>
             <speed value="60"/>
          </scenario>
          <scenario name="BlockedIntersection_1" type="BlockedIntersection">
@@ -2486,13 +2486,13 @@
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-1606.2" y="127.4" z="157.6" yaw="0.0"/>
-            <distance value="65"/>
+            <distance value="113"/>
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="-1423.7" y="127.6" z="154.8" yaw="0.0"/>
-            <distance value="66"/>
+            <distance value="105"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="5"/>
          </scenario>
@@ -2640,20 +2640,20 @@
             <source_dist_interval from="18" to="45"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
-            <trigger_point x="-1293.0" y="364.8" z="153.4" yaw="12.3"/>
-            <distance value="75"/>
+            <trigger_point x="-1212.72" y="380.14" z="152.61" yaw="9.27"/>
+            <distance value="65"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="-2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="-1073.6" y="412.6" z="151.5" yaw="105.7"/>
-            <distance value="65"/>
+            <distance value="98"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="5"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
             <trigger_point x="-1395.3" y="529.0" z="154.4" yaw="115.6"/>
-            <distance value="70"/>
+            <distance value="50"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="1"/>
          </scenario>
@@ -2918,14 +2918,8 @@
             <source_dist_interval from="18" to="55"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
-            <trigger_point x="-4091.4" y="4305.8" z="176.7" yaw="270.9"/>
-            <distance value="70"/>
-            <blocker_model value="static.prop.haybalelb"/>
-            <crossing_angle value="2"/>
-         </scenario>
-         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
-            <trigger_point x="-4320.5" y="3930.9" z="181.2" yaw="0.3"/>
-            <distance value="70"/>
+            <trigger_point x="-4221.44" y="4329.60" z="174.63" yaw="0.45"/>
+            <distance value="58"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="2"/>
          </scenario>
@@ -2960,8 +2954,8 @@
             <crossing_angle value="3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
-            <trigger_point x="-3406.1" y="4159.4" z="181.0" yaw="0.3"/>
-            <distance value="65"/>
+            <trigger_point x="-3531.31" y="4158.72" z="181.28" yaw="0.30"/>
+            <distance value="70"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="-4"/>
          </scenario>
@@ -2972,14 +2966,14 @@
             <crossing_angle value="-2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
-            <trigger_point x="-3285.4" y="3790.3" z="177.7" yaw="180.5"/>
-            <distance value="66"/>
+            <trigger_point x="-3272.6" y="3790.4" z="177.6" yaw="180.5"/>
+            <distance value="44"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_11" type="DynamicObjectCrossing">
-            <trigger_point x="-3542.4" y="3765.9" z="181.1" yaw="270.8"/>
-            <distance value="70"/>
+            <trigger_point x="-3445.36" y="3788.75" z="179.75" yaw="180.54"/>
+            <distance value="65"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="3"/>
          </scenario>
@@ -3121,7 +3115,7 @@
             <trigger_point x="-3834.1" y="4332.7" z="178.2" yaw="0.5"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
-            <trigger_point x="-3516.4" y="4158.8" z="181.2" yaw="0.3"/>
+            <trigger_point x="-3396.49" y="4159.42" z="180.97" yaw="0.30"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="-3275.1" y="3932.8" z="179.4" yaw="180.2"/>
@@ -3170,9 +3164,6 @@
          </scenario>
          <scenario name="ControlLoss_9" type="ControlLoss">
             <trigger_point x="-3284.8" y="3932.7" z="179.5" yaw="180.2"/>
-         </scenario>
-         <scenario name="ControlLoss_10" type="ControlLoss">
-            <trigger_point x="-3272.6" y="3790.4" z="177.6" yaw="180.5"/>
          </scenario>
          <scenario name="ControlLoss_11" type="ControlLoss">
             <trigger_point x="-3440.6" y="3788.8" z="179.7" yaw="180.5"/>
@@ -4539,8 +4530,8 @@
             <frequency from="25" to="65"/>
          </scenario>
          <scenario name="ParkedObstacle_1" type="ParkedObstacle">
-            <trigger_point x="6111.5" y="4132.2" z="163.5" yaw="359.4"/>
-            <distance value="70"/>
+            <trigger_point x="6745.11" y="4252.39" z="175.22" yaw="-178.78"/>
+            <distance value="66"/>
             <speed value="60"/>
          </scenario>
          <scenario name="BlockedIntersection_1" type="BlockedIntersection">
@@ -6692,13 +6683,13 @@
          </scenario>
          <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
             <trigger_point x="-1606.2" y="127.4" z="157.6" yaw="0.0"/>
-            <distance value="65"/>
+            <distance value="113"/>
             <blocker_model value="static.prop.foodcart"/>
             <crossing_angle value="3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_3" type="DynamicObjectCrossing">
             <trigger_point x="-1423.7" y="127.6" z="154.8" yaw="0.0"/>
-            <distance value="66"/>
+            <distance value="105"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="5"/>
          </scenario>
@@ -6846,20 +6837,20 @@
             <source_dist_interval from="18" to="45"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_4" type="DynamicObjectCrossing">
-            <trigger_point x="-1293.0" y="364.8" z="153.4" yaw="12.3"/>
-            <distance value="75"/>
+            <trigger_point x="-1212.72" y="380.14" z="152.61" yaw="9.27"/>
+            <distance value="65"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="-2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_5" type="DynamicObjectCrossing">
             <trigger_point x="-1073.6" y="412.6" z="151.5" yaw="105.7"/>
-            <distance value="65"/>
+            <distance value="98"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="5"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_6" type="DynamicObjectCrossing">
             <trigger_point x="-1395.3" y="529.0" z="154.4" yaw="115.6"/>
-            <distance value="70"/>
+            <distance value="50"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="1"/>
          </scenario>
@@ -7124,14 +7115,8 @@
             <source_dist_interval from="18" to="55"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_1" type="DynamicObjectCrossing">
-            <trigger_point x="-4091.4" y="4305.8" z="176.7" yaw="270.9"/>
-            <distance value="70"/>
-            <blocker_model value="static.prop.haybalelb"/>
-            <crossing_angle value="2"/>
-         </scenario>
-         <scenario name="DynamicObjectCrossing_2" type="DynamicObjectCrossing">
-            <trigger_point x="-4320.5" y="3930.9" z="181.2" yaw="0.3"/>
-            <distance value="70"/>
+            <trigger_point x="-4221.44" y="4329.60" z="174.63" yaw="0.45"/>
+            <distance value="58"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="2"/>
          </scenario>
@@ -7166,8 +7151,8 @@
             <crossing_angle value="3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_8" type="DynamicObjectCrossing">
-            <trigger_point x="-3406.1" y="4159.4" z="181.0" yaw="0.3"/>
-            <distance value="65"/>
+            <trigger_point x="-3531.31" y="4158.72" z="181.28" yaw="0.30"/>
+            <distance value="70"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="-4"/>
          </scenario>
@@ -7178,14 +7163,14 @@
             <crossing_angle value="-2"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_10" type="DynamicObjectCrossing">
-            <trigger_point x="-3285.4" y="3790.3" z="177.7" yaw="180.5"/>
-            <distance value="66"/>
+            <trigger_point x="-3272.6" y="3790.4" z="177.6" yaw="180.5"/>
+            <distance value="44"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="3"/>
          </scenario>
          <scenario name="DynamicObjectCrossing_11" type="DynamicObjectCrossing">
-            <trigger_point x="-3542.4" y="3765.9" z="181.1" yaw="270.8"/>
-            <distance value="70"/>
+            <trigger_point x="-3445.36" y="3788.75" z="179.75" yaw="180.54"/>
+            <distance value="65"/>
             <blocker_model value="static.prop.haybalelb"/>
             <crossing_angle value="3"/>
          </scenario>
@@ -7327,7 +7312,7 @@
             <trigger_point x="-3834.1" y="4332.7" z="178.2" yaw="0.5"/>
          </scenario>
          <scenario name="HardBreakRoute_4" type="HardBreakRoute">
-            <trigger_point x="-3516.4" y="4158.8" z="181.2" yaw="0.3"/>
+            <trigger_point x="-3396.49" y="4159.42" z="180.97" yaw="0.30"/>
          </scenario>
          <scenario name="HardBreakRoute_5" type="HardBreakRoute">
             <trigger_point x="-3275.1" y="3932.8" z="179.4" yaw="180.2"/>
@@ -7376,9 +7361,6 @@
          </scenario>
          <scenario name="ControlLoss_9" type="ControlLoss">
             <trigger_point x="-3284.8" y="3932.7" z="179.5" yaw="180.2"/>
-         </scenario>
-         <scenario name="ControlLoss_10" type="ControlLoss">
-            <trigger_point x="-3272.6" y="3790.4" z="177.6" yaw="180.5"/>
          </scenario>
          <scenario name="ControlLoss_11" type="ControlLoss">
             <trigger_point x="-3440.6" y="3788.8" z="179.7" yaw="180.5"/>
