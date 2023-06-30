@@ -4204,7 +4204,7 @@
       <!-- From a heavily overcast and stormy downpour to a slightly less cloudy, windy, and rainy night -->
          <weather route_percentage="0"
             cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="0.0"
-            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0">
+            wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="45.0" fog_density="4.0"/>
          <weather route_percentage="100"
             cloudiness="90.0" precipitation="50.0" precipitation_deposits="60.0" wetness="0.0"
             wind_intensity="100.0" sun_azimuth_angle="-1.0" sun_altitude_angle="-90.0" fog_density="8.0"/>
