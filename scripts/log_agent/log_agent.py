@@ -3,6 +3,7 @@
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
+import carla
 try:
     import pygame
     from pygame.locals import K_DOWN
@@ -37,6 +38,8 @@ def get_entry_point():
 
 
 class HumanAgent(HumanAgent_):
+
+    TTC_THRESHOLD = 10
 
     def setup(self, path_to_conf_file):
 
@@ -74,6 +77,46 @@ class HumanAgent(HumanAgent_):
 
         self._clock = pygame.time.Clock()
 
+        # Attach obstacle sensor, calculate ttc
+        world = CarlaDataProvider.get_world()
+        blueprint = world.get_blueprint_library().find('sensor.other.obstacle')
+        blueprint.set_attribute('distance', '30')
+        self._obstacle_sensor = world.spawn_actor(blueprint, carla.Transform(), attach_to=self._player)
+        self._obstacle_sensor.listen(lambda event: self._update_obstacle(event))
+        self._ttc = self.TTC_THRESHOLD*2 # Time to collision, default to safe value
+
+    
+    def _update_obstacle(self, event):
+
+        if "vehicle" not in event.other_actor.type_id and "walker" not in event.other_actor.type_id:
+            return
+
+        v_obstacle = CarlaDataProvider.get_velocity(event.other_actor)
+        v_ego = CarlaDataProvider.get_velocity(self._player)
+        ttc = event.distance / max((v_ego - v_obstacle), 0.01) # Avoid division by zero
+        self._ttc = ttc
+
+    
+    def run_step(self, input_data, timestamp):
+
+        # If ttc is small enough, display warning
+        if self._ttc < self.TTC_THRESHOLD:
+        
+            text = "Too Close!"
+            pos = (self.camera_width // 2, self.camera_height // 1.5)
+            font = pygame.font.Font(pygame.font.get_default_font(), 16)
+            surface = pygame.Surface((120, 50)) # width and height
+            surface.fill((0, 0, 0, 0))
+            text_texture = font.render(text, True, (255, 255, 255))
+            surface.blit(text_texture, (22, 18))
+            surface.set_alpha(220)
+            self._hic._display.blit(surface, pos)
+            pygame.display.flip()
+
+            self._ttc = self.TTC_THRESHOLD*2
+
+        return super().run_step(input_data, timestamp)
+        
 
 class KeyboardControl(KeyboardControl_):
 
@@ -136,7 +179,7 @@ class KeyboardControl(KeyboardControl_):
             self._control.throttle = agent_control.throttle
             self._control.brake = agent_control.brake
         elif keys[K_UP] or keys[K_w]:  # Accelerate
-            self._control.throttle = 0.8
+            self._control.throttle = 1.0
             self._control.brake = 0.0
         else:  # Idle
             self._control.throttle = 0.0
