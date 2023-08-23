@@ -39,7 +39,7 @@ def get_entry_point():
 
 class HumanAgent(HumanAgent_):
 
-    TTC_THRESHOLD = 10
+    TTC_THRESHOLD = 5
 
     def setup(self, path_to_conf_file):
 
