@@ -69,17 +69,22 @@ class RouteIndexer():
         route_data = dictor(checkpoint_dict, 'records')
 
         check_index = 0
-        while check_index < progress[0]:
-            route_id = self._configs_list[check_index].name
-            route_id += "_rep" + str(self._configs_list[check_index].repetition_index)
-            checkpoint_route_id = route_data[check_index]['route_id']
+        resume_index = progress[0]
+        while check_index < resume_index:
+            try:
+                route_id = self._configs_list[check_index].name
+                route_id += "_rep" + str(self._configs_list[check_index].repetition_index)
+                checkpoint_route_id = route_data[check_index]['route_id']
 
-            if route_id != checkpoint_route_id:
-                print("Problem reading checkpoint. Checkpoint routes don't match the current ones")
-                return False
+                if route_id != checkpoint_route_id:
+                    print("Problem reading checkpoint. Checkpoint routes don't match the current ones")
+                    return False
 
-            check_index += 1
+                check_index += 1
+            except IndexError:
+                # Patch to fix some cases where the progress might be higher than the actual results
+                resume_index = max(check_index - 1, 0)
 
-        self.index = max(0, progress[0] - 1)  # Resume means something went wrong, repeat the last route
+        self.index = max(0, resume_index - 1)  # Resume means something went wrong, repeat the last route
         return True
 
