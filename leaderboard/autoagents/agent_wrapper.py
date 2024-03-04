@@ -23,7 +23,7 @@ from leaderboard.autoagents.autonomous_agent import Track
 from leaderboard.autoagents.ros_base_agent import ROSBaseAgent
 
 MAX_ALLOWED_RADIUS_SENSOR = 3.0
-SENSORS_LIMITS = {
+QUALIFIER_SENSORS_LIMITS = {
     'sensor.camera.rgb': 4,
     'sensor.lidar.ray_cast': 1,
     'sensor.other.radar': 2,
@@ -31,6 +31,15 @@ SENSORS_LIMITS = {
     'sensor.other.imu': 1,
     'sensor.opendrive_map': 1,
     'sensor.speedometer': 1
+}
+SENSORS_LIMITS = {
+    'sensor.camera.rgb': 8,
+    'sensor.lidar.ray_cast': 2,
+    'sensor.other.radar': 4,
+    'sensor.other.gnss': 2,
+    'sensor.other.imu': 2,
+    'sensor.opendrive_map': 2,
+    'sensor.speedometer': 2
 }
 ALLOWED_SENSORS = SENSORS_LIMITS.keys()
 
@@ -95,7 +104,12 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
         else:
             sensor_count[sensor['type']] = 1
 
-    for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
+    if agent_track in (Track.QUALIFIER_MAP, Track.QUALIFIER_SENSORS):
+        sensor_limits = SENSORS_LIMITS
+    else:
+        sensor_limits = QUALIFIER_SENSORS_LIMITS
+
+    for sensor_type, max_instances_allowed in sensor_limits.items():
         if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
             raise SensorConfigurationInvalid(
                 "Too many {} used! "

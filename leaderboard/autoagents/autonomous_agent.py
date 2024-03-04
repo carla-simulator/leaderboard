@@ -25,6 +25,8 @@ class Track(Enum):
     """
     SENSORS = 'SENSORS'
     MAP = 'MAP'
+    QUALIFIER_SENSORS = 'QUALIFIER_SENSORS'
+    QUALIFIER_MAP = 'QUALIFIER_MAP'
 
 
 class AutonomousAgent(object):
