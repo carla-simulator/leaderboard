@@ -104,7 +104,7 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
         else:
             sensor_count[sensor['type']] = 1
 
-    if agent_track in (Track.QUALIFIER_MAP, Track.QUALIFIER_SENSORS):
+    if agent_track in (Track.SENSORS_QUALIFIER, Track.MAP_QUALIFIER):
         sensor_limits = SENSORS_LIMITS
     else:
         sensor_limits = QUALIFIER_SENSORS_LIMITS
