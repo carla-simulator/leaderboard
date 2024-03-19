@@ -419,7 +419,7 @@ class StatisticsManager(object):
             # Special case for the % based criteria. Extract the meters from the message. Very ugly, but it works
             if key == PENALTY_NAME_DICT[TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION]:
                 if not route_record.infractions[key]:
-                    return 0
+                    return 0.0
                 return float(route_record.infractions[key][0].split(" ")[8])/1000
 
             return len(route_record.infractions[key])
