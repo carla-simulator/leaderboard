@@ -36,10 +36,10 @@ SENSORS_LIMITS = {
     'sensor.camera.rgb': 8,
     'sensor.lidar.ray_cast': 2,
     'sensor.other.radar': 4,
-    'sensor.other.gnss': 2,
-    'sensor.other.imu': 2,
-    'sensor.opendrive_map': 2,
-    'sensor.speedometer': 2
+    'sensor.other.gnss': 1,
+    'sensor.other.imu': 1,
+    'sensor.opendrive_map': 1,
+    'sensor.speedometer': 1
 }
 ALLOWED_SENSORS = SENSORS_LIMITS.keys()
 
