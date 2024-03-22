@@ -85,6 +85,9 @@ class RouteIndexer():
                 # Patch to fix some cases where the progress might be higher than the actual results
                 resume_index = max(check_index - 1, 0)
 
-        self.index = max(0, resume_index - 1)  # Resume means something went wrong, repeat the last route
+        if entry_status == "Crashed":
+            self.index = max(0, resume_index - 1)  # Something went wrong, repeat the last route
+        else: 
+            self.index = max(0, resume_index)
         return True
 

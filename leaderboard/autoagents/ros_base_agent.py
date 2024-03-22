@@ -38,7 +38,7 @@ class ROSLogger(object):
         if not os.path.isdir(logger_path):
             os.makedirs(logger_path)
 
-        self.handler = logging.handlers.RotatingFileHandler(os.path.join(logger_path, self.name + ".log"), maxBytes=5*1024*1024, backupCount=10)
+        self.handler = logging.handlers.RotatingFileHandler(os.path.join(logger_path, self.name + ".log"), maxBytes=25*1024*1024, backupCount=3)
         self.handler.setLevel(logging.INFO)
         self.handler.setFormatter(logging.Formatter("%(message)s"))
 
@@ -62,7 +62,8 @@ class ROSLauncher(object):
     def __init__(self, app_name, ros_version, debug=False):
         self.app_name = app_name
         self.ros_version = ros_version
-        self.debug = debug
+        # force always debugging
+        self.debug = True
 
         self._process = None
 
