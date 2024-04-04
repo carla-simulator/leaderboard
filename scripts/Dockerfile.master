@@ -55,7 +55,7 @@ RUN pip3 install -r ${SCENARIO_RUNNER_ROOT}/requirements.txt
 RUN pip3 install -r ${LEADERBOARD_ROOT}/requirements.txt
 
 RUN mkdir -p /workspace/results
-RUN chmod +x ${LEADERBOARD_ROOT}/scripts/run_evaluation.sh
+RUN chmod +x /workspace/leaderboard/run_leaderboard.sh
 
 ENV PYTHONPATH "${CARLA_ROOT}/PythonAPI/carla/dist/carla-leaderboard-py3x.egg":"${SCENARIO_RUNNER_ROOT}":"${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":"${TEAM_CODE_ROOT}":${PYTHONPATH}
 

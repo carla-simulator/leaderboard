@@ -85,7 +85,7 @@ RUN /bin/bash -c 'source /opt/ros/$ROS_DISTRO/setup.bash; \
   rm -rf /var/lib/apt/lists/*'
 
 RUN mkdir -p /workspace/results
-RUN chmod +x /workspace/leaderboard/scripts/run_evaluation.sh
+RUN chmod +x /workspace/leaderboard/run_leaderboard.sh
 
 ENV PYTHONPATH "${CARLA_ROOT}/PythonAPI/carla":"${SCENARIO_RUNNER_ROOT}":"${LEADERBOARD_ROOT}":${PYTHONPATH}
 
