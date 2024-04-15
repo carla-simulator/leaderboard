@@ -15,10 +15,12 @@ from __future__ import print_function
 import traceback
 import argparse
 from argparse import RawTextHelpFormatter
-from distutils.version import LooseVersion
+try:
+    from packaging.version import Version
+except ImportError:
+    from distutils.version import LooseVersion as Version # Python 2 fallback
 import importlib
 import os
-import pkg_resources
 import sys
 import carla
 import signal
@@ -34,6 +36,20 @@ from leaderboard.autoagents.agent_wrapper import AgentError, validate_sensor_con
 from leaderboard.utils.statistics_manager import StatisticsManager, FAILURE_MESSAGES
 from leaderboard.utils.route_indexer import RouteIndexer
 
+
+try:
+    # requires Python 3.8+
+    from importlib.metadata import metadata
+    def get_carla_version():
+        return Version(metadata("carla")["Version"])
+except ModuleNotFoundError:
+    # backport checking for older Python versions; module is deprecated
+    import pkg_resources
+    def get_carla_version():
+        return Version(pkg_resources.get_distribution("carla").version)
+    
+    
+MIN_CARLA_VERSION = Version("0.9.10.1")
 
 sensors_to_icons = {
     'sensor.camera.rgb':        'carla_camera',
@@ -78,10 +94,10 @@ class LeaderboardEvaluator(object):
         # Setup the simulation
         self.client, self.client_timeout, self.traffic_manager = self._setup_simulation(args)
 
-        dist = pkg_resources.get_distribution("carla")
-        if dist.version != 'leaderboard':
-            if LooseVersion(dist.version) < LooseVersion('0.9.10'):
-                raise ImportError("CARLA version 0.9.10.1 or newer required. CARLA version found: {}".format(dist))
+        carla_version = get_carla_version()
+        if str(carla_version) != 'leaderboard':
+            if carla_version < MIN_CARLA_VERSION:
+                raise ImportError("CARLA version {} or newer required. CARLA version found: {}".format(MIN_CARLA_VERSION, carla_version))
 
         # Load agent
         module_name = os.path.basename(args.agent).split('.')[0]
