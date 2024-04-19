@@ -118,8 +118,13 @@ class SpeedometerReader(BaseReader):
 
 
 class OpenDriveMapReader(BaseReader):
+
+    def __init__(self, vehicle, reading_frequency=1.0):
+        self._opendrive_data = CarlaDataProvider.get_map().to_opendrive()
+        super(OpenDriveMapReader, self).__init__(vehicle, reading_frequency)
+
     def __call__(self):
-        return {'opendrive': CarlaDataProvider.get_map().to_opendrive()}
+        return {'opendrive': self._opendrive_data}
 
 
 class CallBack(object):
@@ -193,17 +198,11 @@ class SensorInterface(object):
         self._data_buffers = Queue()
         self._queue_timeout = 10
 
-        # Only sensor that doesn't get the data on tick, needs special treatment
-        self._opendrive_tag = None
-
     def register_sensor(self, tag, sensor_type, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
 
         self._sensors_objects[tag] = sensor
-
-        if sensor_type == 'sensor.opendrive_map': 
-            self._opendrive_tag = tag
 
     def update_sensor(self, tag, data, frame):
         if tag not in self._sensors_objects:
@@ -216,11 +215,6 @@ class SensorInterface(object):
         try:
             data_dict = {}
             while len(data_dict.keys()) < len(self._sensors_objects.keys()):
-                # Don't wait for the opendrive sensor
-                if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
-                        and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
-                    break
-
                 sensor_data = self._data_buffers.get(True, self._queue_timeout)
                 if sensor_data[1] != frame:
                     continue
