@@ -144,7 +144,8 @@ class AgentWrapper(object):
         attributes = {}
 
         if type_ == 'sensor.opendrive_map':
-            attributes['reading_frequency'] = sensor_spec['reading_frequency']
+            delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+            attributes['reading_frequency'] = 1 / delta_time
             sensor_location = carla.Location()
             sensor_rotation = carla.Rotation()
 
