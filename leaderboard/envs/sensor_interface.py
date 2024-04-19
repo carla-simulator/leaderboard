@@ -91,7 +91,6 @@ class SpeedometerReader(BaseReader):
     """
     Sensor to measure the speed of the vehicle.
     """
-    MAX_CONNECTION_ATTEMPTS = 10
 
     def _get_forward_speed(self, transform=None, velocity=None):
         """ Convert the vehicle transform directly to forward speed """
@@ -108,21 +107,14 @@ class SpeedometerReader(BaseReader):
         return speed
 
     def __call__(self):
-        """ We convert the vehicle physics information into a convenient dictionary """
-
-        # protect this access against timeout
-        attempts = 0
-        while attempts < self.MAX_CONNECTION_ATTEMPTS:
-            try:
-                velocity = self._vehicle.get_velocity()
-                transform = self._vehicle.get_transform()
-                break
-            except Exception:
-                attempts += 1
-                time.sleep(0.2)
-                continue
-
-        return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
+        """ We convert the vehicle physics information into a convenient dictionary"""
+        # Protect this access against timeout
+        try:
+            velocity = self._vehicle.get_velocity()
+            transform = self._vehicle.get_transform()
+            return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
+        except Exception:
+            return {'speed': None}
 
 
 class OpenDriveMapReader(BaseReader):
