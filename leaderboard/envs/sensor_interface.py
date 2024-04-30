@@ -196,6 +196,8 @@ class SensorInterface(object):
     def __init__(self):
         self._sensors_objects = {}
         self._data_buffers = Queue()
+        self._history_buffers = {} # this buffer is necessary because sometimes the data come not in strict frame order
+        self._history_maxlen = 5
         self._queue_timeout = 10
 
     def register_sensor(self, tag, sensor_type, sensor):
@@ -205,6 +207,7 @@ class SensorInterface(object):
         self._sensors_objects[tag] = sensor
 
     def update_sensor(self, tag, data, frame):
+        # print("Update {} @{}, queue len {}".format(tag, frame, self._data_buffers.qsize()))
         if tag not in self._sensors_objects:
             raise SensorConfigurationInvalid("The sensor with tag [{}] has not been created!".format(tag))
 
@@ -212,15 +215,43 @@ class SensorInterface(object):
 
     def get_data(self, frame):
         """Read the queue to get the sensors data"""
-        try:
+
+        if buffer_frame in self._history_buffers.keys():
+            data_dict = self._history_buffers.pop(buffer_frame)
+        else:
             data_dict = {}
+
+        try:
             while len(data_dict.keys()) < len(self._sensors_objects.keys()):
-                sensor_data = self._data_buffers.get(True, self._queue_timeout)
-                if sensor_data[1] != frame:
+                # print("Get @{}, queue len {}, history frames {}".format(frame, self._data_buffers.qsize(), list(self._history_buffers.keys())))
+                trials = int(self._queue_timeout / 0.1)
+                while trials > 0:
+                    # Here time.sleep() is used instead of queue's blocking getter to release GIL.
+                    # It polls the queue every 0.1s.
+                    try:
+                        tag, data_frame, data = self._data_buffers.get_nowait()
+                        break
+                    except Empty:
+                        trials += 1
+                        time.sleep(0.1)
+                if trials == 0:
+                    raise Empty
+
+                if data_frame != frame:
+                    for buffer_frame, buffer in self._history_buffers.items():
+                        if data_frame == buffer_frame:
+                            buffer[tag] = (data_frame, data)
+                            break
+                    else:
+                        if len(self._history_buffers) == self._history_maxlen:
+                            first_frame = next(iter(self._history_buffers))
+                            self._history_buffers.pop(first_frame)
+                        self._history_buffers[data_frame] ={ tag: (data_frame, data) }
                     continue
-                data_dict[sensor_data[0]] = ((sensor_data[1], sensor_data[2]))
+                data_dict[tag] = (data_frame, data)
 
         except Empty:
             raise SensorReceivedNoData("A sensor took too long to send their data")
 
         return data_dict
+
