@@ -49,7 +49,7 @@ except ModuleNotFoundError:
         return Version(pkg_resources.get_distribution("carla").version)
     
     
-MIN_CARLA_VERSION = Version("0.9.10.1")
+MIN_CARLA_VERSION = Version("0.9.15")
 
 sensors_to_icons = {
     'sensor.camera.rgb':        'carla_camera',
