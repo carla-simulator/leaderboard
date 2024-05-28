@@ -1,2 +1,0 @@
-mode: playback
-file: /home/tay/Workspace/LB2/leaderboard/scripts/log_agent/results/logging-test/log.json
