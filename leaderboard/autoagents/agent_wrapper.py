@@ -23,10 +23,19 @@ from leaderboard.autoagents.autonomous_agent import Track
 from leaderboard.autoagents.ros_base_agent import ROSBaseAgent
 
 MAX_ALLOWED_RADIUS_SENSOR = 3.0
-SENSORS_LIMITS = {
+QUALIFIER_SENSORS_LIMITS = {
     'sensor.camera.rgb': 4,
     'sensor.lidar.ray_cast': 1,
     'sensor.other.radar': 2,
+    'sensor.other.gnss': 1,
+    'sensor.other.imu': 1,
+    'sensor.opendrive_map': 1,
+    'sensor.speedometer': 1
+}
+SENSORS_LIMITS = {
+    'sensor.camera.rgb': 8,
+    'sensor.lidar.ray_cast': 2,
+    'sensor.other.radar': 4,
     'sensor.other.gnss': 1,
     'sensor.other.imu': 1,
     'sensor.opendrive_map': 1,
@@ -77,17 +86,17 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
         # Check if the sensor is valid
         if agent_track == Track.SENSORS:
             if sensor['type'].startswith('sensor.opendrive_map'):
-                raise SensorConfigurationInvalid("Illegal sensor used for Track [{}]!".format(agent_track))
+                raise SensorConfigurationInvalid("Illegal sensor 'sensor.opendrive_map' used for Track [{}]!".format(agent_track))
 
         # Check the sensors validity
         if sensor['type'] not in ALLOWED_SENSORS:
-            raise SensorConfigurationInvalid("Illegal sensor used. {} are not allowed!".format(sensor['type']))
+            raise SensorConfigurationInvalid("Illegal sensor '{}' used for Track [{}]!".format(sensor['type'], agent_track))
 
         # Check the extrinsics of the sensor
         if 'x' in sensor and 'y' in sensor and 'z' in sensor:
             if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
                 raise SensorConfigurationInvalid(
-                    "Illegal sensor extrinsics used for Track [{}]!".format(agent_track))
+                    "Illegal sensor extrinsics used for sensor '{}'. Max allowed radius is {}m".format(sensor['id'], MAX_ALLOWED_RADIUS_SENSOR))
 
         # Check the amount of sensors
         if sensor['type'] in sensor_count:
@@ -95,7 +104,12 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
         else:
             sensor_count[sensor['type']] = 1
 
-    for sensor_type, max_instances_allowed in SENSORS_LIMITS.items():
+    if agent_track in (Track.SENSORS_QUALIFIER, Track.MAP_QUALIFIER):
+        sensor_limits = QUALIFIER_SENSORS_LIMITS
+    else:
+        sensor_limits = SENSORS_LIMITS
+
+    for sensor_type, max_instances_allowed in sensor_limits.items():
         if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
             raise SensorConfigurationInvalid(
                 "Too many {} used! "
@@ -130,7 +144,8 @@ class AgentWrapper(object):
         attributes = {}
 
         if type_ == 'sensor.opendrive_map':
-            attributes['reading_frequency'] = sensor_spec['reading_frequency']
+            delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+            attributes['reading_frequency'] = 1 / delta_time
             sensor_location = carla.Location()
             sensor_rotation = carla.Rotation()
 

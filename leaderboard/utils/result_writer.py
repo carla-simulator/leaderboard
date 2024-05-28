@@ -37,18 +37,21 @@ class ResultOutputProvider(object):
     It shall be used from the ScenarioManager only.
     """
 
-    def __init__(self, data, global_result):
+    def __init__(self, data):
         """
         - data contains all scenario-related information
         - global_result is overall pass/fail info
         """
         self._data = data
-        self._global_result = global_result
+        self._start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self._data.start_system_time))
+        self._end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self._data.end_system_time))
 
-        self._start_time = time.strftime('%Y-%m-%d %H:%M:%S',
-                                         time.localtime(self._data.start_system_time))
-        self._end_time = time.strftime('%Y-%m-%d %H:%M:%S',
-                                       time.localtime(self._data.end_system_time))
+        self._global_result = '\033[92m'+'SUCCESS'+'\033[0m'
+        for criterion in self._data.scenario.get_criteria():
+            if criterion.test_status != "SUCCESS":
+                self._global_result = '\033[91m'+'FAILURE'+'\033[0m'
+        if self._data.scenario.timeout_node.timeout:
+            self._global_result = '\033[91m'+'FAILURE'+'\033[0m'
 
         print(self.create_output_text())
 

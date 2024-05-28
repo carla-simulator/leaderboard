@@ -91,7 +91,6 @@ class SpeedometerReader(BaseReader):
     """
     Sensor to measure the speed of the vehicle.
     """
-    MAX_CONNECTION_ATTEMPTS = 10
 
     def _get_forward_speed(self, transform=None, velocity=None):
         """ Convert the vehicle transform directly to forward speed """
@@ -108,26 +107,24 @@ class SpeedometerReader(BaseReader):
         return speed
 
     def __call__(self):
-        """ We convert the vehicle physics information into a convenient dictionary """
-
-        # protect this access against timeout
-        attempts = 0
-        while attempts < self.MAX_CONNECTION_ATTEMPTS:
-            try:
-                velocity = self._vehicle.get_velocity()
-                transform = self._vehicle.get_transform()
-                break
-            except Exception:
-                attempts += 1
-                time.sleep(0.2)
-                continue
-
-        return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
+        """ We convert the vehicle physics information into a convenient dictionary"""
+        # Protect this access against timeout
+        try:
+            velocity = self._vehicle.get_velocity()
+            transform = self._vehicle.get_transform()
+            return {'speed': self._get_forward_speed(transform=transform, velocity=velocity)}
+        except Exception:
+            return {'speed': None}
 
 
 class OpenDriveMapReader(BaseReader):
+
+    def __init__(self, vehicle, reading_frequency=1.0):
+        self._opendrive_data = CarlaDataProvider.get_map().to_opendrive()
+        super(OpenDriveMapReader, self).__init__(vehicle, reading_frequency)
+
     def __call__(self):
-        return {'opendrive': CarlaDataProvider.get_map().to_opendrive()}
+        return {'opendrive': self._opendrive_data}
 
 
 class CallBack(object):
@@ -201,17 +198,11 @@ class SensorInterface(object):
         self._data_buffers = Queue()
         self._queue_timeout = 10
 
-        # Only sensor that doesn't get the data on tick, needs special treatment
-        self._opendrive_tag = None
-
     def register_sensor(self, tag, sensor_type, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
 
         self._sensors_objects[tag] = sensor
-
-        if sensor_type == 'sensor.opendrive_map': 
-            self._opendrive_tag = tag
 
     def update_sensor(self, tag, data, frame):
         if tag not in self._sensors_objects:
@@ -224,11 +215,6 @@ class SensorInterface(object):
         try:
             data_dict = {}
             while len(data_dict.keys()) < len(self._sensors_objects.keys()):
-                # Don't wait for the opendrive sensor
-                if self._opendrive_tag and self._opendrive_tag not in data_dict.keys() \
-                        and len(self._sensors_objects.keys()) == len(data_dict.keys()) + 1:
-                    break
-
                 sensor_data = self._data_buffers.get(True, self._queue_timeout)
                 if sensor_data[1] != frame:
                     continue

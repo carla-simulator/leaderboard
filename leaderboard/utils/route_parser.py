@@ -63,10 +63,10 @@ class RouteParser(object):
 
                     for route in tree.iter("route"):
                         route_id = route.attrib['id']
+                        if not found_start and route_id == start:
+                            found_start = True
                         if not found_start and route_id == end:
                             raise ValueError(f"Malformed route subset '{group}', found the end id before the starting one")
-                        elif not found_start and route_id == start:
-                            found_start = True
                         if not found_end and found_start:
                             if route_id in subset_ids:
                                 raise ValueError(f"Found a repeated route with id '{route_id}'")
@@ -96,7 +96,7 @@ class RouteParser(object):
                     if not found:
                         raise ValueError(f"Couldn't find the route with id '{group}' inside the given routes file")
 
-            subset_ids.sort()
+            subset_ids.sort(key=lambda k: int(k))
             return subset_ids
 
         route_configs = []

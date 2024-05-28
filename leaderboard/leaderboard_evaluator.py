@@ -15,10 +15,12 @@ from __future__ import print_function
 import traceback
 import argparse
 from argparse import RawTextHelpFormatter
-from distutils.version import LooseVersion
+try:
+    from packaging.version import Version
+except ImportError:
+    from distutils.version import LooseVersion as Version # Python 2 fallback
 import importlib
 import os
-import pkg_resources
 import sys
 import carla
 import signal
@@ -31,9 +33,23 @@ from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario
 from leaderboard.envs.sensor_interface import SensorConfigurationInvalid
 from leaderboard.autoagents.agent_wrapper import AgentError, validate_sensor_configuration
-from leaderboard.utils.statistics_manager import StatisticsManager
+from leaderboard.utils.statistics_manager import StatisticsManager, FAILURE_MESSAGES
 from leaderboard.utils.route_indexer import RouteIndexer
 
+
+try:
+    # requires Python 3.8+
+    from importlib.metadata import metadata
+    def get_carla_version():
+        return Version(metadata("carla")["Version"])
+except ModuleNotFoundError:
+    # backport checking for older Python versions; module is deprecated
+    import pkg_resources
+    def get_carla_version():
+        return Version(pkg_resources.get_distribution("carla").version)
+    
+    
+MIN_CARLA_VERSION = Version("0.9.14")
 
 sensors_to_icons = {
     'sensor.camera.rgb':        'carla_camera',
@@ -66,6 +82,7 @@ class LeaderboardEvaluator(object):
         self.sensors_initialized = False
         self.sensor_icons = []
         self.agent_instance = None
+        self.route_scenario = None
 
         self.statistics_manager = statistics_manager
 
@@ -77,10 +94,10 @@ class LeaderboardEvaluator(object):
         # Setup the simulation
         self.client, self.client_timeout, self.traffic_manager = self._setup_simulation(args)
 
-        dist = pkg_resources.get_distribution("carla")
-        if dist.version != 'leaderboard':
-            if LooseVersion(dist.version) < LooseVersion('0.9.10'):
-                raise ImportError("CARLA version 0.9.10.1 or newer required. CARLA version found: {}".format(dist))
+        carla_version = get_carla_version()
+        if str(carla_version) != 'leaderboard':
+            if carla_version < MIN_CARLA_VERSION:
+                raise ImportError("CARLA version {} or newer required. CARLA version found: {}".format(MIN_CARLA_VERSION, carla_version))
 
         # Load agent
         module_name = os.path.basename(args.agent).split('.')[0]
@@ -137,12 +154,19 @@ class LeaderboardEvaluator(object):
         if self._agent_watchdog:
             self._agent_watchdog.stop()
 
-        if self.agent_instance:
-            self.agent_instance.destroy()
-            self.agent_instance = None
+        try:
+            if self.agent_instance:
+                self.agent_instance.destroy()
+                self.agent_instance = None
+        except Exception as e:
+            print("\n\033[91mFailed to stop the agent:")
+            print(f"\n{traceback.format_exc()}\033[0m")
 
-        if self.statistics_manager:
-            self.statistics_manager.remove_scenario()
+        if self.route_scenario:
+            self.route_scenario.remove_all_actors()
+            self.route_scenario = None
+            if self.statistics_manager:
+                self.statistics_manager.remove_scenario()
 
         if self.manager:
             self._client_timed_out = not self.manager.get_running_status()
@@ -224,14 +248,14 @@ class LeaderboardEvaluator(object):
             raise Exception("The CARLA server uses the wrong map!"
                             " This scenario requires the use of map {}".format(town))
 
-    def _register_statistics(self, config, entry_status, crash_message=""):
+    def _register_statistics(self, route_index, entry_status, crash_message=""):
         """
         Computes and saves the route statistics
         """
         print("\033[1m> Registering the route statistics\033[0m")
         self.statistics_manager.save_entry_status(entry_status)
         self.statistics_manager.compute_route_statistics(
-            config, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
+            route_index, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
         )
 
     def _load_and_run_scenario(self, args, config):
@@ -255,19 +279,16 @@ class LeaderboardEvaluator(object):
         # Load the world and the scenario
         try:
             self._load_and_wait_for_world(args, config.town)
-            scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
-            config.route = scenario.route
-            self.statistics_manager.set_scenario(config, scenario)
+            self.route_scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
+            self.statistics_manager.set_scenario(self.route_scenario)
 
         except Exception:
             # The scenario is wrong -> set the ejecution to crashed and stop
             print("\n\033[91mThe scenario could not be loaded:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            crash_message = "Simulation crashed"
-            entry_status = "Crashed"
-
-            self._register_statistics(config, entry_status, crash_message)
+            entry_status, crash_message = FAILURE_MESSAGES["Simulation"]
+            self._register_statistics(config.index, entry_status, crash_message)
             self._cleanup()
             return True
 
@@ -287,7 +308,7 @@ class LeaderboardEvaluator(object):
                 self._ros1_server.start()
 
             self.agent_instance = agent_class_obj(args.host, args.port, args.debug)
-            self.agent_instance.set_global_plan(scenario.gps_route, scenario.route)
+            self.agent_instance.set_global_plan(self.route_scenario.gps_route, self.route_scenario.route)
             self.agent_instance.setup(args.agent_config)
 
             # Check and store the sensors
@@ -306,15 +327,13 @@ class LeaderboardEvaluator(object):
             self._agent_watchdog.stop()
             self._agent_watchdog = None
 
-        except SensorConfigurationInvalid:
+        except SensorConfigurationInvalid as e:
             # The sensors are invalid -> set the ejecution to rejected and stop
             print("\n\033[91mThe sensor's configuration used is invalid:")
-            print(f"\n{traceback.format_exc()}\033[0m")
+            print(f"{e}\033[0m\n")
 
-            crash_message = "Agent's sensors were invalid"
-            entry_status = "Rejected"
-
-            self._register_statistics(config, entry_status, crash_message)
+            entry_status, crash_message = FAILURE_MESSAGES["Sensors"]
+            self._register_statistics(config.index, entry_status, crash_message)
             self._cleanup()
             return True
 
@@ -323,9 +342,8 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mCould not set up the required agent:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            crash_message = "Agent couldn't be set up"
-
-            self._register_statistics(config, entry_status, crash_message)
+            entry_status, crash_message = FAILURE_MESSAGES["Agent_init"]
+            self._register_statistics(config.index, entry_status, crash_message)
             self._cleanup()
             return False
 
@@ -336,7 +354,7 @@ class LeaderboardEvaluator(object):
             # Load scenario and run it
             if args.record:
                 self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(config, scenario, self.agent_instance, config.repetition_index)
+            self.manager.load_scenario(self.route_scenario, self.agent_instance, config.index, config.repetition_index)
             self.manager.run_scenario()
 
         except AgentError:
@@ -344,25 +362,22 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mStopping the route, the agent has crashed:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            crash_message = "Agent crashed"
+            entry_status, crash_message = FAILURE_MESSAGES["Agent_runtime"]
 
         except Exception:
             print("\n\033[91mError during the simulation:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            crash_message = "Simulation crashed"
-            entry_status = "Crashed"
+            entry_status, crash_message = FAILURE_MESSAGES["Simulation"]
 
         # Stop the scenario
         try:
             print("\033[1m> Stopping the route\033[0m")
             self.manager.stop_scenario()
-            self._register_statistics(config, entry_status, crash_message)
+            self._register_statistics(config.index, entry_status, crash_message)
 
             if args.record:
                 self.client.stop_recorder()
-
-            scenario.remove_all_actors()
 
             self._cleanup()
 
@@ -370,7 +385,7 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mFailed to stop the scenario, the statistics might be empty:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            crash_message = "Simulation crashed"
+            _, crash_message = FAILURE_MESSAGES["Simulation"]
 
         # If the simulation crashed, stop the leaderboard, for the rest, move to the next route
         return crash_message == "Simulation crashed"
@@ -411,11 +426,13 @@ class LeaderboardEvaluator(object):
         # Go back to asynchronous mode
         self._reset_world_settings()
 
-        # Save global statistics
-        print("\033[1m> Registering the global statistics\033[0m")
-        self.statistics_manager.compute_global_statistics()
-        self.statistics_manager.validate_and_write_statistics(self.sensors_initialized, crashed)
+        if not crashed:
+            # Save global statistics
+            print("\033[1m> Registering the global statistics\033[0m")
+            self.statistics_manager.compute_global_statistics()
+            self.statistics_manager.validate_and_write_statistics(self.sensors_initialized, crashed)
 
+        return crashed
 
 def main():
     description = "CARLA AD Leaderboard Evaluation: evaluate your Agent in CARLA scenarios\n"
@@ -464,10 +481,14 @@ def main():
 
     statistics_manager = StatisticsManager(arguments.checkpoint, arguments.debug_checkpoint)
     leaderboard_evaluator = LeaderboardEvaluator(arguments, statistics_manager)
-    leaderboard_evaluator.run(arguments)
+    crashed = leaderboard_evaluator.run(arguments)
 
     del leaderboard_evaluator
 
+    if crashed:
+        sys.exit(-1)
+    else:
+        sys.exit(0)
 
 if __name__ == '__main__':
     main()

@@ -37,14 +37,14 @@ PENALTY_PERC_DICT = {
 }
 
 PENALTY_NAME_DICT = {
-    TrafficEventType.COLLISION_STATIC: 'collisions_pedestrian',
-    TrafficEventType.COLLISION_PEDESTRIAN: 'collisions_vehicle',
-    TrafficEventType.COLLISION_VEHICLE: 'collisions_layout',
+    TrafficEventType.COLLISION_STATIC: 'collisions_layout',
+    TrafficEventType.COLLISION_PEDESTRIAN: 'collisions_pedestrian',
+    TrafficEventType.COLLISION_VEHICLE: 'collisions_vehicle',
     TrafficEventType.TRAFFIC_LIGHT_INFRACTION: 'red_light',
     TrafficEventType.STOP_INFRACTION: 'stop_infraction',
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: 'outside_route_lanes',
     TrafficEventType.MIN_SPEED_INFRACTION: 'min_speed_infractions',
-    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicles_infractions',
+    TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 'yield_emergency_vehicle_infractions',
     TrafficEventType.SCENARIO_TIMEOUT: 'scenario_timeouts',
     TrafficEventType.ROUTE_DEVIATION: 'route_dev',
     TrafficEventType.VEHICLE_BLOCKED: 'vehicle_blocked',
@@ -53,6 +53,14 @@ PENALTY_NAME_DICT = {
 # Limit the entry status to some values. Eligible should always be gotten from this table
 ENTRY_STATUS_VALUES = ['Started', 'Finished', 'Rejected', 'Crashed', 'Invalid']
 ELIGIBLE_VALUES = {'Started': False, 'Finished': True, 'Rejected': False, 'Crashed': False, 'Invalid': False}
+
+# Dictionary mapping a route failure with the 'entry status' and 'status'
+FAILURE_MESSAGES = {
+    "Simulation" : ["Crashed", "Simulation crashed"],
+    "Sensors": ["Rejected", "Agent's sensors were invalid"],
+    "Agent_init": ["Started", "Agent couldn't be set up"],
+    "Agent_runtime": ["Started", "Agent crashed"]
+}
 
 ROUND_DIGITS = 3
 ROUND_DIGITS_SCORE = 6
@@ -104,6 +112,9 @@ class GlobalRecord():
         self.scores_std_dev = self.scores_mean.copy()
 
         self.meta = {
+            "total_length": 0,
+            "duration_game": 0,
+            "duration_system": 0,
             'exceptions': []
         }
 
@@ -160,11 +171,11 @@ def to_route_record(record_dict):
     return record
 
 
-def compute_route_length(config):
+def compute_route_length(route):
     route_length = 0.0
     previous_location = None
 
-    for transform, _ in config.route:
+    for transform, _ in route:
         location = transform.location
         if previous_location:
             dist_vec = location - previous_location
@@ -302,17 +313,17 @@ class StatisticsManager(object):
         else:
             self._results.checkpoint.records.append(route_record)
 
-    def set_scenario(self, config, scenario):
+    def set_scenario(self, scenario):
         """Sets the scenario from which the statistics will be taken"""
         self._scenario = scenario
-        self._route_length = round(compute_route_length(config), ROUND_DIGITS)
+        self._route_length = round(compute_route_length(scenario.route), ROUND_DIGITS)
 
     def remove_scenario(self):
         """Removes the scenario"""
         self._scenario = None
         self._route_length = 0
 
-    def compute_route_statistics(self, config, duration_time_system=-1, duration_time_game=-1, failure_message=""):
+    def compute_route_statistics(self, route_index, duration_time_system=-1, duration_time_game=-1, failure_message=""):
         """
         Compute the current statistics by evaluating all relevant scenario criteria.
         Failure message will not be empty if an external source has stopped the simulations (i.e simulation crash).
@@ -333,9 +344,8 @@ class StatisticsManager(object):
                 raise ValueError("Found a criteria with an unknown penalty type")
             return score_penalty
 
-        index = config.index
-        route_record = self._results.checkpoint.records[index]
-        route_record.index = index
+        route_record = self._results.checkpoint.records[route_index]
+        route_record.index = route_index
 
         target_reached = False
         score_penalty = 1.0
@@ -396,10 +406,10 @@ class StatisticsManager(object):
 
         # Add the new data, or overwrite a previous result (happens when resuming the simulation)
         record_len = len(self._results.checkpoint.records)
-        if index == record_len:
+        if route_index == record_len:
             self._results.checkpoint.records.append(route_record)
-        elif index < record_len:
-            self._results.checkpoint.records[index] = route_record
+        elif route_index < record_len:
+            self._results.checkpoint.records[route_index] = route_record
         else:
             raise ValueError("Not enough entries in the route record")
 
@@ -409,7 +419,7 @@ class StatisticsManager(object):
             # Special case for the % based criteria. Extract the meters from the message. Very ugly, but it works
             if key == PENALTY_NAME_DICT[TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION]:
                 if not route_record.infractions[key]:
-                    return 0
+                    return 0.0
                 return float(route_record.infractions[key][0].split(" ")[8])/1000
 
             return len(route_record.infractions[key])
@@ -425,6 +435,10 @@ class StatisticsManager(object):
             global_record.scores_mean['score_route'] += route_record.scores['score_route'] / self._total_routes
             global_record.scores_mean['score_penalty'] += route_record.scores['score_penalty'] / self._total_routes
             global_record.scores_mean['score_composed'] += route_record.scores['score_composed'] / self._total_routes
+
+            global_record.meta['total_length'] += route_record.meta['route_length']
+            global_record.meta['duration_game'] += route_record.meta['duration_game']
+            global_record.meta['duration_system'] += route_record.meta['duration_system']
 
             # Downgrade the global result if need be ('Perfect' -> 'Completed' -> 'Failed'), and record the failed routes
             route_result = 'Failed' if 'Failed' in route_record.status else route_record.status
@@ -443,7 +457,7 @@ class StatisticsManager(object):
         # Calculate the score's standard deviation
         if self._total_routes == 1:
             for key in global_record.scores_std_dev:
-                global_record.scores_std_dev[key] = 'NaN'
+                global_record.scores_std_dev[key] = 0
         else:
             for route_record in route_records:
                 for key in global_record.scores_std_dev:
@@ -475,7 +489,6 @@ class StatisticsManager(object):
         self._results.values = [
             str(global_record.scores_mean['score_composed']),
             str(global_record.scores_mean['score_route']),
-            str(global_record.scores_mean['score_penalty']),
             str(global_record.scores_mean['score_penalty']),
             str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_PEDESTRIAN]]),
             str(global_record.infractions[PENALTY_NAME_DICT[TrafficEventType.COLLISION_VEHICLE]]),
@@ -561,7 +574,7 @@ class StatisticsManager(object):
 
             self.save_entry_status('Invalid')
 
-        save_dict(self._endpoint, self._results.to_json())
+        self.write_statistics()
 
     def write_statistics(self):
         """

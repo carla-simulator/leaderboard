@@ -17,6 +17,7 @@ import time
 
 import py_trees
 import carla
+import threading
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
@@ -48,7 +49,7 @@ class ScenarioManager(object):
         """
         Setups up the parameters, which will be filled at load_scenario()
         """
-        self.config = None
+        self.route_index = None
         self.scenario = None
         self.scenario_tree = None
         self.ego_vehicles = None
@@ -69,6 +70,7 @@ class ScenarioManager(object):
 
         self._watchdog = None
         self._agent_watchdog = None
+        self._scenario_thread = None
 
         self._statistics_manager = statistics_manager
 
@@ -101,14 +103,14 @@ class ScenarioManager(object):
         self._watchdog = None
         self._agent_watchdog = None
 
-    def load_scenario(self, config, scenario, agent, rep_number):
+    def load_scenario(self, scenario, agent, route_index, rep_number):
         """
         Load a new scenario
         """
 
         GameTime.restart()
         self._agent_wrapper = AgentWrapperFactory.get_wrapper(agent)
-        self.config = config
+        self.route_index = route_index
         self.scenario = scenario
         self.scenario_tree = scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
@@ -121,6 +123,16 @@ class ScenarioManager(object):
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
         self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
+
+    def build_scenarios_loop(self, debug):
+        """
+        Keep periodically trying to start the scenarios that are close to the ego vehicle
+        Additionally, do the same for the spawned vehicles
+        """
+        while self._running:
+            self.scenario.build_scenarios(self.ego_vehicles[0], debug=debug)
+            self.scenario.spawn_parked_vehicles(self.ego_vehicles[0])
+            time.sleep(1)
 
     def run_scenario(self):
         """
@@ -138,6 +150,10 @@ class ScenarioManager(object):
         self._agent_watchdog.start()
 
         self._running = True
+
+        # Thread for build_scenarios
+        self._scenario_thread = threading.Thread(target=self.build_scenarios_loop, args=(self._debug_mode > 0, ))
+        self._scenario_thread.start()
 
         while self._running:
             self._tick_scenario()
@@ -172,11 +188,6 @@ class ScenarioManager(object):
 
             except Exception as e:
                 raise AgentError(e)
-            
-            # # build scenarios if necessary
-            # self.scenario._build_scenarios(CarlaDataProvider.get_world(), self.ego_vehicles[0], self.scenario.sampled_scenario_definitions, timeout=10000, debug=self._debug_mode > 0)
-            # # mount new scenarios behavior
-            # self.scenario._process_runtime_init_scenarios()
 
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
@@ -190,13 +201,13 @@ class ScenarioManager(object):
 
                 # Update live statistics
                 self._statistics_manager.compute_route_statistics(
-                    self.config,
+                    self.route_index,
                     self.scenario_duration_system,
                     self.scenario_duration_game,
                     failure_message=""
                 )
                 self._statistics_manager.write_live_results(
-                    self.config.index,
+                    self.route_index,
                     self.ego_vehicles[0].get_velocity().length(),
                     ego_action,
                     self.ego_vehicles[0].get_location()
@@ -221,7 +232,7 @@ class ScenarioManager(object):
         """
         if self._watchdog:
             return self._watchdog.get_status()
-        return False
+        return True
 
     def stop_scenario(self):
         """
@@ -245,6 +256,11 @@ class ScenarioManager(object):
 
             self.analyze_scenario()
 
+        # Make sure the scenario thread finishes to avoid blocks
+        self._running = False
+        self._scenario_thread.join()
+        self._scenario_thread = None
+
     def compute_duration_time(self):
         """
         Computes system and game duration times
@@ -259,13 +275,4 @@ class ScenarioManager(object):
         """
         Analyzes and prints the results of the route
         """
-        global_result = '\033[92m'+'SUCCESS'+'\033[0m'
-
-        for criterion in self.scenario.get_criteria():
-            if criterion.test_status != "SUCCESS":
-                global_result = '\033[91m'+'FAILURE'+'\033[0m'
-
-        if self.scenario.timeout_node.timeout:
-            global_result = '\033[91m'+'FAILURE'+'\033[0m'
-
-        ResultOutputProvider(self, global_result)
+        ResultOutputProvider(self)

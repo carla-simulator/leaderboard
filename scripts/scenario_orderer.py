@@ -267,7 +267,7 @@ def order_saved_scenarios(filename, route_id, tmap, grp):
     for route in root.iter("route"):
         if route.attrib['id'] != route_id:
             continue
-        
+
         # Scenarios data
         for scenario in route.find('scenarios').iter('scenario'):
             scenarios.append(scenario)
