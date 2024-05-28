@@ -4,6 +4,7 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 import carla
+
 try:
     import pygame
     from pygame.locals import K_DOWN
@@ -22,9 +23,10 @@ try:
     from pygame.locals import K_t
     from pygame.locals import K_g
 except ImportError:
-    raise RuntimeError('cannot import pygame, make sure pygame package is installed')
+    raise RuntimeError("cannot import pygame, make sure pygame package is installed")
 
 from agents.navigation.basic_agent import BasicAgent
+from agents.navigation.local_planner import RoadOption
 
 from leaderboard.autoagents.autonomous_agent import Track
 from leaderboard.autoagents.human_agent import HumanAgent as HumanAgent_
@@ -37,9 +39,46 @@ def get_entry_point():
     return "HumanAgent"
 
 
+class LogHumanInterface(HumanInterface):
+    def run_interface(self, input_data):
+        """
+        Run the GUI
+        """
+
+        # Process sensor data
+        image_center = input_data["Center"][1][:, :, -2::-1]
+        self._surface = pygame.surfarray.make_surface(image_center.swapaxes(0, 1))
+
+        # Add the left mirror
+        if self._left_mirror:
+            image_left = input_data["Left"][1][:, :, -2::-1]
+            left_surface = pygame.surfarray.make_surface(image_left.swapaxes(0, 1))
+            self._surface.blit(left_surface, (0, 0))
+
+        # Add the right mirror
+        if self._right_mirror:
+            image_right = input_data["Right"][1][:, :, -2::-1]
+            right_surface = pygame.surfarray.make_surface(image_right.swapaxes(0, 1))
+            self._surface.blit(right_surface, ((1 - self._scale) * self._width, 0))
+
+        # Show scenario name
+        scenario_name = CarlaDataProvider.get_latest_scenario()
+        text = "{}".format(scenario_name)
+        font = pygame.font.Font(pygame.font.get_default_font(), 16)
+        text_texture = font.render(text, True, (255, 255, 255))
+        self._surface.blit(text_texture, (self._width // 2 - 80, self._height - 20))
+
+        # Display image
+        if self._surface is not None:
+            self._display.blit(self._surface, (0, 0))
+        pygame.display.flip()
+
+
 class HumanAgent(HumanAgent_):
 
-    TTC_THRESHOLD = 5
+    TTC_THRESHOLD = 5  # seconds
+    WAYPOINT_MIN_GAP = 10  # meters
+    ROUTE_LC_WARNING_DISTANCE = 100  # meters
 
     def setup(self, path_to_conf_file):
 
@@ -48,8 +87,8 @@ class HumanAgent(HumanAgent_):
         # Get the ego instance
         self._player = None
 
-        for vehicle in CarlaDataProvider.get_world().get_actors().filter('vehicle.*'):
-            if vehicle.attributes['role_name'] == 'hero':
+        for vehicle in CarlaDataProvider.get_world().get_actors().filter("vehicle.*"):
+            if vehicle.attributes["role_name"] == "hero":
                 self._player = vehicle
                 break
 
@@ -62,61 +101,127 @@ class HumanAgent(HumanAgent_):
         self.camera_width = 1280
         self.camera_height = 720
         self._side_scale = 0.3
-        self._left_mirror = False
-        self._right_mirror = False
+        self._left_mirror = True
+        self._right_mirror = True
 
-        self._hic = HumanInterface(
+        self._hic = LogHumanInterface(
             self.camera_width,
             self.camera_height,
             self._side_scale,
             self._left_mirror,
-            self._right_mirror
+            self._right_mirror,
         )
-        self._controller = KeyboardControl(self._player, self._global_plan_world_coord, path_to_conf_file)
+        self._controller = KeyboardControl(
+            self._player, self._global_plan_world_coord, path_to_conf_file
+        )
         self._prev_timestamp = 0
 
         self._clock = pygame.time.Clock()
 
-        # Attach obstacle sensor, calculate ttc
+        # Attach obstacle sensor, calculate ttc (time to collision)
         world = CarlaDataProvider.get_world()
-        blueprint = world.get_blueprint_library().find('sensor.other.obstacle')
-        blueprint.set_attribute('distance', '30')
-        self._obstacle_sensor = world.spawn_actor(blueprint, carla.Transform(), attach_to=self._player)
+        blueprint = world.get_blueprint_library().find("sensor.other.obstacle")
+        blueprint.set_attribute("distance", "30")
+        self._obstacle_sensor = world.spawn_actor(
+            blueprint, carla.Transform(), attach_to=self._player
+        )
         self._obstacle_sensor.listen(lambda event: self._update_obstacle(event))
-        self._ttc = self.TTC_THRESHOLD*2 # Time to collision, default to safe value
+        self._ttc = self.TTC_THRESHOLD * 2  # Time to collision, default to safe value
 
-    
+        # Get planned route
+        wps_queue = self._controller._agent._local_planner._waypoints_queue
+        self._lc_wps = [
+            x
+            for x in wps_queue
+            if x[1] in [RoadOption.CHANGELANELEFT, RoadOption.CHANGELANERIGHT]
+        ]
+
+        # Deduplicate waypoints
+        i = 0
+        while i < len(self._lc_wps) - 1:
+            if (
+                self._lc_wps[i][0].transform.location.distance(
+                    self._lc_wps[i + 1][0].transform.location
+                )
+                < self.WAYPOINT_MIN_GAP
+            ):
+                del self._lc_wps[i + 1]
+            else:
+                i += 1
+
     def _update_obstacle(self, event):
 
-        if "vehicle" not in event.other_actor.type_id and "walker" not in event.other_actor.type_id:
+        if (
+            "vehicle" not in event.other_actor.type_id
+            and "walker" not in event.other_actor.type_id
+        ):
             return
 
         v_obstacle = CarlaDataProvider.get_velocity(event.other_actor)
         v_ego = CarlaDataProvider.get_velocity(self._player)
-        ttc = event.distance / max((v_ego - v_obstacle), 0.01) # Avoid division by zero
+        ttc = event.distance / max((v_ego - v_obstacle), 0.01)  # Avoid division by zero
         self._ttc = ttc
 
-    
     def run_step(self, input_data, timestamp):
 
         # If ttc is small enough, display warning
         if self._ttc < self.TTC_THRESHOLD:
-        
+
             text = "Too Close!"
-            pos = (self.camera_width // 2, self.camera_height // 1.5)
+            pos = (self._hic._width // 2, self._hic._height // 1.5)
             font = pygame.font.Font(pygame.font.get_default_font(), 16)
-            surface = pygame.Surface((120, 50)) # width and height
+            surface = pygame.Surface((120, 50))
             surface.fill((0, 0, 0, 0))
             text_texture = font.render(text, True, (255, 255, 255))
             surface.blit(text_texture, (22, 18))
             surface.set_alpha(220)
             self._hic._display.blit(surface, pos)
-            pygame.display.flip()
+            self._ttc = self.TTC_THRESHOLD * 2
 
-            self._ttc = self.TTC_THRESHOLD*2
+        # If a passiv lane change is near, display warning
+        loc_ego = CarlaDataProvider.get_location(self._player)
+        curr_lc_wps = []
+        i = 0
+        while i < len(self._lc_wps):
+            dist = loc_ego.distance(self._lc_wps[i][0].transform.location)
+            if (
+                loc_ego.distance(self._lc_wps[i][0].transform.location)
+                < self.WAYPOINT_MIN_GAP
+            ):
+                del self._lc_wps[i]  # Passed, remove it
+            elif dist < self.ROUTE_LC_WARNING_DISTANCE:
+                curr_lc_wps.append(self._lc_wps[i])
+                i += 1
+            else:
+                i += 1
+
+        left_lc_dists = [
+            loc_ego.distance(wp[0].transform.location)
+            for wp in curr_lc_wps
+            if wp[1] == RoadOption.CHANGELANELEFT
+        ]
+        right_lc_dists = [
+            loc_ego.distance(wp[0].transform.location)
+            for wp in curr_lc_wps
+            if wp[1] == RoadOption.CHANGELANERIGHT
+        ]
+        text = ""
+        left_lc_string = ", ".join([f"{int(x)}m" for x in left_lc_dists])
+        right_lc_string = ", ".join([f"{int(x)}m" for x in right_lc_dists])
+        if len(left_lc_dists) > 0:
+            text += f"Left: {left_lc_string}"
+        if len(right_lc_dists) > 0:
+            text += f" Right: {right_lc_string}"
+        font = pygame.font.Font(pygame.font.get_default_font(), 20)
+        text_texture = font.render(text, True, (255, 255, 255))
+        self._hic._display.blit(
+            text_texture, (self._hic._width // 2 - 82, self._hic._height - 55)
+        )
+
+        pygame.display.flip()
 
         return super().run_step(input_data, timestamp)
-        
+
 
 class KeyboardControl(KeyboardControl_):
 
@@ -130,21 +235,13 @@ class KeyboardControl(KeyboardControl_):
         self._right_lane_tick = 0
 
         # Add an agent that follows the route to the ego
-        self._agent = BasicAgent(player, 30, {'distance_ratio': 0.3, 'base_min_distance': 2})
+        self._agent = BasicAgent(
+            player, 30, {"distance_ratio": 0.3, "base_min_distance": 2}
+        )
         self._agent.follow_speed_limits()
         self._agent.ignore_traffic_lights()
         self._agent.ignore_stop_signs()
         self._agent.ignore_vehicles()
-
-        # route_keypoints = CarlaDataProvider.get_ego_route()
-        # grp = CarlaDataProvider.get_global_route_planner()
-        # route = []
-        # for i in range(len(route_keypoints) - 1):
-        #     waypoint = route_keypoints[i][0].location
-        #     waypoint_next = route_keypoints[i + 1][0]
-        #     interpolated_trace = grp.trace_route(waypoint, waypoint_next)
-        #     for wp, connection in interpolated_trace:
-        #         route.append((wp, connection))
 
         route = CarlaDataProvider.get_ego_route()
         tmap = CarlaDataProvider.get_map()
@@ -164,20 +261,15 @@ class KeyboardControl(KeyboardControl_):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return 
+                return
             elif event.type == pygame.KEYUP:
                 if event.key == K_q:
                     self._control.gear = 1 if self._control.reverse else -1
                     self._control.reverse = self._control.gear < 0
 
-        max_speed = self._player.get_speed_limit()
-        current_speed = self._player.get_velocity().length()
         if keys[K_DOWN] or keys[K_s]:  # Braking takes priority
             self._control.throttle = 0.0
             self._control.brake = 1.0
-        elif 3.6 * current_speed > max_speed:  # Ensure the max speed is never surpassed
-            self._control.throttle = agent_control.throttle
-            self._control.brake = agent_control.brake
         elif keys[K_UP] or keys[K_w]:  # Accelerate
             self._control.throttle = 1.0
             self._control.brake = 0.0
@@ -198,21 +290,21 @@ class KeyboardControl(KeyboardControl_):
         # LaneInvadingTurn
         if keys[K_f] and self._offset_tick == 0:
             self._agent_active = True
-            self._agent.set_offset(0.5)
+            self._agent.set_offset(0.7)
             self._offset_tick = 20
         self._offset_tick = max(self._offset_tick - 1, 0)
 
         # Left Lane change
         if keys[K_r] and self._offset_tick == 0:
             self._agent_active = True
-            self._agent.set_offset(-3.0)
+            self._agent.set_offset(-3.2)
             self._offset_tick = 20
         self._offset_tick = max(self._offset_tick - 1, 0)
 
         # Right Lane change
         if keys[K_t] and self._offset_tick == 0:
             self._agent_active = True
-            self._agent.set_offset(3.0)
+            self._agent.set_offset(3.2)
             self._offset_tick = 20
         self._offset_tick = max(self._offset_tick - 1, 0)
 
@@ -245,43 +337,43 @@ class KeyboardControl(KeyboardControl_):
         transform = self._player.get_transform()
 
         new_record = {
-            'control': {
-                'throttle': round(self._control.throttle, 2),
-                'steer': round(self._control.steer, 2),
-                'brake': round(self._control.brake, 2),
-                'hand_brake': self._control.hand_brake,
-                'reverse': self._control.reverse,
-                'manual_gear_shift': self._control.manual_gear_shift,
-                'gear': self._control.gear
+            "control": {
+                "throttle": round(self._control.throttle, 2),
+                "steer": round(self._control.steer, 2),
+                "brake": round(self._control.brake, 2),
+                "hand_brake": self._control.hand_brake,
+                "reverse": self._control.reverse,
+                "manual_gear_shift": self._control.manual_gear_shift,
+                "gear": self._control.gear,
             },
-            'state': {
-                'velocity': {
-                    'x': round(velocity.x, 1),
-                    'y': round(velocity.y, 1),
-                    'z': round(velocity.z, 1),
-                    'value': round(velocity.length(), 1)
+            "state": {
+                "velocity": {
+                    "x": round(velocity.x, 1),
+                    "y": round(velocity.y, 1),
+                    "z": round(velocity.z, 1),
+                    "value": round(velocity.length(), 1),
                 },
-                'angular_velocity': {
-                    'x': round(angular_velocity.x, 1),
-                    'y': round(angular_velocity.y, 1),
-                    'z': round(angular_velocity.z, 1),
-                    'value': round(angular_velocity.length(), 1)
+                "angular_velocity": {
+                    "x": round(angular_velocity.x, 1),
+                    "y": round(angular_velocity.y, 1),
+                    "z": round(angular_velocity.z, 1),
+                    "value": round(angular_velocity.length(), 1),
                 },
-                'acceleration': {
-                    'x': round(acceleration.x, 1),
-                    'y': round(acceleration.y, 1),
-                    'z': round(acceleration.z, 1),
-                    'value': round(acceleration.length(), 1)
+                "acceleration": {
+                    "x": round(acceleration.x, 1),
+                    "y": round(acceleration.y, 1),
+                    "z": round(acceleration.z, 1),
+                    "value": round(acceleration.length(), 1),
                 },
-                'transform': {
-                    'x': round(transform.location.x, 1),
-                    'y': round(transform.location.y, 1),
-                    'z': round(transform.location.z, 1),
-                    'roll': round(transform.rotation.roll, 1),
-                    'pitch': round(transform.rotation.pitch, 1),
-                    'yaw': round(transform.rotation.yaw, 1)
-                }
-            }
+                "transform": {
+                    "x": round(transform.location.x, 1),
+                    "y": round(transform.location.y, 1),
+                    "z": round(transform.location.z, 1),
+                    "roll": round(transform.rotation.roll, 1),
+                    "pitch": round(transform.rotation.pitch, 1),
+                    "yaw": round(transform.rotation.yaw, 1),
+                },
+            },
         }
 
-        self._log_data['records'].append(new_record)
+        self._log_data["records"].append(new_record)
