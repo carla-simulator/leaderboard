@@ -64,9 +64,21 @@ class LogHumanInterface(HumanInterface):
         # Show scenario name
         scenario_name = CarlaDataProvider.get_latest_scenario()
         text = "{}".format(scenario_name)
-        font = pygame.font.Font(pygame.font.get_default_font(), 16)
+        font = pygame.font.Font(pygame.font.get_default_font(), 20)
         text_texture = font.render(text, True, (255, 255, 255))
         self._surface.blit(text_texture, (self._width // 2 - 80, self._height - 20))
+
+        # Show ttc warning
+        text = input_data["TooCloseText"]
+        font = pygame.font.Font(pygame.font.get_default_font(), 20)
+        text_texture = font.render(text, True, (255, 255, 255))
+        self._surface.blit(text_texture, (self._width // 2 - 50, self._height - 85))
+
+        # Show passive lane change warning
+        text = input_data["LCWarningText"]
+        font = pygame.font.Font(pygame.font.get_default_font(), 20)
+        text_texture = font.render(text, True, (255, 255, 255))
+        self._surface.blit(text_texture, (self._width // 2 - 82, self._height - 55))
 
         # Display image
         if self._surface is not None:
@@ -164,19 +176,11 @@ class HumanAgent(HumanAgent_):
 
     def run_step(self, input_data, timestamp):
 
-        # If ttc is small enough, display warning
         if self._ttc < self.TTC_THRESHOLD:
-
-            text = "Too Close!"
-            pos = (self._hic._width // 2, self._hic._height // 1.5)
-            font = pygame.font.Font(pygame.font.get_default_font(), 16)
-            surface = pygame.Surface((120, 50))
-            surface.fill((0, 0, 0, 0))
-            text_texture = font.render(text, True, (255, 255, 255))
-            surface.blit(text_texture, (22, 18))
-            surface.set_alpha(220)
-            self._hic._display.blit(surface, pos)
             self._ttc = self.TTC_THRESHOLD * 2
+            input_data["TooCloseText"] = "Too Close!"
+        else:
+            input_data["TooCloseText"] = ""
 
         # If a passiv lane change is near, display warning
         loc_ego = CarlaDataProvider.get_location(self._player)
@@ -212,13 +216,7 @@ class HumanAgent(HumanAgent_):
             text += f"Left: {left_lc_string}"
         if len(right_lc_dists) > 0:
             text += f" Right: {right_lc_string}"
-        font = pygame.font.Font(pygame.font.get_default_font(), 20)
-        text_texture = font.render(text, True, (255, 255, 255))
-        self._hic._display.blit(
-            text_texture, (self._hic._width // 2 - 82, self._hic._height - 55)
-        )
-
-        pygame.display.flip()
+        input_data["LCWarningText"] = text
 
         return super().run_step(input_data, timestamp)
 
@@ -377,3 +375,4 @@ class KeyboardControl(KeyboardControl_):
         }
 
         self._log_data["records"].append(new_record)
+
