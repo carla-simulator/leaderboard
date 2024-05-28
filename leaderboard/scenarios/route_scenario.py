@@ -354,7 +354,9 @@ class RouteScenario(BasicScenario):
             if scenario.behavior_tree is not None:
                 self.behavior_node.add_child(scenario.behavior_tree)
                 self.scenario_triggerer.add_blackboard(
-                    [scenario.config.route_var_name, scenario.config.trigger_points[0].location]
+                    [scenario.config.route_var_name, 
+                     scenario.config.trigger_points[0].location,
+                     scenario.name]
                 )
 
             # Add the criteria criteria
@@ -389,6 +391,7 @@ class RouteScenario(BasicScenario):
         behavior = py_trees.composites.Parallel(name="Route Behavior",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
 
+        self.behavior_node = behavior
         scenario_behaviors = []
         blackboard_list = []
 
@@ -396,6 +399,9 @@ class RouteScenario(BasicScenario):
         scenario_triggerer = ScenarioTriggerer(
             self.ego_vehicles[0], self.route, blackboard_list, scenario_trigger_distance)
         behavior.add_child(scenario_triggerer)  # Tick the ScenarioTriggerer before the scenarios
+
+        # register var
+        self.scenario_triggerer = scenario_triggerer
 
         # Add the Background Activity
         behavior.add_child(BackgroundBehavior(self.ego_vehicles[0], self.route, name="BackgroundActivity"))
@@ -410,6 +416,8 @@ class RouteScenario(BasicScenario):
         """
         criteria = py_trees.composites.Parallel(name="Criteria",
                                                 policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+
+        self.criteria_node = criteria
 
         # End condition
         criteria.add_child(RouteCompletionTest(self.ego_vehicles[0], route=self.route))
