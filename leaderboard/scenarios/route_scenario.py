@@ -119,6 +119,7 @@ class RouteScenario(BasicScenario):
 
         # Prepare route's trajectory (interpolate and add the GPS route)
         self.gps_route, self.route = interpolate_trajectory(config.keypoints)
+        CarlaDataProvider.set_ego_route(self.route)
         return self.route
 
     def _filter_scenarios(self, scenario_configs):
@@ -353,7 +354,9 @@ class RouteScenario(BasicScenario):
             if scenario.behavior_tree is not None:
                 self.behavior_node.add_child(scenario.behavior_tree)
                 self.scenario_triggerer.add_blackboard(
-                    [scenario.config.route_var_name, scenario.config.trigger_points[0].location]
+                    [scenario.config.route_var_name, 
+                     scenario.config.trigger_points[0].location,
+                     scenario.name]
                 )
 
             # Add the criteria criteria
