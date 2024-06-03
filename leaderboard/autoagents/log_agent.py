@@ -23,7 +23,8 @@ try:
     from pygame.locals import K_t
     from pygame.locals import K_g
 except ImportError:
-    raise RuntimeError("cannot import pygame, make sure pygame package is installed")
+    raise RuntimeError(
+        "cannot import pygame, make sure pygame package is installed")
 
 from agents.navigation.basic_agent import BasicAgent
 from agents.navigation.local_planner import RoadOption
@@ -47,38 +48,45 @@ class LogHumanInterface(HumanInterface):
 
         # Process sensor data
         image_center = input_data["Center"][1][:, :, -2::-1]
-        self._surface = pygame.surfarray.make_surface(image_center.swapaxes(0, 1))
+        self._surface = pygame.surfarray.make_surface(
+            image_center.swapaxes(0, 1))
 
         # Add the left mirror
         if self._left_mirror:
             image_left = input_data["Left"][1][:, :, -2::-1]
-            left_surface = pygame.surfarray.make_surface(image_left.swapaxes(0, 1))
+            left_surface = pygame.surfarray.make_surface(
+                image_left.swapaxes(0, 1))
             self._surface.blit(left_surface, (0, 0))
 
         # Add the right mirror
         if self._right_mirror:
             image_right = input_data["Right"][1][:, :, -2::-1]
-            right_surface = pygame.surfarray.make_surface(image_right.swapaxes(0, 1))
-            self._surface.blit(right_surface, ((1 - self._scale) * self._width, 0))
+            right_surface = pygame.surfarray.make_surface(
+                image_right.swapaxes(0, 1))
+            self._surface.blit(
+                right_surface, ((1 - self._scale) * self._width, 0))
 
         # Show scenario name
         scenario_name = CarlaDataProvider.get_latest_scenario()
         text = "{}".format(scenario_name)
         font = pygame.font.Font(pygame.font.get_default_font(), 20)
         text_texture = font.render(text, True, (255, 255, 255))
-        self._surface.blit(text_texture, (self._width // 2 - 80, self._height - 20))
+        self._surface.blit(
+            text_texture, (self._width // 2 - 80, self._height - 20))
 
         # Show ttc warning
         text = input_data["TooCloseText"]
         font = pygame.font.Font(pygame.font.get_default_font(), 20)
         text_texture = font.render(text, True, (255, 255, 255))
-        self._surface.blit(text_texture, (self._width // 2 - 50, self._height - 85))
+        self._surface.blit(
+            text_texture, (self._width // 2 - 50, self._height - 85))
 
         # Show passive lane change warning
         text = input_data["LCWarningText"]
         font = pygame.font.Font(pygame.font.get_default_font(), 20)
         text_texture = font.render(text, True, (255, 255, 255))
-        self._surface.blit(text_texture, (self._width // 2 - 82, self._height - 55))
+        self._surface.blit(
+            text_texture, (self._width // 2 - 82, self._height - 55))
 
         # Display image
         if self._surface is not None:
@@ -137,7 +145,8 @@ class HumanAgent(HumanAgent_):
         self._obstacle_sensor = world.spawn_actor(
             blueprint, carla.Transform(), attach_to=self._player
         )
-        self._obstacle_sensor.listen(lambda event: self._update_obstacle(event))
+        self._obstacle_sensor.listen(
+            lambda event: self._update_obstacle(event))
         self._ttc = self.TTC_THRESHOLD * 2  # Time to collision, default to safe value
 
         # Get planned route
@@ -171,7 +180,8 @@ class HumanAgent(HumanAgent_):
 
         v_obstacle = CarlaDataProvider.get_velocity(event.other_actor)
         v_ego = CarlaDataProvider.get_velocity(self._player)
-        ttc = event.distance / max((v_ego - v_obstacle), 0.01)  # Avoid division by zero
+        # Avoid division by zero
+        ttc = event.distance / max((v_ego - v_obstacle), 0.01)
         self._ttc = ttc
 
     def run_step(self, input_data, timestamp):
@@ -375,4 +385,3 @@ class KeyboardControl(KeyboardControl_):
         }
 
         self._log_data["records"].append(new_record)
-

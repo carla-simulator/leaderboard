@@ -1,5 +1,22 @@
-# Log agent
+# Autoagents
 
+This directory contains a series of agents that can be used for the leaderboard.
+
+## Dummy Agent
+
+This agent will remain stationary.
+
+## NPC Agent
+
+This is a simple rule-based agent that determines its next action through basic logic. The scenarios run by the NPC Agent can be used to test the basic functionality of the leaderboard.
+
+## Human Agent
+
+This agent can be controlled by the user via the keyboard.
+
+Control the agent's behavior through keyboard: `W` (forward), `A` (turn left), `D` (turn right), `S` (backward), `Q` (reverse)
+
+## Log Agent
 
 This agent provides a user-friendly variant of a human agent, which is controlled by a human operator and records all actions for subsequent analysis. It also outputs a log file.
 
@@ -19,3 +36,11 @@ Additional Information Displayed:
   - The first line: A warning will be displayed when the EGO is about to hit a vehicle or obstacle in front: "Too Close!".
   - The second line: If the route ahead includes a lane change within a certain distance, it will display the direction and distance of the next lane change.
   - The third line: Displays the name of the most recently triggered scenario.
+
+## ROS1 Agent
+
+This is the base class for ROS 1 agents.
+
+## ROS2 Agent
+
+This is the base class for ROS 2 agents.
