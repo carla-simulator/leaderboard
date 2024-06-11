@@ -68,8 +68,11 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
     Ensure that the sensor configuration is valid, in case the challenge mode is used
     Returns true on valid configuration, false otherwise
     """
+    if not isinstance(agent_track, Track):
+        raise ValueError("Your agent's 'track' is of type '{}' but must be a 'leaderboard.autoagents.autonomous_agent.Track'".format(type(agent_track)))
+
     if Track(selected_track) != agent_track:
-        raise SensorConfigurationInvalid("You are submitting to the wrong track [{}]!".format(Track(selected_track)))
+        raise ValueError("You are submitting to the '{}' track, but you've selected {}".format(Track(selected_track), agent_track))
 
     sensor_count = {}
     sensor_ids = []
@@ -79,24 +82,24 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
         # Check if the is has been already used
         sensor_id = sensor['id']
         if sensor_id in sensor_ids:
-            raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(sensor_id))
+            raise SensorConfigurationInvalid("Sensor tag '{}' is duplicated".format(sensor_id))
         else:
             sensor_ids.append(sensor_id)
 
         # Check if the sensor is valid
         if agent_track == Track.SENSORS:
             if sensor['type'].startswith('sensor.opendrive_map'):
-                raise SensorConfigurationInvalid("Illegal sensor 'sensor.opendrive_map' used for Track [{}]!".format(agent_track))
+                raise SensorConfigurationInvalid("Sensor 'sensor.opendrive_map' cannot be used in Track '{}'".format(agent_track))
 
         # Check the sensors validity
         if sensor['type'] not in ALLOWED_SENSORS:
-            raise SensorConfigurationInvalid("Illegal sensor '{}' used for Track [{}]!".format(sensor['type'], agent_track))
+            raise SensorConfigurationInvalid("Sensor '{}' cannot be used in the Leaderboard".format(sensor['type']))
 
         # Check the extrinsics of the sensor
         if 'x' in sensor and 'y' in sensor and 'z' in sensor:
             if math.sqrt(sensor['x']**2 + sensor['y']**2 + sensor['z']**2) > MAX_ALLOWED_RADIUS_SENSOR:
                 raise SensorConfigurationInvalid(
-                    "Illegal sensor extrinsics used for sensor '{}'. Max allowed radius is {}m".format(sensor['id'], MAX_ALLOWED_RADIUS_SENSOR))
+                    "Sensor extrinsics used for sensor '{}' surpass the maximum radius of {}m".format(sensor['id'], MAX_ALLOWED_RADIUS_SENSOR))
 
         # Check the amount of sensors
         if sensor['type'] in sensor_count:
@@ -112,10 +115,8 @@ def validate_sensor_configuration(sensors, agent_track, selected_track):
     for sensor_type, max_instances_allowed in sensor_limits.items():
         if sensor_type in sensor_count and sensor_count[sensor_type] > max_instances_allowed:
             raise SensorConfigurationInvalid(
-                "Too many {} used! "
-                "Maximum number allowed is {}, but {} were requested.".format(sensor_type,
-                                                                              max_instances_allowed,
-                                                                              sensor_count[sensor_type]))
+                "Your agent uses {} '{}' but the maximum amount allowed is {}".format(
+                    sensor_type, max_instances_allowed, sensor_count[sensor_type]))
 
 
 class AgentWrapper(object):
@@ -253,7 +254,7 @@ class AgentWrapper(object):
                 sensor = CarlaDataProvider.get_world().spawn_actor(bp, sensor_transform, vehicle)
 
             # setup callback
-            sensor.listen(CallBack(id_, type_, sensor, self._agent.sensor_interface))
+            sensor.listen(CallBack(id_, sensor, self._agent.sensor_interface))
             self._sensors_list.append(sensor)
 
         # Some sensors miss sending data during the first ticks, so tick several times and remove the data

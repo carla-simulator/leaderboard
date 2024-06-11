@@ -128,11 +128,11 @@ class OpenDriveMapReader(BaseReader):
 
 
 class CallBack(object):
-    def __init__(self, tag, sensor_type, sensor, data_provider):
+    def __init__(self, tag, sensor, data_provider):
         self._tag = tag
         self._data_provider = data_provider
 
-        self._data_provider.register_sensor(tag, sensor_type, sensor)
+        self._data_provider.register_sensor(tag, sensor)
 
     def __call__(self, data):
         if isinstance(data, carla.libcarla.Image):
@@ -198,7 +198,7 @@ class SensorInterface(object):
         self._data_buffers = Queue()
         self._queue_timeout = 10
 
-    def register_sensor(self, tag, sensor_type, sensor):
+    def register_sensor(self, tag, sensor):
         if tag in self._sensors_objects:
             raise SensorConfigurationInvalid("Duplicated sensor tag [{}]".format(tag))
 
