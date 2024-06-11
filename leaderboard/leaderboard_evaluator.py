@@ -158,7 +158,7 @@ class LeaderboardEvaluator(object):
             if self.agent_instance:
                 self.agent_instance.destroy()
                 self.agent_instance = None
-        except Exception as e:
+        except Exception:
             print("\n\033[91mFailed to stop the agent:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
@@ -248,15 +248,14 @@ class LeaderboardEvaluator(object):
             raise Exception("The CARLA server uses the wrong map!"
                             " This scenario requires the use of map {}".format(town))
 
-    def _register_statistics(self, route_index, entry_status, crash_message=""):
+    def _register_statistics(self, route_index, entry_data):
         """
         Computes and saves the route statistics
         """
         print("\033[1m> Registering the route statistics\033[0m")
-        self.statistics_manager.save_entry_status(entry_status)
+        self.statistics_manager.save_entry_status(entry_data["entry_status"])
         self.statistics_manager.compute_route_statistics(
-            route_index, self.manager.scenario_duration_system, self.manager.scenario_duration_game, crash_message
-        )
+            route_index, self.manager.scenario_duration_game, self.manager.scenario_duration_system, entry_data)
 
     def _load_and_run_scenario(self, args, config):
         """
@@ -265,8 +264,11 @@ class LeaderboardEvaluator(object):
         Depending on what code fails, the simulation will either stop the route and
         continue from the next one, or report a crash and stop.
         """
-        crash_message = ""
-        entry_status = "Started"
+        entry_data = {
+            "entry_status": "Started",
+            "crash_message": "",
+            "traceback": ""
+        }
 
         print("\n\033[1m========= Preparing {} (repetition {}) =========\033[0m".format(config.name, config.repetition_index))
 
@@ -287,8 +289,10 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mThe scenario could not be loaded:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            entry_status, crash_message = FAILURE_MESSAGES["Simulation"]
-            self._register_statistics(config.index, entry_status, crash_message)
+            entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Simulation"]
+            entry_data["traceback"] = traceback.format_exc(limit=-1)
+
+            self._register_statistics(config.index, entry_data)
             self._cleanup()
             return True
 
@@ -327,13 +331,14 @@ class LeaderboardEvaluator(object):
             self._agent_watchdog.stop()
             self._agent_watchdog = None
 
-        except SensorConfigurationInvalid as e:
+        except SensorConfigurationInvalid:
             # The sensors are invalid -> set the ejecution to rejected and stop
             print("\n\033[91mThe sensor's configuration used is invalid:")
-            print(f"{e}\033[0m\n")
+            print(f"{traceback.format_exc()}\033[0m\n")
 
-            entry_status, crash_message = FAILURE_MESSAGES["Sensors"]
-            self._register_statistics(config.index, entry_status, crash_message)
+            entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Sensors"]
+            entry_data["traceback"] = traceback.format_exc(limit=-1)
+            self._register_statistics(config.index, entry_data)
             self._cleanup()
             return True
 
@@ -342,8 +347,9 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mCould not set up the required agent:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            entry_status, crash_message = FAILURE_MESSAGES["Agent_init"]
-            self._register_statistics(config.index, entry_status, crash_message)
+            entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Agent_init"]
+            entry_data["traceback"] = traceback.format_exc(limit=-1)
+            self._register_statistics(config.index, entry_data)
             self._cleanup()
             return False
 
@@ -355,26 +361,20 @@ class LeaderboardEvaluator(object):
             if args.record:
                 self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
             self.manager.load_scenario(self.route_scenario, self.agent_instance, config.index, config.repetition_index)
-            self.manager.run_scenario()
-
-        except AgentError:
-            # The agent has failed -> stop the route
-            print("\n\033[91mStopping the route, the agent has crashed:")
-            print(f"\n{traceback.format_exc()}\033[0m")
-
-            entry_status, crash_message = FAILURE_MESSAGES["Agent_runtime"]
+            entry_data = self.manager.run_scenario(entry_data)
 
         except Exception:
             print("\n\033[91mError during the simulation:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            entry_status, crash_message = FAILURE_MESSAGES["Simulation"]
+            entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Simulation"]
+            entry_data["traceback"] = traceback.format_exc(limit=-1)
 
         # Stop the scenario
         try:
             print("\033[1m> Stopping the route\033[0m")
             self.manager.stop_scenario()
-            self._register_statistics(config.index, entry_status, crash_message)
+            self._register_statistics(config.index, entry_data)
 
             if args.record:
                 self.client.stop_recorder()
@@ -385,10 +385,11 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mFailed to stop the scenario, the statistics might be empty:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
-            _, crash_message = FAILURE_MESSAGES["Simulation"]
+            entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Simulation"]
+            entry_data["traceback"] = traceback.format_exc(limit=-1)
 
         # If the simulation crashed, stop the leaderboard, for the rest, move to the next route
-        return crash_message == "Simulation crashed"
+        return entry_data["entry_status"] == FAILURE_MESSAGES["Simulation"][0]
 
     def run(self, args):
         """

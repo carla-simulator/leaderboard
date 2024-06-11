@@ -14,6 +14,7 @@ from __future__ import print_function
 import signal
 import sys
 import time
+import traceback
 
 import py_trees
 import carla
@@ -26,6 +27,7 @@ from srunner.scenariomanager.watchdog import Watchdog
 from leaderboard.autoagents.agent_wrapper import AgentWrapperFactory, AgentError
 from leaderboard.envs.sensor_interface import SensorReceivedNoData
 from leaderboard.utils.result_writer import ResultOutputProvider
+from leaderboard.utils.statistics_manager import FAILURE_MESSAGES
 
 
 class ScenarioManager(object):
@@ -134,7 +136,7 @@ class ScenarioManager(object):
             self.scenario.spawn_parked_vehicles(self.ego_vehicles[0])
             time.sleep(1)
 
-    def run_scenario(self):
+    def run_scenario(self, entry_data):
         """
         Trigger the start of the scenario and wait for it to finish/fail
         """
@@ -156,9 +158,11 @@ class ScenarioManager(object):
         self._scenario_thread.start()
 
         while self._running:
-            self._tick_scenario()
+            entry_data = self._tick_scenario(entry_data)
 
-    def _tick_scenario(self):
+        return entry_data
+
+    def _tick_scenario(self, entry_data):
         """
         Run next tick of scenario and the agent and tick the world.
         """
@@ -183,11 +187,23 @@ class ScenarioManager(object):
                 self._agent_watchdog.pause()
 
             # Special exception inside the agent that isn't caused by the agent
-            except SensorReceivedNoData as e:
-                raise RuntimeError(e)
+            except SensorReceivedNoData:
+                print("\n\033[91mError during the simulation, missing sensor data:")
+                print(f"\n{traceback.format_exc()}\033[0m")
 
-            except Exception as e:
-                raise AgentError(e)
+                entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Simulation"]
+                entry_data["traceback"] = traceback.format_exc(limit=-1)
+                self._running = False
+                return entry_data
+
+            except Exception:
+                print("\n\033[91mAgent error during the simulation:")
+                print(f"\n{traceback.format_exc()}\033[0m")
+
+                entry_data["entry_status"], entry_data["crash_message"] = FAILURE_MESSAGES["Agent_runtime"]
+                entry_data["traceback"] = traceback.format_exc(limit=-1)
+                self._running = False
+                return entry_data
 
             self._watchdog.resume()
             self.ego_vehicles[0].apply_control(ego_action)
@@ -224,6 +240,8 @@ class ScenarioManager(object):
             ego_trans = self.ego_vehicles[0].get_transform()
             self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=70),
                                                           carla.Rotation(pitch=-90)))
+
+        return entry_data
 
     def get_running_status(self):
         """

@@ -87,6 +87,7 @@ class RouteRecord():
             'route_length': 0,
             'duration_game': 0,
             'duration_system': 0,
+            'exception': ""
         }
 
     def to_json(self):
@@ -323,7 +324,7 @@ class StatisticsManager(object):
         self._scenario = None
         self._route_length = 0
 
-    def compute_route_statistics(self, route_index, duration_time_system=-1, duration_time_game=-1, failure_message=""):
+    def compute_route_statistics(self, route_index, duration_time_system, duration_time_game, entry_data):
         """
         Compute the current statistics by evaluating all relevant scenario criteria.
         Failure message will not be empty if an external source has stopped the simulations (i.e simulation crash).
@@ -344,6 +345,9 @@ class StatisticsManager(object):
                 raise ValueError("Found a criteria with an unknown penalty type")
             return score_penalty
 
+        failure_message = entry_data["crash_message"]
+        traceback = entry_data["traceback"]
+
         route_record = self._results.checkpoint.records[route_index]
         route_record.index = route_index
 
@@ -357,6 +361,7 @@ class StatisticsManager(object):
         route_record.meta['route_length'] = self._route_length
         route_record.meta['duration_game'] = round(duration_time_game, ROUND_DIGITS)
         route_record.meta['duration_system'] = round(duration_time_system, ROUND_DIGITS)
+        route_record.meta['exception'] = traceback
 
         # Update the route infractions
         if self._scenario:
