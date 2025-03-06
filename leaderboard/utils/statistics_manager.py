@@ -44,8 +44,6 @@ PENALTY_NAME_DICT = {
     TrafficEventType.VEHICLE_BLOCKED: 'vehicle_blocked',
 }
 
-PENALTY_WEIGHT = 0.9
-
 # Limit the entry status to some values. Eligible should always be gotten from this table
 ENTRY_STATUS_VALUES = ['Started', 'Finished', 'Rejected', 'Crashed', 'Invalid']
 ELIGIBLE_VALUES = {'Started': False, 'Finished': True, 'Rejected': False, 'Crashed': False, 'Invalid': False}
