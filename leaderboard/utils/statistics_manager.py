@@ -19,7 +19,7 @@ from srunner.scenariomanager.traffic_events import TrafficEventType
 from leaderboard.utils.checkpoint_tools import fetch_dict, save_dict
 
 PENALTY_VALUE_DICT = {
-    # Traffic events that substract a set amount of points.
+    # Traffic events that subtract a set amount of points.
     TrafficEventType.COLLISION_PEDESTRIAN: 0.5,
     TrafficEventType.COLLISION_VEHICLE: 0.6,
     TrafficEventType.COLLISION_STATIC: 0.65,
@@ -29,7 +29,7 @@ PENALTY_VALUE_DICT = {
     TrafficEventType.YIELD_TO_EMERGENCY_VEHICLE: 0.7
 }
 PENALTY_PERC_DICT = {
-    # Traffic events that substract a varying amount of points. This is the per unit value.
+    # Traffic events that subtract a varying amount of points. This is the per unit value.
     # 'increases' means that the higher the value, the higher the penalty.
     # 'decreases' means that the ideal value is 100 and the lower the value, the higher the penalty.
     TrafficEventType.OUTSIDE_ROUTE_LANES_INFRACTION: [0, 'increases'],  # All route traversed through outside lanes is ignored
@@ -366,12 +366,12 @@ class StatisticsManager(object):
 
             for node in self._scenario.get_criteria():
                 for event in node.events:
-                    # Traffic events that substract a set amount of points
+                    # Traffic events that subtract a set amount of points
                     if event.get_type() in PENALTY_VALUE_DICT:
                         score_penalty *= PENALTY_VALUE_DICT[event.get_type()]
                         set_infraction_message()
 
-                    # Traffic events that substract a varying amount of points
+                    # Traffic events that subtract a varying amount of points
                     elif event.get_type() in PENALTY_PERC_DICT:
                         score_penalty = set_score_penalty(score_penalty)
                         set_infraction_message()
