@@ -222,8 +222,13 @@ class ScenarioManager(object):
                 self._running = False
 
             ego_trans = self.ego_vehicles[0].get_transform()
-            self._spectator.set_transform(carla.Transform(ego_trans.location + carla.Location(z=70),
-                                                          carla.Rotation(pitch=-90)))
+            # 3rd-person chase: behind and above the ego, looking forward.
+            _fwd = ego_trans.get_forward_vector()
+            _cam = ego_trans.location + carla.Location(x=-8.0 * _fwd.x,
+                                                       y=-8.0 * _fwd.y,
+                                                       z=4.0)
+            self._spectator.set_transform(carla.Transform(
+                _cam, carla.Rotation(pitch=-15, yaw=ego_trans.rotation.yaw)))
 
     def get_running_status(self):
         """
