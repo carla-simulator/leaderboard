@@ -9,7 +9,9 @@
 * Added `TmAgent`, a TrafficManager-driven ego agent for stress-testing routes without an AD stack.
 * The spectator now follows the ego as a third-person chase camera.
 
-Known gaps on CARLA UE5: scenarios needing two-wheelers (e.g. HazardAtSideLane) are skipped, as the UE5 content ships none; ParkingExit is skipped because the routes lack the `start_actor_flow` parameter its updated definition requires.
+* Routes authored for leaderboard-2.1 no longer skip `ConstructionObstacle`, `ConstructionObstacleTwoWays` and `ParkingExit`: when a route lacks the `start_actor_flow` parameter their updated definitions require, the scenario falls back to its leaderboard-2.1 definition (provided by ScenarioRunner's `legacy_route_scenarios.py`).
+
+Known gaps on CARLA UE5: scenarios needing two-wheelers (e.g. HazardAtSideLane) require a CARLA build whose content registers them (in progress on the ue58 content branch); on stock 0.10 content they are skipped.
 
 ## Latest changes
 

@@ -48,6 +48,15 @@ from leaderboard.utils.route_manipulation import interpolate_trajectory
 
 import leaderboard.utils.parked_vehicles as parked_vehicles
 
+# Scenarios whose current ScenarioRunner definitions need actor-flow parameters
+# that routes authored for leaderboard-2.1 don't have, mapped to their 2.1-era
+# classes (see srunner/scenarios/legacy_route_scenarios.py)
+LEGACY_PARAMETER_FALLBACKS = {
+    'ConstructionObstacle': 'ConstructionObstacleLegacy',
+    'ConstructionObstacleTwoWays': 'ConstructionObstacleTwoWaysLegacy',
+    'ParkingExit': 'ParkingExitLegacy',
+}
+
 
 class RouteScenario(BasicScenario):
 
@@ -310,7 +319,15 @@ class RouteScenario(BasicScenario):
             scenario_config.route = self.route
 
             try:
-                scenario_class = self.all_scenario_classes[scenario_config.type]
+                scenario_type = scenario_config.type
+                # Routes authored for leaderboard-2.1 lack the actor-flow
+                # parameters some scenarios now require. Fall back to the
+                # 2.1-era definitions instead of skipping the scenario.
+                if scenario_type in LEGACY_PARAMETER_FALLBACKS \
+                        and 'start_actor_flow' not in scenario_config.other_parameters \
+                        and LEGACY_PARAMETER_FALLBACKS[scenario_type] in self.all_scenario_classes:
+                    scenario_type = LEGACY_PARAMETER_FALLBACKS[scenario_type]
+                scenario_class = self.all_scenario_classes[scenario_type]
                 trigger_location = scenario_config.trigger_points[0].location
 
                 ego_location = CarlaDataProvider.get_location(ego_vehicle)
@@ -319,6 +336,9 @@ class RouteScenario(BasicScenario):
 
                 # Only init scenarios that are close to ego
                 if trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
+                    if scenario_type != scenario_config.type:
+                        print("\033[93mScenario '{}' has no 'start_actor_flow' parameter, "
+                              "using its leaderboard-2.1 definition\033[0m".format(scenario_config.name))
                     scenario_instance = scenario_class(self.world, [ego_vehicle], scenario_config, timeout=self.timeout)
 
                     # Add new scenarios to list
