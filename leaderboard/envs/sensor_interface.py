@@ -135,15 +135,15 @@ class CallBack(object):
         self._data_provider.register_sensor(tag, sensor_type, sensor)
 
     def __call__(self, data):
-        if isinstance(data, carla.libcarla.Image):
+        if isinstance(data, carla.Image):
             self._parse_image_cb(data, self._tag)
-        elif isinstance(data, carla.libcarla.LidarMeasurement):
+        elif isinstance(data, carla.LidarMeasurement):
             self._parse_lidar_cb(data, self._tag)
-        elif isinstance(data, carla.libcarla.RadarMeasurement):
+        elif isinstance(data, carla.RadarMeasurement):
             self._parse_radar_cb(data, self._tag)
-        elif isinstance(data, carla.libcarla.GnssMeasurement):
+        elif isinstance(data, carla.GnssMeasurement):
             self._parse_gnss_cb(data, self._tag)
-        elif isinstance(data, carla.libcarla.IMUMeasurement):
+        elif isinstance(data, carla.IMUMeasurement):
             self._parse_imu_cb(data, self._tag)
         elif isinstance(data, GenericMeasurement):
             self._parse_pseudosensor(data, self._tag)

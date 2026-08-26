@@ -1,3 +1,16 @@
+## Latest changes (ue58-dev)
+
+* Made the branch work against CARLA UE5 (0.10.x) servers, paired with the `ue58-dev` branch of ScenarioRunner:
+    - Sensor callbacks dispatched on `carla.libcarla.*` types, which no longer exist as a submodule in the CARLA 0.10 wheel; they now use the top-level `carla.*` classes (this made every sensorized agent fail with "sensor took too long").
+    - Requested towns are resolved against the server's available maps through `CarlaDataProvider.resolve_map_name` (CARLA UE5 needs exact names, e.g. the classic towns only ship as `_Opt` layered variants).
+    - The ego blueprint `vehicle.lincoln.mkz_2020` is translated by ScenarioRunner's UE5 blueprint aliases.
+    - ROS agent support (and its `pexpect`/`transforms3d` dependencies) is imported lazily, so plain Python agents work without them.
+* Brought bug fixes and tools from `master`: Python 3.9+ route parser, dependency-version compatibility, Speedometer fix, OpenDRIVE reading frequency removal, the log agent, and the LB1-to-LB2 route bridge script.
+* Added `TmAgent`, a TrafficManager-driven ego agent for stress-testing routes without an AD stack.
+* The spectator now follows the ego as a third-person chase camera.
+
+Known gaps on CARLA UE5: scenarios needing two-wheelers (e.g. HazardAtSideLane) are skipped, as the UE5 content ships none; ParkingExit is skipped because the routes lack the `start_actor_flow` parameter its updated definition requires.
+
 ## Latest changes
 
 * Added support to ROS agents, which are meant to inherit from the new `ROS1Agent` and `ROS2Agent` agents. The old `RosAgent` has been deleted.

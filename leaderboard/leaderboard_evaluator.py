@@ -224,6 +224,9 @@ class LeaderboardEvaluator(object):
         """
         Load a new CARLA world without changing the settings and provide data to CarlaDataProvider
         """
+        # CARLA UE5 requires exact map names (e.g. the classic towns only exist
+        # as layered '_Opt' variants); resolve against the server's map list.
+        town = CarlaDataProvider.resolve_map_name(town, self.client)
         self.world = self.client.load_world(town, reset_settings=False)
 
         # Large Map settings are always reset, for some reason

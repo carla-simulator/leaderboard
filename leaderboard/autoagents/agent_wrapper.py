@@ -20,7 +20,13 @@ from srunner.scenariomanager.timer import GameTime
 
 from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
-from leaderboard.autoagents.ros_base_agent import ROSBaseAgent
+
+# ROS agent support needs extra dependencies (pexpect, transforms3d). Import it
+# lazily so plain Python agents work without them.
+try:
+    from leaderboard.autoagents.ros_base_agent import ROSBaseAgent
+except ImportError:
+    ROSBaseAgent = None
 
 MAX_ALLOWED_RADIUS_SENSOR = 3.0
 QUALIFIER_SENSORS_LIMITS = {
@@ -57,7 +63,7 @@ class AgentWrapperFactory(object):
 
     @staticmethod
     def get_wrapper(agent):
-        if isinstance(agent, ROSBaseAgent):
+        if ROSBaseAgent is not None and isinstance(agent, ROSBaseAgent):
             return ROSAgentWrapper(agent)
         else:
             return AgentWrapper(agent)
