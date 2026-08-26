@@ -111,8 +111,11 @@ class AutonomousAgent(object):
         wallclock_diff = (wallclock - self.wallclock_t0).total_seconds()
         sim_ratio = 0 if wallclock_diff == 0 else timestamp/wallclock_diff
 
-        print('=== [Agent] -- Wallclock = {} -- System time = {} -- Game time = {} -- Ratio = {}x'.format(
-            str(wallclock)[:-3], format(wallclock_diff, '.3f'), format(timestamp, '.3f'), format(sim_ratio, '.3f')))
+        # Printing this every tick floods the output on long routes: once every
+        # 10 s of game time is enough to follow the pace.
+        if GameTime.get_frame() % 200 == 0:
+            print('=== [Agent] -- Wallclock = {} -- System time = {} -- Game time = {} -- Ratio = {}x'.format(
+                str(wallclock)[:-3], format(wallclock_diff, '.3f'), format(timestamp, '.3f'), format(sim_ratio, '.3f')))
 
         control = self.run_step(input_data, timestamp)
         control.manual_gear_shift = False
