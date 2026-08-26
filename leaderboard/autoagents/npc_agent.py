@@ -4,92 +4,83 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 """
-This module provides an NPC agent to control the ego vehicle
+NPC agent: drives the ego with the CARLA PythonAPI BasicAgent along the dense
+scenario route. It is a testing baseline, not a challenge submission: it reads
+the full route from the CarlaDataProvider (which real submissions cannot do)
+and follows it waypoint by waypoint, braking for vehicles and traffic lights.
+Useful to validate that a route and its scenarios are drivable at all.
 """
 
 from __future__ import print_function
 
 import carla
 from agents.navigation.basic_agent import BasicAgent
+
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
+
 def get_entry_point():
     return 'NpcAgent'
+
 
 class NpcAgent(AutonomousAgent):
 
     """
-    NPC autonomous agent to control the ego vehicle
+    NPC autonomous agent to control the ego vehicle with the BasicAgent
     """
 
     _agent = None
-    _route_assigned = False
 
     def setup(self, path_to_conf_file):
         """
         Setup the agent parameters
         """
         self.track = Track.SENSORS
-
         self._agent = None
 
     def sensors(self):
         """
         Define the sensor suite required by the agent
-
-        :return: a list containing the required sensors in the following format:
-
-        [
-            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-                      'width': 300, 'height': 200, 'fov': 100, 'id': 'Left'},
-
-            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-                      'width': 300, 'height': 200, 'fov': 100, 'id': 'Right'},
-
-            {'type': 'sensor.lidar.ray_cast', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'yaw': 0.0, 'pitch': 0.0, 'roll': 0.0,
-             'id': 'LIDAR'}
-        ]
         """
-
-        sensors = [
-            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-             'width': 300, 'height': 200, 'fov': 100, 'id': 'Left'},
+        return [
+            {'type': 'sensor.speedometer', 'reading_frequency': 20, 'id': 'speed'},
         ]
-
-        return sensors
 
     def run_step(self, input_data, timestamp):
         """
-        Execute one step of navigation. 
+        Execute one step of navigation.
         """
-        if not self._agent:
-
-            # Search for the ego actor
+        if self._agent is None:
             hero_actor = None
-            for actor in CarlaDataProvider.get_world().get_actors():
-                if 'role_name' in actor.attributes and actor.attributes['role_name'] == 'hero':
+            for actor in CarlaDataProvider.get_world().get_actors().filter('vehicle.*'):
+                if actor.attributes.get('role_name') == 'hero':
                     hero_actor = actor
                     break
 
-            if not hero_actor:
+            if hero_actor is None:
                 return carla.VehicleControl()
 
-            # Add an agent that follows the route to the ego
             self._agent = BasicAgent(hero_actor, 30)
 
+            # Follow the dense scenario route directly: re-tracing a plan is
+            # fragile inside junctions, where points can snap to overlapping
+            # connector roads of other maneuvers.
+            route = CarlaDataProvider.get_ego_route()
+            wmap = CarlaDataProvider.get_map()
             plan = []
-            prev_wp = None
-            for transform, _ in self._global_plan_world_coord:
-                wp = CarlaDataProvider.get_map().get_waypoint(transform.location)
-                if prev_wp:
-                    plan.extend(self._agent.trace_route(prev_wp, wp))
-                prev_wp = wp
-
+            for transform, road_option in route:
+                wp = wmap.get_waypoint(transform.location)
+                plan.append((wp, road_option))
             self._agent.set_global_plan(plan)
 
             return carla.VehicleControl()
 
-        else:
-            return self._agent.run_step()
+        return self._agent.run_step()
+
+    def destroy(self):
+        """
+        Cleanup
+        """
+        self._agent = None
