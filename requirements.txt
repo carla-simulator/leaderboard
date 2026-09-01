@@ -5,3 +5,5 @@ pygame
 tabulate
 pexpect
 transforms3d
+# used by srunner.scenariomanager.watchdog
+simple-watchdog-timer

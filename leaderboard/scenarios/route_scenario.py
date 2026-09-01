@@ -156,7 +156,7 @@ class RouteScenario(BasicScenario):
         elevate_transform = self.route[0][0]
         elevate_transform.location.z += 0.5
 
-        ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz_2020',
+        ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz',
                                                           elevate_transform,
                                                           rolename='hero')
         if not ego_vehicle:
@@ -188,27 +188,17 @@ class RouteScenario(BasicScenario):
             max_x = max(max_x, route_transform.location.x + max_distance)
             max_y = max(max_y, route_transform.location.y + max_distance)
 
-        # Occupied parking locations
-        occupied_parking_locations = []
-        for scenario in self.list_scenarios:
-            occupied_parking_locations.extend(scenario.get_parking_slots())
-
-        available_parking_locations = []
         map_name = self.map.name.split('/')[-1]
-        available_parking_locations = getattr(parked_vehicles, map_name, [])
+        map_parking_slots = getattr(parked_vehicles, map_name, [])
 
-        # Exclude parking slots that are too far from the route
-        for slot in available_parking_locations:
-            slot_transform = carla.Transform(
-                location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
-                rotation=carla.Rotation(slot["rotation"][0], slot["rotation"][1], slot["rotation"][2])
-            )
+        # getattr returns the module's own list; never mutate it in place.
+        available_parking_locations = []
+        for slot in map_parking_slots:
+            location = carla.Location(slot["location"][0], slot["location"][1], slot["location"][2])
 
-            in_area = (min_x < slot_transform.location.x < max_x) and (min_y < slot_transform.location.y < max_y)
-            close_to_route = is_close(slot_transform.location)
-            if not in_area or not close_to_route:
-                available_parking_locations.remove(slot)
-                continue
+            in_area = (min_x < location.x < max_x) and (min_y < location.y < max_y)
+            if in_area and is_close(location):
+                available_parking_locations.append(slot)
 
         self.available_parking_locations = available_parking_locations
 
@@ -228,6 +218,7 @@ class RouteScenario(BasicScenario):
         if ego_location is None:
             return
 
+        remaining_parking_locations = []
         for slot in self.available_parking_locations:
             slot_transform = carla.Transform(
                 location=carla.Location(slot["location"][0], slot["location"][1], slot["location"][2]),
@@ -240,11 +231,16 @@ class RouteScenario(BasicScenario):
                 mesh_bp.set_attribute("mesh_path", slot["mesh"])
                 mesh_bp.set_attribute("scale", "0.9")
                 new_parked_vehicles.append(carla.command.SpawnActor(mesh_bp, slot_transform))
-                self.available_parking_locations.remove(slot)
+            else:
+                remaining_parking_locations.append(slot)
+
+        self.available_parking_locations = remaining_parking_locations
 
         # Add the actors to _parked_ids
         for response in CarlaDataProvider.get_client().apply_batch_sync(new_parked_vehicles):
-            if not response.error:
+            if response.error:
+                print("\033[93mWARNING: parked vehicle failed to spawn: {}\033[0m".format(response.error))
+            else:
                 self._parked_ids.append(response.actor_id)
 
     # pylint: disable=no-self-use
