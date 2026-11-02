@@ -9,14 +9,10 @@
 Wrapper for autonomous agents required for tracking and checking of used sensors
 """
 
-from __future__ import print_function
 import math
-import os
-import time
 
 import carla
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
-from srunner.scenariomanager.timer import GameTime
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
@@ -56,7 +52,7 @@ class AgentError(Exception):
     """
 
     def __init__(self, message):
-        super(AgentError, self).__init__(message)
+        super().__init__(message)
 
 
 class AgentWrapperFactory(object):
@@ -289,10 +285,10 @@ class ROSAgentWrapper(AgentWrapper):
     }
 
     def __init__(self, agent):
-        super(ROSAgentWrapper, self).__init__(agent)
+        super().__init__(agent)
 
     def _preprocess_sensor_spec(self, sensor_spec):
-        type_, id_, sensor_transform, attributes = super(ROSAgentWrapper, self)._preprocess_sensor_spec(sensor_spec)
+        type_, id_, sensor_transform, attributes = super()._preprocess_sensor_spec(sensor_spec)
         new_type = self.SENSOR_TYPE_REMAPS.get(type_, type_)
         return new_type, id_, sensor_transform, attributes
 

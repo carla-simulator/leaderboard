@@ -38,13 +38,11 @@ RUN apt-get update; \
   rm -rf /var/lib/apt/lists/*
 
 ENV CARLA_ROOT "/workspace/CARLA"
-ENV SCENARIO_RUNNER_ROOT "/workspace/scenario_runner"
 ENV LEADERBOARD_ROOT "/workspace/leaderboard"
 ENV CARLA_ROS_BRIDGE_ROOT "/workspace/carla_ros_bridge"
 ENV TEAM_CODE_ROOT "/workspace/team_code"
 
 COPY PythonAPI ${CARLA_ROOT}/PythonAPI
-COPY scenario_runner ${SCENARIO_RUNNER_ROOT}
 COPY leaderboard ${LEADERBOARD_ROOT}
 
 COPY carla_ros_bridge/carla_ros_bridge ${CARLA_ROS_BRIDGE_ROOT}/src/carla_ros_bridge
@@ -87,7 +85,7 @@ RUN /bin/bash -c 'source /opt/ros/$ROS_DISTRO/setup.bash; \
 RUN mkdir -p /workspace/results
 RUN chmod +x /workspace/leaderboard/run_leaderboard.sh
 
-ENV PYTHONPATH "${CARLA_ROOT}/PythonAPI/carla":"${SCENARIO_RUNNER_ROOT}":"${LEADERBOARD_ROOT}":${PYTHONPATH}
+ENV PYTHONPATH "${CARLA_ROOT}/PythonAPI/carla":"${LEADERBOARD_ROOT}":${PYTHONPATH}
 
 RUN if [ "$ROS_DISTRO" = "melodic" ]; then \
     echo "${CARLA_ROOT}/PythonAPI/carla/dist/carla-leaderboard-py2.7.egg" > /usr/local/lib/python2.7/dist-packages/carla.pth; \

@@ -1,7 +1,6 @@
 import copy
 import logging
 import numpy as np
-import os
 import time
 from threading import Thread
 
@@ -9,8 +8,8 @@ from queue import Queue
 from queue import Empty
 
 import carla
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
-from srunner.scenariomanager.timer import GameTime
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.timer import GameTime
 
 
 def threaded(fn):
@@ -29,7 +28,7 @@ class SensorConfigurationInvalid(Exception):
     """
 
     def __init__(self, message):
-        super(SensorConfigurationInvalid, self).__init__(message)
+        super().__init__(message)
 
 
 class SensorReceivedNoData(Exception):
@@ -38,7 +37,7 @@ class SensorReceivedNoData(Exception):
     """
 
     def __init__(self, message):
-        super(SensorReceivedNoData, self).__init__(message)
+        super().__init__(message)
 
 
 class GenericMeasurement(object):
@@ -121,7 +120,7 @@ class OpenDriveMapReader(BaseReader):
 
     def __init__(self, vehicle, reading_frequency=1.0):
         self._opendrive_data = CarlaDataProvider.get_map().to_opendrive()
-        super(OpenDriveMapReader, self).__init__(vehicle, reading_frequency)
+        super().__init__(vehicle, reading_frequency)
 
     def __call__(self):
         return {'opendrive': self._opendrive_data}

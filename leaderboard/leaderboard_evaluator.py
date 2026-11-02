@@ -10,24 +10,20 @@ CARLA Challenge Evaluator Routes
 
 Provisional code to evaluate Autonomous Agents for the CARLA Autonomous Driving challenge
 """
-from __future__ import print_function
 
 import traceback
 import argparse
 from argparse import RawTextHelpFormatter
-try:
-    from packaging.version import Version
-except ImportError:
-    from distutils.version import LooseVersion as Version # Python 2 fallback
+from packaging.version import Version
 import importlib
 import os
 import sys
 import carla
 import signal
 
-from srunner.scenariomanager.carla_data_provider import *
-from srunner.scenariomanager.timer import GameTime
-from srunner.scenariomanager.watchdog import Watchdog
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.timer import GameTime
+from leaderboard.scenariomanager.watchdog import Watchdog
 
 from leaderboard.scenarios.scenario_manager import ScenarioManager
 from leaderboard.scenarios.route_scenario import RouteScenario

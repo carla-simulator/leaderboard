@@ -7,8 +7,6 @@
 This module provides a base ROS autonomous agent interface to control the ego vehicle via a ROS1/ROS2 stack
 """
 
-from __future__ import print_function
-
 import logging
 import logging.handlers
 import os
@@ -19,9 +17,9 @@ import carla
 import pexpect
 import transforms3d
 
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
-from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
+from leaderboard.autoagents.autonomous_agent import AutonomousAgent
 
 EPSILON = 0.001
 
@@ -135,7 +133,7 @@ class ROSBaseAgent(AutonomousAgent):
     """
 
     def __init__(self, ros_version, carla_host, carla_port, debug=False):
-        super(ROSBaseAgent, self).__init__(carla_host, carla_port, debug)
+        super().__init__(carla_host, carla_port, debug)
 
         self._bridge_process = ROSLauncher("bridge", ros_version=ros_version, debug=debug)
         self._bridge_process.run(

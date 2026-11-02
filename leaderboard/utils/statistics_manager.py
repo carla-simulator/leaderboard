@@ -9,12 +9,10 @@
 This module contains a statistics manager for the CARLA AD leaderboard
 """
 
-from __future__ import print_function
-
 from dictor import dictor
 import math
 
-from srunner.scenariomanager.traffic_events import TrafficEventType
+from leaderboard.scenariomanager.traffic_events import TrafficEventType
 
 from leaderboard.utils.checkpoint_tools import fetch_dict, save_dict
 

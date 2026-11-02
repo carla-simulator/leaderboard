@@ -5,5 +5,14 @@ pygame
 tabulate
 pexpect
 transforms3d
-# used by srunner.scenariomanager.watchdog
+# used by leaderboard.scenariomanager.watchdog
 simple-watchdog-timer
+py-trees==2.6.0
+numpy
+networkx
+Shapely
+psutil
+ephem
+packaging
+# used by the route and scenario authoring scripts under scripts/
+lxml

@@ -33,7 +33,7 @@ from leaderboard.autoagents.autonomous_agent import Track
 from leaderboard.autoagents.human_agent import HumanAgent as HumanAgent_
 from leaderboard.autoagents.human_agent import KeyboardControl as KeyboardControl_
 from leaderboard.autoagents.human_agent import HumanInterface
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
 
 def get_entry_point():

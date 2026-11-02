@@ -37,11 +37,6 @@ if [ -z "$CARLA_ROOT" ]; then
   exit 1
 fi
 
-if [ -z "$SCENARIO_RUNNER_ROOT" ]; then
-  echo "Error $SCENARIO_RUNNER_ROOT is empty. Set \$SCENARIO_RUNNER_ROOT as an environment variable first."
-  exit 1
-fi
-
 if [ ! -z "$ROS_DISTRO" ] && [ -z $CARLA_ROS_BRIDGE_ROOT ]; then
   echo "Error $CARLA_ROS_BRIDGE_ROOT is empty. Set \$CARLA_ROS_BRIDGE_ROOT as an environment variable first."
   exit 1
@@ -64,10 +59,6 @@ echo "Copying CARLA Python API"
 cp -fr ${CARLA_ROOT}/PythonAPI  .lbtmp
 mv .lbtmp/PythonAPI/carla/dist/carla*-py2*.egg .lbtmp/PythonAPI/carla/dist/carla-leaderboard-py2.7.egg
 mv .lbtmp/PythonAPI/carla/dist/carla*-py3*.egg .lbtmp/PythonAPI/carla/dist/carla-leaderboard-py3x.egg
-
-echo "Copying Scenario Runner"
-cp -fr ${SCENARIO_RUNNER_ROOT}/ .lbtmp
-rm -fr .lbtmp/scenario_runner/.git
 
 echo "Copying Leaderboard"
 cp -fr ${LEADERBOARD_ROOT}/ .lbtmp

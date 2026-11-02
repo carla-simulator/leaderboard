@@ -7,16 +7,12 @@
 This module provides a ROS autonomous agent interface to control the ego vehicle via a ROS2 stack
 """
 
-from __future__ import print_function
-
 import threading
 
-import carla
 
 from leaderboard.autoagents.ros_base_agent import BridgeHelper, ROSBaseAgent
 
 import rclpy
-from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile
 from rclpy.task import Future
 
@@ -56,7 +52,7 @@ class ROS2Agent(ROSBaseAgent):
     ROS_VERSION = 2
 
     def __init__(self, carla_host, carla_port, debug=False):
-        super(ROS2Agent, self).__init__(self.ROS_VERSION, carla_host, carla_port, debug)
+        super().__init__(self.ROS_VERSION, carla_host, carla_port, debug)
 
         rclpy.init(args=None)
         self.ros_node = rclpy.create_node("leaderboard_node")
@@ -115,7 +111,7 @@ class ROS2Agent(ROSBaseAgent):
         return response.success
 
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
-        super(ROS2Agent, self).set_global_plan(global_plan_gps, global_plan_world_coord)
+        super().set_global_plan(global_plan_gps, global_plan_world_coord)
 
         path = CarlaRoute()
         for wp in self._global_plan_world_coord:
@@ -145,4 +141,4 @@ class ROS2Agent(ROSBaseAgent):
         rclpy.shutdown()
         self.spin_thread.join()
 
-        super(ROS2Agent, self).destroy()
+        super().destroy()
