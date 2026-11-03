@@ -60,7 +60,7 @@ class ConstructionObstacle(BasicScenario):
         if self._direction not in ('left', 'right'):
             raise ValueError(f"'direction' must be either 'right' or 'left' but {self._direction} was given")
 
-        super().__init__("ConstructionObstacle", ego_vehicles, config, world, debug_mode, False)
+        super().__init__("ConstructionObstacle", ego_vehicles, config, world, debug_mode)
 
     def _initialize_actors(self, config):
         """Creates all props part of the construction"""

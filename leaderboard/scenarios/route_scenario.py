@@ -100,7 +100,7 @@ class RouteScenario(BasicScenario):
         self._parked_ids = []
         self._get_parking_slots()
 
-        super().__init__(config.name, [ego_vehicle], config, world, debug_mode > 3, False)
+        super().__init__(config.name, [ego_vehicle], config, world, debug_mode > 3)
 
         # Do it after the 'super', as we need the behavior and criteria tree to be initialized
         self.build_scenarios(ego_vehicle, debug=debug_mode > 0)
