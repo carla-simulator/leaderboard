@@ -7,8 +7,6 @@
 This module provides a ROS autonomous agent interface to control the ego vehicle via a ROS stack
 """
 
-from __future__ import print_function
-
 import time
 
 from leaderboard.autoagents.ros_base_agent import BridgeHelper, ROSBaseAgent, ROSLauncher
@@ -82,7 +80,7 @@ class ROS1Agent(ROSBaseAgent):
     ROS_VERSION = 1
 
     def __init__(self, carla_host, carla_port, debug=False):
-        super(ROS1Agent, self).__init__(self.ROS_VERSION, carla_host, carla_port, debug)
+        super().__init__(self.ROS_VERSION, carla_host, carla_port, debug)
 
         client = ROS1Server.client
 
@@ -134,10 +132,10 @@ class ROS1Agent(ROSBaseAgent):
         return response["success"]
 
     def run_step(self, input_data, timestamp):
-        return super(ROS1Agent, self).run_step(input_data, timestamp)
+        return super().run_step(input_data, timestamp)
 
     def set_global_plan(self, global_plan_gps, global_plan_world_coord):
-        super(ROS1Agent, self).set_global_plan(global_plan_gps, global_plan_world_coord)
+        super().set_global_plan(global_plan_gps, global_plan_world_coord)
 
         poses = []
         for wp in self._global_plan_world_coord:
@@ -175,4 +173,4 @@ class ROS1Agent(ROSBaseAgent):
         self._spawn_object_service.unadvertise()
         self._destroy_object_service.unadvertise()
 
-        super(ROS1Agent, self).destroy()
+        super().destroy()

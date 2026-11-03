@@ -9,26 +9,22 @@
 This module provides Challenge routes as standalone scenarios
 """
 
-from __future__ import print_function
-
 import glob
 import os
-import sys
 import importlib
 import inspect
 import py_trees
 import traceback
-import numpy as np
 
 import carla
 from agents.navigation.local_planner import RoadOption
 
-from srunner.scenarioconfigs.scenario_configuration import ActorConfigurationData
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenarioconfigs.scenario_configuration import ActorConfigurationData
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
-from srunner.scenariomanager.scenarioatomics.atomic_behaviors import ScenarioTriggerer, Idle
-from srunner.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitForBlackboardVariable
-from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
+from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ScenarioTriggerer, Idle
+from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitForBlackboardVariable
+from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTest,
                                                                      InRouteTest,
                                                                      RouteCompletionTest,
                                                                      OutsideRouteLanesTest,
@@ -37,25 +33,24 @@ from srunner.scenariomanager.scenarioatomics.atomic_criteria import (CollisionTe
                                                                      ActorBlockedTest,
                                                                      MinimumSpeedRouteTest)
 
-from srunner.scenarios.basic_scenario import BasicScenario
-from srunner.scenarios.background_activity import BackgroundBehavior
-from srunner.scenariomanager.weather_sim import RouteWeatherBehavior
-from srunner.scenariomanager.lights_sim import RouteLightsBehavior
-from srunner.scenariomanager.timer import RouteTimeoutBehavior
+from leaderboard.scenarios.basic_scenario import BasicScenario
+from leaderboard.scenarios.background_activity import BackgroundBehavior
+from leaderboard.scenariomanager.weather_sim import RouteWeatherBehavior
+from leaderboard.scenariomanager.lights_sim import RouteLightsBehavior
+from leaderboard.scenariomanager.timer import RouteTimeoutBehavior
 
 from leaderboard.utils.route_parser import RouteParser, DIST_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
 import leaderboard.utils.parked_vehicles as parked_vehicles
 
-# Scenarios whose current ScenarioRunner definitions need actor-flow parameters
-# that routes authored for leaderboard-2.1 don't have, mapped to their 2.1-era
-# classes (see srunner/scenarios/legacy_route_scenarios.py)
-LEGACY_PARAMETER_FALLBACKS = {
-    'ConstructionObstacle': 'ConstructionObstacleLegacy',
-    'ConstructionObstacleTwoWays': 'ConstructionObstacleTwoWaysLegacy',
-    'ParkingExit': 'ParkingExitLegacy',
-}
+def _adopt(node):
+    """Detaches a node from the tree its scenario built, so the route can own it.
+    py_trees allows a single parent, and BasicScenario parents these to its own tree."""
+    if node.parent is not None:
+        node.parent.remove_child(node)
+    return node
+
 
 
 class RouteScenario(BasicScenario):
@@ -69,7 +64,7 @@ class RouteScenario(BasicScenario):
     INIT_THRESHOLD = 500 # Runtime initialization trigger distance to ego (m)
     PARKED_VEHICLES_INIT_THRESHOLD = INIT_THRESHOLD - 50 # Runtime initialization trigger distance to parked vehicles (m)
 
-    def __init__(self, world, config, debug_mode=0, criteria_enable=True):
+    def __init__(self, world, config, debug_mode=0):
         """
         Setup all relevant parameters and create scenarios along route
         """
@@ -105,9 +100,7 @@ class RouteScenario(BasicScenario):
         self._parked_ids = []
         self._get_parking_slots()
 
-        super(RouteScenario, self).__init__(
-            config.name, [ego_vehicle], config, world, debug_mode > 3, False, criteria_enable
-        )
+        super().__init__(config.name, [ego_vehicle], config, world, debug_mode > 3, False)
 
         # Do it after the 'super', as we need the behavior and criteria tree to be initialized
         self.build_scenarios(ego_vehicle, debug=debug_mode > 0)
@@ -276,24 +269,24 @@ class RouteScenario(BasicScenario):
 
     def get_all_scenario_classes(self):
         """
-        Searches through the 'scenarios' folder for all the Python classes
+        Searches through the 'scenarios' folder for all the BasicScenario classes
         """
-        # Path of all scenario at "srunner/scenarios" folder
-        scenarios_list = glob.glob("{}/srunner/scenarios/*.py".format(os.getenv('SCENARIO_RUNNER_ROOT', "./")))
+        # The scenarios live beside this module, inside the leaderboard package
+        scenarios_list = glob.glob(os.path.join(os.path.dirname(__file__), "*.py"))
 
         all_scenario_classes = {}
 
         for scenario_file in scenarios_list:
 
-            # Get their module
             module_name = os.path.basename(scenario_file).split('.')[0]
-            sys.path.insert(0, os.path.dirname(scenario_file))
-            scenario_module = importlib.import_module(module_name)
+            if module_name == '__init__':
+                continue
 
-            # And their members of type class
-            for member in inspect.getmembers(scenario_module, inspect.isclass):
-                # TODO: Filter out any class that isn't a child of BasicScenario
-                all_scenario_classes[member[0]] = member[1]
+            scenario_module = importlib.import_module('leaderboard.scenarios.' + module_name)
+
+            for _, member in inspect.getmembers(scenario_module, inspect.isclass):
+                if issubclass(member, BasicScenario) and member is not BasicScenario:
+                    all_scenario_classes[member.__name__] = member
 
         return all_scenario_classes
 
@@ -315,15 +308,7 @@ class RouteScenario(BasicScenario):
             scenario_config.route = self.route
 
             try:
-                scenario_type = scenario_config.type
-                # Routes authored for leaderboard-2.1 lack the actor-flow
-                # parameters some scenarios now require. Fall back to the
-                # 2.1-era definitions instead of skipping the scenario.
-                if scenario_type in LEGACY_PARAMETER_FALLBACKS \
-                        and 'start_actor_flow' not in scenario_config.other_parameters \
-                        and LEGACY_PARAMETER_FALLBACKS[scenario_type] in self.all_scenario_classes:
-                    scenario_type = LEGACY_PARAMETER_FALLBACKS[scenario_type]
-                scenario_class = self.all_scenario_classes[scenario_type]
+                scenario_class = self.all_scenario_classes[scenario_config.type]
                 trigger_location = scenario_config.trigger_points[0].location
 
                 ego_location = CarlaDataProvider.get_location(ego_vehicle)
@@ -332,9 +317,6 @@ class RouteScenario(BasicScenario):
 
                 # Only init scenarios that are close to ego
                 if trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
-                    if scenario_type != scenario_config.type:
-                        print("\033[93mScenario '{}' has no 'start_actor_flow' parameter, "
-                              "using its leaderboard-2.1 definition\033[0m".format(scenario_config.name))
                     scenario_instance = scenario_class(self.world, [ego_vehicle], scenario_config, timeout=self.timeout)
 
                     # Add new scenarios to list
@@ -368,7 +350,7 @@ class RouteScenario(BasicScenario):
 
             # Add behavior
             if scenario.behavior_tree is not None:
-                self.behavior_node.add_child(scenario.behavior_tree)
+                self.behavior_node.add_child(_adopt(scenario.behavior_tree))
                 self.scenario_triggerer.add_blackboard(
                     [scenario.config.route_var_name, 
                      scenario.config.trigger_points[0].location,
@@ -405,7 +387,7 @@ class RouteScenario(BasicScenario):
         scenario_trigger_distance = DIST_THRESHOLD  # Max trigger distance between route and scenario
 
         behavior = py_trees.composites.Parallel(name="Route Behavior",
-                                                policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
+                                                policy=py_trees.common.ParallelPolicy.SuccessOnAll())
 
         self.behavior_node = behavior
         scenario_behaviors = []
@@ -431,7 +413,7 @@ class RouteScenario(BasicScenario):
         and adds the scenario specific ones, which will only be active during their scenario
         """
         criteria = py_trees.composites.Parallel(name="Criteria",
-                                                policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+                                                policy=py_trees.common.ParallelPolicy.SuccessOnOne())
 
         self.criteria_node = criteria
 
@@ -492,13 +474,13 @@ class RouteScenario(BasicScenario):
         var_name = scenario.config.route_var_name
         check_name = "WaitForBlackboardVariable: {}".format(var_name)
 
-        criteria_tree = py_trees.composites.Sequence(name=scenario_name)
+        criteria_tree = py_trees.composites.Sequence(name=scenario_name, memory=True)
         criteria_tree.add_child(WaitForBlackboardVariable(var_name, True, False, name=check_name))
 
         scenario_criteria = py_trees.composites.Parallel(name=scenario_name,
-                                                policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+                                                policy=py_trees.common.ParallelPolicy.SuccessOnOne())
         for criterion in criteria:
-            scenario_criteria.add_child(criterion)
+            scenario_criteria.add_child(_adopt(criterion))
         scenario_criteria.add_child(WaitForBlackboardVariable(var_name, False, None, name=check_name))
 
         criteria_tree.add_child(scenario_criteria)

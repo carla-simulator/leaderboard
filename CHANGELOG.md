@@ -9,7 +9,12 @@
 * Added `TmAgent`, a TrafficManager-driven ego agent for stress-testing routes without an AD stack.
 * The spectator now follows the ego as a third-person chase camera.
 
-* Routes authored for leaderboard-2.1 no longer skip `ConstructionObstacle`, `ConstructionObstacleTwoWays` and `ParkingExit`: when a route lacks the `start_actor_flow` parameter their updated definitions require, the scenario falls back to its leaderboard-2.1 definition (provided by ScenarioRunner's `legacy_route_scenarios.py`).
+* Decoupled the leaderboard from ScenarioRunner.
+* Upgraded py_trees from 0.8.3 to 2.6.0.
+* Route scenarios now use the route versions of `ConstructionObstacle`, `ConstructionObstacleTwoWays` and `ParkingExit`.
+* Removed the `route_mode`, `criteria_enable`, `randomize`, `terminate_on_failure` and `optional` options.
+* Fixed `Accident`, `ParkedObstacle` and `HazardAtSideLane` ignoring `debug_mode`.
+* Updated requirements to match the new decoupled state.
 
 Known gaps on CARLA UE5: scenarios needing two-wheelers (e.g. HazardAtSideLane) require a CARLA build whose content registers them (in progress on the ue58 content branch); on stock 0.10 content they are skipped.
 

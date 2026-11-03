@@ -10,7 +10,6 @@ This module provides the ScenarioManager implementations.
 It must not be modified and is for reference only!
 """
 
-from __future__ import print_function
 import signal
 import sys
 import time
@@ -19,13 +18,14 @@ import py_trees
 import carla
 import threading
 
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
-from srunner.scenariomanager.timer import GameTime
-from srunner.scenariomanager.watchdog import Watchdog
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.timer import GameTime
+from leaderboard.scenariomanager.watchdog import Watchdog
 
 from leaderboard.autoagents.agent_wrapper import AgentWrapperFactory, AgentError
 from leaderboard.envs.sensor_interface import SensorReceivedNoData
 from leaderboard.utils.result_writer import ResultOutputProvider
+from leaderboard.utils.blackboard import set_blackboard
 
 
 class ScenarioManager(object):
@@ -193,7 +193,7 @@ class ScenarioManager(object):
             self.ego_vehicles[0].apply_control(ego_action)
 
             # Tick scenario. Add the ego control to the blackboard in case some behaviors want to change it
-            py_trees.blackboard.Blackboard().set("AV_control", ego_action, overwrite=True)
+            set_blackboard("AV_control", ego_action)
             self.scenario_tree.tick_once()
 
             if self._debug_mode > 1:
@@ -215,7 +215,7 @@ class ScenarioManager(object):
 
             if self._debug_mode > 2:
                 print("\n")
-                py_trees.display.print_ascii_tree(self.scenario_tree, show_status=True)
+                print(py_trees.display.ascii_tree(self.scenario_tree, show_status=True))
                 sys.stdout.flush()
 
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:

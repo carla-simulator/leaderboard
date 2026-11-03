@@ -7,12 +7,10 @@
 This module provides the base class for all autonomous agents
 """
 
-from __future__ import print_function
-
 from enum import Enum
 
 import carla
-from srunner.scenariomanager.timer import GameTime
+from leaderboard.scenariomanager.timer import GameTime
 
 from leaderboard.utils.route_manipulation import downsample_route
 from leaderboard.envs.sensor_interface import SensorInterface

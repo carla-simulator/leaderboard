@@ -7,8 +7,6 @@
 This module provides a dummy agent to control the ego vehicle
 """
 
-from __future__ import print_function
-
 import carla
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track

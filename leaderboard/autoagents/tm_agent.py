@@ -5,7 +5,7 @@
 
 """
 Traffic-Manager agent: drives the ego with CARLA's TrafficManager (autopilot)
-instead of an AD stack, so leaderboard / scenario_runner scenarios can be used
+instead of an AD stack, so the leaderboard scenarios can be used
 to stress-test TM behaviour. The route's global plan is handed to the TM via
 set_path so the ego follows the prescribed route, and the experimental TM
 capabilities under development (adaptive lateral control + junction
@@ -25,15 +25,13 @@ after the world tick, run_step returns the ego's *current* control (the one the
 TM last applied), re-applying it rather than fighting the TM with an empty one.
 """
 
-from __future__ import print_function
-
 import math
 import os
 
 import numpy as np
 
 import carla
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 

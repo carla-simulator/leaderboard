@@ -11,12 +11,10 @@ and follows it waypoint by waypoint, braking for vehicles and traffic lights.
 Useful to validate that a route and its scenarios are drivable at all.
 """
 
-from __future__ import print_function
-
 import carla
 from agents.navigation.basic_agent import BasicAgent
 
-from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
