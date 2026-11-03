@@ -14,7 +14,7 @@ forcing the ego to move right to avoid a possible collision.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (InvadingActorFlow,
                                                                       ScenarioTimeout,
                                                                       ActorDestroy,
@@ -24,6 +24,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import Scenario
 from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import RemoveRoadLane, ChangeOppositeBehavior, ReAddRoadLane
 from leaderboard.tools.scenario_helper import get_value_parameter
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class InvadingTurn(BasicScenario):
@@ -40,7 +41,7 @@ class InvadingTurn(BasicScenario):
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._trigger_location = config.trigger_points[0].location
@@ -97,7 +98,7 @@ class InvadingTurn(BasicScenario):
             spawn_transform = next_wp.transform
             spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y)
 
-            cone = CarlaDataProvider.request_new_actor('*constructioncone*', spawn_transform)
+            cone = request_new_actor('*constructioncone*', spawn_transform)
             self.other_actors.append(cone)
 
             self._obstacle_transforms.append([cone, spawn_transform])

@@ -12,14 +12,16 @@ Scenario in which the ego is parked between two vehicles and has to maneuver to 
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorDestroy, ActorTransformSetter, WaitForever, ChangeAutoPilot, ScenarioTimeout
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import DriveDistance
 from leaderboard.scenarios.basic_scenario import BasicScenario
+from leaderboard.tools.actor_state import destroy_actor
 
 from leaderboard.tools.background_manager import ChangeRoadBehavior
 from leaderboard.tools.scenario_helper import get_value_parameter
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class ParkingExit(BasicScenario):
@@ -46,9 +48,9 @@ class ParkingExit(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
-        self._tm = CarlaDataProvider.get_client().get_trafficmanager(
-            CarlaDataProvider.get_traffic_manager_port())
+        self._map = SimulationData.get_map()
+        self._tm = SimulationData.get_client().get_trafficmanager(
+            SimulationData.get_traffic_manager_port())
         self.timeout = timeout
 
         self._bp_attributes = {'base_type': 'car', 'generation': 3}
@@ -94,8 +96,7 @@ class ParkingExit(BasicScenario):
 
         self.parking_slots.append(front_points[0].transform.location)
 
-        actor_front = CarlaDataProvider.request_new_actor(
-            'vehicle.*', front_points[0].transform, rolename='scenario no lights', attribute_filter=self._bp_attributes)
+        actor_front = request_new_actor('vehicle.*', front_points[0].transform, rolename='scenario no lights', attribute_filter=self._bp_attributes)
         if actor_front is None:
             raise ValueError("Couldn't spawn the vehicle in front of the parking point")
         actor_front.apply_control(carla.VehicleControl(hand_brake=True))
@@ -113,14 +114,13 @@ class ParkingExit(BasicScenario):
 
         self.parking_slots.append(behind_points[0].transform.location)
 
-        actor_behind = CarlaDataProvider.request_new_actor(
-            "vehicle.*",
+        actor_behind = request_new_actor("vehicle.*",
             behind_points[0].transform,
             rolename="scenario no lights",
             attribute_filter=self._bp_attributes,
         )
         if actor_behind is None:
-            CarlaDataProvider.remove_actor_by_id(actor_front.id)
+            destroy_actor(actor_front)
             raise ValueError("Couldn't spawn the vehicle behind the parking point")
         actor_behind.apply_control(carla.VehicleControl(hand_brake=True))
         self.other_actors.append(actor_behind)
@@ -135,8 +135,7 @@ class ParkingExit(BasicScenario):
         self.ego_vehicles[0].set_location(self._ego_location)
 
         # Spawn the actor at the side of the ego
-        actor_side = CarlaDataProvider.request_new_actor(
-            'vehicle.*', self._reference_waypoint.transform, attribute_filter=self._bp_attributes)
+        actor_side = request_new_actor('vehicle.*', self._reference_waypoint.transform, attribute_filter=self._bp_attributes)
         if actor_side is None:
             raise ValueError("Couldn't spawn the vehicle at the side of the parking point")
         self.other_actors.append(actor_side)

@@ -11,7 +11,7 @@ Scenario with low visibility, the ego performs a turn only to find out that the 
 
 import carla
 import py_trees
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       Idle,
@@ -25,6 +25,7 @@ from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import HandleJunctionScenario
 
 from leaderboard.tools.scenario_helper import generate_target_waypoint_in_route
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class BlockedIntersection(BasicScenario):
@@ -39,7 +40,7 @@ class BlockedIntersection(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._trigger_location = config.trigger_points[0].location
@@ -66,8 +67,7 @@ class BlockedIntersection(BasicScenario):
         self._blocker_transform = waypoint.transform
 
         # Spawn the blocker vehicle
-        blocker = CarlaDataProvider.request_new_actor(
-            "vehicle.*.*", self._blocker_transform,
+        blocker = request_new_actor("vehicle.*.*", self._blocker_transform,
             attribute_filter={'base_type': 'car', 'has_lights': True, 'special_type': ''}
         )
         if blocker is None:

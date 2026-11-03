@@ -13,7 +13,7 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       SwitchWrongDirectionTest,
                                                                       BasicAgentBehavior,
@@ -29,6 +29,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions impor
                                                                                WaitUntilInFrontPosition)
 from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import LeaveSpaceInFront, SetMaxSpeed, ChangeOppositeBehavior, ChangeRoadBehavior
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 def get_value_parameter(config, name, p_type, default):
@@ -60,7 +61,7 @@ class Accident(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._first_distance = 10
@@ -118,7 +119,7 @@ class Accident(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=0.2)
         spawn_transform.rotation.yaw += 90
-        signal_prop = CarlaDataProvider.request_new_actor('static.prop.warningaccident', spawn_transform)
+        signal_prop = request_new_actor('static.prop.warningaccident', spawn_transform)
         if not signal_prop:
             raise ValueError("Couldn't spawn the indication prop asset")
         signal_prop.set_simulate_physics(False)
@@ -136,15 +137,13 @@ class Accident(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=1)
         if accident_actor:
-            actor = CarlaDataProvider.request_new_actor(
-                blueprint,
+            actor = request_new_actor(blueprint,
                 spawn_transform,
                 rolename="scenario no lights",
                 attribute_filter={"base_type": "car", "generation": 2},
             )
         else:
-            actor = CarlaDataProvider.request_new_actor(
-                blueprint, spawn_transform, rolename='scenario')
+            actor = request_new_actor(blueprint, spawn_transform, rolename='scenario')
         if not actor:
             raise ValueError("Couldn't spawn an obstacle actor")
 
@@ -291,7 +290,7 @@ class ParkedObstacle(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._trigger_distance = 50
@@ -346,7 +345,7 @@ class ParkedObstacle(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=0.2)
         spawn_transform.rotation.yaw += 90
-        signal_prop = CarlaDataProvider.request_new_actor('static.prop.warningaccident', spawn_transform)
+        signal_prop = request_new_actor('static.prop.warningaccident', spawn_transform)
         if not signal_prop:
             raise ValueError("Couldn't spawn the indication prop asset")
         signal_prop.set_simulate_physics(False)
@@ -363,8 +362,7 @@ class ParkedObstacle(BasicScenario):
 
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=1)
-        actor = CarlaDataProvider.request_new_actor(
-            blueprint,
+        actor = request_new_actor(blueprint,
             spawn_transform,
             rolename="scenario no lights",
             attribute_filter={"base_type": "car", "generation": 2},
@@ -497,7 +495,7 @@ class HazardAtSideLane(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._obstacle_distance = 9
@@ -540,7 +538,7 @@ class HazardAtSideLane(BasicScenario):
 
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=1)
-        actor = CarlaDataProvider.request_new_actor(blueprint, spawn_transform)
+        actor = request_new_actor(blueprint, spawn_transform)
         if not actor:
             raise ValueError("Couldn't spawn an obstacle actor")
 
@@ -550,7 +548,7 @@ class HazardAtSideLane(BasicScenario):
         """
         Custom initialization
         """
-        rng = CarlaDataProvider.get_random_seed()
+        rng = SimulationData.get_rng()
         self._starting_wp = self._map.get_waypoint(config.trigger_points[0].location)
 
         # Spawn the first bicycle

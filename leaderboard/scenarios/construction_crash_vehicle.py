@@ -11,7 +11,7 @@ moving along the road and encountering a construction setup.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorDestroy, ActorTransformSetter, SwitchWrongDirectionTest, ScenarioTimeout, Idle, WaitForever, OppositeActorFlow
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import (InTriggerDistanceToLocation,
                                                                                WaitUntilInFrontPosition)
@@ -23,6 +23,7 @@ from leaderboard.tools.background_manager import (RemoveRoadLane,
                                               ChangeOppositeBehavior)
 
 from leaderboard.tools.scenario_helper import get_value_parameter, get_interval_parameter
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class ConstructionObstacle(BasicScenario):
@@ -41,7 +42,7 @@ class ConstructionObstacle(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._trigger_distance = 30
@@ -105,7 +106,7 @@ class ConstructionObstacle(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=0.2)
         spawn_transform.rotation.yaw += 90
-        signal_prop = CarlaDataProvider.request_new_actor('static.prop.warningconstruction', spawn_transform)
+        signal_prop = request_new_actor('static.prop.warningconstruction', spawn_transform)
         if not signal_prop:
             raise ValueError("Couldn't spawn the indication prop asset")
         signal_prop.set_simulate_physics(False)
@@ -125,7 +126,7 @@ class ConstructionObstacle(BasicScenario):
             spawn_transform.location.z -= 200
             cone_transform = carla.Transform(location, start_transform.rotation)
 
-            cone = CarlaDataProvider.request_new_actor('static.prop.constructioncone', spawn_transform)
+            cone = request_new_actor('static.prop.constructioncone', spawn_transform)
             cone.set_simulate_physics(False)
             self.other_actors.append(cone)
 
@@ -159,8 +160,7 @@ class ConstructionObstacle(BasicScenario):
 
             spawn_transform = carla.Transform(transform.location, transform.rotation)
             spawn_transform.location.z -= 200
-            static = CarlaDataProvider.request_new_actor(
-                _prop_names[key], spawn_transform)
+            static = request_new_actor(_prop_names[key], spawn_transform)
             static.set_simulate_physics(False)
             self.other_actors.append(static)
 

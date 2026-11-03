@@ -12,7 +12,7 @@ Scenarios in which the ego has to cross a flow of bycicles
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import BicycleFlow, TrafficLightFreezer, ScenarioTimeout
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitEndIntersection
@@ -37,7 +37,7 @@ class CrossingBicycleFlow(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._start_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
@@ -60,7 +60,7 @@ class CrossingBicycleFlow(BasicScenario):
     def _initialize_actors(self, config):
 
         ego_location = config.trigger_points[0].location
-        self._ego_wp = CarlaDataProvider.get_map().get_waypoint(ego_location)
+        self._ego_wp = SimulationData.get_map().get_waypoint(ego_location)
 
         # Get the junction
         starting_wp = self._ego_wp

@@ -20,7 +20,7 @@ import carla
 from agents.navigation.local_planner import RoadOption
 
 from leaderboard.scenarioconfigs.scenario_configuration import ActorConfigurationData
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ScenarioTriggerer, Idle
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitForBlackboardVariable
@@ -43,6 +43,8 @@ from leaderboard.utils.route_parser import RouteParser, DIST_THRESHOLD
 from leaderboard.utils.route_manipulation import interpolate_trajectory
 
 import leaderboard.utils.parked_vehicles as parked_vehicles
+from leaderboard.tools.actor_state import destroy_actors, has_actor_ticked
+from leaderboard.tools.actor_factory import request_new_actor
 
 def _adopt(node):
     """Detaches a node from the tree its scenario built, so the route can own it.
@@ -68,11 +70,11 @@ class RouteScenario(BasicScenario):
         """
         Setup all relevant parameters and create scenarios along route
         """
-        self.client = CarlaDataProvider.get_client()
+        self.client = SimulationData.get_client()
         self.config = config
         self.route = self._get_route(config)
         self.world = world
-        self.map = CarlaDataProvider.get_map()
+        self.map = SimulationData.get_map()
         self.timeout = 10000
 
         self.all_scenario_classes = None
@@ -105,13 +107,14 @@ class RouteScenario(BasicScenario):
         # Do it after the 'super', as we need the behavior and criteria tree to be initialized
         self.build_scenarios(ego_vehicle, debug=debug_mode > 0)
 
-        # Set runtime init mode. Do this after the first set of scenarios has been initialized!
-        CarlaDataProvider.set_runtime_init_mode(True)
+        # From here on the manager advances the world, so nothing else may tick it.
+        # Do this after the first set of scenarios has been initialized!
+        SimulationData.set_do_tick(False)
 
     def _get_route(self, config):
         """
         Gets the route from the configuration, interpolating it to the desired density,
-        saving it to the CarlaDataProvider and sending it to the agent
+        saving it to the SimulationData and sending it to the agent
 
         Parameters:
         - world: CARLA world
@@ -121,7 +124,7 @@ class RouteScenario(BasicScenario):
 
         # Prepare route's trajectory (interpolate and add the GPS route)
         self.gps_route, self.route = interpolate_trajectory(config.keypoints)
-        CarlaDataProvider.set_ego_route(self.route)
+        SimulationData.set_ego_route(self.route)
         return self.route
 
     def _filter_scenarios(self, scenario_configs):
@@ -149,7 +152,7 @@ class RouteScenario(BasicScenario):
         elevate_transform = self.route[0][0]
         elevate_transform.location.z += 0.5
 
-        ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz',
+        ego_vehicle = request_new_actor('vehicle.lincoln.mkz',
                                                           elevate_transform,
                                                           rolename='hero')
         if not ego_vehicle:
@@ -207,9 +210,9 @@ class RouteScenario(BasicScenario):
 
         new_parked_vehicles = []
 
-        ego_location = CarlaDataProvider.get_location(ego_vehicle)
-        if ego_location is None:
+        if not has_actor_ticked(ego_vehicle):
             return
+        ego_location = ego_vehicle.get_location()
 
         remaining_parking_locations = []
         for slot in self.available_parking_locations:
@@ -220,7 +223,7 @@ class RouteScenario(BasicScenario):
 
             # Add all vehicles that are close to the ego and in a free space
             if is_close(slot_transform.location, ego_location) and is_free(slot_transform.location):
-                mesh_bp = CarlaDataProvider.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
+                mesh_bp = SimulationData.get_world().get_blueprint_library().filter("static.prop.mesh")[0]
                 mesh_bp.set_attribute("mesh_path", slot["mesh"])
                 mesh_bp.set_attribute("scale", "0.9")
                 new_parked_vehicles.append(carla.command.SpawnActor(mesh_bp, slot_transform))
@@ -230,7 +233,7 @@ class RouteScenario(BasicScenario):
         self.available_parking_locations = remaining_parking_locations
 
         # Add the actors to _parked_ids
-        for response in CarlaDataProvider.get_client().apply_batch_sync(new_parked_vehicles):
+        for response in SimulationData.get_client().apply_batch_sync(new_parked_vehicles):
             if response.error:
                 print("\033[93mWARNING: parked vehicle failed to spawn: {}\033[0m".format(response.error))
             else:
@@ -311,9 +314,9 @@ class RouteScenario(BasicScenario):
                 scenario_class = self.all_scenario_classes[scenario_config.type]
                 trigger_location = scenario_config.trigger_points[0].location
 
-                ego_location = CarlaDataProvider.get_location(ego_vehicle)
-                if ego_location is None:
+                if not has_actor_ticked(ego_vehicle):
                     continue
+                ego_location = ego_vehicle.get_location()
 
                 # Only init scenarios that are close to ego
                 if trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
@@ -367,14 +370,6 @@ class RouteScenario(BasicScenario):
             )
 
     # pylint: enable=no-self-use
-    def _initialize_actors(self, config):
-        """
-        Set other_actors to the superset of all scenario actors
-        """
-        # Add all the actors of the specific scenarios to self.other_actors
-        for scenario in self.list_scenarios:
-            self.other_actors.extend(scenario.other_actors)
-
     def _create_behavior(self):
         """
         Creates a parallel behavior that runs all of the scenarios part of the route.
@@ -456,13 +451,6 @@ class RouteScenario(BasicScenario):
         """
         return RouteTimeoutBehavior(self.ego_vehicles[0], self.route)
 
-    def _initialize_environment(self, world):
-        """
-        Set the weather
-        """
-        # Set the appropriate weather conditions
-        world.set_weather(self.config.weather[0][1])
-
     def _create_criterion_tree(self, scenario, criteria):
         """
         We can make use of the blackboard variables used by the behaviors themselves,
@@ -487,9 +475,27 @@ class RouteScenario(BasicScenario):
         criteria_tree.add_child(Idle())  # Avoid the indiviual criteria stopping the simulation
         return criteria_tree
 
+    def remove_all_actors(self):
+        """
+        Destroy the ego vehicle, the parked vehicles and the actors of every scenario of the route
+        """
+        # Called both by the evaluator and by __del__, which may run on a half built route
+        for scenario in getattr(self, 'list_scenarios', []):
+            scenario.remove_all_actors()
+        self.list_scenarios = []
+
+        parked_ids = getattr(self, '_parked_ids', [])
+        if parked_ids:
+            self.client.apply_batch([carla.command.DestroyActor(x) for x in parked_ids])
+        self._parked_ids = []
+
+        destroy_actors(getattr(self, 'ego_vehicles', []))
+        self.ego_vehicles = []
+
+        super().remove_all_actors()
+
     def __del__(self):
         """
         Remove all actors upon deletion
         """
-        self.client.apply_batch([carla.command.DestroyActor(x) for x in self._parked_ids])
         self.remove_all_actors()

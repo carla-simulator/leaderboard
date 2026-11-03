@@ -8,7 +8,7 @@ from queue import Queue
 from queue import Empty
 
 import carla
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.timer import GameTime
 
 
@@ -119,7 +119,7 @@ class SpeedometerReader(BaseReader):
 class OpenDriveMapReader(BaseReader):
 
     def __init__(self, vehicle, reading_frequency=1.0):
-        self._opendrive_data = CarlaDataProvider.get_map().to_opendrive()
+        self._opendrive_data = SimulationData.get_map().to_opendrive()
         super().__init__(vehicle, reading_frequency)
 
     def __call__(self):

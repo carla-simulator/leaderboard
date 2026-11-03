@@ -13,7 +13,7 @@ import py_trees
 
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       HandBrakeVehicle,
                                                                       KeepVelocity,
@@ -24,12 +24,14 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions impor
                                                                                InTimeToArrivalToLocation,
                                                                                DriveDistance)
 from leaderboard.scenarios.basic_scenario import BasicScenario
+from leaderboard.tools.actor_state import destroy_actor
 from leaderboard.tools.scenario_helper import (generate_target_waypoint,
                                            generate_target_waypoint_in_route,
                                            get_same_dir_lanes,
                                            get_opposite_dir_lanes)
 
 from leaderboard.tools.background_manager import LeaveCrossingSpace
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 def get_sidewalk_transform(waypoint, offset):
@@ -70,7 +72,7 @@ class BaseVehicleTurning(BasicScenario):
         Setup all relevant parameters and create scenario
         """
 
-        self._wmap = CarlaDataProvider.get_map()
+        self._wmap = SimulationData.get_map()
         self._trigger_location = config.trigger_points[0].location
         self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._ego_route = config.route
@@ -133,7 +135,7 @@ class BaseVehicleTurning(BasicScenario):
 
             # Get the adversary transform and spawn it
             self._adversary_transform = get_sidewalk_transform(sidewalk_waypoint, self._offset)
-            adversary = CarlaDataProvider.request_new_actor('vehicle.diamondback.century', self._adversary_transform)
+            adversary = request_new_actor('vehicle.diamondback.century', self._adversary_transform)
             if adversary is None:
                 self._number_of_attempts -= 1
                 move_dist = self._retry_dist
@@ -244,7 +246,7 @@ class VehicleTurningRoutePedestrian(BasicScenario):
         Setup all relevant parameters and create scenario
         """
 
-        self._wmap = CarlaDataProvider.get_map()
+        self._wmap = SimulationData.get_map()
         self._trigger_location = config.trigger_points[0].location
         self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._ego_route = config.route
@@ -313,7 +315,7 @@ class VehicleTurningRoutePedestrian(BasicScenario):
 
         # Get the adversary transform and spawn it
         self._spawn_transform = get_sidewalk_transform(spawn_wp, self._offset)
-        adversary = CarlaDataProvider.request_new_actor('walker.*', self._spawn_transform)
+        adversary = request_new_actor('walker.*', self._spawn_transform)
         if adversary is None:
             raise ValueError("Couldn't spawn adversary")
 
@@ -376,10 +378,10 @@ class VehicleTurningRoutePedestrian(BasicScenario):
     def _replace_walker(self, adversary):
         """As the adversary is probably, replace it with another one"""
         type_id = adversary.type_id
-        CarlaDataProvider.remove_actor_by_id(adversary.id)
+        destroy_actor(adversary)
         spawn_transform = self.ego_vehicles[0].get_transform()
         spawn_transform.location.z -= 50
-        adversary = CarlaDataProvider.request_new_actor(type_id, spawn_transform)
+        adversary = request_new_actor(type_id, spawn_transform)
         if not adversary:
             raise ValueError("Couldn't spawn the walker substitute")
         adversary.set_simulate_physics(False)

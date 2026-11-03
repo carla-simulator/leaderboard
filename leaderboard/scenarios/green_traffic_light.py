@@ -13,7 +13,7 @@ import py_trees
 
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import TrafficLightFreezer
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitEndIntersection
 from leaderboard.scenarios.basic_scenario import BasicScenario
@@ -32,7 +32,7 @@ class PriorityAtJunction(BasicScenario):
         Setup all relevant parameters and create scenario
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self._tl_dict = {}
 
         self.timeout = timeout
@@ -43,7 +43,7 @@ class PriorityAtJunction(BasicScenario):
         Get the junction and traffic lights
         """
         ego_location = config.trigger_points[0].location
-        self._ego_wp = CarlaDataProvider.get_map().get_waypoint(ego_location)
+        self._ego_wp = SimulationData.get_map().get_waypoint(ego_location)
 
         # Get the junction
         starting_wp = self._ego_wp

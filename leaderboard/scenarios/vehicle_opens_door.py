@@ -13,7 +13,7 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
@@ -25,6 +25,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorD
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import InTriggerDistanceToLocation, InTimeToArrivalToLocation, WaitUntilInFrontPosition
 from leaderboard.scenarios.basic_scenario import BasicScenario
 
+from leaderboard.tools.actor_factory import request_new_actor
 from leaderboard.tools.background_manager import (
     LeaveSpaceInFront,
     ChangeOppositeBehavior,
@@ -61,7 +62,7 @@ class VehicleOpensDoorTwoWays(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
 
         self.timeout = timeout
         self._min_trigger_dist = 10
@@ -132,8 +133,7 @@ class VehicleOpensDoorTwoWays(BasicScenario):
 
         self.parking_slots.append(self._parked_wp.transform.location)
 
-        self._parked_actor = CarlaDataProvider.request_new_actor(
-            "*vehicle.*", self._parked_wp.transform, attribute_filter={'has_dynamic_doors': True, 'base_type': 'car'})
+        self._parked_actor = request_new_actor("*vehicle.*", self._parked_wp.transform, attribute_filter={'has_dynamic_doors': True, 'base_type': 'car'})
         if not self._parked_actor:
             raise ValueError("Couldn't spawn the parked vehicle")
         self.other_actors.append(self._parked_actor)

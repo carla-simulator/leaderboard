@@ -17,7 +17,7 @@ import carla
 import pexpect
 import transforms3d
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent
 
@@ -204,7 +204,7 @@ class ROSBaseAgent(AutonomousAgent):
         # Checks that the received control timestamp is the expected one.
         # We need to retrieve the simulation time directly from the CARLA snapshot instead of using the GameTime object to avoid
         # a race condition between the execution of this callback and the update of the GameTime internal variables.
-        carla_timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
+        carla_timestamp = SimulationData.get_world().get_snapshot().timestamp.elapsed_seconds
         if abs(control_timestamp - carla_timestamp) > EPSILON:
             print(
                 "\033[93mWARNING: Expecting a vehicle command with timestamp {} but the timestamp received was {} .\033[0m".format(carla_timestamp, control_timestamp),
@@ -232,7 +232,7 @@ class ROSBaseAgent(AutonomousAgent):
         except queue.Empty:
             control_timestamp, control = 0, carla.VehicleControl()
 
-        carla_timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
+        carla_timestamp = SimulationData.get_world().get_snapshot().timestamp.elapsed_seconds
         if abs(control_timestamp - carla_timestamp) > EPSILON:
             print(
                 "\033[93mWARNING: Expecting a vehicle command with timestamp {} but the timestamp received was {} .\033[0m".format(carla_timestamp, control_timestamp),

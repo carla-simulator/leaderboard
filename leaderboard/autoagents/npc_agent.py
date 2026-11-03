@@ -6,7 +6,7 @@
 """
 NPC agent: drives the ego with the CARLA PythonAPI BasicAgent along the dense
 scenario route. It is a testing baseline, not a challenge submission: it reads
-the full route from the CarlaDataProvider (which real submissions cannot do)
+the full route from the SimulationData (which real submissions cannot do)
 and follows it waypoint by waypoint, braking for vehicles and traffic lights.
 Useful to validate that a route and its scenarios are drivable at all.
 """
@@ -14,7 +14,7 @@ Useful to validate that a route and its scenarios are drivable at all.
 import carla
 from agents.navigation.basic_agent import BasicAgent
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
@@ -52,7 +52,7 @@ class NpcAgent(AutonomousAgent):
         """
         if self._agent is None:
             hero_actor = None
-            for actor in CarlaDataProvider.get_world().get_actors().filter('vehicle.*'):
+            for actor in SimulationData.get_world().get_actors().filter('vehicle.*'):
                 if actor.attributes.get('role_name') == 'hero':
                     hero_actor = actor
                     break
@@ -65,8 +65,8 @@ class NpcAgent(AutonomousAgent):
             # Follow the dense scenario route directly: re-tracing a plan is
             # fragile inside junctions, where points can snap to overlapping
             # connector roads of other maneuvers.
-            route = CarlaDataProvider.get_ego_route()
-            wmap = CarlaDataProvider.get_map()
+            route = SimulationData.get_ego_route()
+            wmap = SimulationData.get_map()
             plan = []
             for transform, road_option in route:
                 wp = wmap.get_waypoint(transform.location)

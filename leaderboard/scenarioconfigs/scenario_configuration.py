@@ -19,13 +19,12 @@ class ActorConfigurationData(object):
     """
 
     def __init__(self, model, transform, rolename='other', speed=0, autopilot=False,
-                 random=False, color=None, category="car", args=None):
+                 color=None, category="car", args=None):
         self.model = model
         self.rolename = rolename
         self.transform = transform
         self.speed = speed
         self.autopilot = autopilot
-        self.random_location = random
         self.color = color
         self.category = category
         self.args = args
@@ -53,13 +52,9 @@ class ActorConfigurationData(object):
         if 'autopilot' in node.keys():
             autopilot = True
 
-        random_location = False
-        if 'random_location' in node.keys():
-            random_location = True
-
         color = node.attrib.get('color', None)
 
-        return ActorConfigurationData(model, transform, rolename, speed, autopilot, random_location, color)
+        return ActorConfigurationData(model, transform, rolename, speed, autopilot, color)
 
     @staticmethod
     def parse_from_dict(actor_dict, rolename):
@@ -78,10 +73,9 @@ class ActorConfigurationData(object):
         rolename = actor_dict['rolename'] if 'rolename' in actor_dict else rolename
         speed = actor_dict['speed'] if 'speed' in actor_dict else 0
         autopilot = actor_dict['autopilot'] if 'autopilot' in actor_dict else False
-        random_location = actor_dict['random_location'] if 'random_location' in actor_dict else False
         color = actor_dict['color'] if 'color' in actor_dict else None
 
-        return ActorConfigurationData(model, transform, rolename, speed, autopilot, random_location, color)
+        return ActorConfigurationData(model, transform, rolename, speed, autopilot, color)
 
 
 class ScenarioConfiguration(object):
@@ -105,6 +99,5 @@ class ScenarioConfiguration(object):
         self.route = None
         self.agent = None
         self.weather = carla.WeatherParameters(sun_altitude_angle=70, cloudiness=50)
-        self.friction = None
         self.subtype = None
         self.route_var_name = None

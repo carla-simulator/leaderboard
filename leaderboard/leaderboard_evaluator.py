@@ -21,7 +21,8 @@ import sys
 import carla
 import signal
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
+from leaderboard.tools.map_utils import resolve_map_name
 from leaderboard.scenariomanager.timer import GameTime
 from leaderboard.scenariomanager.watchdog import Watchdog
 
@@ -145,8 +146,6 @@ class LeaderboardEvaluator(object):
         """
         Remove and destroy all actors
         """
-        CarlaDataProvider.cleanup()
-
         if self._agent_watchdog:
             self._agent_watchdog.stop()
 
@@ -158,6 +157,14 @@ class LeaderboardEvaluator(object):
             print("\n\033[91mFailed to stop the agent:")
             print(f"\n{traceback.format_exc()}\033[0m")
 
+        # Make sure no sensors are left streaming. Actors are destroyed by whoever
+        # created them, but a leaked sensor would keep feeding an agent that is gone.
+        # Before the ego goes, or its sensors are already gone with it and this fails.
+        alive_sensors = self.world.get_actors().filter('*sensor*')
+        for sensor in alive_sensors:
+            sensor.stop()
+            sensor.destroy()
+
         if self.route_scenario:
             self.route_scenario.remove_all_actors()
             self.route_scenario = None
@@ -168,11 +175,7 @@ class LeaderboardEvaluator(object):
             self._client_timed_out = not self.manager.get_running_status()
             self.manager.cleanup()
 
-        # Make sure no sensors are left streaming
-        alive_sensors = self.world.get_actors().filter('*sensor*')
-        for sensor in alive_sensors:
-            sensor.stop()
-            sensor.destroy()
+        SimulationData.cleanup()
 
     def _setup_simulation(self, args):
         """
@@ -218,11 +221,11 @@ class LeaderboardEvaluator(object):
 
     def _load_and_wait_for_world(self, args, town):
         """
-        Load a new CARLA world without changing the settings and provide data to CarlaDataProvider
+        Load a new CARLA world without changing the settings and provide data to SimulationData
         """
         # CARLA UE5 requires exact map names (e.g. the classic towns only exist
         # as layered '_Opt' variants); resolve against the server's map list.
-        town = CarlaDataProvider.resolve_map_name(town, self.client)
+        town = resolve_map_name(self.client, town)
         self.world = self.client.load_world(town, reset_settings=False)
 
         # Large Map settings are always reset, for some reason
@@ -232,9 +235,9 @@ class LeaderboardEvaluator(object):
         self.world.apply_settings(settings)
 
         self.world.reset_all_traffic_lights()
-        CarlaDataProvider.set_client(self.client)
-        CarlaDataProvider.set_traffic_manager_port(args.traffic_manager_port)
-        CarlaDataProvider.set_world(self.world)
+        SimulationData.set_client(self.client)
+        SimulationData.set_traffic_manager_port(args.traffic_manager_port)
+        SimulationData.prepare_world(self.world)
 
         # This must be here so that all route repetitions use the same 'unmodified' seed
         self.traffic_manager.set_random_device_seed(args.traffic_manager_seed)
@@ -242,7 +245,7 @@ class LeaderboardEvaluator(object):
         # Wait for the world to be ready
         self.world.tick()
 
-        map_name = CarlaDataProvider.get_map().name.split("/")[-1]
+        map_name = SimulationData.get_map().name.split("/")[-1]
         if map_name != town:
             raise Exception("The CARLA server uses the wrong map!"
                             " This scenario requires the use of map {}".format(town))

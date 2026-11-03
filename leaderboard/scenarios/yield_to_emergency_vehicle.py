@@ -12,7 +12,7 @@ Scenario in which the ego has to yield its lane to emergency vehicle.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorTransformSetter,
                                                                       ActorDestroy,
                                                                       Idle,
@@ -23,6 +23,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions impor
                                                                                DriveDistance)
 from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import RemoveRoadLane, ReAddRoadLane
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class YieldToEmergencyVehicle(BasicScenario):
@@ -41,7 +42,7 @@ class YieldToEmergencyVehicle(BasicScenario):
         and instantiate scenario manager
         """
         self._world = world
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self.timeout = timeout
         self._ev_idle_time = 10  # seconds
 
@@ -82,8 +83,7 @@ class YieldToEmergencyVehicle(BasicScenario):
 
         self._ev_start_transform = ev_points[0].transform
 
-        actor = CarlaDataProvider.request_new_actor(
-            "vehicle.*.*",
+        actor = request_new_actor("vehicle.*.*",
             self._ev_start_transform,
             attribute_filter={"special_type": "emergency"},
         )

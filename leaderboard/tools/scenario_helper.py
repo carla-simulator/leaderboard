@@ -19,7 +19,7 @@ import carla
 from agents.tools.misc import vector
 from agents.navigation.local_planner import RoadOption
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 
 def get_value_parameter(config, name, p_type, default):
@@ -58,7 +58,7 @@ def get_geometric_linear_intersection(ego_location, other_location, move_to_junc
     @return point of intersection of the two vehicles
     """
 
-    wp_ego_1 = CarlaDataProvider.get_map().get_waypoint(ego_location)
+    wp_ego_1 = SimulationData.get_map().get_waypoint(ego_location)
     wp_ego_2 = wp_ego_1.next(1)[0]
 
     if move_to_junction:
@@ -73,7 +73,7 @@ def get_geometric_linear_intersection(ego_location, other_location, move_to_junc
     ego_1_loc = wp_ego_1.transform.location
     ego_2_loc = wp_ego_2.transform.location
 
-    wp_other_1 = CarlaDataProvider.get_world().get_map().get_waypoint(other_location)
+    wp_other_1 = SimulationData.get_world().get_map().get_waypoint(other_location)
     wp_other_2 = wp_other_1.next(1)[0]
 
     if move_to_junction:
@@ -256,7 +256,7 @@ def generate_target_waypoint_in_route(waypoint, route):
     @returns a waypoint list according to turn input
     """
     target_waypoint = None
-    wmap = CarlaDataProvider.get_map()
+    wmap = SimulationData.get_map()
     reached_junction = False
 
     # Get the route location
@@ -323,7 +323,7 @@ def detect_lane_obstacle(actor, extension_factor=3, margin=1.02):
     """
     This function identifies if an obstacle is present in front of the reference actor
     """
-    world_actors = CarlaDataProvider.get_all_actors().filter('vehicle.*')
+    world_actors = actor.get_world().get_actors().filter('vehicle.*')
     actor_bbox = actor.bounding_box
     actor_transform = actor.get_transform()
     actor_location = actor_transform.location
@@ -430,15 +430,12 @@ def filter_junction_wp_direction(reference_wp, wp_list, direction='opposite'):
     return filtered_wps
 
 
-def get_closest_traffic_light(waypoint, traffic_lights=None):
+def get_closest_traffic_light(waypoint, traffic_lights):
     """
     Returns the traffic light closest to the waypoint. The distance is computed between the
     waypoint and the traffic light's bounding box.
-    Checks all traffic lights part of 'traffic_lights', or all the town ones, if None are passed.
+    Checks the traffic lights given in 'traffic_lights'.
     """
-    if not traffic_lights:
-        traffic_lights = CarlaDataProvider.get_all_actors().filter('*traffic_light*')
-
     closest_dist = float('inf')
     closest_tl = None
 
@@ -471,12 +468,12 @@ def get_troad_from_transform(actor_transform):
     This function finds the lateral road position (t) from actor_transform
     """
     actor_loc = actor_transform.location
-    c_wp = CarlaDataProvider.get_map().get_waypoint(actor_loc)
+    c_wp = SimulationData.get_map().get_waypoint(actor_loc)
     left_lanes, right_lanes = [], []
     # opendrive standard: (left ==> +ve lane_id) and (right ==> -ve lane_id)
-    ref_lane = CarlaDataProvider.get_map().get_waypoint_xodr(c_wp.road_id, 0, c_wp.s)
+    ref_lane = SimulationData.get_map().get_waypoint_xodr(c_wp.road_id, 0, c_wp.s)
     for i in range(-50, 50):
-        _wp = CarlaDataProvider.get_map().get_waypoint_xodr(c_wp.road_id, i, c_wp.s)
+        _wp = SimulationData.get_map().get_waypoint_xodr(c_wp.road_id, i, c_wp.s)
         if _wp:
             if i < 0:
                 left_lanes.append(_wp)
@@ -522,10 +519,10 @@ def get_distance_between_actors(current, target, distance_type="euclidianDistanc
     attributes
     """
 
-    target_transform = CarlaDataProvider.get_transform(target)
-    current_transform = CarlaDataProvider.get_transform(current)
-    target_wp = CarlaDataProvider.get_map().get_waypoint(target_transform.location)
-    current_wp = CarlaDataProvider.get_map().get_waypoint(current_transform.location)
+    target_transform = target.get_transform()
+    current_transform = current.get_transform()
+    target_wp = SimulationData.get_map().get_waypoint(target_transform.location)
+    current_wp = SimulationData.get_map().get_waypoint(current_transform.location)
 
     extent_sum_x, extent_sum_y = 0, 0
     if freespace:

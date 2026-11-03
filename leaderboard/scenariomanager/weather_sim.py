@@ -15,7 +15,8 @@ behavior of the sun.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
+from leaderboard.tools.actor_state import has_actor_ticked
 
 
 class RouteWeatherBehavior(py_trees.behaviour.Behaviour):
@@ -36,15 +37,15 @@ class RouteWeatherBehavior(py_trees.behaviour.Behaviour):
         Setup parameters
         """
         super().__init__(name)
-        self._world = CarlaDataProvider.get_world()
+        self._world = SimulationData.get_world()
         self._ego_vehicle = ego_vehicle
         self._route = route
 
         self._weathers = weathers
         if self._weathers[0][0] != 0:  # Make sure the weather is defined at 0%
-            self._weathers.insert(0, [0, self._weathers[0]])
+            self._weathers.insert(0, [0, self._weathers[0][1]])
         if self._weathers[-1][0] != 100:  # Make sure the weather is defined at 100%
-            self._weathers.append([100, self._weathers[-1]])
+            self._weathers.append([100, self._weathers[-1][1]])
 
         self._wsize = 3
 
@@ -66,6 +67,10 @@ class RouteWeatherBehavior(py_trees.behaviour.Behaviour):
                     )
                     debug_perc = new_perc
         self._route_weathers = self.get_route_weathers()
+
+        # update() only sets the weather once the ego advances a route index, so the
+        # weather at the start of the route has to be applied here.
+        self._world.set_weather(self._route_weathers[0])
 
     def _get_route_percentages(self):
         """
@@ -130,9 +135,9 @@ class RouteWeatherBehavior(py_trees.behaviour.Behaviour):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        ego_location = CarlaDataProvider.get_location(self._ego_vehicle)
-        if ego_location is None:
+        if not has_actor_ticked(self._ego_vehicle):
             return new_status
+        ego_location = self._ego_vehicle.get_location()
 
         new_index = self._current_index
 
