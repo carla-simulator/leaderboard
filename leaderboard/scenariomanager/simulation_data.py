@@ -153,6 +153,14 @@ class SimulationData(object):
         """
         Reset every entry, so that the next route starts from a clean state
         """
+        if SimulationData._world is not None:
+            try:
+                debug = SimulationData._world.debug
+                debug.clear_debug_shape()
+                debug.clear_debug_string()
+            except RuntimeError:
+                pass  # Cleanup also runs after a crash; the resets below must still happen
+
         SimulationData._map = None
         SimulationData._world = None
         SimulationData._do_tick = False
