@@ -22,10 +22,11 @@ import shapely.geometry
 
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.timer import GameTime
 from leaderboard.scenariomanager.traffic_events import TrafficEvent, TrafficEventType
 from leaderboard.utils.blackboard import get_blackboard, set_blackboard
+from leaderboard.tools.actor_state import get_ground_speed, has_actor_ticked
 
 
 class Criterion(py_trees.behaviour.Behaviour):
@@ -117,7 +118,7 @@ class CollisionTest(Criterion):
     def initialise(self):
         """
         Creates the sensor and callback"""
-        world = CarlaDataProvider.get_world()
+        world = SimulationData.get_world()
         blueprint = world.get_blueprint_library().find('sensor.other.collision')
         self._collision_sensor = world.spawn_actor(blueprint, carla.Transform(), attach_to=self.actor)
         self._collision_sensor.listen(lambda event: self._count_collisions(event))  # pylint: disable=unnecessary-lambda
@@ -132,7 +133,7 @@ class CollisionTest(Criterion):
         if self._terminate_on_failure and (self.test_status == "FAILURE"):
             new_status = py_trees.common.Status.FAILURE
 
-        actor_location = CarlaDataProvider.get_location(self.actor)
+        actor_location = self.actor.get_location()
 
         # Check if the last collision can be ignored
         if self._collision_location:
@@ -160,7 +161,7 @@ class CollisionTest(Criterion):
 
     def _count_collisions(self, event):     # pylint: disable=too-many-return-statements
         """Update collision count"""
-        actor_location = CarlaDataProvider.get_location(self.actor)
+        actor_location = self.actor.get_location()
 
         # Check if the care about the other actor
         if self._other_actor and self._other_actor.id != event.other_actor.id:
@@ -182,7 +183,7 @@ class CollisionTest(Criterion):
                 return
 
         # If the actor speed is 0, the collision isn't its fault
-        if CarlaDataProvider.get_velocity(self.actor) < self.EPSILON:
+        if get_ground_speed(self.actor) < self.EPSILON:
             return
 
         # The collision is valid, save the data
@@ -253,24 +254,26 @@ class ActorBlockedTest(Criterion):
             set_blackboard("AC_SwitchActorBlockedTest", None)
 
         if self._active:
-            linear_speed = CarlaDataProvider.get_velocity(self.actor)
-            if linear_speed is not None:
-                if linear_speed < self._min_speed and self._time_last_valid_state:
-                    if (GameTime.get_time() - self._time_last_valid_state) > self._max_time:
-                        # The actor has been "blocked" for too long, save the data
-                        self.test_status = "FAILURE"
+            if not has_actor_ticked(self.actor):
+                return new_status
 
-                        vehicle_location = CarlaDataProvider.get_location(self.actor)
-                        event = TrafficEvent(event_type=TrafficEventType.VEHICLE_BLOCKED, frame=GameTime.get_frame())
-                        event.set_message('Agent got blocked at (x={}, y={}, z={})'.format(
-                            round(vehicle_location.x, 3),
-                            round(vehicle_location.y, 3),
-                            round(vehicle_location.z, 3))
-                        )
-                        event.set_dict({'location': vehicle_location})
-                        self.events.append(event)
-                else:
-                    self._time_last_valid_state = GameTime.get_time()
+            linear_speed = get_ground_speed(self.actor)
+            if linear_speed < self._min_speed and self._time_last_valid_state:
+                if (GameTime.get_time() - self._time_last_valid_state) > self._max_time:
+                    # The actor has been "blocked" for too long, save the data
+                    self.test_status = "FAILURE"
+
+                    vehicle_location = self.actor.get_location()
+                    event = TrafficEvent(event_type=TrafficEventType.VEHICLE_BLOCKED, frame=GameTime.get_frame())
+                    event.set_message('Agent got blocked at (x={}, y={}, z={})'.format(
+                        round(vehicle_location.x, 3),
+                        round(vehicle_location.y, 3),
+                        round(vehicle_location.z, 3))
+                    )
+                    event.set_dict({'location': vehicle_location})
+                    self.events.append(event)
+            else:
+                self._time_last_valid_state = GameTime.get_time()
 
         if self._terminate_on_failure and (self.test_status == "FAILURE"):
             new_status = py_trees.common.Status.FAILURE
@@ -305,7 +308,7 @@ class OutsideRouteLanesTest(Criterion):
         self._route_length = len(self._route)
         self._route_transforms, _ = zip(*self._route)
 
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
         self._last_ego_waypoint = self._map.get_waypoint(self.actor.get_location())
 
         self._outside_lane_active = False
@@ -330,9 +333,9 @@ class OutsideRouteLanesTest(Criterion):
         new_status = py_trees.common.Status.RUNNING
 
         # Some of the vehicle parameters
-        location = CarlaDataProvider.get_location(self.actor)
-        if location is None:
+        if not has_actor_ticked(self.actor):
             return new_status
+        location = self.actor.get_location()
 
         # Deactivate / activate checking by blackboard message
         active = get_blackboard('AC_SwitchWrongDirectionTest')
@@ -489,7 +492,7 @@ class InRouteTest(Criterion):
         else:
             self._offroad_min = self._offroad_min
 
-        self._world = CarlaDataProvider.get_world()
+        self._world = SimulationData.get_world()
         self._route_transforms, _ = zip(*self._route)
         self._route_length = len(self._route)
         self._current_index = 0
@@ -516,9 +519,9 @@ class InRouteTest(Criterion):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        location = CarlaDataProvider.get_location(self.actor)
-        if location is None:
+        if not has_actor_ticked(self.actor):
             return new_status
+        location = self.actor.get_location()
 
         if self._terminate_on_failure and (self.test_status == "FAILURE"):
             new_status = py_trees.common.Status.FAILURE
@@ -609,7 +612,7 @@ class RouteCompletionTest(Criterion):
         self.units = "%"
         self.success_value = 100
         self._route = route
-        self._map = CarlaDataProvider.get_map()
+        self._map = SimulationData.get_map()
 
         self._index = 0
         self._route_length = len(self._route)
@@ -643,9 +646,9 @@ class RouteCompletionTest(Criterion):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        location = CarlaDataProvider.get_location(self.actor)
-        if location is None:
+        if not has_actor_ticked(self.actor):
             return new_status
+        location = self.actor.get_location()
 
         if self._terminate_on_failure and (self.test_status == "FAILURE"):
             new_status = py_trees.common.Status.FAILURE
@@ -710,13 +713,13 @@ class RunningRedLightTest(Criterion):
         Init
         """
         super().__init__(name, actor, terminate_on_failure=terminate_on_failure)
-        self._world = CarlaDataProvider.get_world()
-        self._map = CarlaDataProvider.get_map()
+        self._world = SimulationData.get_world()
+        self._map = SimulationData.get_map()
         self._list_traffic_lights = []
         self._last_red_light_id = None
         self.debug = False
 
-        all_actors = CarlaDataProvider.get_all_actors()
+        all_actors = self._world.get_actors()
         for _actor in all_actors:  # pylint: disable=not-an-iterable
             if 'traffic_light' in _actor.type_id:
                 center, waypoints = self.get_traffic_light_waypoints(_actor)
@@ -739,7 +742,7 @@ class RunningRedLightTest(Criterion):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        transform = CarlaDataProvider.get_transform(self.actor)
+        transform = self.actor.get_transform()
         location = transform.location
         if location is None:
             return new_status
@@ -784,7 +787,7 @@ class RunningRedLightTest(Criterion):
                 tail_wp = self._map.get_waypoint(tail_far_pt)
 
                 # Calculate the dot product (Might be unscaled, as only its sign is important)
-                ve_dir = CarlaDataProvider.get_transform(self.actor).get_forward_vector()
+                ve_dir = self.actor.get_transform().get_forward_vector()
                 wp_dir = wp.transform.get_forward_vector()
 
                 # Check the lane until all the "tail" has passed
@@ -890,15 +893,15 @@ class RunningStopTest(Criterion):
     def __init__(self, actor, name="RunningStopTest", terminate_on_failure=False):
         """ """
         super().__init__(name, actor, terminate_on_failure=terminate_on_failure)
-        self._world = CarlaDataProvider.get_world()
-        self._map = CarlaDataProvider.get_map()
+        self._world = SimulationData.get_world()
+        self._map = SimulationData.get_map()
         self._list_stop_signs = []
         self._target_stop_sign = None
         self._stop_completed = False
 
         self._last_failed_stop = None
 
-        for _actor in CarlaDataProvider.get_all_actors():  # pylint: disable=not-an-iterable
+        for _actor in self._world.get_actors():  # pylint: disable=not-an-iterable
             if 'traffic.stop' in _actor.type_id:
                 self._list_stop_signs.append(_actor)
 
@@ -998,7 +1001,7 @@ class RunningStopTest(Criterion):
             return new_status
 
         if not self._stop_completed:
-            current_speed = CarlaDataProvider.get_velocity(self.actor)
+            current_speed = get_ground_speed(self.actor)
             if current_speed < self.SPEED_THRESHOLD:
                 self._stop_completed = True
 
@@ -1093,9 +1096,9 @@ class MinimumSpeedRouteTest(Criterion):
             new_status = py_trees.common.Status.FAILURE
 
         # Check the actor progress through the route
-        location = CarlaDataProvider.get_location(self.actor)
-        if location is None:
+        if not has_actor_ticked(self.actor):
             return new_status
+        location = self.actor.get_location()
 
         for index in range(self._index, min(self._index + self.WINDOWS_SIZE + 1, self._route_length)):
             # Get the dot product to know if it has passed this location
@@ -1115,18 +1118,18 @@ class MinimumSpeedRouteTest(Criterion):
             self._speed_points = 0
 
         # Get the actor speed
-        velocity = CarlaDataProvider.get_velocity(self.actor)
-        if velocity is None:
+        if not has_actor_ticked(self.actor):
             return new_status
+        velocity = get_ground_speed(self.actor)
 
         # Get the speed of the surrounding Background Activity
-        all_vehicles = CarlaDataProvider.get_all_actors().filter('vehicle*')
+        all_vehicles = self.actor.get_world().get_actors().filter('vehicle*')
         background_vehicles = [v for v in all_vehicles if v.attributes['role_name'] == 'background']
 
         if background_vehicles:
             frame_mean_speed = 0
             for vehicle in background_vehicles:
-                frame_mean_speed += CarlaDataProvider.get_velocity(vehicle)
+                frame_mean_speed += get_ground_speed(vehicle)
             frame_mean_speed /= len(background_vehicles)
 
             # Record the data
@@ -1201,14 +1204,14 @@ class YieldToEmergencyVehicleTest(Criterion):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        actor_location = CarlaDataProvider.get_location(self.actor)
-        if not actor_location:
+        if not has_actor_ticked(self.actor):
             return new_status
-        ev_location = CarlaDataProvider.get_location(self._ev)
-        if not ev_location:
+        actor_location = self.actor.get_location()
+        if not has_actor_ticked(self._ev):
             return new_status
+        ev_location = self._ev.get_location()
 
-        ev_direction = CarlaDataProvider.get_transform(self._ev).get_forward_vector()
+        ev_direction = self._ev.get_transform().get_forward_vector()
         actor_ev_vector = actor_location - ev_location
 
         if ev_direction.dot(actor_ev_vector) > 0:

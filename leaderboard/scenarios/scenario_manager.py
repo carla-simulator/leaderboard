@@ -18,7 +18,7 @@ import py_trees
 import carla
 import threading
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.timer import GameTime
 from leaderboard.scenariomanager.watchdog import Watchdog
 
@@ -117,7 +117,7 @@ class ScenarioManager(object):
         self.other_actors = scenario.other_actors
         self.repetition_number = rep_number
 
-        self._spectator = CarlaDataProvider.get_world().get_spectator()
+        self._spectator = SimulationData.get_world().get_spectator()
 
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
@@ -163,9 +163,9 @@ class ScenarioManager(object):
         Run next tick of scenario and the agent and tick the world.
         """
         if self._running and self.get_running_status():
-            CarlaDataProvider.get_world().tick(self._timeout)
+            SimulationData.get_world().tick(self._timeout)
 
-        timestamp = CarlaDataProvider.get_world().get_snapshot().timestamp
+        timestamp = SimulationData.get_world().get_snapshot().timestamp
 
         if self._timestamp_last_run < timestamp.elapsed_seconds and self._running:
             self._timestamp_last_run = timestamp.elapsed_seconds
@@ -173,7 +173,6 @@ class ScenarioManager(object):
             self._watchdog.update()
             # Update game time and actor information
             GameTime.on_carla_tick(timestamp)
-            CarlaDataProvider.on_carla_tick()
             self._watchdog.pause()
 
             try:

@@ -12,7 +12,7 @@ Wrapper for autonomous agents required for tracking and checking of used sensors
 import math
 
 import carla
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 from leaderboard.envs.sensor_interface import CallBack, OpenDriveMapReader, SpeedometerReader, SensorConfigurationInvalid
 from leaderboard.autoagents.autonomous_agent import Track
@@ -146,13 +146,13 @@ class AgentWrapper(object):
         attributes = {}
 
         if type_ == 'sensor.opendrive_map':
-            delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+            delta_time = SimulationData.get_world().get_settings().fixed_delta_seconds
             attributes['reading_frequency'] = 1 / delta_time
             sensor_location = carla.Location()
             sensor_rotation = carla.Rotation()
 
         elif type_ == 'sensor.speedometer':
-            delta_time = CarlaDataProvider.get_world().get_settings().fixed_delta_seconds
+            delta_time = SimulationData.get_world().get_settings().fixed_delta_seconds
             attributes['reading_frequency'] = 1 / delta_time
             sensor_location = carla.Location()
             sensor_rotation = carla.Rotation()
@@ -236,7 +236,7 @@ class AgentWrapper(object):
         :param vehicle: ego vehicle
         :return:
         """
-        world = CarlaDataProvider.get_world()
+        world = SimulationData.get_world()
         bp_library = world.get_blueprint_library()
         for sensor_spec in self._agent.sensors():
             type_, id_, sensor_transform, attributes = self._preprocess_sensor_spec(sensor_spec)
@@ -252,7 +252,7 @@ class AgentWrapper(object):
                 bp = bp_library.find(type_)
                 for key, value in attributes.items():
                     bp.set_attribute(str(key), str(value))
-                sensor = CarlaDataProvider.get_world().spawn_actor(bp, sensor_transform, vehicle)
+                sensor = SimulationData.get_world().spawn_actor(bp, sensor_transform, vehicle)
 
             # setup callback
             sensor.listen(CallBack(id_, type_, sensor, self._agent.sensor_interface))
@@ -274,7 +274,7 @@ class AgentWrapper(object):
         self._sensors_list = []
 
         # Tick once to destroy the sensors
-        CarlaDataProvider.get_world().tick()
+        SimulationData.get_world().tick()
 
 
 class ROSAgentWrapper(AgentWrapper):
@@ -304,7 +304,7 @@ class ROSAgentWrapper(AgentWrapper):
             self._sensors_list.append(uid)
 
         # Tick once to spawn the sensors
-        CarlaDataProvider.get_world().tick()
+        SimulationData.get_world().tick()
 
     def cleanup(self):
         for uid in self._sensors_list:
@@ -312,4 +312,4 @@ class ROSAgentWrapper(AgentWrapper):
         self._sensors_list.clear()
 
         # Tick once to destroy the sensors
-        CarlaDataProvider.get_world().tick()
+        SimulationData.get_world().tick()

@@ -2,7 +2,7 @@
 
 * Made the branch work against CARLA UE5 (0.10.x) servers, paired with the `ue58-dev` branch of ScenarioRunner:
     - Sensor callbacks dispatched on `carla.libcarla.*` types, which no longer exist as a submodule in the CARLA 0.10 wheel; they now use the top-level `carla.*` classes (this made every sensorized agent fail with "sensor took too long").
-    - Requested towns are resolved against the server's available maps through `CarlaDataProvider.resolve_map_name` (CARLA UE5 needs exact names, e.g. the classic towns only ship as `_Opt` layered variants).
+    - Requested towns are resolved against the server's available maps through `resolve_map_name` (CARLA UE5 needs exact names, e.g. the classic towns only ship as `_Opt` layered variants).
     - The ego blueprint `vehicle.lincoln.mkz_2020` is translated by ScenarioRunner's UE5 blueprint aliases.
     - ROS agent support (and its `pexpect`/`transforms3d` dependencies) is imported lazily, so plain Python agents work without them.
 * Brought bug fixes and tools from `master`: Python 3.9+ route parser, dependency-version compatibility, Speedometer fix, OpenDRIVE reading frequency removal, the log agent, and the LB1-to-LB2 route bridge script.
@@ -15,6 +15,17 @@
 * Removed the `route_mode`, `criteria_enable`, `randomize`, `terminate_on_failure` and `optional` options.
 * Fixed `Accident`, `ParkedObstacle` and `HazardAtSideLane` ignoring `debug_mode`.
 * Updated requirements to match the new decoupled state.
+
+* Renamed `CarlaDataProvider` to `SimulationData`, in `leaderboard/scenariomanager/simulation_data.py`. It now holds only the client, the world, its map, the global route planner, the random state and the traffic manager port.
+* Actor state is no longer cached. Read location and transform from the CARLA Python API; `CarlaDataProvider.get_velocity()` becomes `get_ground_speed()` in `leaderboard/tools/actor_state.py`, which returns the 2D speed as before. An actor spawned with `tick=False` reads as the origin until the world next advances: `has_actor_ticked()`, in the same module, is the check for it.
+* Moved spawning to `leaderboard/tools/actor_factory.py`: `request_new_actor`, `request_new_actors`, `request_new_batch_actors`, `handle_actor_batch`, `create_blueprint` and `resolve_model_name`. Moved `resolve_map_name` to `leaderboard/tools/map_utils.py`.
+* Whoever creates an actor destroys it. The global actor pool is gone, together with `cleanup()`'s batch destroy, `actor_id_exists`, `remove_actor_by_id` and `get_hero_actor`; a scenario destroys `self.other_actors` in `remove_all_actors()`, an atomic destroys what it spawned in `terminate()`, and `destroy_actor`/`destroy_actors` in `leaderboard/tools/actor_state.py` do it. The evaluator still sweeps the world for leftover sensors.
+* Replaced `is_sync_mode()` and the runtime init mode with `SimulationData.set_do_tick()` and `SimulationData.tick_world()`, which advances the world or waits for whoever is advancing it.
+* Renamed `get_random_seed()` to `get_rng()` and `set_world()` to `prepare_world()`. Removed `prepare_map()` and the traffic light map.
+* Removed `random_location` from spawning and from `ActorConfigurationData`; the `random_location` attribute in a scenario's `<other_actor>` is ignored.
+* Replaced `set_latest_scenario()`/`get_latest_scenario()` with the `latest_scenario` blackboard variable.
+* `_destroy_other_actors()` is gone; call `remove_all_actors()`.
+* Fixed the route's first weather never being applied, and the weather keypoint padding raising on routes that do not define a weather at 0% or 100%.
 
 Known gaps on CARLA UE5: scenarios needing two-wheelers (e.g. HazardAtSideLane) require a CARLA build whose content registers them (in progress on the ue58 content branch); on stock 0.10 content they are skipped.
 

@@ -15,7 +15,7 @@ import carla
 
 from agents.navigation.local_planner import RoadOption
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorFlow, ScenarioTimeout, WaitForever
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import (InTriggerDistanceToLocation,
@@ -43,17 +43,15 @@ class EnterActorFlow(BasicScenario):
     ambulances or firetrucks.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         ego_location = config.trigger_points[0].location
-        self._reference_waypoint = CarlaDataProvider.get_map().get_waypoint(ego_location)
+        self._reference_waypoint = SimulationData.get_map().get_waypoint(ego_location)
 
         self._sink_distance = 2
 
@@ -64,7 +62,7 @@ class EnterActorFlow(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("EnterActorFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("EnterActorFlow", ego_vehicles, config, debug_mode)
 
     def _create_behavior(self):
         """
@@ -103,7 +101,7 @@ class EnterActorFlow(BasicScenario):
         root.add_child(ScenarioTimeout(self._scenario_timeout, self.config.name))
 
         sequence = py_trees.composites.Sequence(name="Sequence", memory=True)
-        grp = CarlaDataProvider.get_global_route_planner()
+        grp = SimulationData.get_global_route_planner()
         route = grp.trace_route(source_wp.transform.location, sink_wp.transform.location)
         extra_space = 20
         for i in range(-2, -len(route)-1, -1):
@@ -174,7 +172,7 @@ class EnterActorFlowV2(EnterActorFlow):
         exit_wp = generate_target_waypoint_in_route(self._reference_waypoint, self.config.route)
         exit_wp = exit_wp.next(10)[0]  # just in case the junction maneuvers don't match
 
-        grp = CarlaDataProvider.get_global_route_planner()
+        grp = SimulationData.get_global_route_planner()
         route = grp.trace_route(source_wp.transform.location, sink_wp.transform.location)
         self._extra_space = 20
         for i in range(-2, -len(route)-1, -1):
@@ -224,13 +222,11 @@ class HighwayExit(BasicScenario):
     And there should be no junctions in front of the ego.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._start_actor_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
@@ -243,7 +239,7 @@ class HighwayExit(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("HighwayExit", ego_vehicles, config, world, debug_mode)
+        super().__init__("HighwayExit", ego_vehicles, config, debug_mode)
 
     def _create_behavior(self):
         """
@@ -252,7 +248,7 @@ class HighwayExit(BasicScenario):
         source_wp = self._map.get_waypoint(self._start_actor_flow)
         sink_wp = self._map.get_waypoint(self._end_actor_flow)
 
-        grp = CarlaDataProvider.get_global_route_planner()
+        grp = SimulationData.get_global_route_planner()
         route = grp.trace_route(source_wp.transform.location, sink_wp.transform.location)
         junction_id = None
         for wp, _ in route:
@@ -300,17 +296,15 @@ class MergerIntoSlowTraffic(BasicScenario):
     area at a highway intersection.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         ego_location = config.trigger_points[0].location
-        self._reference_waypoint = CarlaDataProvider.get_map().get_waypoint(ego_location)
+        self._reference_waypoint = SimulationData.get_map().get_waypoint(ego_location)
 
         self._start_actor_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
         self._end_actor_flow = convert_dict_to_location(config.other_parameters['end_actor_flow'])
@@ -322,7 +316,7 @@ class MergerIntoSlowTraffic(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("MergerIntoSlowTraffic", ego_vehicles, config, world, debug_mode)
+        super().__init__("MergerIntoSlowTraffic", ego_vehicles, config, debug_mode)
 
     def _create_behavior(self):
         """
@@ -348,7 +342,7 @@ class MergerIntoSlowTraffic(BasicScenario):
         root.add_child(ScenarioTimeout(self._scenario_timeout, self.config.name))
 
         sequence = py_trees.composites.Sequence(name="Sequence", memory=True)
-        grp = CarlaDataProvider.get_global_route_planner()
+        grp = SimulationData.get_global_route_planner()
         route = grp.trace_route(source_wp.transform.location, sink_wp.transform.location)
         extra_space = 0
         for i in range(-2, -len(route)-1, -1):
@@ -418,7 +412,7 @@ class MergerIntoSlowTrafficV2(MergerIntoSlowTraffic):
         exit_wp = generate_target_waypoint_in_route(self._reference_waypoint, self.config.route)
         exit_wp = exit_wp.next(10)[0]  # just in case the junction maneuvers don't match
 
-        grp = CarlaDataProvider.get_global_route_planner()
+        grp = SimulationData.get_global_route_planner()
         route = grp.trace_route(source_wp.transform.location, sink_wp.transform.location)
         self._extra_space = 20
         for i in range(-2, -len(route)-1, -1):
@@ -462,13 +456,11 @@ class InterurbanActorFlow(BasicScenario):
     where the ego leaves the interurban road by turning left, crossing an actor flow.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._start_actor_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
@@ -494,7 +486,7 @@ class InterurbanActorFlow(BasicScenario):
 
         self._remove_entries = [route_entry_wp, other_entry_wp, self._source_wp]
 
-        super().__init__("InterurbanActorFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("InterurbanActorFlow", ego_vehicles, config, debug_mode)
 
     def _get_entry_exit_route_lanes(self, wp, route):
 
@@ -582,13 +574,11 @@ class InterurbanAdvancedActorFlow(BasicScenario):
     first crossing an actor flow, and then merging into another one.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._sink_distance = 2
@@ -603,7 +593,7 @@ class InterurbanAdvancedActorFlow(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("InterurbanAdvancedActorFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("InterurbanAdvancedActorFlow", ego_vehicles, config, debug_mode)
 
     def get_lane_key(self, waypoint):
         return str(waypoint.road_id) + '*' + str(waypoint.lane_id)
@@ -636,7 +626,7 @@ class InterurbanAdvancedActorFlow(BasicScenario):
         if not self._sink_wp_2 or self._sink_wp_2.lane_type != carla.LaneType.Driving:
             raise ValueError("Couldn't find a position for the actor flow")
 
-        grp = CarlaDataProvider.get_global_route_planner()
+        grp = SimulationData.get_global_route_planner()
         route = grp.trace_route(self._source_wp_2.transform.location, self._sink_wp_2.transform.location)
         self._extra_space = 20
         route_exit_wp = None

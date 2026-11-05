@@ -23,8 +23,9 @@ import py_trees
 
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import calculate_distance
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.tools.scenario_helper import get_distance_between_actors
+from leaderboard.tools.actor_state import get_ground_speed, has_actor_ticked
 
 
 EPSILON = 0.001
@@ -101,10 +102,9 @@ class InTriggerRegion(AtomicCondition):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        location = CarlaDataProvider.get_location(self._actor)
-
-        if location is None:
+        if not has_actor_ticked(self._actor):
             return new_status
+        location = self._actor.get_location()
 
         not_in_region = (location.x < self._min_x or location.x > self._max_x) or \
                         (location.y < self._min_y or location.y > self._max_y)
@@ -149,7 +149,7 @@ class InTriggerDistanceToVehicle(AtomicCondition):
         self._comparison_operator = comparison_operator
 
         if distance_type == "longitudinal":
-            self._global_rp = CarlaDataProvider.get_global_route_planner()
+            self._global_rp = SimulationData.get_global_route_planner()
         else:
             self._global_rp = None
 
@@ -159,10 +159,7 @@ class InTriggerDistanceToVehicle(AtomicCondition):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        location = CarlaDataProvider.get_location(self._actor)
-        reference_location = CarlaDataProvider.get_location(self._reference_actor)
-
-        if location is None or reference_location is None:
+        if not has_actor_ticked(self._actor) or not has_actor_ticked(self._reference_actor):
             return new_status
 
         distance = get_distance_between_actors(
@@ -214,10 +211,9 @@ class InTriggerDistanceToLocation(AtomicCondition):
 
         new_status = py_trees.common.Status.RUNNING
 
-        location = CarlaDataProvider.get_location(self._actor)
-
-        if location is None:
+        if not has_actor_ticked(self._actor):
             return new_status
+        location = self._actor.get_location()
 
         if self._comparison_operator(calculate_distance(
                 location, self._target_location), self._distance):
@@ -262,13 +258,12 @@ class InTimeToArrivalToLocation(AtomicCondition):
         """
         new_status = py_trees.common.Status.RUNNING
 
-        current_location = CarlaDataProvider.get_location(self._actor)
-
-        if current_location is None:
+        if not has_actor_ticked(self._actor):
             return new_status
+        current_location = self._actor.get_location()
 
         distance = calculate_distance(current_location, self._target_location)
-        velocity = CarlaDataProvider.get_velocity(self._actor)
+        velocity = get_ground_speed(self._actor)
 
         # if velocity is too small, simply use a large time to arrival
         time_to_arrival = self._max_time_to_arrival
@@ -307,8 +302,8 @@ class WaitUntilInFront(AtomicCondition):
         self._factor = max(EPSILON, factor)  # Must be > 0
         self._check_distance = check_distance
 
-        self._world = CarlaDataProvider.get_world()
-        self._map = CarlaDataProvider.get_map(self._world)
+        self._world = SimulationData.get_world()
+        self._map = SimulationData.get_map(self._world)
 
         actor_extent = self._actor.bounding_box.extent.x
         other_extent = self._other_actor.bounding_box.extent.x
@@ -326,12 +321,12 @@ class WaitUntilInFront(AtomicCondition):
         close_by = False
 
         # Location of our actor
-        actor_location = CarlaDataProvider.get_location(self._actor)
-        if actor_location is None:
+        if not has_actor_ticked(self._actor):
             return new_status
+        actor_location = self._actor.get_location()
 
         # Waypoint in front of the other actor
-        other_location = CarlaDataProvider.get_location(self._other_actor)
+        other_location = self._other_actor.get_location()
         other_waypoint = self._map.get_waypoint(other_location)
         if other_waypoint is None:
             return new_status
@@ -391,9 +386,9 @@ class WaitUntilInFrontPosition(AtomicCondition):
         new_status = py_trees.common.Status.RUNNING
 
         # Is the actor in front?
-        location = CarlaDataProvider.get_location(self._actor)
-        if location is None:
+        if not has_actor_ticked(self._actor):
             return new_status
+        location = self._actor.get_location()
 
         actor_dir = location - self._ref_location
         in_front = actor_dir.dot(self._ref_vector) > 0.0
@@ -434,7 +429,7 @@ class DriveDistance(AtomicCondition):
         self._actor = actor
 
     def initialise(self):
-        self._location = CarlaDataProvider.get_location(self._actor)
+        self._location = self._actor.get_location()
         super().initialise()
 
     def update(self):
@@ -446,7 +441,7 @@ class DriveDistance(AtomicCondition):
         if self._location is None:
             return new_status
 
-        new_location = CarlaDataProvider.get_location(self._actor)
+        new_location = self._actor.get_location()
         self._distance += calculate_distance(self._location, new_location)
         self._location = new_location
 
@@ -477,8 +472,8 @@ class WaitEndIntersection(AtomicCondition):
 
         new_status = py_trees.common.Status.RUNNING
 
-        location = CarlaDataProvider.get_location(self.actor)
-        waypoint = CarlaDataProvider.get_map().get_waypoint(location)
+        location = self.actor.get_location()
+        waypoint = SimulationData.get_map().get_waypoint(location)
 
         # Wait for the actor to enter a / the junction
         if not self._inside_junction:

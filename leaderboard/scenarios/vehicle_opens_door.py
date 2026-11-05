@@ -13,7 +13,6 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
@@ -25,6 +24,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorD
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import InTriggerDistanceToLocation, InTimeToArrivalToLocation, WaitUntilInFrontPosition
 from leaderboard.scenarios.basic_scenario import BasicScenario
 
+from leaderboard.tools.actor_factory import request_new_actor
 from leaderboard.tools.background_manager import (
     LeaveSpaceInFront,
     ChangeOppositeBehavior,
@@ -55,13 +55,11 @@ class VehicleOpensDoorTwoWays(BasicScenario):
     This class holds everything required for a scenario in which another vehicle parked at the side lane
     opens the door, forcing the ego to lane change, invading the opposite lane
     """
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
 
         self.timeout = timeout
         self._min_trigger_dist = 10
@@ -80,7 +78,7 @@ class VehicleOpensDoorTwoWays(BasicScenario):
 
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
 
-        super().__init__("VehicleOpensDoorTwoWays", ego_vehicles, config, world, debug_mode)
+        super().__init__("VehicleOpensDoorTwoWays", ego_vehicles, config, debug_mode)
 
     def _get_displaced_location(self, actor, wp):
         """
@@ -132,8 +130,7 @@ class VehicleOpensDoorTwoWays(BasicScenario):
 
         self.parking_slots.append(self._parked_wp.transform.location)
 
-        self._parked_actor = CarlaDataProvider.request_new_actor(
-            "*vehicle.*", self._parked_wp.transform, attribute_filter={'has_dynamic_doors': True, 'base_type': 'car'})
+        self._parked_actor = request_new_actor("*vehicle.*", self._parked_wp.transform, attribute_filter={'has_dynamic_doors': True, 'base_type': 'car'})
         if not self._parked_actor:
             raise ValueError("Couldn't spawn the parked vehicle")
         self.other_actors.append(self._parked_actor)

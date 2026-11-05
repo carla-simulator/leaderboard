@@ -13,7 +13,7 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       SwitchWrongDirectionTest,
                                                                       BasicAgentBehavior,
@@ -29,6 +29,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions impor
                                                                                WaitUntilInFrontPosition)
 from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import LeaveSpaceInFront, SetMaxSpeed, ChangeOppositeBehavior, ChangeRoadBehavior
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 def get_value_parameter(config, name, p_type, default):
@@ -54,13 +55,11 @@ class Accident(BasicScenario):
     two other cars that have been in an accident.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._first_distance = 10
@@ -85,7 +84,7 @@ class Accident(BasicScenario):
         self._max_speed = get_value_parameter(config, 'speed', float, 60)
         self._scenario_timeout = 240
 
-        super().__init__("Accident", ego_vehicles, config, world, debug_mode)
+        super().__init__("Accident", ego_vehicles, config, debug_mode)
 
     def _move_waypoint_forward(self, wp, distance):
         dist = 0
@@ -118,7 +117,7 @@ class Accident(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=0.2)
         spawn_transform.rotation.yaw += 90
-        signal_prop = CarlaDataProvider.request_new_actor('static.prop.warningaccident', spawn_transform)
+        signal_prop = request_new_actor('static.prop.warningaccident', spawn_transform)
         if not signal_prop:
             raise ValueError("Couldn't spawn the indication prop asset")
         signal_prop.set_simulate_physics(False)
@@ -136,15 +135,13 @@ class Accident(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=1)
         if accident_actor:
-            actor = CarlaDataProvider.request_new_actor(
-                blueprint,
+            actor = request_new_actor(blueprint,
                 spawn_transform,
                 rolename="scenario no lights",
                 attribute_filter={"base_type": "car", "generation": 2},
             )
         else:
-            actor = CarlaDataProvider.request_new_actor(
-                blueprint, spawn_transform, rolename='scenario')
+            actor = request_new_actor(blueprint, spawn_transform, rolename='scenario')
         if not actor:
             raise ValueError("Couldn't spawn an obstacle actor")
 
@@ -239,10 +236,10 @@ class AccidentTwoWays(Accident):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=180,
+        self, ego_vehicles, config, debug_mode=False, timeout=180,
     ):
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """
@@ -285,13 +282,11 @@ class ParkedObstacle(BasicScenario):
     forcing the ego to lane change out of the route's lane
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._trigger_distance = 50
@@ -313,7 +308,7 @@ class ParkedObstacle(BasicScenario):
         self._max_speed = get_value_parameter(config, 'speed', float, 60)
         self._scenario_timeout = 240
 
-        super().__init__("ParkedObstacle", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkedObstacle", ego_vehicles, config, debug_mode)
 
     def _move_waypoint_forward(self, wp, distance):
         dist = 0
@@ -346,7 +341,7 @@ class ParkedObstacle(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=0.2)
         spawn_transform.rotation.yaw += 90
-        signal_prop = CarlaDataProvider.request_new_actor('static.prop.warningaccident', spawn_transform)
+        signal_prop = request_new_actor('static.prop.warningaccident', spawn_transform)
         if not signal_prop:
             raise ValueError("Couldn't spawn the indication prop asset")
         signal_prop.set_simulate_physics(False)
@@ -363,8 +358,7 @@ class ParkedObstacle(BasicScenario):
 
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=1)
-        actor = CarlaDataProvider.request_new_actor(
-            blueprint,
+        actor = request_new_actor(blueprint,
             spawn_transform,
             rolename="scenario no lights",
             attribute_filter={"base_type": "car", "generation": 2},
@@ -444,10 +438,10 @@ class ParkedObstacleTwoWays(ParkedObstacle):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=180,
+        self, ego_vehicles, config, debug_mode=False, timeout=180,
     ):
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """
@@ -491,13 +485,11 @@ class HazardAtSideLane(BasicScenario):
     with three bicycles encroaching on some roads in front.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._obstacle_distance = 9
@@ -518,7 +510,7 @@ class HazardAtSideLane(BasicScenario):
         self._bicycle_drive_distance = get_value_parameter(config, 'bicycle_drive_distance', float, 50)
         self._scenario_timeout = 240
 
-        super().__init__("HazardAtSideLane", ego_vehicles, config, world, debug_mode)
+        super().__init__("HazardAtSideLane", ego_vehicles, config, debug_mode)
 
     def _move_waypoint_forward(self, wp, distance):
         dist = 0
@@ -540,7 +532,7 @@ class HazardAtSideLane(BasicScenario):
 
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=1)
-        actor = CarlaDataProvider.request_new_actor(blueprint, spawn_transform)
+        actor = request_new_actor(blueprint, spawn_transform)
         if not actor:
             raise ValueError("Couldn't spawn an obstacle actor")
 
@@ -550,7 +542,7 @@ class HazardAtSideLane(BasicScenario):
         """
         Custom initialization
         """
-        rng = CarlaDataProvider.get_random_seed()
+        rng = SimulationData.get_rng()
         self._starting_wp = self._map.get_waypoint(config.trigger_points[0].location)
 
         # Spawn the first bicycle
@@ -654,11 +646,11 @@ class HazardAtSideLaneTwoWays(HazardAtSideLane):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=180,
+        self, ego_vehicles, config, debug_mode=False, timeout=180,
     ):
         self._opposite_frequency = get_value_parameter(config, 'frequency', float, 100)
 
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """

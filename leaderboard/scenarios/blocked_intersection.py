@@ -11,7 +11,6 @@ Scenario with low visibility, the ego performs a turn only to find out that the 
 
 import carla
 import py_trees
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       Idle,
@@ -25,6 +24,7 @@ from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import HandleJunctionScenario
 
 from leaderboard.tools.scenario_helper import generate_target_waypoint_in_route
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class BlockedIntersection(BasicScenario):
@@ -33,17 +33,13 @@ class BlockedIntersection(BasicScenario):
     the ego performs a turn only to find out that the end is blocked by another vehicle.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._map.get_waypoint(self._trigger_location)
 
         self._blocker_distance = 5
         self._trigger_distance = 13
@@ -53,7 +49,7 @@ class BlockedIntersection(BasicScenario):
 
         self._blocker_transform = None
 
-        super().__init__("BlockedIntersection", ego_vehicles, config, world, debug_mode)
+        super().__init__("BlockedIntersection", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -66,8 +62,7 @@ class BlockedIntersection(BasicScenario):
         self._blocker_transform = waypoint.transform
 
         # Spawn the blocker vehicle
-        blocker = CarlaDataProvider.request_new_actor(
-            "vehicle.*.*", self._blocker_transform,
+        blocker = request_new_actor("vehicle.*.*", self._blocker_transform,
             attribute_filter={'base_type': 'car', 'has_lights': True, 'special_type': ''}
         )
         if blocker is None:

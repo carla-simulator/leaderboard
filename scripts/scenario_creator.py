@@ -188,19 +188,6 @@ SCENARIO_TYPES ={
     ],
 
     # Special ones
-    "BackgroundActivityParametrizer": [
-        ["num_front_vehicles", "value"],
-        ["num_back_vehicles", "value"],
-        ["road_spawn_dist", "value"],
-        ["opposite_source_dist", "value"],
-        ["opposite_max_actors", "value"],
-        ["opposite_spawn_dist", "value"],
-        ["opposite_active", "bool"],
-        ["junction_source_dist", "value"],
-        ["junction_max_actors", "value"],
-        ["junction_spawn_dist", "value"],
-        ["junction_source_perc", "value"],
-    ],
     "PriorityAtJunction": [
     ],
 }

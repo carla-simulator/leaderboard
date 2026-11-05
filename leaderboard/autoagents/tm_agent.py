@@ -31,7 +31,7 @@ import os
 import numpy as np
 
 import carla
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 
 from leaderboard.autoagents.autonomous_agent import AutonomousAgent, Track
 
@@ -164,17 +164,16 @@ class TmAgent(AutonomousAgent):
         ]
 
     def _configure(self):
-        hero = CarlaDataProvider.get_hero_actor()
-        if hero is None:
-            for actor in CarlaDataProvider.get_world().get_actors().filter('vehicle.*'):
-                if actor.attributes.get('role_name') == 'hero':
-                    hero = actor
-                    break
+        hero = None
+        for actor in SimulationData.get_world().get_actors().filter('vehicle.*'):
+            if actor.attributes.get('role_name') == 'hero':
+                hero = actor
+                break
         if hero is None:
             return False
 
-        tm_port = CarlaDataProvider.get_traffic_manager_port()
-        tm = CarlaDataProvider.get_client().get_trafficmanager(tm_port)
+        tm_port = SimulationData.get_traffic_manager_port()
+        tm = SimulationData.get_client().get_trafficmanager(tm_port)
 
         hero.set_autopilot(True, tm_port)
 
@@ -201,7 +200,7 @@ class TmAgent(AutonomousAgent):
         # Diagnostic collision sensor: prints contacts live so a run can be
         # judged from the log without waiting for the end-of-route checkpoint.
         try:
-            world = CarlaDataProvider.get_world()
+            world = SimulationData.get_world()
             bp = world.get_blueprint_library().find('sensor.other.collision')
             self._collision_sensor = world.spawn_actor(
                 bp, carla.Transform(), attach_to=hero)
@@ -226,7 +225,7 @@ class TmAgent(AutonomousAgent):
 
         self._hero = hero
         self._tm = tm
-        self._world = CarlaDataProvider.get_world()
+        self._world = SimulationData.get_world()
         self._configured = True
         print("[tm_agent] ego on TM autopilot (port %d), route fed, features on"
               % tm_port)
@@ -486,4 +485,8 @@ class TmAgent(AutonomousAgent):
         return carla.VehicleControl()
 
     def destroy(self):
+        if self._collision_sensor is not None:
+            self._collision_sensor.stop()
+            self._collision_sensor.destroy()
+            self._collision_sensor = None
         self._hero = None

@@ -11,7 +11,6 @@ moving along the road and encountering a construction setup.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorDestroy, ActorTransformSetter, SwitchWrongDirectionTest, ScenarioTimeout, Idle, WaitForever, OppositeActorFlow
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import (InTriggerDistanceToLocation,
                                                                                WaitUntilInFrontPosition)
@@ -23,6 +22,7 @@ from leaderboard.tools.background_manager import (RemoveRoadLane,
                                               ChangeOppositeBehavior)
 
 from leaderboard.tools.scenario_helper import get_value_parameter, get_interval_parameter
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class ConstructionObstacle(BasicScenario):
@@ -35,20 +35,17 @@ class ConstructionObstacle(BasicScenario):
     This is a single ego vehicle scenario
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=60):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=60):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._trigger_distance = 30
         self._opposite_wait_duration = 5
         self._end_distance = 50
 
-        self._reference_waypoint = self._map.get_waypoint(config.trigger_points[0].location)
         self._construction_wp = None
 
         self._construction_transforms = []
@@ -60,7 +57,7 @@ class ConstructionObstacle(BasicScenario):
         if self._direction not in ('left', 'right'):
             raise ValueError(f"'direction' must be either 'right' or 'left' but {self._direction} was given")
 
-        super().__init__("ConstructionObstacle", ego_vehicles, config, world, debug_mode)
+        super().__init__("ConstructionObstacle", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """Creates all props part of the construction"""
@@ -105,7 +102,7 @@ class ConstructionObstacle(BasicScenario):
         spawn_transform = wp.transform
         spawn_transform.location += carla.Location(x=displacement * r_vec.x, y=displacement * r_vec.y, z=0.2)
         spawn_transform.rotation.yaw += 90
-        signal_prop = CarlaDataProvider.request_new_actor('static.prop.warningconstruction', spawn_transform)
+        signal_prop = request_new_actor('static.prop.warningconstruction', spawn_transform)
         if not signal_prop:
             raise ValueError("Couldn't spawn the indication prop asset")
         signal_prop.set_simulate_physics(False)
@@ -125,7 +122,7 @@ class ConstructionObstacle(BasicScenario):
             spawn_transform.location.z -= 200
             cone_transform = carla.Transform(location, start_transform.rotation)
 
-            cone = CarlaDataProvider.request_new_actor('static.prop.constructioncone', spawn_transform)
+            cone = request_new_actor('static.prop.constructioncone', spawn_transform)
             cone.set_simulate_physics(False)
             self.other_actors.append(cone)
 
@@ -159,8 +156,7 @@ class ConstructionObstacle(BasicScenario):
 
             spawn_transform = carla.Transform(transform.location, transform.rotation)
             spawn_transform.location.z -= 200
-            static = CarlaDataProvider.request_new_actor(
-                _prop_names[key], spawn_transform)
+            static = request_new_actor(_prop_names[key], spawn_transform)
             static.set_simulate_physics(False)
             self.other_actors.append(static)
 
@@ -248,10 +244,10 @@ class ConstructionObstacleTwoWays(ConstructionObstacle):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """

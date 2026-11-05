@@ -13,7 +13,6 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       ActorTransformSetter,
                                                                       SyncArrivalWithAgent,
@@ -24,6 +23,7 @@ from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import HandleJunctionScenario
 
 from leaderboard.tools.scenario_helper import generate_target_waypoint, convert_dict_to_location
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class HighwayCutIn(BasicScenario):
@@ -33,13 +33,11 @@ class HighwayCutIn(BasicScenario):
     ambulances or firetrucks.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
         self.timeout = timeout
 
         self._same_lane_time = 0.3
@@ -51,7 +49,7 @@ class HighwayCutIn(BasicScenario):
 
         self._start_location = convert_dict_to_location(config.other_parameters['other_actor_location'])
 
-        super().__init__("HighwayCutIn", ego_vehicles, config, world, debug_mode)
+        super().__init__("HighwayCutIn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -60,8 +58,7 @@ class HighwayCutIn(BasicScenario):
         self._other_waypoint = self._map.get_waypoint(self._start_location)
         self._other_transform = self._other_waypoint.transform
 
-        self._cut_in_vehicle = CarlaDataProvider.request_new_actor(
-            'vehicle.*', self._other_transform, rolename='scenario',
+        self._cut_in_vehicle = request_new_actor('vehicle.*', self._other_transform, rolename='scenario',
             attribute_filter={'base_type': 'car', 'has_lights': True}
         )
         self.other_actors.append(self._cut_in_vehicle)

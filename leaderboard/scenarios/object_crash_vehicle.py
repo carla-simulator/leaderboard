@@ -12,16 +12,17 @@ import py_trees
 import carla
 from math import floor
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorDestroy, KeepVelocity, ActorTransformSetter, MovePedestrianWithEgo
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import CollisionTest
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import (InTriggerDistanceToLocation,
                                                                                InTimeToArrivalToLocation,
                                                                                DriveDistance)
 from leaderboard.scenarios.basic_scenario import BasicScenario
+from leaderboard.tools.actor_state import destroy_actor
 from leaderboard.tools.scenario_helper import get_location_in_distance_from_wp
 
 from leaderboard.tools.background_manager import LeaveSpaceInFront, LeaveCrossingSpace
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 def get_value_parameter(config, name, p_type, default):
@@ -43,14 +44,11 @@ class DynamicObjectCrossing(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = CarlaDataProvider.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._num_lane_changes = 0
 
         self._blocker_shift = 0.9
@@ -78,7 +76,7 @@ class DynamicObjectCrossing(BasicScenario):
         if self._direction not in ('left', 'right'):
             raise ValueError(f"'direction' must be either 'right' or 'left' but {self._direction} was given")
 
-        super().__init__("DynamicObjectCrossing", ego_vehicles, config, world, debug_mode)
+        super().__init__("DynamicObjectCrossing", ego_vehicles, config, debug_mode)
 
     def _get_sidewalk_transform(self, waypoint, offset):
         """
@@ -118,7 +116,7 @@ class DynamicObjectCrossing(BasicScenario):
 
             # Move to the front
             location, _ = get_location_in_distance_from_wp(waypoint, move_dist, False)
-            waypoint = self._wmap.get_waypoint(location)
+            waypoint = self._map.get_waypoint(location)
             self._collision_wp = waypoint
 
             # Move to the right
@@ -140,8 +138,7 @@ class DynamicObjectCrossing(BasicScenario):
             aligned = 'vehicle' in self._blocker_model or self._blocker_model == 'static.prop.dumpster'
             offset = {"yaw": 0 if aligned else 90, "z": 0.0, "k": 1.5}
             self._blocker_transform = self._get_sidewalk_transform(sidewalk_waypoint, offset)
-            blocker = CarlaDataProvider.request_new_actor(
-                self._blocker_model, self._blocker_transform, rolename="scenario no lights")
+            blocker = request_new_actor(self._blocker_model, self._blocker_transform, rolename="scenario no lights")
             if not blocker:
                 self._number_of_attempts -= 1
                 move_dist = self._retry_dist
@@ -157,9 +154,9 @@ class DynamicObjectCrossing(BasicScenario):
 
             offset = {"yaw": 270 - self._crossing_angle, "z": 1.2, "k": 1.2}
             self._adversary_transform = self._get_sidewalk_transform(walker_wp, offset)
-            adversary = CarlaDataProvider.request_new_actor('walker.*', self._adversary_transform)
+            adversary = request_new_actor('walker.*', self._adversary_transform)
             if adversary is None:
-                CarlaDataProvider.remove_actor_by_id(blocker.id)
+                destroy_actor(blocker)
                 self._number_of_attempts -= 1
                 move_dist = self._retry_dist
                 print("Failed to spawn an adversary")
@@ -240,10 +237,10 @@ class DynamicObjectCrossing(BasicScenario):
     def _replace_walker(self, adversary):
         """As the adversary is probably, replace it with another one"""
         type_id = adversary.type_id
-        CarlaDataProvider.remove_actor_by_id(adversary.id)
+        destroy_actor(adversary)
         spawn_transform = self.ego_vehicles[0].get_transform()
         spawn_transform.location.z -= 50
-        adversary = CarlaDataProvider.request_new_actor(type_id, spawn_transform)
+        adversary = request_new_actor(type_id, spawn_transform)
         if not adversary:
             raise ValueError("Couldn't spawn the walker substitute")
         adversary.set_simulate_physics(False)
@@ -277,14 +274,11 @@ class ParkingCrossingPedestrian(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = CarlaDataProvider.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._num_lane_changes = 0
 
         self._adversary_speed = 2.0  # Speed of the adversary [m/s]
@@ -306,7 +300,7 @@ class ParkingCrossingPedestrian(BasicScenario):
         self._reaction_time = 2.15
         self._reaction_time += 0.1 * floor(self._crossing_angle / 5)
 
-        super().__init__("ParkingCrossingPedestrian", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkingCrossingPedestrian", ego_vehicles, config, debug_mode)
 
     def _get_blocker_transform(self, waypoint):
         """Processes the driving wp to get a waypoint at the side that looks at the road"""
@@ -355,8 +349,7 @@ class ParkingCrossingPedestrian(BasicScenario):
         # Get the adversary transform and spawn it
         self._blocker_transform = self._get_blocker_transform(blocker_wp)
         self.parking_slots.append(self._blocker_transform.location)
-        blocker = CarlaDataProvider.request_new_actor(
-            'vehicle.*', self._blocker_transform, attribute_filter=self._bp_attributes)
+        blocker = request_new_actor('vehicle.*', self._blocker_transform, attribute_filter=self._bp_attributes)
         if blocker is None:
             raise ValueError("Couldn't spawn the adversary")
         self.other_actors.append(blocker)
@@ -372,7 +365,7 @@ class ParkingCrossingPedestrian(BasicScenario):
         self._walker_transform = self._get_walker_transform(walker_wp)
         self.parking_slots.append(self._walker_transform.location)
 
-        walker = CarlaDataProvider.request_new_actor('walker.*', self._walker_transform)
+        walker = request_new_actor('walker.*', self._walker_transform)
         if walker is None:
             raise ValueError("Couldn't spawn the adversary")
 
@@ -440,10 +433,10 @@ class ParkingCrossingPedestrian(BasicScenario):
     def _replace_walker(self, walker):
         """As the adversary is probably, replace it with another one"""
         type_id = walker.type_id
-        CarlaDataProvider.remove_actor_by_id(walker.id)
+        destroy_actor(walker)
         spawn_transform = self.ego_vehicles[0].get_transform()
         spawn_transform.location.z -= 50
-        walker = CarlaDataProvider.request_new_actor(type_id, spawn_transform)
+        walker = request_new_actor(type_id, spawn_transform)
         if not walker:
             raise ValueError("Couldn't spawn the walker substitute")
         walker.set_simulate_physics(False)

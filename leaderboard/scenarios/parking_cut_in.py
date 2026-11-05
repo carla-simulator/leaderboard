@@ -10,7 +10,6 @@ to cut in in front of the ego vehicle, forcing it to break
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       BasicAgentBehavior)
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import CollisionTest
@@ -19,6 +18,7 @@ from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions impor
                                                                                DriveDistance)
 from leaderboard.scenarios.basic_scenario import BasicScenario
 from leaderboard.tools.background_manager import LeaveSpaceInFront, ChangeRoadBehavior
+from leaderboard.tools.actor_factory import request_new_actor
 
 
 class ParkingCutIn(BasicScenario):
@@ -29,14 +29,11 @@ class ParkingCutIn(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = CarlaDataProvider.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
 
         self._cut_in_distance = 35
         self._blocker_distance = 28
@@ -56,7 +53,7 @@ class ParkingCutIn(BasicScenario):
         else:
             self._direction = "right"
 
-        super().__init__("ParkingCutIn", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkingCutIn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -75,8 +72,7 @@ class ParkingCutIn(BasicScenario):
 
         self.parking_slots.append(parking_wp.transform.location)
 
-        self._blocker_actor = CarlaDataProvider.request_new_actor(
-            "vehicle.*",
+        self._blocker_actor = request_new_actor("vehicle.*",
             parking_wp.transform,
             "scenario no lights",
             attribute_filter={"base_type": "car", "generation": 2},
@@ -102,8 +98,7 @@ class ParkingCutIn(BasicScenario):
 
         self.parking_slots.append(parking_wp.transform.location)
 
-        self._parked_actor = CarlaDataProvider.request_new_actor(
-            'vehicle.*', parking_wp.transform, 'scenario', attribute_filter=self._bp_attributes)
+        self._parked_actor = request_new_actor('vehicle.*', parking_wp.transform, 'scenario', attribute_filter=self._bp_attributes)
         if not self._parked_actor:
             raise ValueError("Couldn't spawn the parked actor")
         self.other_actors.append(self._parked_actor)

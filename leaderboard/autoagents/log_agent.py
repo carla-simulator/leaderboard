@@ -33,7 +33,9 @@ from leaderboard.autoagents.autonomous_agent import Track
 from leaderboard.autoagents.human_agent import HumanAgent as HumanAgent_
 from leaderboard.autoagents.human_agent import KeyboardControl as KeyboardControl_
 from leaderboard.autoagents.human_agent import HumanInterface
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
+from leaderboard.tools.actor_state import get_ground_speed
+from leaderboard.utils.blackboard import get_blackboard
 
 
 def get_entry_point():
@@ -67,7 +69,7 @@ class LogHumanInterface(HumanInterface):
                 right_surface, ((1 - self._scale) * self._width, 0))
 
         # Show scenario name
-        scenario_name = CarlaDataProvider.get_latest_scenario()
+        scenario_name = get_blackboard("latest_scenario", "")
         text = "{}".format(scenario_name)
         font = pygame.font.Font(pygame.font.get_default_font(), 20)
         text_texture = font.render(text, True, (255, 255, 255))
@@ -107,7 +109,7 @@ class HumanAgent(HumanAgent_):
         # Get the ego instance
         self._player = None
 
-        for vehicle in CarlaDataProvider.get_world().get_actors().filter("vehicle.*"):
+        for vehicle in SimulationData.get_world().get_actors().filter("vehicle.*"):
             if vehicle.attributes["role_name"] == "hero":
                 self._player = vehicle
                 break
@@ -139,7 +141,7 @@ class HumanAgent(HumanAgent_):
         self._clock = pygame.time.Clock()
 
         # Attach obstacle sensor, calculate ttc (time to collision)
-        world = CarlaDataProvider.get_world()
+        world = SimulationData.get_world()
         blueprint = world.get_blueprint_library().find("sensor.other.obstacle")
         blueprint.set_attribute("distance", "30")
         self._obstacle_sensor = world.spawn_actor(
@@ -178,8 +180,8 @@ class HumanAgent(HumanAgent_):
         ):
             return
 
-        v_obstacle = CarlaDataProvider.get_velocity(event.other_actor)
-        v_ego = CarlaDataProvider.get_velocity(self._player)
+        v_obstacle = get_ground_speed(event.other_actor)
+        v_ego = get_ground_speed(self._player)
         # Avoid division by zero
         ttc = event.distance / max((v_ego - v_obstacle), 0.01)
         self._ttc = ttc
@@ -193,7 +195,7 @@ class HumanAgent(HumanAgent_):
             input_data["TooCloseText"] = ""
 
         # If a passiv lane change is near, display warning
-        loc_ego = CarlaDataProvider.get_location(self._player)
+        loc_ego = self._player.get_location()
         curr_lc_wps = []
         i = 0
         while i < len(self._lc_wps):
@@ -230,6 +232,16 @@ class HumanAgent(HumanAgent_):
 
         return super().run_step(input_data, timestamp)
 
+    def destroy(self):
+        """
+        Cleanup
+        """
+        if self._obstacle_sensor is not None:
+            self._obstacle_sensor.stop()
+            self._obstacle_sensor.destroy()
+            self._obstacle_sensor = None
+        super().destroy()
+
 
 class KeyboardControl(KeyboardControl_):
 
@@ -251,8 +263,8 @@ class KeyboardControl(KeyboardControl_):
         self._agent.ignore_stop_signs()
         self._agent.ignore_vehicles()
 
-        route = CarlaDataProvider.get_ego_route()
-        tmap = CarlaDataProvider.get_map()
+        route = SimulationData.get_ego_route()
+        tmap = SimulationData.get_map()
         waypoint_route = []
         for transform, road_option in route:
             wp = tmap.get_waypoint(transform.location)

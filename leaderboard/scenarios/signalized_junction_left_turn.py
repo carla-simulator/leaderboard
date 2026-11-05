@@ -13,7 +13,7 @@ import py_trees
 
 import carla
 
-from leaderboard.scenariomanager.carla_data_provider import CarlaDataProvider
+from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorFlow, TrafficLightFreezer, ScenarioTimeout
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import WaitEndIntersection, DriveDistance
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
@@ -35,13 +35,11 @@ class JunctionLeftTurn(BasicScenario):
     The ego has to react to them, safely crossing the opposite lane
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=80):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=80):
         """
         Setup all relevant parameters and create scenario
         """
-        self._world = world
-        self._map = CarlaDataProvider.get_map()
-        self._rng = CarlaDataProvider.get_random_seed()
+        self._rng = SimulationData.get_rng()
 
         self.timeout = timeout
 
@@ -60,7 +58,7 @@ class JunctionLeftTurn(BasicScenario):
         self._source_dist = 4 * self._flow_speed
         self._sink_dist = 2.5 * self._flow_speed
 
-        super().__init__("JunctionLeftTurn", ego_vehicles, config, world, debug_mode)
+        super().__init__("JunctionLeftTurn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -68,7 +66,7 @@ class JunctionLeftTurn(BasicScenario):
         Override this method in child class to provide custom initialization.
         """
         ego_location = config.trigger_points[0].location
-        self._ego_wp = CarlaDataProvider.get_map().get_waypoint(ego_location)
+        self._ego_wp = SimulationData.get_map().get_waypoint(ego_location)
 
         # Get the junction
         starting_wp = self._ego_wp
@@ -137,8 +135,8 @@ class SignalizedJunctionLeftTurn(JunctionLeftTurn):
 
     timeout = 80  # Timeout of scenario in seconds
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=80):
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=80):
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _initialize_actors(self, config):
         """
@@ -208,8 +206,8 @@ class NonSignalizedJunctionLeftTurn(JunctionLeftTurn):
 
     timeout = 80  # Timeout of scenario in seconds
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=80):
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=80):
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """
