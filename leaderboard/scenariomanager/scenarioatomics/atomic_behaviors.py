@@ -2273,10 +2273,7 @@ class BicycleFlow(AtomicBehavior):
             distance = self._spawn_dist + 1
         else:
             actor_location = self._actor_data[-1][0].get_location()
-            if actor_location is None:
-                distance = 0
-            else:
-                distance = self._source_location.distance(actor_location)
+            distance = self._source_location.distance(actor_location)
 
         if distance > self._spawn_dist:
             self._spawn_actor(self._source_transform)
