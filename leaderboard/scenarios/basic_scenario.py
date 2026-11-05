@@ -30,7 +30,7 @@ class BasicScenario(object):
     Base class for user-defined scenario
     """
 
-    def __init__(self, name, ego_vehicles, config, world, debug_mode=False):
+    def __init__(self, name, ego_vehicles, config, debug_mode=False):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
@@ -40,11 +40,19 @@ class BasicScenario(object):
         self.other_actors = []
         self.parking_slots = []
         self.config = config
-        self.world = world
         self.debug_mode = debug_mode
 
         self.behavior_tree = None
         self.criteria_tree = None
+
+        # Where the scenario is anchored on the map. A config carries no trigger
+        # point when the scenario places itself, as a route or an OpenSCENARIO file does
+        if config.trigger_points and config.trigger_points[0]:
+            self._trigger_location = config.trigger_points[0].location
+            self._reference_waypoint = self._map.get_waypoint(self._trigger_location)
+        else:
+            self._trigger_location = None
+            self._reference_waypoint = None
 
         # If no timeout was provided, set it to 60 seconds
         if not hasattr(self, 'timeout'):
@@ -118,6 +126,28 @@ class BasicScenario(object):
         self.scenario_tree.add_child(UpdateAllActorControls())
 
         self.scenario_tree.setup()
+
+    # The simulator connection is global, so every scenario reads the same world,
+    # map and route planner rather than each storing its own copy.
+    @property
+    def world(self):
+        """The CARLA world this scenario runs in"""
+        return SimulationData.get_world()
+
+    @property
+    def _world(self):
+        """The CARLA world this scenario runs in"""
+        return SimulationData.get_world()
+
+    @property
+    def _map(self):
+        """The map of the world this scenario runs in"""
+        return SimulationData.get_map()
+
+    @property
+    def _grp(self):
+        """The global route planner of the world this scenario runs in"""
+        return SimulationData.get_global_route_planner()
 
     def _initialize_actors(self, config):
         """

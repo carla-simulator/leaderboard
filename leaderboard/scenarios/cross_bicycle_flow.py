@@ -31,13 +31,11 @@ class CrossingBicycleFlow(BasicScenario):
     ambulances or firetrucks.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._start_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
@@ -48,14 +46,13 @@ class CrossingBicycleFlow(BasicScenario):
 
         self._signalized_junction = False
 
-        self._reference_waypoint = self._map.get_waypoint(config.trigger_points[0].location)
 
         self._green_light_delay = 5
         self._scenario_timeout = 240
         self._flow_speed = get_value_parameter(config, 'flow_speed', float, 10)
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
 
-        super().__init__("CrossingBicycleFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("CrossingBicycleFlow", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
 

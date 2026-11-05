@@ -10,7 +10,6 @@ to cut in in front of the ego vehicle, forcing it to break
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       BasicAgentBehavior)
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import CollisionTest
@@ -30,14 +29,11 @@ class ParkingCutIn(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = SimulationData.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
 
         self._cut_in_distance = 35
         self._blocker_distance = 28
@@ -57,7 +53,7 @@ class ParkingCutIn(BasicScenario):
         else:
             self._direction = "right"
 
-        super().__init__("ParkingCutIn", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkingCutIn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

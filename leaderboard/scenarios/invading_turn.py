@@ -14,7 +14,6 @@ forcing the ego to move right to avoid a possible collision.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (InvadingActorFlow,
                                                                       ScenarioTimeout,
                                                                       ActorDestroy,
@@ -36,17 +35,12 @@ class InvadingTurn(BasicScenario):
     This scenario is expected to take place on a road that has only one lane in each direction.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._map = SimulationData.get_map()
         self.timeout = timeout
-
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._map.get_waypoint(
-            self._trigger_location)
 
         self._flow_frequency = 40 # m
         self._source_dist = 30 # Distance between source and end point
@@ -59,7 +53,7 @@ class InvadingTurn(BasicScenario):
 
         self._obstacle_transforms = []
 
-        super().__init__("InvadingTurn", ego_vehicles, config, world, debug_mode)
+        super().__init__("InvadingTurn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

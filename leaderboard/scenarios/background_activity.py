@@ -183,8 +183,8 @@ class BackgroundBehavior(AtomicBehavior):
         """
         super().__init__(name)
         self.debug = debug
-        self._map = SimulationData.get_map()
         self._world = SimulationData.get_world()
+        self._map = SimulationData.get_map()
         self._tm_port = SimulationData.get_traffic_manager_port()
         self._tm = SimulationData.get_client().get_trafficmanager(self._tm_port)
         self._tm.global_percentage_speed_difference(0.0)

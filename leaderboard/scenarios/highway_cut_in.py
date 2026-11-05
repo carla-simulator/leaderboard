@@ -13,7 +13,6 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       ActorTransformSetter,
                                                                       SyncArrivalWithAgent,
@@ -34,13 +33,11 @@ class HighwayCutIn(BasicScenario):
     ambulances or firetrucks.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._same_lane_time = 0.3
@@ -52,7 +49,7 @@ class HighwayCutIn(BasicScenario):
 
         self._start_location = convert_dict_to_location(config.other_parameters['other_actor_location'])
 
-        super().__init__("HighwayCutIn", ego_vehicles, config, world, debug_mode)
+        super().__init__("HighwayCutIn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

@@ -42,13 +42,11 @@ class ParkingExit(BasicScenario):
         Make sure there are enough space for spawning blocking vehicles.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self._tm = SimulationData.get_client().get_trafficmanager(
             SimulationData.get_traffic_manager_port())
         self.timeout = timeout
@@ -81,7 +79,7 @@ class ParkingExit(BasicScenario):
             raise Exception(
                 "Couldn't find parking point on the {} side".format(self._direction))
 
-        super().__init__("ParkingExit", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkingExit", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

@@ -11,7 +11,6 @@ import carla
 
 from agents.navigation.local_planner import RoadOption
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       BatchActorTransformSetter,
                                                                       CutIn,
@@ -34,16 +33,13 @@ class StaticCutIn(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = SimulationData.get_map()
         self.timeout = timeout
 
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
 
         self._reaction_time = 2.7  # Time the agent has to react to avoid the collision [s]
         self._min_trigger_dist = 15.0  # Min distance to the collision location that triggers the adversary [m]
@@ -68,7 +64,7 @@ class StaticCutIn(BasicScenario):
         if self._direction not in ('left', 'right'):
             raise ValueError(f"'direction' must be either 'right' or 'left' but {self._direction} was given")
 
-        super().__init__("StaticCutIn", ego_vehicles, config, world, debug_mode)
+        super().__init__("StaticCutIn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

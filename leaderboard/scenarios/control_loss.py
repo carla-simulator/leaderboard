@@ -34,14 +34,13 @@ class ControlLoss(BasicScenario):
     This is a single ego vehicle scenario
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=60):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=60):
         """
         Setup all relevant parameters and create scenario
         """
         self.timeout = timeout
         self._rng = SimulationData.get_rng()
 
-        self._map = SimulationData.get_map()
         self._end_distance = 110
 
         # Friction loss tends to have a much stronger steering compoenent then a throttle one
@@ -52,7 +51,7 @@ class ControlLoss(BasicScenario):
 
         self._trigger_dist = 2
 
-        super().__init__("ControlLoss", ego_vehicles, config, world, debug_mode)
+        super().__init__("ControlLoss", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -61,7 +60,6 @@ class ControlLoss(BasicScenario):
         self._distance = [14, 48, 74]
         self._offset = [-0.6, 0.8, 0.2]
 
-        self._reference_waypoint = self._map.get_waypoint(config.trigger_points[0].location)
 
         # Get the debris locations
         first_wp, _ = get_waypoint_in_distance(self._reference_waypoint, self._distance[0])

@@ -41,13 +41,11 @@ class OppositeVehicleJunction(BasicScenario):
     forcing it to break to avoid a collision
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self._source_dist = 30
         self._sink_dist = 10
         self._adversary_speed = 60 / 3.6 # m/s
@@ -65,7 +63,7 @@ class OppositeVehicleJunction(BasicScenario):
 
         self._lights = carla.VehicleLightState.Special1 | carla.VehicleLightState.Special2
 
-        super().__init__("OppositeVehicleJunction", ego_vehicles, config, world, debug_mode)
+        super().__init__("OppositeVehicleJunction", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -167,12 +165,12 @@ class OppositeVehicleRunningRedLight(OppositeVehicleJunction):
     Signalized junction version, where the other vehicle runs a red light
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _initialize_actors(self, config):
         """
@@ -247,12 +245,12 @@ class OppositeVehicleTakingPriority(OppositeVehicleJunction):
     Non signalized version
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """

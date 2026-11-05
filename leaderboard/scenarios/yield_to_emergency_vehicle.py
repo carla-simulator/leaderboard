@@ -12,7 +12,6 @@ Scenario in which the ego has to yield its lane to emergency vehicle.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorTransformSetter,
                                                                       ActorDestroy,
                                                                       Idle,
@@ -36,13 +35,11 @@ class YieldToEmergencyVehicle(BasicScenario):
     There should be at least two lanes on the highway.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
         self._ev_idle_time = 10  # seconds
 
@@ -65,12 +62,10 @@ class YieldToEmergencyVehicle(BasicScenario):
             'base_min_distance': 1, 'distance_ratio': 0.2
             }
 
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._map.get_waypoint(self._trigger_location)
 
         self._end_distance = 50
 
-        super().__init__("YieldToEmergencyVehicle", ego_vehicles, config, world, debug_mode)
+        super().__init__("YieldToEmergencyVehicle", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

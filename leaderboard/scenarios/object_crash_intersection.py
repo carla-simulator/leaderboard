@@ -13,7 +13,6 @@ import py_trees
 
 import carla
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
                                                                       HandBrakeVehicle,
                                                                       KeepVelocity,
@@ -67,14 +66,11 @@ class BaseVehicleTurning(BasicScenario):
     """
     _subtype = None
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=60, name="BaseVehicleTurning"):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=60, name="BaseVehicleTurning"):
         """
         Setup all relevant parameters and create scenario
         """
 
-        self._wmap = SimulationData.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._ego_route = config.route
 
         self._start_distance = 11
@@ -93,7 +89,7 @@ class BaseVehicleTurning(BasicScenario):
         self._offset = {"yaw": 270, "z": 0.2, "k": 1.5}
 
         self.timeout = timeout
-        super().__init__(name, ego_vehicles, config, world, debug_mode)
+        super().__init__(name, ego_vehicles, config, debug_mode)
 
     def _get_target_waypoint(self):
         """
@@ -215,12 +211,12 @@ class VehicleTurningRoute(BaseVehicleTurning):
     the adversary is placed using the route path
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=60):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=60):
         """
         Setup all relevant parameters and create scenario
         """
         self._subtype = 'route'
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout, "VehicleTurningRoute")
+        super().__init__(ego_vehicles, config, debug_mode, timeout, "VehicleTurningRoute")
 
     def _create_test_criteria(self):
         """
@@ -241,14 +237,11 @@ class VehicleTurningRoutePedestrian(BasicScenario):
     """
     _subtype = None
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=60, name="VehicleTurningRoutePedestrian"):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=60, name="VehicleTurningRoutePedestrian"):
         """
         Setup all relevant parameters and create scenario
         """
 
-        self._wmap = SimulationData.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._ego_route = config.route
 
         self._collision_wp = None
@@ -260,7 +253,7 @@ class VehicleTurningRoutePedestrian(BasicScenario):
         self._offset = {"yaw": 270, "z": 1.2, "k": 1.5}
 
         self.timeout = timeout
-        super().__init__(name, ego_vehicles, config, world, debug_mode)
+        super().__init__(name, ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """

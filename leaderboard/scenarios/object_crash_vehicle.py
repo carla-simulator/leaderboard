@@ -12,7 +12,6 @@ import py_trees
 import carla
 from math import floor
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import ActorDestroy, KeepVelocity, ActorTransformSetter, MovePedestrianWithEgo
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import CollisionTest
 from leaderboard.scenariomanager.scenarioatomics.atomic_trigger_conditions import (InTriggerDistanceToLocation,
@@ -45,14 +44,11 @@ class DynamicObjectCrossing(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = SimulationData.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._num_lane_changes = 0
 
         self._blocker_shift = 0.9
@@ -80,7 +76,7 @@ class DynamicObjectCrossing(BasicScenario):
         if self._direction not in ('left', 'right'):
             raise ValueError(f"'direction' must be either 'right' or 'left' but {self._direction} was given")
 
-        super().__init__("DynamicObjectCrossing", ego_vehicles, config, world, debug_mode)
+        super().__init__("DynamicObjectCrossing", ego_vehicles, config, debug_mode)
 
     def _get_sidewalk_transform(self, waypoint, offset):
         """
@@ -120,7 +116,7 @@ class DynamicObjectCrossing(BasicScenario):
 
             # Move to the front
             location, _ = get_location_in_distance_from_wp(waypoint, move_dist, False)
-            waypoint = self._wmap.get_waypoint(location)
+            waypoint = self._map.get_waypoint(location)
             self._collision_wp = waypoint
 
             # Move to the right
@@ -278,14 +274,11 @@ class ParkingCrossingPedestrian(BasicScenario):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=60,
+        self, ego_vehicles, config, debug_mode=False, timeout=60,
     ):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = SimulationData.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._num_lane_changes = 0
 
         self._adversary_speed = 2.0  # Speed of the adversary [m/s]
@@ -307,7 +300,7 @@ class ParkingCrossingPedestrian(BasicScenario):
         self._reaction_time = 2.15
         self._reaction_time += 0.1 * floor(self._crossing_angle / 5)
 
-        super().__init__("ParkingCrossingPedestrian", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkingCrossingPedestrian", ego_vehicles, config, debug_mode)
 
     def _get_blocker_transform(self, waypoint):
         """Processes the driving wp to get a waypoint at the side that looks at the road"""

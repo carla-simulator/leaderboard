@@ -66,14 +66,13 @@ class RouteScenario(BasicScenario):
     INIT_THRESHOLD = 500 # Runtime initialization trigger distance to ego (m)
     PARKED_VEHICLES_INIT_THRESHOLD = INIT_THRESHOLD - 50 # Runtime initialization trigger distance to parked vehicles (m)
 
-    def __init__(self, world, config, debug_mode=0):
+    def __init__(self, config, debug_mode=0):
         """
         Setup all relevant parameters and create scenarios along route
         """
         self.client = SimulationData.get_client()
         self.config = config
         self.route = self._get_route(config)
-        self.world = world
         self.map = SimulationData.get_map()
         self.timeout = 10000
 
@@ -102,7 +101,7 @@ class RouteScenario(BasicScenario):
         self._parked_ids = []
         self._get_parking_slots()
 
-        super().__init__(config.name, [ego_vehicle], config, world, debug_mode > 3)
+        super().__init__(config.name, [ego_vehicle], config, debug_mode > 3)
 
         # Do it after the 'super', as we need the behavior and criteria tree to be initialized
         self.build_scenarios(ego_vehicle, debug=debug_mode > 0)
@@ -117,7 +116,6 @@ class RouteScenario(BasicScenario):
         saving it to the SimulationData and sending it to the agent
 
         Parameters:
-        - world: CARLA world
         - config: Scenario configuration (RouteConfiguration)
         - debug_mode: boolean to decide whether or not the route poitns are printed
         """
@@ -320,7 +318,7 @@ class RouteScenario(BasicScenario):
 
                 # Only init scenarios that are close to ego
                 if trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
-                    scenario_instance = scenario_class(self.world, [ego_vehicle], scenario_config, timeout=self.timeout)
+                    scenario_instance = scenario_class([ego_vehicle], scenario_config, timeout=self.timeout)
 
                     # Add new scenarios to list
                     self.list_scenarios.append(scenario_instance)

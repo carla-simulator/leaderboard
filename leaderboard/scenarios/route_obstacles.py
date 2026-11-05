@@ -55,13 +55,11 @@ class Accident(BasicScenario):
     two other cars that have been in an accident.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._first_distance = 10
@@ -86,7 +84,7 @@ class Accident(BasicScenario):
         self._max_speed = get_value_parameter(config, 'speed', float, 60)
         self._scenario_timeout = 240
 
-        super().__init__("Accident", ego_vehicles, config, world, debug_mode)
+        super().__init__("Accident", ego_vehicles, config, debug_mode)
 
     def _move_waypoint_forward(self, wp, distance):
         dist = 0
@@ -238,10 +236,10 @@ class AccidentTwoWays(Accident):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=180,
+        self, ego_vehicles, config, debug_mode=False, timeout=180,
     ):
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """
@@ -284,13 +282,11 @@ class ParkedObstacle(BasicScenario):
     forcing the ego to lane change out of the route's lane
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._trigger_distance = 50
@@ -312,7 +308,7 @@ class ParkedObstacle(BasicScenario):
         self._max_speed = get_value_parameter(config, 'speed', float, 60)
         self._scenario_timeout = 240
 
-        super().__init__("ParkedObstacle", ego_vehicles, config, world, debug_mode)
+        super().__init__("ParkedObstacle", ego_vehicles, config, debug_mode)
 
     def _move_waypoint_forward(self, wp, distance):
         dist = 0
@@ -442,10 +438,10 @@ class ParkedObstacleTwoWays(ParkedObstacle):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=180,
+        self, ego_vehicles, config, debug_mode=False, timeout=180,
     ):
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """
@@ -489,13 +485,11 @@ class HazardAtSideLane(BasicScenario):
     with three bicycles encroaching on some roads in front.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._obstacle_distance = 9
@@ -516,7 +510,7 @@ class HazardAtSideLane(BasicScenario):
         self._bicycle_drive_distance = get_value_parameter(config, 'bicycle_drive_distance', float, 50)
         self._scenario_timeout = 240
 
-        super().__init__("HazardAtSideLane", ego_vehicles, config, world, debug_mode)
+        super().__init__("HazardAtSideLane", ego_vehicles, config, debug_mode)
 
     def _move_waypoint_forward(self, wp, distance):
         dist = 0
@@ -652,11 +646,11 @@ class HazardAtSideLaneTwoWays(HazardAtSideLane):
     """
 
     def __init__(
-        self, world, ego_vehicles, config, debug_mode=False, timeout=180,
+        self, ego_vehicles, config, debug_mode=False, timeout=180,
     ):
         self._opposite_frequency = get_value_parameter(config, 'frequency', float, 100)
 
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """

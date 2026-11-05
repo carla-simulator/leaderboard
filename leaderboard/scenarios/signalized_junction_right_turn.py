@@ -35,12 +35,10 @@ class JunctionRightTurn(BasicScenario):
     colliding with vehicles coming from its left
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=80):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=80):
         """
         Setup all relevant parameters and create scenario
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._direction = 'left'
@@ -59,7 +57,7 @@ class JunctionRightTurn(BasicScenario):
         self._source_dist = 5 * self._flow_speed
         self._sink_dist = 3 * self._flow_speed
 
-        super().__init__("JunctionRightTurn", ego_vehicles, config, world, debug_mode)
+        super().__init__("JunctionRightTurn", ego_vehicles, config, debug_mode)
 
     def _initialize_actors(self, config):
         """
@@ -138,8 +136,8 @@ class SignalizedJunctionRightTurn(JunctionRightTurn):
     Signalized version of JunctionRightTurn
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=80):
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=80):
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _initialize_actors(self, config):
         """
@@ -201,8 +199,8 @@ class NonSignalizedJunctionRightTurn(JunctionRightTurn):
     Non signalized version of JunctionRightTurn
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=80):
-        super().__init__(world, ego_vehicles, config, debug_mode, timeout)
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=80):
+        super().__init__(ego_vehicles, config, debug_mode, timeout)
 
     def _create_behavior(self):
         """

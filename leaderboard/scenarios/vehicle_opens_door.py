@@ -13,7 +13,6 @@ priority, e.g. by running a red traffic light.
 import py_trees
 import carla
 
-from leaderboard.scenariomanager.simulation_data import SimulationData
 from leaderboard.scenariomanager.scenarioatomics.atomic_criteria import ScenarioTimeoutTest
 
 from leaderboard.scenariomanager.scenarioatomics.atomic_behaviors import (ActorDestroy,
@@ -56,13 +55,11 @@ class VehicleOpensDoorTwoWays(BasicScenario):
     This class holds everything required for a scenario in which another vehicle parked at the side lane
     opens the door, forcing the ego to lane change, invading the opposite lane
     """
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
 
         self.timeout = timeout
         self._min_trigger_dist = 10
@@ -81,7 +78,7 @@ class VehicleOpensDoorTwoWays(BasicScenario):
 
         self._opposite_interval = get_interval_parameter(config, 'frequency', float, [20, 100])
 
-        super().__init__("VehicleOpensDoorTwoWays", ego_vehicles, config, world, debug_mode)
+        super().__init__("VehicleOpensDoorTwoWays", ego_vehicles, config, debug_mode)
 
     def _get_displaced_location(self, actor, wp):
         """

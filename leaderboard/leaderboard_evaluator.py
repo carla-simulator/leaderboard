@@ -281,7 +281,7 @@ class LeaderboardEvaluator(object):
         # Load the world and the scenario
         try:
             self._load_and_wait_for_world(args, config.town)
-            self.route_scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
+            self.route_scenario = RouteScenario(config=config, debug_mode=args.debug)
             self.statistics_manager.set_scenario(self.route_scenario)
 
         except Exception:

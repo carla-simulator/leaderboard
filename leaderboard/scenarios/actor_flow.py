@@ -43,13 +43,11 @@ class EnterActorFlow(BasicScenario):
     ambulances or firetrucks.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         ego_location = config.trigger_points[0].location
@@ -64,7 +62,7 @@ class EnterActorFlow(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("EnterActorFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("EnterActorFlow", ego_vehicles, config, debug_mode)
 
     def _create_behavior(self):
         """
@@ -224,13 +222,11 @@ class HighwayExit(BasicScenario):
     And there should be no junctions in front of the ego.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._start_actor_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
@@ -243,7 +239,7 @@ class HighwayExit(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("HighwayExit", ego_vehicles, config, world, debug_mode)
+        super().__init__("HighwayExit", ego_vehicles, config, debug_mode)
 
     def _create_behavior(self):
         """
@@ -300,13 +296,11 @@ class MergerIntoSlowTraffic(BasicScenario):
     area at a highway intersection.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         ego_location = config.trigger_points[0].location
@@ -322,7 +316,7 @@ class MergerIntoSlowTraffic(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("MergerIntoSlowTraffic", ego_vehicles, config, world, debug_mode)
+        super().__init__("MergerIntoSlowTraffic", ego_vehicles, config, debug_mode)
 
     def _create_behavior(self):
         """
@@ -462,13 +456,11 @@ class InterurbanActorFlow(BasicScenario):
     where the ego leaves the interurban road by turning left, crossing an actor flow.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._start_actor_flow = convert_dict_to_location(config.other_parameters['start_actor_flow'])
@@ -494,7 +486,7 @@ class InterurbanActorFlow(BasicScenario):
 
         self._remove_entries = [route_entry_wp, other_entry_wp, self._source_wp]
 
-        super().__init__("InterurbanActorFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("InterurbanActorFlow", ego_vehicles, config, debug_mode)
 
     def _get_entry_exit_route_lanes(self, wp, route):
 
@@ -582,13 +574,11 @@ class InterurbanAdvancedActorFlow(BasicScenario):
     first crossing an actor flow, and then merging into another one.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=180):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=180):
         """
         Setup all relevant parameters and create scenario
         and instantiate scenario manager
         """
-        self._world = world
-        self._map = SimulationData.get_map()
         self.timeout = timeout
 
         self._sink_distance = 2
@@ -603,7 +593,7 @@ class InterurbanAdvancedActorFlow(BasicScenario):
         self._source_dist_interval = get_interval_parameter(config, 'source_dist_interval', float, [20, 50])
         self._scenario_timeout = 240
 
-        super().__init__("InterurbanAdvancedActorFlow", ego_vehicles, config, world, debug_mode)
+        super().__init__("InterurbanAdvancedActorFlow", ego_vehicles, config, debug_mode)
 
     def get_lane_key(self, waypoint):
         return str(waypoint.road_id) + '*' + str(waypoint.lane_id)

@@ -40,13 +40,10 @@ class PedestrianCrossing(BasicScenario):
     Notice that the initial pedestrian will walk from the start of the junction ahead to end_walker_flow_1.
     """
 
-    def __init__(self, world, ego_vehicles, config, debug_mode=False, timeout=60):
+    def __init__(self, ego_vehicles, config, debug_mode=False, timeout=60):
         """
         Setup all relevant parameters and create scenario
         """
-        self._wmap = SimulationData.get_map()
-        self._trigger_location = config.trigger_points[0].location
-        self._reference_waypoint = self._wmap.get_waypoint(self._trigger_location)
         self._rng = SimulationData.get_rng()
 
         self._adversary_speed = 1.3  # Speed of the adversary [m/s]
@@ -65,7 +62,7 @@ class PedestrianCrossing(BasicScenario):
             walker_data['idle_time'] = self._rng.uniform(0, 1.5)
             walker_data['speed'] = self._rng.uniform(1.3, 2.0)
 
-        super().__init__("PedestrianCrossing", ego_vehicles, config, world, debug_mode)
+        super().__init__("PedestrianCrossing", ego_vehicles, config, debug_mode)
 
     def _get_walker_transform(self, wp, displacement):
         disp_x = displacement['x']
