@@ -366,7 +366,9 @@ class BackgroundBehavior(AtomicBehavior):
         """Checks if the Traffic Manager has removed a backgroudn actor"""
         alive_ids = [actor.id for actor in self._world.get_actors().filter('vehicle*')]
         for actor in list(self._all_actors):
-            if actor.id not in alive_ids:
+            # The world's list comes from the last snapshot, so it still holds an actor
+            # the Traffic Manager destroyed during this tick; is_alive already knows.
+            if actor.id not in alive_ids or not actor.is_alive:
                 self._remove_actor_info(actor)
 
     ################################

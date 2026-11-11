@@ -26,6 +26,7 @@
 * Replaced `set_latest_scenario()`/`get_latest_scenario()` with the `latest_scenario` blackboard variable.
 * `_destroy_other_actors()` is gone; call `remove_all_actors()`.
 * Fixed the route's first weather never being applied, and the weather keypoint padding raising on routes that do not define a weather at 0% or 100%.
+* Fixed routes crashing with "trying to operate on a destroyed actor" when the Traffic Manager removes a stuck background vehicle. The background activity read its location before noticing it was gone, as the world's actor list still listed it until the next tick; it now also drops actors that are no longer alive. The agent behaviours (`BasicAgentBehavior`, `ConstantVelocityAgentBehavior`, `AdaptiveConstantVelocityAgentBehavior`) also tolerate an actor destroyed before they terminate.
 
 Known gaps on CARLA UE5: scenarios needing two-wheelers (e.g. HazardAtSideLane) require a CARLA build whose content registers them (in progress on the ue58 content branch); on stock 0.10 content they are skipped.
 
