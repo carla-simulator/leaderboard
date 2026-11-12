@@ -1133,9 +1133,10 @@ class BasicAgentBehavior(AtomicBehavior):
 
     def terminate(self, new_status):
         """Resets the control"""
-        self._control.throttle = 0.0
-        self._control.brake = 0.0
-        self._actor.apply_control(self._control)
+        if self._actor is not None and self._actor.is_alive:
+            self._control.throttle = 0.0
+            self._control.brake = 0.0
+            self._actor.apply_control(self._control)
         super().terminate(new_status)
 
 
@@ -1197,9 +1198,10 @@ class ConstantVelocityAgentBehavior(AtomicBehavior):
 
     def terminate(self, new_status):
         """Resets the control"""
-        self._control.throttle = 0.0
-        self._control.brake = 0.0
-        self._actor.apply_control(self._control)
+        if self._actor is not None and self._actor.is_alive:
+            self._control.throttle = 0.0
+            self._control.brake = 0.0
+            self._actor.apply_control(self._control)
         if self._agent:
             self._agent.destroy_sensor()
         super().terminate(new_status)
@@ -1271,9 +1273,10 @@ class AdaptiveConstantVelocityAgentBehavior(AtomicBehavior):
 
     def terminate(self, new_status):
         """Resets the control"""
-        self._control.throttle = 0.0
-        self._control.brake = 0.0
-        self._actor.apply_control(self._control)
+        if self._actor is not None and self._actor.is_alive:
+            self._control.throttle = 0.0
+            self._control.brake = 0.0
+            self._actor.apply_control(self._control)
         if self._agent:
             self._agent.destroy_sensor()
         super().terminate(new_status)
