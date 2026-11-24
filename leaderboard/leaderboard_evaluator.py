@@ -313,13 +313,14 @@ class LeaderboardEvaluator(object):
             self.agent_instance.set_global_plan(self.route_scenario.gps_route, self.route_scenario.route)
             self.agent_instance.setup(args.agent_config)
 
-            # Check and store the sensors
-            if not self.sensors:
-                self.sensors = self.agent_instance.sensors()
-                track = self.agent_instance.track
+            # Check the sensors on every route, as each route gets a new agent instance
+            self.sensors = self.agent_instance.sensors()
+            track = self.agent_instance.track
 
-                validate_sensor_configuration(self.sensors, track, args.track)
+            validate_sensor_configuration(self.sensors, track, args.track)
 
+            # Store them once
+            if not self.sensors_initialized:
                 self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
                 self.statistics_manager.save_sensors(self.sensor_icons)
                 self.statistics_manager.write_statistics()
@@ -356,7 +357,8 @@ class LeaderboardEvaluator(object):
             # Load scenario and run it
             if args.record:
                 self.client.start_recorder("{}/{}_rep{}.log".format(args.record, config.name, config.repetition_index))
-            self.manager.load_scenario(self.route_scenario, self.agent_instance, config.index, config.repetition_index)
+            self.manager.load_scenario(self.route_scenario, self.agent_instance, config.index, config.repetition_index,
+                                       self.sensors)
             self.manager.run_scenario()
 
         except AgentError:

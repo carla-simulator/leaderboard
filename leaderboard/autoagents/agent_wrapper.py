@@ -230,15 +230,18 @@ class AgentWrapper(object):
 
         return type_, id_, sensor_transform, attributes
 
-    def setup_sensors(self, vehicle):
+    def setup_sensors(self, vehicle, sensors=None):
         """
         Create the sensors defined by the user and attach them to the ego-vehicle
         :param vehicle: ego vehicle
+        :param sensors: the already validated sensor list, asked to the agent if None
         :return:
         """
+        if sensors is None:
+            sensors = self._agent.sensors()
         world = SimulationData.get_world()
         bp_library = world.get_blueprint_library()
-        for sensor_spec in self._agent.sensors():
+        for sensor_spec in sensors:
             type_, id_, sensor_transform, attributes = self._preprocess_sensor_spec(sensor_spec)
 
             # These are the pseudosensors (not spawned)
@@ -292,13 +295,16 @@ class ROSAgentWrapper(AgentWrapper):
         new_type = self.SENSOR_TYPE_REMAPS.get(type_, type_)
         return new_type, id_, sensor_transform, attributes
 
-    def setup_sensors(self, vehicle):
+    def setup_sensors(self, vehicle, sensors=None):
         """
         Create the sensors defined by the user and attach them to the ego-vehicle
         :param vehicle: ego vehicle
+        :param sensors: the already validated sensor list, asked to the agent if None
         :return:
         """
-        for sensor_spec in self._agent.sensors():
+        if sensors is None:
+            sensors = self._agent.sensors()
+        for sensor_spec in sensors:
             type_, id_, transform, attributes = self._preprocess_sensor_spec(sensor_spec)
             uid = self._agent.spawn_object(type_, id_, transform, attributes, attach_to=vehicle.id)
             self._sensors_list.append(uid)
