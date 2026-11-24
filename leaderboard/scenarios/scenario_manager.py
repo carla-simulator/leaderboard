@@ -103,7 +103,7 @@ class ScenarioManager(object):
         self._watchdog = None
         self._agent_watchdog = None
 
-    def load_scenario(self, scenario, agent, route_index, rep_number):
+    def load_scenario(self, scenario, agent, route_index, rep_number, sensors=None):
         """
         Load a new scenario
         """
@@ -122,7 +122,7 @@ class ScenarioManager(object):
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
-        self._agent_wrapper.setup_sensors(self.ego_vehicles[0])
+        self._agent_wrapper.setup_sensors(self.ego_vehicles[0], sensors)
 
     def build_scenarios_loop(self, debug):
         """
